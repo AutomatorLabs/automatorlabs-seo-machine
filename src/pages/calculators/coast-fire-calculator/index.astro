@@ -1,0 +1,125 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { coastFireCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = coastFireCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={coastFireCalculator.title}
+  eyebrow={coastFireCalculator.eyebrow}
+  description={coastFireCalculator.description}
+  inputs={coastFireCalculator.inputs}
+  outputs={coastFireCalculator.outputs}
+  faq={coastFireCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import {
+      calculateCoastFireNumber,
+      calculateFireNumber,
+    } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const fireNumberResult = document.querySelector<HTMLElement>(
+      '#fire-number-result',
+    );
+    const coastFireNumberResult = document.querySelector<HTMLElement>(
+      '#coast-fire-number-result',
+    );
+    const coastFireDifferenceResult = document.querySelector<HTMLElement>(
+      '#coast-fire-difference-result',
+    );
+    const yearsUntilRetirementResult = document.querySelector<HTMLElement>(
+      '#years-until-retirement-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const years = new Intl.NumberFormat('en-US', {
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !fireNumberResult ||
+        !coastFireNumberResult ||
+        !coastFireDifferenceResult ||
+        !yearsUntilRetirementResult
+      ) {
+        return;
+      }
+
+      const data = new FormData(form);
+      const currentAge = Number(data.get('currentAge'));
+      const retirementAge = Number(data.get('retirementAge'));
+      const annualExpenses = Number(data.get('annualExpenses'));
+      const withdrawalRate = Number(data.get('withdrawalRate'));
+      const expectedReturn = Number(data.get('expectedReturn'));
+      const currentAssets = Number(data.get('currentAssets'));
+
+      const values = [
+        currentAge,
+        retirementAge,
+        annualExpenses,
+        withdrawalRate,
+        expectedReturn,
+        currentAssets,
+      ];
+      const isInvalid =
+        values.some((value) => !Number.isFinite(value)) ||
+        currentAge <= 0 ||
+        retirementAge <= currentAge ||
+        annualExpenses <= 0 ||
+        withdrawalRate <= 0 ||
+        expectedReturn < 0 ||
+        currentAssets < 0;
+
+      if (isInvalid) {
+        error.textContent =
+          'Current age, annual expenses, and withdrawal rate must be greater than 0. Retirement age must be greater than current age. Return and assets cannot be negative.';
+        error.hidden = false;
+        return;
+      }
+
+      error.hidden = true;
+
+      const yearsUntilRetirement = retirementAge - currentAge;
+      const fireNumber = calculateFireNumber(
+        annualExpenses,
+        withdrawalRate,
+      );
+      const coastFireNumber = calculateCoastFireNumber(
+        fireNumber,
+        expectedReturn,
+        yearsUntilRetirement,
+      );
+      const coastFireDifference = currentAssets - coastFireNumber;
+
+      fireNumberResult.textContent = currency.format(fireNumber);
+      coastFireNumberResult.textContent = currency.format(coastFireNumber);
+      coastFireDifferenceResult.textContent =
+        currency.format(coastFireDifference);
+      yearsUntilRetirementResult.textContent =
+        `${years.format(yearsUntilRetirement)} years`;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      calculate();
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

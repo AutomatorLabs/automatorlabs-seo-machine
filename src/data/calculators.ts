@@ -364,8 +364,136 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       'coast-fire-calculator',
     ],
   },
+  'coast-fire': {
+    id: 'coast-fire',
+    url: '/calculators/coast-fire-calculator/',
+    title: 'Coast FIRE Calculator',
+    eyebrow: 'Financial Calculator',
+    description:
+      'Estimate how much you need invested today to stop contributing and still reach financial independence by your target age.',
+    inputs: [
+      {
+        id: 'current-age',
+        name: 'currentAge',
+        label: 'Current age',
+        type: 'number',
+        value: '30',
+        min: '1',
+        step: '1',
+        required: true,
+      },
+      {
+        id: 'retirement-age',
+        name: 'retirementAge',
+        label: 'Target retirement age',
+        type: 'number',
+        value: '60',
+        min: '1',
+        step: '1',
+        required: true,
+      },
+      {
+        id: 'annual-expenses',
+        name: 'annualExpenses',
+        label: 'Annual expenses in retirement',
+        type: 'number',
+        value: '48000',
+        min: '0.01',
+        step: '100',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'withdrawal-rate',
+        name: 'withdrawalRate',
+        label: 'Withdrawal rate (%)',
+        type: 'number',
+        value: '4',
+        min: '0.01',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: 'expected-return',
+        name: 'expectedReturn',
+        label: 'Expected annual return (%)',
+        type: 'number',
+        value: '7',
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: 'current-assets',
+        name: 'currentAssets',
+        label: 'Current invested assets',
+        type: 'number',
+        value: '100000',
+        min: '0',
+        step: '100',
+        prefix: '$',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'fire-number-result',
+        label: 'FIRE number',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'coast-fire-number-result',
+        label: 'Coast FIRE number',
+        initialValue: '$0.00',
+        primary: true,
+      },
+      {
+        id: 'coast-fire-difference-result',
+        label: 'Amount above or below Coast FIRE',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'years-until-retirement-result',
+        label: 'Years until retirement',
+        initialValue: '0 years',
+      },
+    ],
+    faq: [
+      {
+        question: 'What is Coast FIRE?',
+        answer:
+          'Coast FIRE is the point where your current investments could grow to your retirement target without additional contributions, assuming your return and timeline estimates hold.',
+      },
+      {
+        question: 'How is my FIRE number calculated?',
+        answer:
+          'Your FIRE number divides estimated annual retirement expenses by your chosen withdrawal rate.',
+      },
+      {
+        question: 'Why does compounding matter for Coast FIRE?',
+        answer:
+          'More years of compounding can reduce the amount needed today because investments have longer to grow before retirement.',
+      },
+      {
+        question: 'How does the withdrawal rate affect Coast FIRE?',
+        answer:
+          'A lower withdrawal rate increases both your FIRE number and Coast FIRE number, while a higher rate reduces them but may increase retirement risk.',
+      },
+      {
+        question: 'Are the investment assumptions guaranteed?',
+        answer:
+          'No. Actual returns vary, and inflation, taxes, fees, spending changes, and market conditions can materially affect the result.',
+      },
+    ],
+    relatedIds: [
+      'fire-calculator',
+      'compound-interest-calculator',
+      'savings-rate-calculator',
+    ],
+  },
 };
 
 export const compoundInterestCalculator = calculatorConfigs['compound-interest'];
 export const savingsRateCalculator = calculatorConfigs['savings-rate'];
 export const fireCalculator = calculatorConfigs.fire;
+export const coastFireCalculator = calculatorConfigs['coast-fire'];

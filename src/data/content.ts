@@ -96,7 +96,7 @@ export const contentItems: ContentItem[] = [
     slug: 'coast-fire-calculator',
     url: '/calculators/coast-fire-calculator/',
     category: 'calculator',
-    status: 'planned',
+    status: 'live',
     description:
       'Estimate when your existing investments could grow enough to fund retirement without further contributions.',
     primaryKeyword: 'Coast FIRE calculator',
@@ -106,8 +106,8 @@ export const contentItems: ContentItem[] = [
       'retirement savings calculator',
     ],
     priority: 4,
-    publishedAt: null,
-    updatedAt: null,
+    publishedAt: '2026-06-12',
+    updatedAt: '2026-06-12',
     relatedIds: [
       'compound-interest-calculator',
       'fire-calculator',

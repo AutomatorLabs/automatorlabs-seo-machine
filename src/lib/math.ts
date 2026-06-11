@@ -106,6 +106,19 @@ export function calculateFireNumber(
   return annualExpenses / (withdrawalRatePercent / 100);
 }
 
+export function calculateCoastFireNumber(
+  fireNumber: number,
+  annualReturnPercent: number,
+  yearsUntilRetirement: number,
+): number {
+  return futureValue({
+    principal: fireNumber,
+    contributionPerPeriod: 0,
+    ratePerPeriod: annualReturnPercent / 100,
+    numberOfPeriods: -yearsUntilRetirement,
+  });
+}
+
 export function calculateYearsToTarget({
   target,
   currentBalance,
