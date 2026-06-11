@@ -43,6 +43,30 @@ export const contentItems: ContentItem[] = [
     ],
   },
   {
+    id: 'savings-rate-calculator',
+    title: 'Savings Rate Calculator',
+    slug: 'savings-rate',
+    url: '/calculators/savings-rate/',
+    category: 'calculator',
+    status: 'live',
+    description:
+      'Calculate what percentage of your income you save each month.',
+    primaryKeyword: 'savings rate calculator',
+    secondaryKeywords: [
+      'monthly savings calculator',
+      'FIRE savings rate',
+      'annual savings calculator',
+    ],
+    priority: 2,
+    publishedAt: '2026-06-11',
+    updatedAt: '2026-06-11',
+    relatedIds: [
+      'compound-interest-calculator',
+      'fire-calculator',
+      'coast-fire-calculator',
+    ],
+  },
+  {
     id: 'fire-calculator',
     title: 'FIRE Calculator',
     slug: 'fire-calculator',
@@ -57,7 +81,7 @@ export const contentItems: ContentItem[] = [
       'early retirement calculator',
       'FIRE number calculator',
     ],
-    priority: 2,
+    priority: 3,
     publishedAt: null,
     updatedAt: null,
     relatedIds: [
@@ -81,7 +105,7 @@ export const contentItems: ContentItem[] = [
       'financial independence calculator',
       'retirement savings calculator',
     ],
-    priority: 3,
+    priority: 4,
     publishedAt: null,
     updatedAt: null,
     relatedIds: [
@@ -105,7 +129,7 @@ export const contentItems: ContentItem[] = [
       'future value of money',
       'inflation rate calculator',
     ],
-    priority: 4,
+    priority: 5,
     publishedAt: null,
     updatedAt: null,
     relatedIds: [
@@ -129,7 +153,7 @@ export const contentItems: ContentItem[] = [
       'mutual fund fee calculator',
       'ETF expense calculator',
     ],
-    priority: 5,
+    priority: 6,
     publishedAt: null,
     updatedAt: null,
     relatedIds: [

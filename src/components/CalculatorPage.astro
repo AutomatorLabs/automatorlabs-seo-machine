@@ -92,6 +92,7 @@ const {
           <p id="form-error" class="error" role="alert" hidden>
             Enter valid, non-negative values in every field.
           </p>
+          <p id="form-warning" class="warning" role="status" hidden></p>
 
           <button type="submit">Calculate</button>
         </form>
@@ -301,6 +302,12 @@ const {
   .error {
     margin: 1rem 0 0;
     color: #b42318;
+    font-size: 0.9rem;
+  }
+
+  .warning {
+    margin: 1rem 0 0;
+    color: #9a6700;
     font-size: 0.9rem;
   }
 

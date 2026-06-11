@@ -1,0 +1,108 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { savingsRateCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = savingsRateCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={savingsRateCalculator.title}
+  eyebrow={savingsRateCalculator.eyebrow}
+  description={savingsRateCalculator.description}
+  inputs={savingsRateCalculator.inputs}
+  outputs={savingsRateCalculator.outputs}
+  faq={savingsRateCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const warning = document.querySelector<HTMLElement>('#form-warning');
+    const monthlySavingsResult = document.querySelector<HTMLElement>(
+      '#monthly-savings-result',
+    );
+    const savingsRateResult = document.querySelector<HTMLElement>(
+      '#savings-rate-result',
+    );
+    const annualSavingsResult = document.querySelector<HTMLElement>(
+      '#annual-savings-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const percentage = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !warning ||
+        !monthlySavingsResult ||
+        !savingsRateResult ||
+        !annualSavingsResult
+      ) {
+        return;
+      }
+
+      const data = new FormData(form);
+      const income = Number(data.get('monthlyIncome'));
+      const expenses = Number(data.get('monthlyExpenses'));
+      const savingsValue = String(data.get('monthlySavings') ?? '').trim();
+      const suppliedSavings =
+        savingsValue === '' ? null : Number(savingsValue);
+
+      const isInvalid =
+        !Number.isFinite(income) ||
+        !Number.isFinite(expenses) ||
+        income <= 0 ||
+        expenses < 0 ||
+        (suppliedSavings !== null &&
+          (!Number.isFinite(suppliedSavings) || suppliedSavings < 0));
+
+      if (isInvalid) {
+        error.textContent =
+          'Income must be greater than 0. Expenses and savings cannot be negative.';
+        error.hidden = false;
+        warning.hidden = true;
+        return;
+      }
+
+      error.hidden = true;
+
+      const monthlySavings =
+        suppliedSavings === null ? income - expenses : suppliedSavings;
+      const savingsRate = (monthlySavings / income) * 100;
+      const annualSavings = monthlySavings * 12;
+
+      if (expenses > income) {
+        warning.textContent =
+          'Your monthly expenses are greater than your monthly income.';
+        warning.hidden = false;
+      } else {
+        warning.hidden = true;
+      }
+
+      monthlySavingsResult.textContent = currency.format(monthlySavings);
+      savingsRateResult.textContent = `${percentage.format(savingsRate)}%`;
+      annualSavingsResult.textContent = currency.format(annualSavings);
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      calculate();
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

@@ -31,6 +31,7 @@ export interface CalculatorFaq {
 
 export interface CalculatorConfig {
   id: string;
+  url: string;
   title: string;
   eyebrow: string;
   description: string;
@@ -43,6 +44,7 @@ export interface CalculatorConfig {
 export const calculatorConfigs: Record<string, CalculatorConfig> = {
   'compound-interest': {
     id: 'compound-interest',
+    url: '/calculators/compound-interest/',
     title: 'Compound Interest Calculator',
     eyebrow: 'Financial calculator',
     description:
@@ -155,6 +157,100 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       'inflation-calculator',
     ],
   },
+  'savings-rate': {
+    id: 'savings-rate',
+    url: '/calculators/savings-rate/',
+    title: 'Savings Rate Calculator',
+    eyebrow: 'Financial Calculator',
+    description:
+      'Calculate what percentage of your income you save each month.',
+    inputs: [
+      {
+        id: 'monthly-income',
+        name: 'monthlyIncome',
+        label: 'Monthly income',
+        type: 'number',
+        value: '5000',
+        min: '0.01',
+        step: '0.01',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'monthly-expenses',
+        name: 'monthlyExpenses',
+        label: 'Monthly expenses',
+        type: 'number',
+        value: '3500',
+        min: '0',
+        step: '0.01',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'monthly-savings',
+        name: 'monthlySavings',
+        label: 'Monthly savings (optional)',
+        type: 'number',
+        value: '',
+        min: '0',
+        step: '0.01',
+        prefix: '$',
+        wide: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'monthly-savings-result',
+        label: 'Monthly savings',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'savings-rate-result',
+        label: 'Savings rate',
+        initialValue: '0.00%',
+        primary: true,
+      },
+      {
+        id: 'annual-savings-result',
+        label: 'Annual savings',
+        initialValue: '$0.00',
+      },
+    ],
+    faq: [
+      {
+        question: 'What is a savings rate?',
+        answer:
+          'Your savings rate is the percentage of your income that you save rather than spend during a given period.',
+      },
+      {
+        question: 'Why does savings rate matter for FIRE?',
+        answer:
+          'A higher savings rate can shorten the time needed to reach financial independence because you invest more while learning to live on less.',
+      },
+      {
+        question: 'Should I use gross or net income?',
+        answer:
+          'Net income usually gives the clearest view of your household budget because it reflects the money available after taxes and payroll deductions.',
+      },
+      {
+        question: 'Which expenses should I include?',
+        answer:
+          'Include recurring bills, housing, food, transportation, discretionary spending, and other money that leaves your monthly budget.',
+      },
+      {
+        question: 'What is a realistic savings rate target?',
+        answer:
+          'A realistic target depends on income, essential costs, debt, and goals. Many people begin near 10% to 20% and increase it gradually.',
+      },
+    ],
+    relatedIds: [
+      'compound-interest-calculator',
+      'fire-calculator',
+      'coast-fire-calculator',
+    ],
+  },
 };
 
 export const compoundInterestCalculator = calculatorConfigs['compound-interest'];
+export const savingsRateCalculator = calculatorConfigs['savings-rate'];
