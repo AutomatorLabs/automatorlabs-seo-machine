@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://automator-labs.netlify.app/sitemap-index.xml
+Sitemap: https://automatorlabs.co/sitemap-index.xml
