@@ -19,6 +19,8 @@ const relatedItems = savingsRateCalculator.relatedIds.flatMap((id) => {
   relatedItems={relatedItems}
 >
   <script>
+    import { calculateSavingsRate } from '../../../lib/math';
+
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
     const warning = document.querySelector<HTMLElement>('#form-warning');
@@ -80,10 +82,11 @@ const relatedItems = savingsRateCalculator.relatedIds.flatMap((id) => {
 
       error.hidden = true;
 
-      const monthlySavings =
-        suppliedSavings === null ? income - expenses : suppliedSavings;
-      const savingsRate = (monthlySavings / income) * 100;
-      const annualSavings = monthlySavings * 12;
+      const result = calculateSavingsRate({
+        monthlyIncome: income,
+        monthlyExpenses: expenses,
+        monthlySavings: suppliedSavings,
+      });
 
       if (expenses > income) {
         warning.textContent =
@@ -93,9 +96,10 @@ const relatedItems = savingsRateCalculator.relatedIds.flatMap((id) => {
         warning.hidden = true;
       }
 
-      monthlySavingsResult.textContent = currency.format(monthlySavings);
-      savingsRateResult.textContent = `${percentage.format(savingsRate)}%`;
-      annualSavingsResult.textContent = currency.format(annualSavings);
+      monthlySavingsResult.textContent = currency.format(result.monthlySavings);
+      savingsRateResult.textContent =
+        `${percentage.format(result.savingsRate)}%`;
+      annualSavingsResult.textContent = currency.format(result.annualSavings);
     }
 
     form?.addEventListener('submit', (event) => {

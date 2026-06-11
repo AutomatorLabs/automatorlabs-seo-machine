@@ -19,6 +19,8 @@ const relatedItems = compoundInterestCalculator.relatedIds.flatMap((id) => {
   relatedItems={relatedItems}
 >
   <script>
+    import { calculateCompoundInterest } from '../../../lib/math';
+
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
     const finalBalance = document.querySelector<HTMLElement>('#final-balance');
@@ -39,14 +41,14 @@ const relatedItems = compoundInterestCalculator.relatedIds.flatMap((id) => {
       const data = new FormData(form);
       const principal = Number(data.get('principal'));
       const monthlyContribution = Number(data.get('monthlyContribution'));
-      const annualRate = Number(data.get('interestRate')) / 100;
+      const annualRatePercent = Number(data.get('interestRate'));
       const years = Number(data.get('years'));
       const periodsPerYear = Number(data.get('frequency'));
 
       const values = [
         principal,
         monthlyContribution,
-        annualRate,
+        annualRatePercent,
         years,
         periodsPerYear,
       ];
@@ -54,7 +56,7 @@ const relatedItems = compoundInterestCalculator.relatedIds.flatMap((id) => {
         values.some((value) => !Number.isFinite(value)) ||
         principal < 0 ||
         monthlyContribution < 0 ||
-        annualRate < 0 ||
+        annualRatePercent < 0 ||
         years <= 0 ||
         periodsPerYear <= 0;
 
@@ -65,22 +67,19 @@ const relatedItems = compoundInterestCalculator.relatedIds.flatMap((id) => {
 
       error.hidden = true;
 
-      const numberOfPeriods = periodsPerYear * years;
-      const ratePerPeriod = annualRate / periodsPerYear;
-      const contributionPerPeriod = (monthlyContribution * 12) / periodsPerYear;
-      const growthFactor = Math.pow(1 + ratePerPeriod, numberOfPeriods);
-      const contributionGrowth =
-        ratePerPeriod === 0
-          ? contributionPerPeriod * numberOfPeriods
-          : contributionPerPeriod * ((growthFactor - 1) / ratePerPeriod);
+      const result = calculateCompoundInterest({
+        principal,
+        monthlyContribution,
+        annualRatePercent,
+        years,
+        periodsPerYear,
+      });
 
-      const balance = principal * growthFactor + contributionGrowth;
-      const contributions = principal + monthlyContribution * 12 * years;
-      const interest = balance - contributions;
-
-      finalBalance.textContent = currency.format(balance);
-      totalContributions.textContent = currency.format(contributions);
-      totalInterest.textContent = currency.format(interest);
+      finalBalance.textContent = currency.format(result.finalBalance);
+      totalContributions.textContent = currency.format(
+        result.totalContributions,
+      );
+      totalInterest.textContent = currency.format(result.totalInterest);
     }
 
     form?.addEventListener('submit', (event) => {

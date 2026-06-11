@@ -1,0 +1,140 @@
+export interface FutureValueInput {
+  principal: number;
+  contributionPerPeriod: number;
+  ratePerPeriod: number;
+  numberOfPeriods: number;
+}
+
+export interface CompoundInterestInput {
+  principal: number;
+  monthlyContribution: number;
+  annualRatePercent: number;
+  years: number;
+  periodsPerYear: number;
+}
+
+export interface CompoundInterestResult {
+  finalBalance: number;
+  totalContributions: number;
+  totalInterest: number;
+}
+
+export interface SavingsRateInput {
+  monthlyIncome: number;
+  monthlyExpenses: number;
+  monthlySavings?: number | null;
+}
+
+export interface SavingsRateResult {
+  monthlySavings: number;
+  savingsRate: number;
+  annualSavings: number;
+}
+
+export interface YearsToTargetInput {
+  target: number;
+  currentBalance: number;
+  monthlyContribution: number;
+  annualReturnPercent: number;
+}
+
+export function futureValue({
+  principal,
+  contributionPerPeriod,
+  ratePerPeriod,
+  numberOfPeriods,
+}: FutureValueInput): number {
+  if (ratePerPeriod === 0) {
+    return principal + contributionPerPeriod * numberOfPeriods;
+  }
+
+  const growthFactor = Math.pow(1 + ratePerPeriod, numberOfPeriods);
+  const contributionGrowth =
+    contributionPerPeriod * ((growthFactor - 1) / ratePerPeriod);
+
+  return principal * growthFactor + contributionGrowth;
+}
+
+export function calculateCompoundInterest({
+  principal,
+  monthlyContribution,
+  annualRatePercent,
+  years,
+  periodsPerYear,
+}: CompoundInterestInput): CompoundInterestResult {
+  const numberOfPeriods = periodsPerYear * years;
+  const ratePerPeriod = annualRatePercent / 100 / periodsPerYear;
+  const contributionPerPeriod =
+    (monthlyContribution * 12) / periodsPerYear;
+  const finalBalance = futureValue({
+    principal,
+    contributionPerPeriod,
+    ratePerPeriod,
+    numberOfPeriods,
+  });
+  const totalContributions =
+    principal + monthlyContribution * 12 * years;
+
+  return {
+    finalBalance,
+    totalContributions,
+    totalInterest: finalBalance - totalContributions,
+  };
+}
+
+export function calculateSavingsRate({
+  monthlyIncome,
+  monthlyExpenses,
+  monthlySavings,
+}: SavingsRateInput): SavingsRateResult {
+  const resolvedMonthlySavings =
+    monthlySavings == null
+      ? monthlyIncome - monthlyExpenses
+      : monthlySavings;
+
+  return {
+    monthlySavings: resolvedMonthlySavings,
+    savingsRate: (resolvedMonthlySavings / monthlyIncome) * 100,
+    annualSavings: resolvedMonthlySavings * 12,
+  };
+}
+
+export function calculateFireNumber(
+  annualExpenses: number,
+  withdrawalRatePercent: number,
+): number {
+  return annualExpenses / (withdrawalRatePercent / 100);
+}
+
+export function calculateYearsToTarget({
+  target,
+  currentBalance,
+  monthlyContribution,
+  annualReturnPercent,
+}: YearsToTargetInput): number | null {
+  if (currentBalance >= target) {
+    return 0;
+  }
+
+  const amountNeeded = target - currentBalance;
+  const monthlyRate = annualReturnPercent / 100 / 12;
+
+  if (monthlyRate === 0) {
+    return monthlyContribution > 0
+      ? Math.ceil(amountNeeded / monthlyContribution) / 12
+      : null;
+  }
+
+  if (currentBalance === 0 && monthlyContribution === 0) {
+    return null;
+  }
+
+  const contributionValue = monthlyContribution / monthlyRate;
+  const growthRatio =
+    (target + contributionValue) / (currentBalance + contributionValue);
+  const months = Math.log(growthRatio) / Math.log1p(monthlyRate);
+
+  return Number.isFinite(months) && months >= 0
+    ? Math.ceil(months) / 12
+    : null;
+}

@@ -19,6 +19,11 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
   relatedItems={relatedItems}
 >
   <script>
+    import {
+      calculateFireNumber,
+      calculateYearsToTarget,
+    } from '../../../lib/math';
+
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
     const fireNumberResult = document.querySelector<HTMLElement>(
@@ -41,37 +46,6 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
       minimumFractionDigits: 1,
       maximumFractionDigits: 1,
     });
-
-    function estimateMonthsToFire(
-      target: number,
-      currentAssets: number,
-      monthlyContribution: number,
-      annualReturn: number,
-    ): number | null {
-      if (currentAssets >= target) {
-        return 0;
-      }
-
-      const amountNeeded = target - currentAssets;
-      const monthlyRate = annualReturn / 100 / 12;
-
-      if (monthlyRate === 0) {
-        return monthlyContribution > 0
-          ? Math.ceil(amountNeeded / monthlyContribution)
-          : null;
-      }
-
-      if (currentAssets === 0 && monthlyContribution === 0) {
-        return null;
-      }
-
-      const contributionValue = monthlyContribution / monthlyRate;
-      const growthRatio =
-        (target + contributionValue) / (currentAssets + contributionValue);
-      const months = Math.log(growthRatio) / Math.log1p(monthlyRate);
-
-      return Number.isFinite(months) && months >= 0 ? Math.ceil(months) : null;
-    }
 
     function calculate() {
       if (
@@ -115,25 +89,28 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
 
       error.hidden = true;
 
-      const fireNumber = annualExpenses / (withdrawalRate / 100);
-      const amountNeeded = fireNumber - currentAssets;
-      const monthsToFire = estimateMonthsToFire(
-        fireNumber,
-        currentAssets,
-        monthlyContribution,
-        expectedReturn,
+      const fireNumber = calculateFireNumber(
+        annualExpenses,
+        withdrawalRate,
       );
+      const amountNeeded = fireNumber - currentAssets;
+      const yearsToFire = calculateYearsToTarget({
+        target: fireNumber,
+        currentBalance: currentAssets,
+        monthlyContribution,
+        annualReturnPercent: expectedReturn,
+      });
 
       fireNumberResult.textContent = currency.format(fireNumber);
       amountNeededResult.textContent = currency.format(amountNeeded);
 
-      if (monthsToFire === null) {
+      if (yearsToFire === null) {
         yearsToFireResult.textContent = 'Not reachable with current inputs';
-      } else if (monthsToFire === 0) {
+      } else if (yearsToFire === 0) {
         yearsToFireResult.textContent = 'Already reached';
       } else {
         yearsToFireResult.textContent =
-          `${years.format(monthsToFire / 12)} years`;
+          `${years.format(yearsToFire)} years`;
       }
     }
 
