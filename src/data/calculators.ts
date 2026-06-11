@@ -678,6 +678,71 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       'four-percent-rule-calculator',
     ],
   },
+  'rule-of-72': {
+    id: 'rule-of-72',
+    url: '/calculators/rule-of-72-calculator/',
+    title: 'Rule of 72 Calculator',
+    eyebrow: 'Financial Calculator',
+    description:
+      'Estimate how long it takes money to double at a given annual return.',
+    inputs: [
+      {
+        id: 'annual-return',
+        name: 'annualReturn',
+        label: 'Annual return (%)',
+        type: 'number',
+        value: '8',
+        min: '0.01',
+        step: '0.01',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'years-to-double-result',
+        label: 'Estimated years to double',
+        initialValue: '0 years',
+        primary: true,
+      },
+      {
+        id: 'doubling-date-result',
+        label: 'Approximate doubling date if starting today',
+        initialValue: 'Not calculated',
+      },
+    ],
+    faq: [
+      {
+        question: 'What is the Rule of 72?',
+        answer:
+          'The Rule of 72 is a shortcut for estimating how many years an investment may take to double by dividing 72 by its annual return percentage.',
+      },
+      {
+        question: 'Does the Rule of 72 assume compound growth?',
+        answer:
+          'Yes. It approximates compound growth and is generally more useful for rates in a typical investing range than for extremely high or low rates.',
+      },
+      {
+        question: 'Can I use the Rule of 72 for investment returns?',
+        answer:
+          'Yes, but the result assumes a steady annual return. Real investments fluctuate and may take more or less time to double.',
+      },
+      {
+        question: 'Can the Rule of 72 estimate inflation effects?',
+        answer:
+          'Yes. Dividing 72 by an inflation rate estimates how long it could take prices to double if that inflation rate remains constant.',
+      },
+      {
+        question: 'What are the limitations of the Rule of 72?',
+        answer:
+          'It is an approximation that ignores taxes, fees, changing rates, contributions, withdrawals, and uneven investment returns.',
+      },
+    ],
+    relatedIds: [
+      'compound-interest-calculator',
+      'fire-calculator',
+      'coast-fire-calculator',
+    ],
+  },
 };
 
 export const compoundInterestCalculator = calculatorConfigs['compound-interest'];
@@ -688,3 +753,4 @@ export const fourPercentRuleCalculator =
   calculatorConfigs['four-percent-rule'];
 export const retirementWithdrawalCalculator =
   calculatorConfigs['retirement-withdrawal'];
+export const ruleOf72Calculator = calculatorConfigs['rule-of-72'];

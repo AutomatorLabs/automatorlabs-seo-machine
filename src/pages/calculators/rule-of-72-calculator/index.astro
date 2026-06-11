@@ -1,0 +1,78 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { ruleOf72Calculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = ruleOf72Calculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={ruleOf72Calculator.title}
+  eyebrow={ruleOf72Calculator.eyebrow}
+  description={ruleOf72Calculator.description}
+  inputs={ruleOf72Calculator.inputs}
+  outputs={ruleOf72Calculator.outputs}
+  faq={ruleOf72Calculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { calculateRuleOf72 } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const yearsToDoubleResult = document.querySelector<HTMLElement>(
+      '#years-to-double-result',
+    );
+    const doublingDateResult = document.querySelector<HTMLElement>(
+      '#doubling-date-result',
+    );
+
+    const years = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+
+    const date = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    function calculate() {
+      if (!form || !error || !yearsToDoubleResult || !doublingDateResult) {
+        return;
+      }
+
+      const data = new FormData(form);
+      const annualReturn = Number(data.get('annualReturn'));
+
+      if (!Number.isFinite(annualReturn) || annualReturn <= 0) {
+        error.textContent = 'Annual return must be greater than 0.';
+        error.hidden = false;
+        return;
+      }
+
+      error.hidden = true;
+
+      const yearsToDouble = calculateRuleOf72(annualReturn);
+      const millisecondsPerYear = 365.2425 * 24 * 60 * 60 * 1000;
+      const doublingDate = new Date(
+        Date.now() + yearsToDouble * millisecondsPerYear,
+      );
+
+      yearsToDoubleResult.textContent =
+        `${years.format(yearsToDouble)} years`;
+      doublingDateResult.textContent = date.format(doublingDate);
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      calculate();
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

@@ -174,6 +174,10 @@ export function calculateWithdrawalPlan({
   };
 }
 
+export function calculateRuleOf72(annualReturnPercent: number): number {
+  return 72 / annualReturnPercent;
+}
+
 export function calculateYearsToTarget({
   target,
   currentBalance,

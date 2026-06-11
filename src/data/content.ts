@@ -163,6 +163,30 @@ export const contentItems: ContentItem[] = [
     ],
   },
   {
+    id: 'rule-of-72-calculator',
+    title: 'Rule of 72 Calculator',
+    slug: 'rule-of-72-calculator',
+    url: '/calculators/rule-of-72-calculator/',
+    category: 'calculator',
+    status: 'live',
+    description:
+      'Estimate how long it takes money to double at a given annual return.',
+    primaryKeyword: 'rule of 72 calculator',
+    secondaryKeywords: [
+      'investment doubling calculator',
+      'years to double money',
+      'compound growth estimate',
+    ],
+    priority: 7,
+    publishedAt: '2026-06-12',
+    updatedAt: '2026-06-12',
+    relatedIds: [
+      'compound-interest-calculator',
+      'fire-calculator',
+      'coast-fire-calculator',
+    ],
+  },
+  {
     id: 'inflation-calculator',
     title: 'Inflation Calculator',
     slug: 'inflation-calculator',
@@ -177,7 +201,7 @@ export const contentItems: ContentItem[] = [
       'future value of money',
       'inflation rate calculator',
     ],
-    priority: 7,
+    priority: 8,
     publishedAt: null,
     updatedAt: null,
     relatedIds: [
@@ -201,7 +225,7 @@ export const contentItems: ContentItem[] = [
       'mutual fund fee calculator',
       'ETF expense calculator',
     ],
-    priority: 8,
+    priority: 9,
     publishedAt: null,
     updatedAt: null,
     relatedIds: [
