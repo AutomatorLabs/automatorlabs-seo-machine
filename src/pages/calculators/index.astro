@@ -1,5 +1,10 @@
 ---
+import { contentItems } from '../../data/content';
 import Layout from '../../layouts/Layout.astro';
+
+const calculators = contentItems
+  .filter((item) => item.category === 'calculator')
+  .sort((a, b) => a.priority - b.priority);
 ---
 
 <Layout
@@ -11,10 +16,22 @@ import Layout from '../../layouts/Layout.astro';
     <h1>Practical calculators for better decisions</h1>
     <p>Explore our growing collection of simple, useful calculators.</p>
 
-    <ul>
-      <li>
-        <a href="/calculators/compound-interest/">Compound Interest Calculator</a>
-      </li>
+    <ul class="calculator-list">
+      {calculators.map((item) => (
+        <li>
+          <div>
+            {item.status === 'live' ? (
+              <a href={item.url}>{item.title}</a>
+            ) : (
+              <h2>{item.title}</h2>
+            )}
+            <p>{item.description}</p>
+          </div>
+          <span class:list={['status', { live: item.status === 'live' }]}>
+            {item.status === 'live' ? 'Live' : 'Planned'}
+          </span>
+        </li>
+      ))}
     </ul>
   </main>
 </Layout>
@@ -45,13 +62,58 @@ import Layout from '../../layouts/Layout.astro';
     color: #586176;
   }
 
-  ul {
+  .calculator-list {
+    display: grid;
+    gap: 0.75rem;
     margin-top: 2rem;
-    padding-left: 1.25rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .calculator-list li {
+    display: flex;
+    border: 1px solid #e1e4ec;
+    border-radius: 12px;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .calculator-list h2,
+  .calculator-list p {
+    margin: 0;
+  }
+
+  .calculator-list h2,
+  .calculator-list a {
+    font-size: 1rem;
+  }
+
+  .calculator-list p {
+    margin-top: 0.35rem;
+    font-size: 0.92rem;
   }
 
   a {
     color: #3158d3;
     font-weight: 700;
+  }
+
+  .status {
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: #eef1f7;
+    color: #697386;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 0.15rem 0.5rem;
+    text-transform: uppercase;
+  }
+
+  .status.live {
+    background: #e8f7ed;
+    color: #217a3c;
   }
 </style>

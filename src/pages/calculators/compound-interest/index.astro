@@ -1,16 +1,25 @@
 ---
+import { contentItems } from '../../../data/content';
 import Layout from '../../../layouts/Layout.astro';
 
-const title = 'Compound Interest Calculator';
-const description =
-  'Estimate your future balance, total contributions, and interest earned with regular monthly investments.';
+const contentItem = contentItems.find(
+  (item) => item.id === 'compound-interest-calculator',
+);
+
+if (!contentItem) {
+  throw new Error('Compound interest calculator is missing from the content manifest.');
+}
+
+const relatedCalculators = contentItem.relatedIds
+  .map((id) => contentItems.find((item) => item.id === id))
+  .filter((item) => item !== undefined);
 ---
 
-<Layout title={title} description={description}>
+<Layout title={contentItem.title} description={contentItem.description}>
   <main>
     <header class="page-header">
       <p class="eyebrow">Financial calculator</p>
-      <h1>Compound Interest Calculator</h1>
+      <h1>{contentItem.title}</h1>
       <p class="intro">
         Compound interest is interest earned on both your original investment and
         the interest it has already accumulated. Use this calculator to estimate
@@ -168,9 +177,9 @@ const description =
     <section class="content-section" aria-labelledby="related-heading">
       <h2 id="related-heading">Related Calculators</h2>
       <nav class="related-links" aria-label="Related calculators">
-        <a href="/calculators/fire-calculator/">FIRE Calculator</a>
-        <a href="/calculators/coast-fire-calculator/">Coast FIRE Calculator</a>
-        <a href="/calculators/inflation-calculator/">Inflation Calculator</a>
+        {relatedCalculators.map((item) => (
+          <a href={item.url}>{item.title}</a>
+        ))}
       </nav>
     </section>
   </main>

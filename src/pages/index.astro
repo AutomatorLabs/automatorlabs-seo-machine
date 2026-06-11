@@ -1,5 +1,10 @@
 ---
+import { contentItems } from '../data/content';
 import Layout from '../layouts/Layout.astro';
+
+const calculators = contentItems
+  .filter((item) => item.category === 'calculator')
+  .sort((a, b) => a.priority - b.priority);
 ---
 
 <Layout
@@ -11,9 +16,18 @@ import Layout from '../layouts/Layout.astro';
       <h1>AutomatorLabs</h1>
       <p>Free calculators and tools for money, data, and automation.</p>
 
-      <nav>
-        <a href="/calculators/compound-interest/">Compound Interest Calculator</a>
-      </nav>
+      <ul class="content-list">
+        {calculators.map((item) => (
+          <li>
+            {item.status === 'live' ? (
+              <a href={item.url}>{item.title}</a>
+            ) : (
+              <span>{item.title}</span>
+            )}
+            <small>{item.status === 'live' ? 'Live' : 'Planned'}</small>
+          </li>
+        ))}
+      </ul>
     </section>
   </main>
 </Layout>
@@ -41,12 +55,38 @@ import Layout from '../layouts/Layout.astro';
     font-size: 1.15rem;
   }
 
-  nav {
+  .content-list {
+    display: grid;
+    gap: 0.75rem;
     margin-top: 2rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .content-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
   }
 
   a {
     color: #3158d3;
     font-weight: 700;
+  }
+
+  .content-list span {
+    color: #4b5563;
+    font-weight: 700;
+  }
+
+  small {
+    border-radius: 999px;
+    background: #eef1f7;
+    color: #697386;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 0.15rem 0.5rem;
+    text-transform: uppercase;
   }
 </style>
