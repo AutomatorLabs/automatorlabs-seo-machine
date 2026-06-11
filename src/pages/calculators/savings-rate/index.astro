@@ -20,6 +20,10 @@ const relatedItems = savingsRateCalculator.relatedIds.flatMap((id) => {
 >
   <script>
     import { calculateSavingsRate } from '../../../lib/math';
+    import {
+      parseCalculatorNumber,
+      parseOptionalCalculatorNumber,
+    } from '../../../lib/input';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
@@ -58,11 +62,11 @@ const relatedItems = savingsRateCalculator.relatedIds.flatMap((id) => {
       }
 
       const data = new FormData(form);
-      const income = Number(data.get('monthlyIncome'));
-      const expenses = Number(data.get('monthlyExpenses'));
-      const savingsValue = String(data.get('monthlySavings') ?? '').trim();
-      const suppliedSavings =
-        savingsValue === '' ? null : Number(savingsValue);
+      const income = parseCalculatorNumber(data.get('monthlyIncome'));
+      const expenses = parseCalculatorNumber(data.get('monthlyExpenses'));
+      const suppliedSavings = parseOptionalCalculatorNumber(
+        data.get('monthlySavings'),
+      );
 
       const isInvalid =
         !Number.isFinite(income) ||

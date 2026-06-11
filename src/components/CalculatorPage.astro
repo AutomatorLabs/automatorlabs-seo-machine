@@ -67,10 +67,10 @@ const {
                     <input
                       id={input.id}
                       name={input.name}
-                      type="number"
-                      min={input.min}
-                      step={input.step}
-                      value={input.value}
+                      type="text"
+                      inputmode="decimal"
+                      value={input.value.replace(/[$,\s]/g, '')}
+                      data-currency-input
                       required={input.required}
                     />
                   </div>
@@ -142,6 +142,20 @@ const {
 
   <slot />
 </Layout>
+
+<script>
+  document.querySelectorAll<HTMLInputElement>('[data-currency-input]').forEach(
+    (input) => {
+      input.addEventListener('input', () => {
+        const normalized = input.value.replace(/[$,\s]/g, '');
+
+        if (normalized !== input.value) {
+          input.value = normalized;
+        }
+      });
+    },
+  );
+</script>
 
 <style>
   :global(body) {

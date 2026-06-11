@@ -20,6 +20,7 @@ const relatedItems = retirementWithdrawalCalculator.relatedIds.flatMap((id) => {
 >
   <script>
     import { calculateWithdrawalIncome } from '../../../lib/math';
+    import { parseCalculatorNumber } from '../../../lib/input';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
@@ -51,8 +52,8 @@ const relatedItems = retirementWithdrawalCalculator.relatedIds.flatMap((id) => {
       }
 
       const data = new FormData(form);
-      const portfolioValue = Number(data.get('portfolioValue'));
-      const withdrawalRate = Number(data.get('withdrawalRate'));
+      const portfolioValue = parseCalculatorNumber(data.get('portfolioValue'));
+      const withdrawalRate = parseCalculatorNumber(data.get('withdrawalRate'));
 
       const isInvalid =
         !Number.isFinite(portfolioValue) ||

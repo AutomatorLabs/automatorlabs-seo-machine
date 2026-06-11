@@ -23,6 +23,7 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
       calculateFireNumber,
       calculateYearsToTarget,
     } from '../../../lib/math';
+    import { parseCalculatorNumber } from '../../../lib/input';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
@@ -59,11 +60,13 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
       }
 
       const data = new FormData(form);
-      const annualExpenses = Number(data.get('annualExpenses'));
-      const withdrawalRate = Number(data.get('withdrawalRate'));
-      const currentAssets = Number(data.get('currentAssets'));
-      const monthlyContribution = Number(data.get('monthlyContribution'));
-      const expectedReturn = Number(data.get('expectedReturn'));
+      const annualExpenses = parseCalculatorNumber(data.get('annualExpenses'));
+      const withdrawalRate = parseCalculatorNumber(data.get('withdrawalRate'));
+      const currentAssets = parseCalculatorNumber(data.get('currentAssets'));
+      const monthlyContribution = parseCalculatorNumber(
+        data.get('monthlyContribution'),
+      );
+      const expectedReturn = parseCalculatorNumber(data.get('expectedReturn'));
 
       const values = [
         annualExpenses,

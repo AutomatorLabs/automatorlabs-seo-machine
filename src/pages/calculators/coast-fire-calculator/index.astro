@@ -23,6 +23,7 @@ const relatedItems = coastFireCalculator.relatedIds.flatMap((id) => {
       calculateCoastFireNumber,
       calculateFireNumber,
     } from '../../../lib/math';
+    import { parseCalculatorNumber } from '../../../lib/input';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
@@ -62,12 +63,12 @@ const relatedItems = coastFireCalculator.relatedIds.flatMap((id) => {
       }
 
       const data = new FormData(form);
-      const currentAge = Number(data.get('currentAge'));
-      const retirementAge = Number(data.get('retirementAge'));
-      const annualExpenses = Number(data.get('annualExpenses'));
-      const withdrawalRate = Number(data.get('withdrawalRate'));
-      const expectedReturn = Number(data.get('expectedReturn'));
-      const currentAssets = Number(data.get('currentAssets'));
+      const currentAge = parseCalculatorNumber(data.get('currentAge'));
+      const retirementAge = parseCalculatorNumber(data.get('retirementAge'));
+      const annualExpenses = parseCalculatorNumber(data.get('annualExpenses'));
+      const withdrawalRate = parseCalculatorNumber(data.get('withdrawalRate'));
+      const expectedReturn = parseCalculatorNumber(data.get('expectedReturn'));
+      const currentAssets = parseCalculatorNumber(data.get('currentAssets'));
 
       const values = [
         currentAge,

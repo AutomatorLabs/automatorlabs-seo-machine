@@ -20,6 +20,10 @@ const relatedItems = fourPercentRuleCalculator.relatedIds.flatMap((id) => {
 >
   <script>
     import { calculateWithdrawalPlan } from '../../../lib/math';
+    import {
+      parseCalculatorNumber,
+      parseOptionalCalculatorNumber,
+    } from '../../../lib/input';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
@@ -42,11 +46,6 @@ const relatedItems = fourPercentRuleCalculator.relatedIds.flatMap((id) => {
       maximumFractionDigits: 2,
     });
 
-    function optionalNumber(data: FormData, name: string): number | null {
-      const value = String(data.get(name) ?? '').trim();
-      return value === '' ? null : Number(value);
-    }
-
     function calculate() {
       if (
         !form ||
@@ -60,10 +59,14 @@ const relatedItems = fourPercentRuleCalculator.relatedIds.flatMap((id) => {
       }
 
       const data = new FormData(form);
-      const portfolioValue = Number(data.get('portfolioValue'));
-      const withdrawalRate = Number(data.get('withdrawalRate'));
-      const annualExpenses = optionalNumber(data, 'annualExpenses');
-      const monthlyExpenses = optionalNumber(data, 'monthlyExpenses');
+      const portfolioValue = parseCalculatorNumber(data.get('portfolioValue'));
+      const withdrawalRate = parseCalculatorNumber(data.get('withdrawalRate'));
+      const annualExpenses = parseOptionalCalculatorNumber(
+        data.get('annualExpenses'),
+      );
+      const monthlyExpenses = parseOptionalCalculatorNumber(
+        data.get('monthlyExpenses'),
+      );
 
       const isInvalid =
         !Number.isFinite(portfolioValue) ||

@@ -20,6 +20,7 @@ const relatedItems = ruleOf72Calculator.relatedIds.flatMap((id) => {
 >
   <script>
     import { calculateRuleOf72 } from '../../../lib/math';
+    import { parseCalculatorNumber } from '../../../lib/input';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
@@ -47,7 +48,7 @@ const relatedItems = ruleOf72Calculator.relatedIds.flatMap((id) => {
       }
 
       const data = new FormData(form);
-      const annualReturn = Number(data.get('annualReturn'));
+      const annualReturn = parseCalculatorNumber(data.get('annualReturn'));
 
       if (!Number.isFinite(annualReturn) || annualReturn <= 0) {
         error.textContent = 'Annual return must be greater than 0.';

@@ -20,6 +20,7 @@ const relatedItems = compoundInterestCalculator.relatedIds.flatMap((id) => {
 >
   <script>
     import { calculateCompoundInterest } from '../../../lib/math';
+    import { parseCalculatorNumber } from '../../../lib/input';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
@@ -39,11 +40,13 @@ const relatedItems = compoundInterestCalculator.relatedIds.flatMap((id) => {
       }
 
       const data = new FormData(form);
-      const principal = Number(data.get('principal'));
-      const monthlyContribution = Number(data.get('monthlyContribution'));
-      const annualRatePercent = Number(data.get('interestRate'));
-      const years = Number(data.get('years'));
-      const periodsPerYear = Number(data.get('frequency'));
+      const principal = parseCalculatorNumber(data.get('principal'));
+      const monthlyContribution = parseCalculatorNumber(
+        data.get('monthlyContribution'),
+      );
+      const annualRatePercent = parseCalculatorNumber(data.get('interestRate'));
+      const years = parseCalculatorNumber(data.get('years'));
+      const periodsPerYear = parseCalculatorNumber(data.get('frequency'));
 
       const values = [
         principal,
