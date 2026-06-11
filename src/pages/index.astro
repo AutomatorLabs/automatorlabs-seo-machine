@@ -2,7 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout>
+<Layout
+  title="AutomatorLabs | Free Calculators and Tools"
+  description="Free calculators and tools for money, data, and automation."
+>
   <main>
     <section>
       <h1>AutomatorLabs</h1>
@@ -14,3 +17,36 @@ import Layout from '../layouts/Layout.astro';
     </section>
   </main>
 </Layout>
+
+<style>
+  main {
+    width: min(1120px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 5rem 0;
+  }
+
+  section {
+    max-width: 720px;
+  }
+
+  h1 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+
+  p {
+    color: #586176;
+    font-size: 1.15rem;
+  }
+
+  nav {
+    margin-top: 2rem;
+  }
+
+  a {
+    color: #3158d3;
+    font-weight: 700;
+  }
+</style>

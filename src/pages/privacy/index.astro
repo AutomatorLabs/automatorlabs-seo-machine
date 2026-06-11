@@ -1,0 +1,34 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="Privacy | AutomatorLabs"
+  description="Read the AutomatorLabs privacy information."
+>
+  <main>
+    <h1>Privacy</h1>
+    <p>
+      Our full privacy policy is coming soon. AutomatorLabs calculators currently
+      run in your browser and do not require an account.
+    </p>
+  </main>
+</Layout>
+
+<style>
+  main {
+    width: min(760px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 5rem 0;
+  }
+
+  h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(2.25rem, 7vw, 3.75rem);
+    letter-spacing: -0.04em;
+  }
+
+  p {
+    color: #586176;
+  }
+</style>

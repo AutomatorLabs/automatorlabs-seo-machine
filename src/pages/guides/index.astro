@@ -1,0 +1,41 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="Guides | AutomatorLabs"
+  description="Read practical guides about money, data, and automation."
+>
+  <main>
+    <p class="eyebrow">Guides</p>
+    <h1>Clear guides for practical problems</h1>
+    <p>Helpful guides on money, data, and automation are coming soon.</p>
+  </main>
+</Layout>
+
+<style>
+  main {
+    width: min(760px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 5rem 0;
+  }
+
+  .eyebrow {
+    color: #3158d3;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(2.25rem, 7vw, 3.75rem);
+    letter-spacing: -0.04em;
+    line-height: 1.08;
+  }
+
+  p {
+    color: #586176;
+  }
+</style>

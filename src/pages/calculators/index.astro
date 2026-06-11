@@ -1,0 +1,57 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="Calculators | AutomatorLabs"
+  description="Explore free financial and planning calculators from AutomatorLabs."
+>
+  <main>
+    <p class="eyebrow">Calculators</p>
+    <h1>Practical calculators for better decisions</h1>
+    <p>Explore our growing collection of simple, useful calculators.</p>
+
+    <ul>
+      <li>
+        <a href="/calculators/compound-interest/">Compound Interest Calculator</a>
+      </li>
+    </ul>
+  </main>
+</Layout>
+
+<style>
+  main {
+    width: min(760px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 5rem 0;
+  }
+
+  .eyebrow {
+    color: #3158d3;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(2.25rem, 7vw, 3.75rem);
+    letter-spacing: -0.04em;
+    line-height: 1.08;
+  }
+
+  p {
+    color: #586176;
+  }
+
+  ul {
+    margin-top: 2rem;
+    padding-left: 1.25rem;
+  }
+
+  a {
+    color: #3158d3;
+    font-weight: 700;
+  }
+</style>
