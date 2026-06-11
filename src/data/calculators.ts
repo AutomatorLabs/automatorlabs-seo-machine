@@ -250,7 +250,122 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       'coast-fire-calculator',
     ],
   },
+  fire: {
+    id: 'fire',
+    url: '/calculators/fire-calculator/',
+    title: 'FIRE Calculator',
+    eyebrow: 'Financial Calculator',
+    description:
+      'Estimate your financial independence number based on annual expenses and withdrawal rate.',
+    inputs: [
+      {
+        id: 'annual-expenses',
+        name: 'annualExpenses',
+        label: 'Annual expenses',
+        type: 'number',
+        value: '48000',
+        min: '0.01',
+        step: '100',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'withdrawal-rate',
+        name: 'withdrawalRate',
+        label: 'Withdrawal rate (%)',
+        type: 'number',
+        value: '4',
+        min: '0.01',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: 'current-assets',
+        name: 'currentAssets',
+        label: 'Current invested assets',
+        type: 'number',
+        value: '100000',
+        min: '0',
+        step: '100',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'monthly-contribution',
+        name: 'monthlyContribution',
+        label: 'Monthly contribution',
+        type: 'number',
+        value: '1500',
+        min: '0',
+        step: '50',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'expected-return',
+        name: 'expectedReturn',
+        label: 'Expected annual return (%)',
+        type: 'number',
+        value: '7',
+        min: '0',
+        step: '0.01',
+        wide: true,
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'fire-number-result',
+        label: 'FIRE number',
+        initialValue: '$0.00',
+        primary: true,
+      },
+      {
+        id: 'amount-needed-result',
+        label: 'Amount still needed',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'years-to-fire-result',
+        label: 'Estimated years to FIRE',
+        initialValue: '0 years',
+      },
+    ],
+    faq: [
+      {
+        question: 'What is a FIRE number?',
+        answer:
+          'Your FIRE number is the invested portfolio value intended to support your annual expenses through regular withdrawals.',
+      },
+      {
+        question: 'What is the 4% rule?',
+        answer:
+          'The 4% rule is a retirement planning guideline that starts withdrawals at 4% of a portfolio in the first year and adjusts them for inflation later.',
+      },
+      {
+        question: 'Can I use a withdrawal rate other than 4%?',
+        answer:
+          'Yes. A lower withdrawal rate produces a larger FIRE number and may provide more flexibility, while a higher rate produces a smaller target with greater risk.',
+      },
+      {
+        question: 'How does investing affect my FIRE timeline?',
+        answer:
+          'Investment growth and regular contributions can compound over time, potentially reducing the number of years needed to reach your target.',
+      },
+      {
+        question: 'Is the estimated FIRE timeline guaranteed?',
+        answer:
+          'No. The estimate assumes a constant return and contribution. Actual market returns, inflation, expenses, taxes, and contribution changes will affect the timeline.',
+      },
+    ],
+    relatedIds: [
+      'compound-interest-calculator',
+      'savings-rate-calculator',
+      'coast-fire-calculator',
+    ],
+  },
 };
 
 export const compoundInterestCalculator = calculatorConfigs['compound-interest'];
 export const savingsRateCalculator = calculatorConfigs['savings-rate'];
+export const fireCalculator = calculatorConfigs.fire;

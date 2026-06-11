@@ -72,7 +72,7 @@ export const contentItems: ContentItem[] = [
     slug: 'fire-calculator',
     url: '/calculators/fire-calculator/',
     category: 'calculator',
-    status: 'planned',
+    status: 'live',
     description:
       'Estimate how much you need to reach financial independence and retire early.',
     primaryKeyword: 'FIRE calculator',
@@ -82,8 +82,8 @@ export const contentItems: ContentItem[] = [
       'FIRE number calculator',
     ],
     priority: 3,
-    publishedAt: null,
-    updatedAt: null,
+    publishedAt: '2026-06-11',
+    updatedAt: '2026-06-11',
     relatedIds: [
       'compound-interest-calculator',
       'coast-fire-calculator',

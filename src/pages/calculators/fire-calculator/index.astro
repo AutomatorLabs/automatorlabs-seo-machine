@@ -1,0 +1,147 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { fireCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={fireCalculator.title}
+  eyebrow={fireCalculator.eyebrow}
+  description={fireCalculator.description}
+  inputs={fireCalculator.inputs}
+  outputs={fireCalculator.outputs}
+  faq={fireCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const fireNumberResult = document.querySelector<HTMLElement>(
+      '#fire-number-result',
+    );
+    const amountNeededResult = document.querySelector<HTMLElement>(
+      '#amount-needed-result',
+    );
+    const yearsToFireResult = document.querySelector<HTMLElement>(
+      '#years-to-fire-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const years = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+
+    function estimateMonthsToFire(
+      target: number,
+      currentAssets: number,
+      monthlyContribution: number,
+      annualReturn: number,
+    ): number | null {
+      if (currentAssets >= target) {
+        return 0;
+      }
+
+      const amountNeeded = target - currentAssets;
+      const monthlyRate = annualReturn / 100 / 12;
+
+      if (monthlyRate === 0) {
+        return monthlyContribution > 0
+          ? Math.ceil(amountNeeded / monthlyContribution)
+          : null;
+      }
+
+      if (currentAssets === 0 && monthlyContribution === 0) {
+        return null;
+      }
+
+      const contributionValue = monthlyContribution / monthlyRate;
+      const growthRatio =
+        (target + contributionValue) / (currentAssets + contributionValue);
+      const months = Math.log(growthRatio) / Math.log1p(monthlyRate);
+
+      return Number.isFinite(months) && months >= 0 ? Math.ceil(months) : null;
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !fireNumberResult ||
+        !amountNeededResult ||
+        !yearsToFireResult
+      ) {
+        return;
+      }
+
+      const data = new FormData(form);
+      const annualExpenses = Number(data.get('annualExpenses'));
+      const withdrawalRate = Number(data.get('withdrawalRate'));
+      const currentAssets = Number(data.get('currentAssets'));
+      const monthlyContribution = Number(data.get('monthlyContribution'));
+      const expectedReturn = Number(data.get('expectedReturn'));
+
+      const values = [
+        annualExpenses,
+        withdrawalRate,
+        currentAssets,
+        monthlyContribution,
+        expectedReturn,
+      ];
+      const isInvalid =
+        values.some((value) => !Number.isFinite(value)) ||
+        annualExpenses <= 0 ||
+        withdrawalRate <= 0 ||
+        currentAssets < 0 ||
+        monthlyContribution < 0 ||
+        expectedReturn < 0;
+
+      if (isInvalid) {
+        error.textContent =
+          'Annual expenses and withdrawal rate must be greater than 0. Assets, contributions, and expected return cannot be negative.';
+        error.hidden = false;
+        return;
+      }
+
+      error.hidden = true;
+
+      const fireNumber = annualExpenses / (withdrawalRate / 100);
+      const amountNeeded = fireNumber - currentAssets;
+      const monthsToFire = estimateMonthsToFire(
+        fireNumber,
+        currentAssets,
+        monthlyContribution,
+        expectedReturn,
+      );
+
+      fireNumberResult.textContent = currency.format(fireNumber);
+      amountNeededResult.textContent = currency.format(amountNeeded);
+
+      if (monthsToFire === null) {
+        yearsToFireResult.textContent = 'Not reachable with current inputs';
+      } else if (monthsToFire === 0) {
+        yearsToFireResult.textContent = 'Already reached';
+      } else {
+        yearsToFireResult.textContent =
+          `${years.format(monthsToFire / 12)} years`;
+      }
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      calculate();
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>
