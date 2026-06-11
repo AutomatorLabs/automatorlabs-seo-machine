@@ -1,0 +1,430 @@
+---
+import Layout from '../layouts/Layout.astro';
+import type {
+  CalculatorFaq,
+  CalculatorInput,
+  CalculatorOutput,
+} from '../data/calculators';
+
+interface RelatedItem {
+  title: string;
+  url: string;
+}
+
+interface Props {
+  title: string;
+  eyebrow: string;
+  description: string;
+  inputs: CalculatorInput[];
+  outputs: CalculatorOutput[];
+  faq: CalculatorFaq[];
+  relatedItems: RelatedItem[];
+}
+
+const {
+  title,
+  eyebrow,
+  description,
+  inputs,
+  outputs,
+  faq,
+  relatedItems,
+} = Astro.props;
+---
+
+<Layout title={title} description={description}>
+  <main>
+    <header class="page-header">
+      <p class="eyebrow">{eyebrow}</p>
+      <h1>{title}</h1>
+      <p class="intro">{description}</p>
+    </header>
+
+    <section class="calculator" aria-labelledby="calculator-heading">
+      <div class="panel">
+        <h2 id="calculator-heading">Calculate your investment growth</h2>
+
+        <form id="calculator-form">
+          <div class="form-grid">
+            {inputs.map((input) => (
+              <div class:list={['field', { 'field-wide': input.wide }]}>
+                <label for={input.id}>{input.label}</label>
+
+                {input.type === 'select' ? (
+                  <select id={input.id} name={input.name} required={input.required}>
+                    {input.options?.map((option) => (
+                      <option
+                        value={option.value}
+                        selected={option.value === input.value}
+                      >
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : input.prefix ? (
+                  <div class="input-with-prefix">
+                    <span aria-hidden="true">{input.prefix}</span>
+                    <input
+                      id={input.id}
+                      name={input.name}
+                      type="number"
+                      min={input.min}
+                      step={input.step}
+                      value={input.value}
+                      required={input.required}
+                    />
+                  </div>
+                ) : (
+                  <input
+                    id={input.id}
+                    name={input.name}
+                    type="number"
+                    min={input.min}
+                    step={input.step}
+                    value={input.value}
+                    required={input.required}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          <p id="form-error" class="error" role="alert" hidden>
+            Enter valid, non-negative values in every field.
+          </p>
+
+          <button type="submit">Calculate</button>
+        </form>
+      </div>
+
+      <section class="results panel" aria-labelledby="results-heading" aria-live="polite">
+        <h2 id="results-heading">Your results</h2>
+        <dl>
+          {outputs.map((output) => (
+            <div class:list={{ 'primary-result': output.primary }}>
+              <dt>{output.label}</dt>
+              <dd id={output.id}>{output.initialValue}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <div id="chart" aria-label="Investment growth chart placeholder">
+          <span>Growth chart coming soon</span>
+        </div>
+      </section>
+    </section>
+
+    <section class="content-section" aria-labelledby="faq-heading">
+      <h2 id="faq-heading">Frequently asked questions</h2>
+
+      <div class="faq-list">
+        {faq.map((item) => (
+          <details>
+            <summary>{item.question}</summary>
+            <p>{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    {relatedItems.length > 0 && (
+      <section class="content-section" aria-labelledby="related-heading">
+        <h2 id="related-heading">Related Calculators</h2>
+        <nav class="related-links" aria-label="Related calculators">
+          {relatedItems.map((item) => (
+            <a href={item.url}>{item.title}</a>
+          ))}
+        </nav>
+      </section>
+    )}
+  </main>
+
+  <slot />
+</Layout>
+
+<style>
+  :global(body) {
+    background: #f6f7fb;
+    line-height: 1.6;
+  }
+
+  main {
+    width: min(1120px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 4.5rem 0;
+  }
+
+  .page-header {
+    max-width: 760px;
+    margin-bottom: 2.5rem;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.4rem;
+    color: #3158d3;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h1,
+  h2,
+  p {
+    margin-top: 0;
+  }
+
+  h1 {
+    margin-bottom: 0.8rem;
+    font-size: clamp(2.15rem, 6vw, 3.75rem);
+    line-height: 1.08;
+    letter-spacing: -0.045em;
+  }
+
+  h2 {
+    margin-bottom: 1.25rem;
+    font-size: 1.35rem;
+    line-height: 1.25;
+  }
+
+  .intro {
+    max-width: 680px;
+    margin-bottom: 0;
+    color: #586176;
+    font-size: 1.08rem;
+  }
+
+  .calculator {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+    gap: 1.25rem;
+    align-items: start;
+  }
+
+  .panel,
+  .content-section {
+    border: 1px solid #e1e4ec;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 12px 35px rgb(22 32 51 / 6%);
+  }
+
+  .panel {
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .field-wide {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    font-size: 0.9rem;
+    font-weight: 650;
+  }
+
+  input,
+  select {
+    width: 100%;
+    min-height: 46px;
+    border: 1px solid #cdd2df;
+    border-radius: 9px;
+    background: #fff;
+    color: inherit;
+    font: inherit;
+    padding: 0.65rem 0.75rem;
+  }
+
+  input:focus,
+  select:focus {
+    border-color: #3158d3;
+    outline: 3px solid rgb(49 88 211 / 14%);
+  }
+
+  .input-with-prefix {
+    position: relative;
+  }
+
+  .input-with-prefix span {
+    position: absolute;
+    top: 50%;
+    left: 0.8rem;
+    color: #6d7485;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .input-with-prefix input {
+    padding-left: 1.75rem;
+  }
+
+  button {
+    width: 100%;
+    margin-top: 1.25rem;
+    border: 0;
+    border-radius: 9px;
+    background: #3158d3;
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    padding: 0.8rem 1rem;
+    transition:
+      background 150ms ease,
+      transform 150ms ease;
+  }
+
+  button:hover {
+    background: #2647b0;
+  }
+
+  button:active {
+    transform: translateY(1px);
+  }
+
+  button:focus-visible {
+    outline: 3px solid rgb(49 88 211 / 25%);
+    outline-offset: 3px;
+  }
+
+  .error {
+    margin: 1rem 0 0;
+    color: #b42318;
+    font-size: 0.9rem;
+  }
+
+  .results dl {
+    display: grid;
+    gap: 0;
+    margin: 0;
+  }
+
+  .results dl > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid #eceef3;
+    padding: 1rem 0;
+  }
+
+  .results dl > div:first-child {
+    padding-top: 0;
+  }
+
+  .results dt {
+    color: #626a7c;
+  }
+
+  .results dd {
+    margin: 0;
+    font-weight: 750;
+    text-align: right;
+  }
+
+  .results .primary-result dd {
+    color: #3158d3;
+    font-size: 1.25rem;
+  }
+
+  #chart {
+    display: grid;
+    min-height: 190px;
+    margin-top: 1.5rem;
+    border: 1px dashed #c9ceda;
+    border-radius: 10px;
+    background: #f9faff;
+    color: #777f91;
+    place-items: center;
+  }
+
+  #chart span {
+    font-size: 0.9rem;
+  }
+
+  .content-section {
+    margin-top: 1.25rem;
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .faq-list {
+    border-top: 1px solid #e6e8ef;
+  }
+
+  details {
+    border-bottom: 1px solid #e6e8ef;
+    padding: 1rem 0;
+  }
+
+  summary {
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  details p {
+    max-width: 760px;
+    margin: 0.65rem 0 0;
+    color: #5b6477;
+  }
+
+  .related-links {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .related-links a {
+    border: 1px solid #dfe3ec;
+    border-radius: 10px;
+    color: #2446ad;
+    font-weight: 650;
+    padding: 0.9rem 1rem;
+    text-decoration: none;
+  }
+
+  .related-links a:hover {
+    border-color: #3158d3;
+    background: #f5f7ff;
+  }
+
+  @media (max-width: 760px) {
+    main {
+      padding: 2.75rem 0;
+    }
+
+    .calculator,
+    .related-links {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .field-wide {
+      grid-column: auto;
+    }
+
+    .results dl > div {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .results dd {
+      text-align: left;
+    }
+  }
+</style>
