@@ -44,6 +44,12 @@ export interface WithdrawalPlanInput {
   annualExpenses: number;
 }
 
+export interface WithdrawalIncome {
+  annualWithdrawal: number;
+  monthlyWithdrawal: number;
+  dailyWithdrawal: number;
+}
+
 export interface WithdrawalPlanResult {
   safeAnnualWithdrawal: number;
   safeMonthlyWithdrawal: number;
@@ -132,21 +138,37 @@ export function calculateCoastFireNumber(
   });
 }
 
+export function calculateWithdrawalIncome(
+  portfolioValue: number,
+  withdrawalRatePercent: number,
+): WithdrawalIncome {
+  const annualWithdrawal =
+    portfolioValue * (withdrawalRatePercent / 100);
+
+  return {
+    annualWithdrawal,
+    monthlyWithdrawal: annualWithdrawal / 12,
+    dailyWithdrawal: annualWithdrawal / 365,
+  };
+}
+
 export function calculateWithdrawalPlan({
   portfolioValue,
   withdrawalRatePercent,
   annualExpenses,
 }: WithdrawalPlanInput): WithdrawalPlanResult {
-  const safeAnnualWithdrawal =
-    portfolioValue * (withdrawalRatePercent / 100);
+  const withdrawalIncome = calculateWithdrawalIncome(
+    portfolioValue,
+    withdrawalRatePercent,
+  );
   const requiredPortfolio = calculateFireNumber(
     annualExpenses,
     withdrawalRatePercent,
   );
 
   return {
-    safeAnnualWithdrawal,
-    safeMonthlyWithdrawal: safeAnnualWithdrawal / 12,
+    safeAnnualWithdrawal: withdrawalIncome.annualWithdrawal,
+    safeMonthlyWithdrawal: withdrawalIncome.monthlyWithdrawal,
     requiredPortfolio,
     portfolioGap: portfolioValue - requiredPortfolio,
   };

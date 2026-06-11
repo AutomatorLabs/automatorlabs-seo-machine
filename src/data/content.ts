@@ -139,6 +139,30 @@ export const contentItems: ContentItem[] = [
     ],
   },
   {
+    id: 'retirement-withdrawal-calculator',
+    title: 'Retirement Withdrawal Calculator',
+    slug: 'retirement-withdrawal-calculator',
+    url: '/calculators/retirement-withdrawal-calculator/',
+    category: 'calculator',
+    status: 'live',
+    description:
+      'Estimate annual, monthly, and daily retirement withdrawals based on your portfolio and chosen withdrawal rate.',
+    primaryKeyword: 'retirement withdrawal calculator',
+    secondaryKeywords: [
+      'safe withdrawal calculator',
+      'monthly retirement income calculator',
+      'retirement portfolio withdrawal',
+    ],
+    priority: 6,
+    publishedAt: '2026-06-12',
+    updatedAt: '2026-06-12',
+    relatedIds: [
+      'fire-calculator',
+      'coast-fire-calculator',
+      'four-percent-rule-calculator',
+    ],
+  },
+  {
     id: 'inflation-calculator',
     title: 'Inflation Calculator',
     slug: 'inflation-calculator',
@@ -153,7 +177,7 @@ export const contentItems: ContentItem[] = [
       'future value of money',
       'inflation rate calculator',
     ],
-    priority: 6,
+    priority: 7,
     publishedAt: null,
     updatedAt: null,
     relatedIds: [
@@ -177,7 +201,7 @@ export const contentItems: ContentItem[] = [
       'mutual fund fee calculator',
       'ETF expense calculator',
     ],
-    priority: 7,
+    priority: 8,
     publishedAt: null,
     updatedAt: null,
     relatedIds: [

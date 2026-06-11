@@ -1,0 +1,95 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { retirementWithdrawalCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = retirementWithdrawalCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={retirementWithdrawalCalculator.title}
+  eyebrow={retirementWithdrawalCalculator.eyebrow}
+  description={retirementWithdrawalCalculator.description}
+  inputs={retirementWithdrawalCalculator.inputs}
+  outputs={retirementWithdrawalCalculator.outputs}
+  faq={retirementWithdrawalCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { calculateWithdrawalIncome } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const annualWithdrawalResult = document.querySelector<HTMLElement>(
+      '#annual-withdrawal-result',
+    );
+    const monthlyWithdrawalResult = document.querySelector<HTMLElement>(
+      '#monthly-withdrawal-result',
+    );
+    const dailyWithdrawalResult = document.querySelector<HTMLElement>(
+      '#daily-withdrawal-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !annualWithdrawalResult ||
+        !monthlyWithdrawalResult ||
+        !dailyWithdrawalResult
+      ) {
+        return;
+      }
+
+      const data = new FormData(form);
+      const portfolioValue = Number(data.get('portfolioValue'));
+      const withdrawalRate = Number(data.get('withdrawalRate'));
+
+      const isInvalid =
+        !Number.isFinite(portfolioValue) ||
+        !Number.isFinite(withdrawalRate) ||
+        portfolioValue < 0 ||
+        withdrawalRate <= 0;
+
+      if (isInvalid) {
+        error.textContent =
+          'Portfolio value cannot be negative, and withdrawal rate must be greater than 0.';
+        error.hidden = false;
+        return;
+      }
+
+      error.hidden = true;
+
+      const result = calculateWithdrawalIncome(
+        portfolioValue,
+        withdrawalRate,
+      );
+
+      annualWithdrawalResult.textContent = currency.format(
+        result.annualWithdrawal,
+      );
+      monthlyWithdrawalResult.textContent = currency.format(
+        result.monthlyWithdrawal,
+      );
+      dailyWithdrawalResult.textContent = currency.format(
+        result.dailyWithdrawal,
+      );
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      calculate();
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

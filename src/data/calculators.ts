@@ -597,6 +597,87 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       'compound-interest-calculator',
     ],
   },
+  'retirement-withdrawal': {
+    id: 'retirement-withdrawal',
+    url: '/calculators/retirement-withdrawal-calculator/',
+    title: 'Retirement Withdrawal Calculator',
+    eyebrow: 'Retirement Calculator',
+    description:
+      'Estimate annual, monthly, and daily retirement withdrawals based on your portfolio and chosen withdrawal rate.',
+    inputs: [
+      {
+        id: 'portfolio-value',
+        name: 'portfolioValue',
+        label: 'Portfolio value',
+        type: 'number',
+        value: '1000000',
+        min: '0',
+        step: '1000',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'withdrawal-rate',
+        name: 'withdrawalRate',
+        label: 'Withdrawal rate (%)',
+        type: 'number',
+        value: '4',
+        min: '0.01',
+        step: '0.01',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'annual-withdrawal-result',
+        label: 'Annual withdrawal',
+        initialValue: '$0.00',
+        primary: true,
+      },
+      {
+        id: 'monthly-withdrawal-result',
+        label: 'Monthly withdrawal',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'daily-withdrawal-result',
+        label: 'Daily withdrawal',
+        initialValue: '$0.00',
+      },
+    ],
+    faq: [
+      {
+        question: 'What is a safe withdrawal rate?',
+        answer:
+          'A safe withdrawal rate is an estimated percentage of a portfolio that may be withdrawn each year while trying to preserve assets throughout retirement.',
+      },
+      {
+        question: 'How does the 4% rule work?',
+        answer:
+          'The 4% rule starts with a first-year withdrawal equal to 4% of the portfolio, then generally assumes future withdrawals adjust for inflation.',
+      },
+      {
+        question: 'How should inflation affect retirement withdrawals?',
+        answer:
+          'Inflation reduces purchasing power, so retirement plans often increase withdrawals over time and account for rising living and healthcare costs.',
+      },
+      {
+        question: 'What is sequence of returns risk?',
+        answer:
+          'Sequence of returns risk is the danger that poor investment returns early in retirement, combined with withdrawals, can reduce how long a portfolio lasts.',
+      },
+      {
+        question: 'How should I use this estimate in retirement planning?',
+        answer:
+          'Use it as a starting point alongside taxes, fees, Social Security, pensions, spending flexibility, asset allocation, and professional guidance.',
+      },
+    ],
+    relatedIds: [
+      'fire-calculator',
+      'coast-fire-calculator',
+      'four-percent-rule-calculator',
+    ],
+  },
 };
 
 export const compoundInterestCalculator = calculatorConfigs['compound-interest'];
@@ -605,3 +686,5 @@ export const fireCalculator = calculatorConfigs.fire;
 export const coastFireCalculator = calculatorConfigs['coast-fire'];
 export const fourPercentRuleCalculator =
   calculatorConfigs['four-percent-rule'];
+export const retirementWithdrawalCalculator =
+  calculatorConfigs['retirement-withdrawal'];
