@@ -115,6 +115,30 @@ export const contentItems: ContentItem[] = [
     ],
   },
   {
+    id: 'four-percent-rule-calculator',
+    title: '4% Rule Calculator',
+    slug: '4-percent-rule-calculator',
+    url: '/calculators/4-percent-rule-calculator/',
+    category: 'calculator',
+    status: 'live',
+    description:
+      'Estimate how much portfolio income a withdrawal rate can support and how large a portfolio you may need.',
+    primaryKeyword: '4% rule calculator',
+    secondaryKeywords: [
+      'safe withdrawal rate calculator',
+      'retirement withdrawal calculator',
+      'required retirement portfolio',
+    ],
+    priority: 5,
+    publishedAt: '2026-06-12',
+    updatedAt: '2026-06-12',
+    relatedIds: [
+      'fire-calculator',
+      'coast-fire-calculator',
+      'compound-interest-calculator',
+    ],
+  },
+  {
     id: 'inflation-calculator',
     title: 'Inflation Calculator',
     slug: 'inflation-calculator',
@@ -129,7 +153,7 @@ export const contentItems: ContentItem[] = [
       'future value of money',
       'inflation rate calculator',
     ],
-    priority: 5,
+    priority: 6,
     publishedAt: null,
     updatedAt: null,
     relatedIds: [
@@ -153,7 +177,7 @@ export const contentItems: ContentItem[] = [
       'mutual fund fee calculator',
       'ETF expense calculator',
     ],
-    priority: 6,
+    priority: 7,
     publishedAt: null,
     updatedAt: null,
     relatedIds: [

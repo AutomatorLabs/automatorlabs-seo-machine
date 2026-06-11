@@ -38,6 +38,19 @@ export interface YearsToTargetInput {
   annualReturnPercent: number;
 }
 
+export interface WithdrawalPlanInput {
+  portfolioValue: number;
+  withdrawalRatePercent: number;
+  annualExpenses: number;
+}
+
+export interface WithdrawalPlanResult {
+  safeAnnualWithdrawal: number;
+  safeMonthlyWithdrawal: number;
+  requiredPortfolio: number;
+  portfolioGap: number;
+}
+
 export function futureValue({
   principal,
   contributionPerPeriod,
@@ -117,6 +130,26 @@ export function calculateCoastFireNumber(
     ratePerPeriod: annualReturnPercent / 100,
     numberOfPeriods: -yearsUntilRetirement,
   });
+}
+
+export function calculateWithdrawalPlan({
+  portfolioValue,
+  withdrawalRatePercent,
+  annualExpenses,
+}: WithdrawalPlanInput): WithdrawalPlanResult {
+  const safeAnnualWithdrawal =
+    portfolioValue * (withdrawalRatePercent / 100);
+  const requiredPortfolio = calculateFireNumber(
+    annualExpenses,
+    withdrawalRatePercent,
+  );
+
+  return {
+    safeAnnualWithdrawal,
+    safeMonthlyWithdrawal: safeAnnualWithdrawal / 12,
+    requiredPortfolio,
+    portfolioGap: portfolioValue - requiredPortfolio,
+  };
 }
 
 export function calculateYearsToTarget({

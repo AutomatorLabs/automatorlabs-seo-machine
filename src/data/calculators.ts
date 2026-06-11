@@ -491,9 +491,117 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       'savings-rate-calculator',
     ],
   },
+  'four-percent-rule': {
+    id: 'four-percent-rule',
+    url: '/calculators/4-percent-rule-calculator/',
+    title: '4% Rule Calculator',
+    eyebrow: 'Retirement Calculator',
+    description:
+      'Estimate how much portfolio income a withdrawal rate can support and how large a portfolio you may need.',
+    inputs: [
+      {
+        id: 'portfolio-value',
+        name: 'portfolioValue',
+        label: 'Portfolio value',
+        type: 'number',
+        value: '1000000',
+        min: '0',
+        step: '1000',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'withdrawal-rate',
+        name: 'withdrawalRate',
+        label: 'Withdrawal rate (%)',
+        type: 'number',
+        value: '4',
+        min: '0.01',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: 'annual-expenses',
+        name: 'annualExpenses',
+        label: 'Annual expenses',
+        type: 'number',
+        value: '40000',
+        min: '0',
+        step: '100',
+        prefix: '$',
+      },
+      {
+        id: 'monthly-expenses',
+        name: 'monthlyExpenses',
+        label: 'Monthly expenses',
+        type: 'number',
+        value: '',
+        min: '0',
+        step: '10',
+        prefix: '$',
+      },
+    ],
+    outputs: [
+      {
+        id: 'safe-annual-withdrawal-result',
+        label: 'Safe annual withdrawal',
+        initialValue: '$0.00',
+        primary: true,
+      },
+      {
+        id: 'safe-monthly-withdrawal-result',
+        label: 'Safe monthly withdrawal',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'required-portfolio-result',
+        label: 'Required portfolio',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'portfolio-gap-result',
+        label: 'Portfolio surplus or gap',
+        initialValue: '$0.00',
+      },
+    ],
+    faq: [
+      {
+        question: 'What is the 4% rule?',
+        answer:
+          'The 4% rule is a retirement planning guideline that begins with a withdrawal equal to 4% of a portfolio in the first retirement year.',
+      },
+      {
+        question: 'Can I choose a different withdrawal rate?',
+        answer:
+          'Yes. Lower rates generally require a larger portfolio and may provide more flexibility, while higher rates increase withdrawal risk.',
+      },
+      {
+        question: 'Which retirement spending amount should I enter?',
+        answer:
+          'Use a realistic estimate that includes housing, healthcare, food, travel, taxes, and other expected retirement expenses.',
+      },
+      {
+        question: 'Does the 4% rule account for inflation?',
+        answer:
+          'The original guideline assumes later withdrawals rise with inflation, but this calculator only estimates the first-year withdrawal and portfolio target.',
+      },
+      {
+        question: 'How is this calculator useful for FIRE planning?',
+        answer:
+          'It compares portfolio income with planned spending and estimates the portfolio size associated with your chosen withdrawal rate.',
+      },
+    ],
+    relatedIds: [
+      'fire-calculator',
+      'coast-fire-calculator',
+      'compound-interest-calculator',
+    ],
+  },
 };
 
 export const compoundInterestCalculator = calculatorConfigs['compound-interest'];
 export const savingsRateCalculator = calculatorConfigs['savings-rate'];
 export const fireCalculator = calculatorConfigs.fire;
 export const coastFireCalculator = calculatorConfigs['coast-fire'];
+export const fourPercentRuleCalculator =
+  calculatorConfigs['four-percent-rule'];

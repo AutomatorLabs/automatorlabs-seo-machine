@@ -1,0 +1,115 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { fourPercentRuleCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = fourPercentRuleCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={fourPercentRuleCalculator.title}
+  eyebrow={fourPercentRuleCalculator.eyebrow}
+  description={fourPercentRuleCalculator.description}
+  inputs={fourPercentRuleCalculator.inputs}
+  outputs={fourPercentRuleCalculator.outputs}
+  faq={fourPercentRuleCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { calculateWithdrawalPlan } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const safeAnnualWithdrawalResult = document.querySelector<HTMLElement>(
+      '#safe-annual-withdrawal-result',
+    );
+    const safeMonthlyWithdrawalResult = document.querySelector<HTMLElement>(
+      '#safe-monthly-withdrawal-result',
+    );
+    const requiredPortfolioResult = document.querySelector<HTMLElement>(
+      '#required-portfolio-result',
+    );
+    const portfolioGapResult = document.querySelector<HTMLElement>(
+      '#portfolio-gap-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function optionalNumber(data: FormData, name: string): number | null {
+      const value = String(data.get(name) ?? '').trim();
+      return value === '' ? null : Number(value);
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !safeAnnualWithdrawalResult ||
+        !safeMonthlyWithdrawalResult ||
+        !requiredPortfolioResult ||
+        !portfolioGapResult
+      ) {
+        return;
+      }
+
+      const data = new FormData(form);
+      const portfolioValue = Number(data.get('portfolioValue'));
+      const withdrawalRate = Number(data.get('withdrawalRate'));
+      const annualExpenses = optionalNumber(data, 'annualExpenses');
+      const monthlyExpenses = optionalNumber(data, 'monthlyExpenses');
+
+      const isInvalid =
+        !Number.isFinite(portfolioValue) ||
+        !Number.isFinite(withdrawalRate) ||
+        portfolioValue < 0 ||
+        withdrawalRate <= 0 ||
+        (annualExpenses !== null &&
+          (!Number.isFinite(annualExpenses) || annualExpenses < 0)) ||
+        (monthlyExpenses !== null &&
+          (!Number.isFinite(monthlyExpenses) || monthlyExpenses < 0)) ||
+        (annualExpenses === null && monthlyExpenses === null);
+
+      if (isInvalid) {
+        error.textContent =
+          'Portfolio value and expenses cannot be negative. Withdrawal rate must be greater than 0, and at least one expense field is required.';
+        error.hidden = false;
+        return;
+      }
+
+      error.hidden = true;
+
+      const resolvedAnnualExpenses =
+        annualExpenses ?? (monthlyExpenses as number) * 12;
+      const result = calculateWithdrawalPlan({
+        portfolioValue,
+        withdrawalRatePercent: withdrawalRate,
+        annualExpenses: resolvedAnnualExpenses,
+      });
+
+      safeAnnualWithdrawalResult.textContent = currency.format(
+        result.safeAnnualWithdrawal,
+      );
+      safeMonthlyWithdrawalResult.textContent = currency.format(
+        result.safeMonthlyWithdrawal,
+      );
+      requiredPortfolioResult.textContent = currency.format(
+        result.requiredPortfolio,
+      );
+      portfolioGapResult.textContent = currency.format(result.portfolioGap);
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      calculate();
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>
