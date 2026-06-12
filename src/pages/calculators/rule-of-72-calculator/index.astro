@@ -19,6 +19,7 @@ const relatedItems = ruleOf72Calculator.relatedIds.flatMap((id) => {
   relatedItems={relatedItems}
 >
   <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
     import { calculateRuleOf72 } from '../../../lib/math';
     import { parseCalculatorNumber } from '../../../lib/input';
 
@@ -44,7 +45,7 @@ const relatedItems = ruleOf72Calculator.relatedIds.flatMap((id) => {
 
     function calculate() {
       if (!form || !error || !yearsToDoubleResult || !doublingDateResult) {
-        return;
+        return false;
       }
 
       const data = new FormData(form);
@@ -53,7 +54,7 @@ const relatedItems = ruleOf72Calculator.relatedIds.flatMap((id) => {
       if (!Number.isFinite(annualReturn) || annualReturn <= 0) {
         error.textContent = 'Annual return must be greater than 0.';
         error.hidden = false;
-        return;
+        return false;
       }
 
       error.hidden = true;
@@ -67,11 +68,12 @@ const relatedItems = ruleOf72Calculator.relatedIds.flatMap((id) => {
       yearsToDoubleResult.textContent =
         `${years.format(yearsToDouble)} years`;
       doublingDateResult.textContent = date.format(doublingDate);
+      return true;
     }
 
     form?.addEventListener('submit', (event) => {
       event.preventDefault();
-      calculate();
+      trackSuccessfulCalculation('rule_of_72', calculate);
     });
 
     calculate();

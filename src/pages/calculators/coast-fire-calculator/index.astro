@@ -19,6 +19,7 @@ const relatedItems = coastFireCalculator.relatedIds.flatMap((id) => {
   relatedItems={relatedItems}
 >
   <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
     import {
       calculateCoastFireNumber,
       calculateFireNumber,
@@ -59,7 +60,7 @@ const relatedItems = coastFireCalculator.relatedIds.flatMap((id) => {
         !coastFireDifferenceResult ||
         !yearsUntilRetirementResult
       ) {
-        return;
+        return false;
       }
 
       const data = new FormData(form);
@@ -91,7 +92,7 @@ const relatedItems = coastFireCalculator.relatedIds.flatMap((id) => {
         error.textContent =
           'Current age, annual expenses, and withdrawal rate must be greater than 0. Retirement age must be greater than current age. Return and assets cannot be negative.';
         error.hidden = false;
-        return;
+        return false;
       }
 
       error.hidden = true;
@@ -114,11 +115,12 @@ const relatedItems = coastFireCalculator.relatedIds.flatMap((id) => {
         currency.format(coastFireDifference);
       yearsUntilRetirementResult.textContent =
         `${years.format(yearsUntilRetirement)} years`;
+      return true;
     }
 
     form?.addEventListener('submit', (event) => {
       event.preventDefault();
-      calculate();
+      trackSuccessfulCalculation('coast_fire', calculate);
     });
 
     calculate();
