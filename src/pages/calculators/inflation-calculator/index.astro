@@ -1,0 +1,106 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { inflationCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = inflationCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={inflationCalculator.title}
+  eyebrow={inflationCalculator.eyebrow}
+  description={inflationCalculator.description}
+  inputs={inflationCalculator.inputs}
+  outputs={inflationCalculator.outputs}
+  faq={inflationCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateInflationImpact } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const futurePurchasingPowerResult = document.querySelector<HTMLElement>(
+      '#future-purchasing-power-result',
+    );
+    const purchasingPowerLostResult = document.querySelector<HTMLElement>(
+      '#purchasing-power-lost-result',
+    );
+    const inflationMultiplierResult = document.querySelector<HTMLElement>(
+      '#inflation-multiplier-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const multiplier = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !futurePurchasingPowerResult ||
+        !purchasingPowerLostResult ||
+        !inflationMultiplierResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const startingAmount = parseCalculatorNumber(data.get('startingAmount'));
+      const inflationRate = parseCalculatorNumber(data.get('inflationRate'));
+      const years = parseCalculatorNumber(data.get('years'));
+
+      const isInvalid =
+        !Number.isFinite(startingAmount) ||
+        !Number.isFinite(inflationRate) ||
+        !Number.isFinite(years) ||
+        startingAmount < 0 ||
+        inflationRate < 0 ||
+        years < 0;
+
+      if (isInvalid) {
+        error.textContent =
+          'Starting amount, inflation rate, and number of years cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateInflationImpact({
+        startingAmount,
+        inflationRatePercent: inflationRate,
+        years,
+      });
+
+      futurePurchasingPowerResult.textContent = currency.format(
+        result.futurePurchasingPower,
+      );
+      purchasingPowerLostResult.textContent = currency.format(
+        result.purchasingPowerLost,
+      );
+      inflationMultiplierResult.textContent =
+        `${multiplier.format(result.inflationMultiplier)}x`;
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('inflation', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

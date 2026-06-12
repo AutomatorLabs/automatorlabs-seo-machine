@@ -57,6 +57,18 @@ export interface WithdrawalPlanResult {
   portfolioGap: number;
 }
 
+export interface InflationImpactInput {
+  startingAmount: number;
+  inflationRatePercent: number;
+  years: number;
+}
+
+export interface InflationImpactResult {
+  futurePurchasingPower: number;
+  purchasingPowerLost: number;
+  inflationMultiplier: number;
+}
+
 export function futureValue({
   principal,
   contributionPerPeriod,
@@ -176,6 +188,24 @@ export function calculateWithdrawalPlan({
 
 export function calculateRuleOf72(annualReturnPercent: number): number {
   return 72 / annualReturnPercent;
+}
+
+export function calculateInflationImpact({
+  startingAmount,
+  inflationRatePercent,
+  years,
+}: InflationImpactInput): InflationImpactResult {
+  const inflationMultiplier = Math.pow(
+    1 + inflationRatePercent / 100,
+    years,
+  );
+  const futurePurchasingPower = startingAmount / inflationMultiplier;
+
+  return {
+    futurePurchasingPower,
+    purchasingPowerLost: startingAmount - futurePurchasingPower,
+    inflationMultiplier,
+  };
 }
 
 export function calculateYearsToTarget({

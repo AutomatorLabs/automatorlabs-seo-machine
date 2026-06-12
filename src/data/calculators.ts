@@ -743,6 +743,97 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       'coast-fire-calculator',
     ],
   },
+  inflation: {
+    id: 'inflation',
+    url: '/calculators/inflation-calculator/',
+    title: 'Inflation Calculator',
+    eyebrow: 'Financial Calculator',
+    description:
+      'Estimate how inflation reduces the future purchasing power of money over time.',
+    inputs: [
+      {
+        id: 'starting-amount',
+        name: 'startingAmount',
+        label: 'Starting amount',
+        type: 'number',
+        value: '100000',
+        min: '0',
+        step: '100',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'inflation-rate',
+        name: 'inflationRate',
+        label: 'Inflation rate (%)',
+        type: 'number',
+        value: '3',
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: 'years',
+        name: 'years',
+        label: 'Number of years',
+        type: 'number',
+        value: '20',
+        min: '0',
+        step: '1',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'future-purchasing-power-result',
+        label: 'Future purchasing power',
+        initialValue: '$0.00',
+        primary: true,
+      },
+      {
+        id: 'purchasing-power-lost-result',
+        label: 'Total purchasing power lost',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'inflation-multiplier-result',
+        label: 'Inflation multiplier',
+        initialValue: '1.00x',
+      },
+    ],
+    faq: [
+      {
+        question: 'What does future purchasing power mean?',
+        answer:
+          'Future purchasing power estimates what a fixed amount of money will be able to buy after inflation, expressed in today’s dollars.',
+      },
+      {
+        question: 'How is the inflation multiplier calculated?',
+        answer:
+          'The calculator compounds the annual inflation rate over the selected number of years. A 1.50x multiplier means prices are estimated to be 50% higher.',
+      },
+      {
+        question: 'Does inflation stay constant over time?',
+        answer:
+          'No. Actual inflation changes from year to year. This calculator uses a constant rate to provide a planning estimate.',
+      },
+      {
+        question: 'How can investments help offset inflation?',
+        answer:
+          'Investments that grow faster than inflation may help preserve or increase purchasing power, although returns are never guaranteed.',
+      },
+      {
+        question: 'Why is inflation important for retirement planning?',
+        answer:
+          'Even moderate inflation can materially increase future expenses, so long-term savings and retirement targets should account for reduced purchasing power.',
+      },
+    ],
+    relatedIds: [
+      'compound-interest-calculator',
+      'fire-calculator',
+      'coast-fire-calculator',
+    ],
+  },
 };
 
 export const compoundInterestCalculator = calculatorConfigs['compound-interest'];
@@ -754,3 +845,4 @@ export const fourPercentRuleCalculator =
 export const retirementWithdrawalCalculator =
   calculatorConfigs['retirement-withdrawal'];
 export const ruleOf72Calculator = calculatorConfigs['rule-of-72'];
+export const inflationCalculator = calculatorConfigs.inflation;

@@ -192,9 +192,9 @@ export const contentItems: ContentItem[] = [
     slug: 'inflation-calculator',
     url: '/calculators/inflation-calculator/',
     category: 'calculator',
-    status: 'planned',
+    status: 'live',
     description:
-      'Estimate how inflation changes purchasing power and the future cost of money.',
+      'Estimate how inflation reduces the future purchasing power of money over time.',
     primaryKeyword: 'inflation calculator',
     secondaryKeywords: [
       'purchasing power calculator',
@@ -202,8 +202,8 @@ export const contentItems: ContentItem[] = [
       'inflation rate calculator',
     ],
     priority: 8,
-    publishedAt: null,
-    updatedAt: null,
+    publishedAt: '2026-06-12',
+    updatedAt: '2026-06-12',
     relatedIds: [
       'compound-interest-calculator',
       'fire-calculator',
