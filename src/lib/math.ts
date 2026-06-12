@@ -69,6 +69,20 @@ export interface InflationImpactResult {
   inflationMultiplier: number;
 }
 
+export interface ExpenseRatioImpactInput {
+  investmentAmount: number;
+  expenseRatioPercent: number;
+  years: number;
+  expectedAnnualReturnPercent: number;
+}
+
+export interface ExpenseRatioImpactResult {
+  totalFeesPaid: number;
+  endingBalanceAfterFees: number;
+  endingBalanceWithoutFees: number;
+  differenceCausedByFees: number;
+}
+
 export function futureValue({
   principal,
   contributionPerPeriod,
@@ -205,6 +219,37 @@ export function calculateInflationImpact({
     futurePurchasingPower,
     purchasingPowerLost: startingAmount - futurePurchasingPower,
     inflationMultiplier,
+  };
+}
+
+export function calculateExpenseRatioImpact({
+  investmentAmount,
+  expenseRatioPercent,
+  years,
+  expectedAnnualReturnPercent,
+}: ExpenseRatioImpactInput): ExpenseRatioImpactResult {
+  const netAnnualReturnPercent =
+    expectedAnnualReturnPercent - expenseRatioPercent;
+  const endingBalanceWithoutFees = futureValue({
+    principal: investmentAmount,
+    contributionPerPeriod: 0,
+    ratePerPeriod: expectedAnnualReturnPercent / 100,
+    numberOfPeriods: years,
+  });
+  const endingBalanceAfterFees = futureValue({
+    principal: investmentAmount,
+    contributionPerPeriod: 0,
+    ratePerPeriod: netAnnualReturnPercent / 100,
+    numberOfPeriods: years,
+  });
+  const differenceCausedByFees =
+    endingBalanceWithoutFees - endingBalanceAfterFees;
+
+  return {
+    totalFeesPaid: differenceCausedByFees,
+    endingBalanceAfterFees,
+    endingBalanceWithoutFees,
+    differenceCausedByFees,
   };
 }
 

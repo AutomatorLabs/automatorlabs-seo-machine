@@ -1,0 +1,127 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { expenseRatioCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = expenseRatioCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={expenseRatioCalculator.title}
+  eyebrow={expenseRatioCalculator.eyebrow}
+  description={expenseRatioCalculator.description}
+  inputs={expenseRatioCalculator.inputs}
+  outputs={expenseRatioCalculator.outputs}
+  faq={expenseRatioCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateExpenseRatioImpact } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const warning = document.querySelector<HTMLElement>('#form-warning');
+    const totalFeesPaidResult = document.querySelector<HTMLElement>(
+      '#total-fees-paid-result',
+    );
+    const endingBalanceAfterFeesResult = document.querySelector<HTMLElement>(
+      '#ending-balance-after-fees-result',
+    );
+    const endingBalanceWithoutFeesResult = document.querySelector<HTMLElement>(
+      '#ending-balance-without-fees-result',
+    );
+    const feeDifferenceResult = document.querySelector<HTMLElement>(
+      '#fee-difference-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !warning ||
+        !totalFeesPaidResult ||
+        !endingBalanceAfterFeesResult ||
+        !endingBalanceWithoutFeesResult ||
+        !feeDifferenceResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const investmentAmount = parseCalculatorNumber(
+        data.get('investmentAmount'),
+      );
+      const expenseRatio = parseCalculatorNumber(data.get('expenseRatio'));
+      const years = parseCalculatorNumber(data.get('years'));
+      const expectedReturn = parseCalculatorNumber(data.get('expectedReturn'));
+
+      const values = [
+        investmentAmount,
+        expenseRatio,
+        years,
+        expectedReturn,
+      ];
+      const isInvalid =
+        values.some((value) => !Number.isFinite(value)) ||
+        investmentAmount < 0 ||
+        expenseRatio < 0 ||
+        years <= 0 ||
+        expectedReturn < 0;
+
+      if (isInvalid) {
+        error.textContent =
+          'Investment amount, expense ratio, and expected return cannot be negative. Number of years must be greater than 0.';
+        error.hidden = false;
+        warning.hidden = true;
+        return false;
+      }
+
+      error.hidden = true;
+
+      if (expenseRatio > expectedReturn) {
+        warning.textContent =
+          'The expense ratio is greater than the expected annual return, so the estimated net return is negative.';
+        warning.hidden = false;
+      } else {
+        warning.hidden = true;
+      }
+
+      const result = calculateExpenseRatioImpact({
+        investmentAmount,
+        expenseRatioPercent: expenseRatio,
+        years,
+        expectedAnnualReturnPercent: expectedReturn,
+      });
+
+      totalFeesPaidResult.textContent = currency.format(result.totalFeesPaid);
+      endingBalanceAfterFeesResult.textContent = currency.format(
+        result.endingBalanceAfterFees,
+      );
+      endingBalanceWithoutFeesResult.textContent = currency.format(
+        result.endingBalanceWithoutFees,
+      );
+      feeDifferenceResult.textContent = currency.format(
+        result.differenceCausedByFees,
+      );
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('expense_ratio', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

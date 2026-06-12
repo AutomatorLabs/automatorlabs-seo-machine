@@ -834,6 +834,112 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       'coast-fire-calculator',
     ],
   },
+  'expense-ratio': {
+    id: 'expense-ratio',
+    url: '/calculators/expense-ratio-calculator/',
+    title: 'Expense Ratio Calculator',
+    eyebrow: 'Investment Calculator',
+    description:
+      'Estimate how investment expense ratios can reduce long-term portfolio growth.',
+    inputs: [
+      {
+        id: 'investment-amount',
+        name: 'investmentAmount',
+        label: 'Investment amount',
+        type: 'number',
+        value: '100000',
+        min: '0',
+        step: '100',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'expense-ratio',
+        name: 'expenseRatio',
+        label: 'Expense ratio (%)',
+        type: 'number',
+        value: '0.5',
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: 'years',
+        name: 'years',
+        label: 'Number of years',
+        type: 'number',
+        value: '30',
+        min: '1',
+        step: '1',
+        required: true,
+      },
+      {
+        id: 'expected-return',
+        name: 'expectedReturn',
+        label: 'Expected annual return (%)',
+        type: 'number',
+        value: '7',
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'total-fees-paid-result',
+        label: 'Total fees paid',
+        initialValue: '$0.00',
+        primary: true,
+      },
+      {
+        id: 'ending-balance-after-fees-result',
+        label: 'Ending balance after fees',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'ending-balance-without-fees-result',
+        label: 'Ending balance without fees',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'fee-difference-result',
+        label: 'Difference caused by fees',
+        initialValue: '$0.00',
+      },
+    ],
+    faq: [
+      {
+        question: 'What is an expense ratio?',
+        answer:
+          'An expense ratio is the annual percentage of fund assets used to cover management and operating costs.',
+      },
+      {
+        question: 'How do expense ratios reduce investment returns?',
+        answer:
+          'The fee lowers the return retained by the investor each year, and the lost amount also misses future compound growth.',
+      },
+      {
+        question: 'Is a lower expense ratio always better?',
+        answer:
+          'Lower costs generally leave more return for investors, but fees should be considered alongside strategy, diversification, risk, and fund quality.',
+      },
+      {
+        question: 'Does this estimate include contributions or taxes?',
+        answer:
+          'No. This calculator models one starting investment with a constant return and expense ratio, without taxes, deposits, withdrawals, or trading costs.',
+      },
+      {
+        question: 'Are investment returns and fees constant?',
+        answer:
+          'Not necessarily. Market returns vary and funds can change fees, so this result is a planning estimate rather than a guarantee.',
+      },
+    ],
+    relatedIds: [
+      'compound-interest-calculator',
+      'inflation-calculator',
+      'fire-calculator',
+    ],
+  },
 };
 
 export const compoundInterestCalculator = calculatorConfigs['compound-interest'];
@@ -846,3 +952,4 @@ export const retirementWithdrawalCalculator =
   calculatorConfigs['retirement-withdrawal'];
 export const ruleOf72Calculator = calculatorConfigs['rule-of-72'];
 export const inflationCalculator = calculatorConfigs.inflation;
+export const expenseRatioCalculator = calculatorConfigs['expense-ratio'];

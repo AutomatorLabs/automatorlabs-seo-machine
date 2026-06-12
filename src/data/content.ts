@@ -216,9 +216,9 @@ export const contentItems: ContentItem[] = [
     slug: 'expense-ratio-calculator',
     url: '/calculators/expense-ratio-calculator/',
     category: 'calculator',
-    status: 'planned',
+    status: 'live',
     description:
-      'Estimate how fund expense ratios can affect long-term investment returns.',
+      'Estimate how investment expense ratios can reduce long-term portfolio growth.',
     primaryKeyword: 'expense ratio calculator',
     secondaryKeywords: [
       'investment fee calculator',
@@ -226,12 +226,12 @@ export const contentItems: ContentItem[] = [
       'ETF expense calculator',
     ],
     priority: 9,
-    publishedAt: null,
-    updatedAt: null,
+    publishedAt: '2026-06-12',
+    updatedAt: '2026-06-12',
     relatedIds: [
       'compound-interest-calculator',
-      'fire-calculator',
       'inflation-calculator',
+      'fire-calculator',
     ],
   },
 ];
