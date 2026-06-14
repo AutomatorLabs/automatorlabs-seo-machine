@@ -79,6 +79,10 @@ test.describe('calculator QA', () => {
         page.locator('#form-error:not([hidden])'),
         'Reasonable positive inputs should complete without validation errors',
       ).toHaveCount(0);
+      expect(
+        new URL(page.url()).searchParams.size,
+        'A successful calculation should add the inputs to the URL',
+      ).toBeGreaterThan(0);
 
       const results = page.locator('.results dd');
       expect(await results.count()).toBeGreaterThan(0);
@@ -104,4 +108,37 @@ test.describe('calculator QA', () => {
       expect(consoleErrors, 'No browser console errors').toEqual([]);
     });
   }
+
+  test('prefills inputs from the URL and copies the share link', async ({
+    context,
+    page,
+  }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write'], {
+      origin: 'http://127.0.0.1:4321',
+    });
+    await page.route('https://www.googletagmanager.com/**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/javascript',
+        body: '',
+      });
+    });
+
+    await page.goto(
+      '/calculators/fire-calculator/?annualExpenses=40000&withdrawalRate=4',
+      { waitUntil: 'domcontentloaded' },
+    );
+
+    await expect(page.locator('[name="annualExpenses"]')).toHaveValue('40000');
+    await expect(page.locator('[name="withdrawalRate"]')).toHaveValue('4');
+
+    await page.getByRole('button', { name: 'Calculate', exact: true }).click();
+
+    const currentUrl = page.url();
+    await page.getByRole('button', { name: 'Copy link', exact: true }).click();
+    await expect(page.locator('#copy-link-status')).toHaveText('Link copied');
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+      currentUrl,
+    );
+  });
 });

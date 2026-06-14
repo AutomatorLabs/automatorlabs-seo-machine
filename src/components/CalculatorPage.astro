@@ -69,6 +69,8 @@ const {
                       name={input.name}
                       type="text"
                       inputmode="decimal"
+                      min={input.min}
+                      step={input.step}
                       value={input.value.replace(/[$,\s]/g, '')}
                       data-currency-input
                       required={input.required}
@@ -96,6 +98,54 @@ const {
 
           <button type="submit">Calculate</button>
         </form>
+
+        <script is:inline>
+          (() => {
+            const form = document.querySelector('#calculator-form');
+            if (!form || !window.location.search) return;
+
+            const params = new URLSearchParams(window.location.search);
+
+            for (const field of form.elements) {
+              if (
+                !(field instanceof HTMLInputElement) &&
+                !(field instanceof HTMLSelectElement)
+              ) {
+                continue;
+              }
+
+              const queryValue = params.get(field.name);
+              if (queryValue === null) continue;
+
+              if (field instanceof HTMLSelectElement) {
+                if (
+                  Array.from(field.options).some(
+                    (option) => option.value === queryValue,
+                  )
+                ) {
+                  field.value = queryValue;
+                }
+                continue;
+              }
+
+              const normalizedValue = queryValue.replace(/[$,\s]/g, '');
+              const numericValue = Number(normalizedValue);
+              const minimum = field.min === '' ? null : Number(field.min);
+              const maximum = field.max === '' ? null : Number(field.max);
+
+              if (
+                normalizedValue === '' ||
+                !Number.isFinite(numericValue) ||
+                (minimum !== null && numericValue < minimum) ||
+                (maximum !== null && numericValue > maximum)
+              ) {
+                continue;
+              }
+
+              field.value = normalizedValue;
+            }
+          })();
+        </script>
       </div>
 
       <section class="results panel" aria-labelledby="results-heading" aria-live="polite">
@@ -108,6 +158,18 @@ const {
             </div>
           ))}
         </dl>
+
+        <div class="share-results">
+          <button id="copy-calculator-link" class="copy-link" type="button">
+            Copy link
+          </button>
+          <span
+            id="copy-link-status"
+            class="copy-link-status"
+            role="status"
+            aria-live="polite"
+          ></span>
+        </div>
 
         <div id="chart" aria-label="Investment growth chart placeholder">
           <span>Growth chart coming soon</span>
@@ -144,6 +206,52 @@ const {
 </Layout>
 
 <script>
+  const copyLinkButton = document.querySelector<HTMLButtonElement>(
+    '#copy-calculator-link',
+  );
+  const copyLinkStatus =
+    document.querySelector<HTMLElement>('#copy-link-status');
+  let copyStatusTimeout: number | undefined;
+
+  async function copyCurrentUrl(): Promise<void> {
+    if (!copyLinkStatus) {
+      return;
+    }
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(window.location.href);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = window.location.href;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.append(textArea);
+        textArea.select();
+
+        const copied = document.execCommand('copy');
+        textArea.remove();
+
+        if (!copied) {
+          throw new Error('Copy command failed');
+        }
+      }
+
+      copyLinkStatus.textContent = 'Link copied';
+    } catch {
+      copyLinkStatus.textContent = 'Unable to copy link';
+    }
+
+    window.clearTimeout(copyStatusTimeout);
+    copyStatusTimeout = window.setTimeout(() => {
+      if (copyLinkStatus) {
+        copyLinkStatus.textContent = '';
+      }
+    }, 2500);
+  }
+
+  copyLinkButton?.addEventListener('click', copyCurrentUrl);
+
   document.querySelectorAll<HTMLInputElement>('[data-currency-input]').forEach(
     (input) => {
       input.addEventListener('input', () => {
@@ -360,6 +468,32 @@ const {
   .results .primary-result dd {
     color: var(--link-color);
     font-size: 1.25rem;
+  }
+
+  .share-results {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  .copy-link {
+    width: auto;
+    margin: 0;
+    border: 1px solid var(--border-color);
+    background: var(--subtle-background);
+    color: var(--link-color);
+    padding: 0.65rem 0.9rem;
+  }
+
+  .copy-link:hover {
+    border-color: var(--link-color);
+    background: var(--card-background);
+  }
+
+  .copy-link-status {
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
   }
 
   #chart {
