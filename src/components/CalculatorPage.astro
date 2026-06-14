@@ -34,6 +34,14 @@ const {
 
 <Layout title={title} description={description}>
   <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li aria-current="page">{title}</li>
+      </ol>
+    </nav>
+
     <header class="page-header">
       <p class="eyebrow">{eyebrow}</p>
       <h1>{title}</h1>
@@ -280,6 +288,47 @@ const {
   .page-header {
     max-width: 760px;
     margin-bottom: 2.5rem;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
+  }
+
+  .breadcrumbs li + li::before {
+    color: var(--muted-text-color);
+    content: '›';
+  }
+
+  .breadcrumbs a {
+    color: var(--link-color);
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .breadcrumbs [aria-current='page'] {
+    color: var(--text-color);
+    font-weight: 650;
   }
 
   .eyebrow {
