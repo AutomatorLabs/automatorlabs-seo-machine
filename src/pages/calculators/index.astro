@@ -5,6 +5,111 @@ import Layout from '../../layouts/Layout.astro';
 const calculators = contentItems
   .filter((item) => item.category === 'calculator')
   .sort((a, b) => a.priority - b.priority);
+
+const calculatorGroups = [
+  {
+    title: 'FIRE & Retirement',
+    description:
+      'Plan financial independence, retirement timing, withdrawals, and sustainable income.',
+    ids: [
+      'fire-calculator',
+      'coast-fire-calculator',
+      'four-percent-rule-calculator',
+      'retirement-withdrawal-calculator',
+      'financial-independence-date-calculator',
+      'lean-fire-calculator',
+      'fat-fire-calculator',
+      'barista-fire-calculator',
+      'safe-withdrawal-rate-calculator',
+      'years-to-retirement-calculator',
+      'retirement-income-gap-calculator',
+      'portfolio-withdrawal-sustainability-calculator',
+      'retirement-tax-drag-calculator',
+    ],
+  },
+  {
+    title: 'Investing',
+    description:
+      'Explore growth, returns, inflation, dividends, fees, and investment strategies.',
+    ids: [
+      'compound-interest-calculator',
+      'rule-of-72-calculator',
+      'inflation-calculator',
+      'investment-fee-calculator',
+      'expense-ratio-calculator',
+      'cagr-calculator',
+      'etf-fee-drag-calculator',
+      'dividend-yield-calculator',
+      'dividend-growth-calculator',
+      'drip-calculator',
+      'lump-sum-vs-dca-calculator',
+      'real-rate-of-return-calculator',
+      'inflation-adjusted-return-calculator',
+    ],
+  },
+  {
+    title: 'Debt & Loans',
+    description:
+      'Estimate payments, payoff timelines, interest costs, and debt repayment strategies.',
+    ids: [
+      'loan-payment-calculator',
+      'debt-payoff-calculator',
+      'debt-snowball-calculator',
+      'debt-avalanche-calculator',
+      'credit-card-interest-calculator',
+      'auto-loan-calculator',
+      'student-loan-calculator',
+      'student-loan-payoff-calculator',
+    ],
+  },
+  {
+    title: 'Home & Mortgage',
+    description:
+      'Compare housing choices, mortgage costs, home equity, affordability, and down payments.',
+    ids: [
+      'mortgage-payoff-calculator',
+      'refinance-calculator',
+      'heloc-calculator',
+      'rent-vs-buy-calculator',
+      'home-affordability-calculator',
+      'down-payment-calculator',
+      'mortgage-recast-calculator',
+    ],
+  },
+  {
+    title: 'Budgeting & Savings',
+    description:
+      'Build stronger cash flow, savings habits, emergency funds, and personal balance sheets.',
+    ids: [
+      'savings-rate-calculator',
+      'net-worth-calculator',
+      'emergency-fund-calculator',
+      'savings-goal-calculator',
+      'budget-calculator',
+    ],
+  },
+  {
+    title: 'College & Tax-Advantaged Accounts',
+    description:
+      'Plan education costs and compare retirement, health, and tax-advantaged accounts.',
+    ids: [
+      'roth-vs-traditional-ira-calculator',
+      '401k-growth-calculator',
+      'ira-growth-calculator',
+      'taxable-vs-tax-advantaged-calculator',
+      'hsa-growth-calculator',
+      '529-college-savings-calculator',
+      'college-cost-inflation-calculator',
+    ],
+  },
+].map((group) => {
+  const groupIds = new Set(group.ids);
+
+  return {
+    ...group,
+    calculators: calculators.filter((item) => groupIds.has(item.id)),
+  };
+});
 ---
 
 <Layout
@@ -25,7 +130,7 @@ const calculators = contentItems
         type="search"
         placeholder="Try FIRE, debt, mortgage, dividend..."
         autocomplete="off"
-        aria-controls="calculator-list"
+        aria-controls="calculator-groups"
         aria-describedby="calculator-count"
       />
       <p id="calculator-count" class="calculator-count" aria-live="polite">
@@ -33,34 +138,46 @@ const calculators = contentItems
       </p>
     </section>
 
-    <ul id="calculator-list" class="calculator-list">
-      {calculators.map((item) => (
-        <li
-          data-calculator-card
-          data-search-text={[
-            item.title,
-            item.description,
-            item.category,
-            item.primaryKeyword,
-            ...item.secondaryKeywords,
-          ]
-            .join(' ')
-            .toLocaleLowerCase()}
-        >
-          <div>
-            {item.status === 'live' ? (
-              <a href={item.url}>{item.title}</a>
-            ) : (
-              <h2>{item.title}</h2>
-            )}
-            <p>{item.description}</p>
-          </div>
-          <span class:list={['status', { live: item.status === 'live' }]}>
-            {item.status === 'live' ? 'Live' : 'Planned'}
-          </span>
-        </li>
+    <div id="calculator-groups" class="calculator-groups">
+      {calculatorGroups.map((group) => (
+        <section class="calculator-group" data-calculator-group>
+          <header class="group-header">
+            <h2>{group.title}</h2>
+            <p>{group.description}</p>
+          </header>
+
+          <ul class="calculator-list">
+            {group.calculators.map((item) => (
+              <li
+                data-calculator-card
+                data-search-text={[
+                  item.title,
+                  item.description,
+                  item.category,
+                  item.primaryKeyword,
+                  ...item.secondaryKeywords,
+                  group.title,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <div>
+                  {item.status === 'live' ? (
+                    <a href={item.url}>{item.title}</a>
+                  ) : (
+                    <h3>{item.title}</h3>
+                  )}
+                  <p>{item.description}</p>
+                </div>
+                <span class:list={['status', { live: item.status === 'live' }]}>
+                  {item.status === 'live' ? 'Live' : 'Planned'}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
       ))}
-    </ul>
+    </div>
 
     <p id="no-calculators-found" class="no-results" role="status" hidden>
       No calculators found.
@@ -73,6 +190,9 @@ const calculators = contentItems
     document.querySelector<HTMLInputElement>('#calculator-search');
   const calculatorCards = Array.from(
     document.querySelectorAll<HTMLElement>('[data-calculator-card]'),
+  );
+  const calculatorGroups = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-calculator-group]'),
   );
   const calculatorCount =
     document.querySelector<HTMLElement>('#calculator-count');
@@ -99,6 +219,14 @@ const calculators = contentItems
       if (matches) {
         visibleCount += 1;
       }
+    });
+
+    calculatorGroups.forEach((group) => {
+      const hasVisibleCalculator = Array.from(
+        group.querySelectorAll<HTMLElement>('[data-calculator-card]'),
+      ).some((card) => !card.hidden);
+
+      group.hidden = !hasVisibleCalculator;
     });
 
     calculatorCount.textContent = `Showing ${visibleCount} ${
@@ -174,10 +302,39 @@ const calculators = contentItems
     font-size: 0.88rem;
   }
 
+  .calculator-groups {
+    display: grid;
+    gap: 2.75rem;
+    margin-top: 2.25rem;
+  }
+
+  .calculator-group[hidden] {
+    display: none;
+  }
+
+  .group-header {
+    margin-bottom: 1rem;
+  }
+
+  .group-header h2,
+  .group-header p {
+    margin: 0;
+  }
+
+  .group-header h2 {
+    font-size: 1.45rem;
+    letter-spacing: -0.02em;
+  }
+
+  .group-header p {
+    margin-top: 0.3rem;
+    font-size: 0.94rem;
+  }
+
   .calculator-list {
     display: grid;
     gap: 0.75rem;
-    margin-top: 1.25rem;
+    margin: 0;
     padding: 0;
     list-style: none;
   }
@@ -197,12 +354,12 @@ const calculators = contentItems
     display: none;
   }
 
-  .calculator-list h2,
+  .calculator-list h3,
   .calculator-list p {
     margin: 0;
   }
 
-  .calculator-list h2,
+  .calculator-list h3,
   .calculator-list a {
     font-size: 1rem;
   }
