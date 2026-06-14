@@ -1,108 +1,13 @@
 ---
 import { contentItems } from '../../data/content';
+import { calculatorCategories } from '../../data/calculator-categories';
 import Layout from '../../layouts/Layout.astro';
 
 const calculators = contentItems
   .filter((item) => item.category === 'calculator')
   .sort((a, b) => a.priority - b.priority);
 
-const calculatorGroups = [
-  {
-    title: 'FIRE & Retirement',
-    description:
-      'Plan financial independence, retirement timing, withdrawals, and sustainable income.',
-    ids: [
-      'fire-calculator',
-      'coast-fire-calculator',
-      'four-percent-rule-calculator',
-      'retirement-withdrawal-calculator',
-      'financial-independence-date-calculator',
-      'lean-fire-calculator',
-      'fat-fire-calculator',
-      'barista-fire-calculator',
-      'safe-withdrawal-rate-calculator',
-      'years-to-retirement-calculator',
-      'retirement-income-gap-calculator',
-      'portfolio-withdrawal-sustainability-calculator',
-      'retirement-tax-drag-calculator',
-    ],
-  },
-  {
-    title: 'Investing',
-    description:
-      'Explore growth, returns, inflation, dividends, fees, and investment strategies.',
-    ids: [
-      'compound-interest-calculator',
-      'rule-of-72-calculator',
-      'inflation-calculator',
-      'investment-fee-calculator',
-      'expense-ratio-calculator',
-      'cagr-calculator',
-      'etf-fee-drag-calculator',
-      'dividend-yield-calculator',
-      'dividend-growth-calculator',
-      'drip-calculator',
-      'lump-sum-vs-dca-calculator',
-      'real-rate-of-return-calculator',
-      'inflation-adjusted-return-calculator',
-    ],
-  },
-  {
-    title: 'Debt & Loans',
-    description:
-      'Estimate payments, payoff timelines, interest costs, and debt repayment strategies.',
-    ids: [
-      'loan-payment-calculator',
-      'debt-payoff-calculator',
-      'debt-snowball-calculator',
-      'debt-avalanche-calculator',
-      'credit-card-interest-calculator',
-      'auto-loan-calculator',
-      'student-loan-calculator',
-      'student-loan-payoff-calculator',
-    ],
-  },
-  {
-    title: 'Home & Mortgage',
-    description:
-      'Compare housing choices, mortgage costs, home equity, affordability, and down payments.',
-    ids: [
-      'mortgage-payoff-calculator',
-      'refinance-calculator',
-      'heloc-calculator',
-      'rent-vs-buy-calculator',
-      'home-affordability-calculator',
-      'down-payment-calculator',
-      'mortgage-recast-calculator',
-    ],
-  },
-  {
-    title: 'Budgeting & Savings',
-    description:
-      'Build stronger cash flow, savings habits, emergency funds, and personal balance sheets.',
-    ids: [
-      'savings-rate-calculator',
-      'net-worth-calculator',
-      'emergency-fund-calculator',
-      'savings-goal-calculator',
-      'budget-calculator',
-    ],
-  },
-  {
-    title: 'College & Tax-Advantaged Accounts',
-    description:
-      'Plan education costs and compare retirement, health, and tax-advantaged accounts.',
-    ids: [
-      'roth-vs-traditional-ira-calculator',
-      '401k-growth-calculator',
-      'ira-growth-calculator',
-      'taxable-vs-tax-advantaged-calculator',
-      'hsa-growth-calculator',
-      '529-college-savings-calculator',
-      'college-cost-inflation-calculator',
-    ],
-  },
-].map((group) => {
+const calculatorGroups = calculatorCategories.map((group) => {
   const groupIds = new Set(group.ids);
 
   return {
@@ -142,8 +47,11 @@ const calculatorGroups = [
       {calculatorGroups.map((group) => (
         <section class="calculator-group" data-calculator-group>
           <header class="group-header">
-            <h2>{group.title}</h2>
-            <p>{group.description}</p>
+            <div>
+              <h2>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <a href={`/calculators/${group.slug}/`}>View category</a>
           </header>
 
           <ul class="calculator-list">
@@ -325,6 +233,10 @@ const calculatorGroups = [
   }
 
   .group-header {
+    display: flex;
+    gap: 1rem;
+    align-items: end;
+    justify-content: space-between;
     margin-bottom: 1rem;
   }
 
@@ -341,6 +253,13 @@ const calculatorGroups = [
   .group-header p {
     margin-top: 0.3rem;
     font-size: 0.94rem;
+  }
+
+  .group-header a {
+    flex: 0 0 auto;
+    color: var(--link-color);
+    font-size: 0.88rem;
+    font-weight: 700;
   }
 
   .calculator-list {
@@ -484,6 +403,11 @@ const calculatorGroups = [
 
     .calculator-list {
       grid-template-columns: 1fr;
+    }
+
+    .group-header {
+      align-items: flex-start;
+      flex-direction: column;
     }
   }
 </style>

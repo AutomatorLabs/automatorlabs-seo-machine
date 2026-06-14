@@ -1,0 +1,9 @@
+---
+import CalculatorCategoryPage from '../../../components/CalculatorCategoryPage.astro';
+import { getCalculatorCategory } from '../../../data/calculator-categories';
+
+const category = getCalculatorCategory('investing');
+if (!category) throw new Error('Missing investing category');
+---
+
+<CalculatorCategoryPage category={category} />

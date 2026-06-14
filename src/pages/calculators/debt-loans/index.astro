@@ -1,0 +1,9 @@
+---
+import CalculatorCategoryPage from '../../../components/CalculatorCategoryPage.astro';
+import { getCalculatorCategory } from '../../../data/calculator-categories';
+
+const category = getCalculatorCategory('debt-loans');
+if (!category) throw new Error('Missing debt and loans category');
+---
+
+<CalculatorCategoryPage category={category} />

@@ -1,0 +1,9 @@
+---
+import CalculatorCategoryPage from '../../../components/CalculatorCategoryPage.astro';
+import { getCalculatorCategory } from '../../../data/calculator-categories';
+
+const category = getCalculatorCategory('home-mortgage');
+if (!category) throw new Error('Missing home and mortgage category');
+---
+
+<CalculatorCategoryPage category={category} />

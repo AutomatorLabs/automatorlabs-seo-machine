@@ -1,0 +1,9 @@
+---
+import CalculatorCategoryPage from '../../../components/CalculatorCategoryPage.astro';
+import { getCalculatorCategory } from '../../../data/calculator-categories';
+
+const category = getCalculatorCategory('college-tax-advantaged');
+if (!category) throw new Error('Missing college and tax-advantaged category');
+---
+
+<CalculatorCategoryPage category={category} />

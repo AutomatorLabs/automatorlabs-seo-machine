@@ -1,0 +1,9 @@
+---
+import CalculatorCategoryPage from '../../../components/CalculatorCategoryPage.astro';
+import { getCalculatorCategory } from '../../../data/calculator-categories';
+
+const category = getCalculatorCategory('budgeting-savings');
+if (!category) throw new Error('Missing budgeting and savings category');
+---
+
+<CalculatorCategoryPage category={category} />

@@ -1,0 +1,312 @@
+---
+import type { CalculatorCategory } from '../data/calculator-categories';
+import { contentItems } from '../data/content';
+import Layout from '../layouts/Layout.astro';
+
+interface Props {
+  category: CalculatorCategory;
+}
+
+const { category } = Astro.props;
+const categoryIds = new Set(category.ids);
+const calculators = contentItems
+  .filter(
+    (item) =>
+      item.category === 'calculator' && categoryIds.has(item.id),
+  )
+  .sort((a, b) => a.priority - b.priority);
+---
+
+<Layout
+  title={category.seoTitle}
+  description={category.metaDescription}
+>
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span aria-hidden="true">›</span>
+      <a href="/calculators/">Calculators</a>
+      <span aria-hidden="true">›</span>
+      <span aria-current="page">{category.title}</span>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Calculator collection</p>
+      <h1>{category.title}</h1>
+      <p class="intro">{category.intro}</p>
+    </header>
+
+    <section aria-labelledby="category-calculators-heading">
+      <div class="section-header">
+        <div>
+          <h2 id="category-calculators-heading">Explore calculators</h2>
+          <p>{category.description}</p>
+        </div>
+        <span class="calculator-count">
+          {calculators.length} {calculators.length === 1 ? 'calculator' : 'calculators'}
+        </span>
+      </div>
+
+      <ul class="calculator-list">
+        {calculators.map((item) => (
+          <li class:list={{ 'is-live': item.status === 'live' }}>
+            {item.status === 'live' ? (
+              <a class="calculator-card" href={item.url}>
+                <span class="card-meta">
+                  <span class="category-label">{category.title}</span>
+                  <span class="status live">Live</span>
+                </span>
+                <span class="card-title">{item.title}</span>
+                <span class="card-description">{item.description}</span>
+                <span class="card-action" aria-hidden="true">
+                  Open calculator <span>→</span>
+                </span>
+              </a>
+            ) : (
+              <div class="calculator-card planned-card">
+                <span class="card-meta">
+                  <span class="category-label">{category.title}</span>
+                  <span class="status">Planned</span>
+                </span>
+                <h3 class="card-title">{item.title}</h3>
+                <p class="card-description">{item.description}</p>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <a class="back-link" href="/calculators/">View all calculators</a>
+  </main>
+</Layout>
+
+<style>
+  main {
+    width: min(1040px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 4.5rem 0;
+  }
+
+  .breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumbs a,
+  .back-link {
+    color: var(--link-color);
+  }
+
+  .breadcrumbs a {
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover,
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  .breadcrumbs [aria-current='page'] {
+    color: var(--text-color);
+    font-weight: 650;
+  }
+
+  .page-header {
+    max-width: 760px;
+    margin-bottom: 3rem;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.5rem;
+    color: var(--link-color);
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.25rem, 7vw, 3.75rem);
+    letter-spacing: -0.04em;
+    line-height: 1.08;
+  }
+
+  .intro {
+    max-width: 720px;
+    margin: 1rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 1.08rem;
+    line-height: 1.65;
+  }
+
+  .section-header {
+    display: flex;
+    gap: 1rem;
+    align-items: end;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  .section-header h2,
+  .section-header p {
+    margin: 0;
+  }
+
+  .section-header h2 {
+    font-size: 1.45rem;
+  }
+
+  .section-header p {
+    margin-top: 0.35rem;
+    color: var(--muted-text-color);
+  }
+
+  .calculator-count {
+    flex: 0 0 auto;
+    color: var(--muted-text-color);
+    font-size: 0.88rem;
+  }
+
+  .calculator-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .calculator-list li {
+    min-width: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--card-background);
+    box-shadow: 0 8px 24px transparent;
+    overflow: hidden;
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease,
+      transform 160ms ease;
+  }
+
+  .calculator-list li.is-live:hover {
+    border-color: var(--link-color);
+    box-shadow: 0 12px 30px var(--shadow-color);
+    transform: translateY(-2px);
+  }
+
+  .calculator-card {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    color: var(--text-color);
+    padding: 1.2rem;
+    text-decoration: none;
+  }
+
+  .calculator-card:focus-visible {
+    border-radius: 13px;
+    box-shadow: inset 0 0 0 3px var(--focus-ring);
+    outline: none;
+  }
+
+  .planned-card {
+    cursor: default;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.85rem;
+  }
+
+  .category-label {
+    color: var(--muted-text-color);
+    font-size: 0.7rem;
+    font-weight: 750;
+    letter-spacing: 0.045em;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+
+  .card-title {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1.08rem;
+    font-weight: 750;
+    line-height: 1.3;
+  }
+
+  .card-description {
+    margin: 0.5rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+
+  .card-action {
+    display: flex;
+    gap: 0.35rem;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 1.15rem;
+    color: var(--link-color);
+    font-size: 0.85rem;
+    font-weight: 750;
+  }
+
+  .card-action span {
+    transition: transform 160ms ease;
+  }
+
+  .calculator-card:hover .card-action span {
+    transform: translateX(3px);
+  }
+
+  .status {
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: var(--subtle-background);
+    color: var(--subtle-text);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 0.15rem 0.5rem;
+    text-transform: uppercase;
+  }
+
+  .status.live {
+    background: var(--success-background);
+    color: var(--success-text);
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 2rem;
+    font-weight: 700;
+  }
+
+  @media (max-width: 640px) {
+    main {
+      padding: 3.25rem 0;
+    }
+
+    .section-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .calculator-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
