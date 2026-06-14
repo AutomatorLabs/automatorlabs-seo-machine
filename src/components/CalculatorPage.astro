@@ -1,10 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import type {
-  CalculatorFaq,
-  CalculatorInput,
-  CalculatorOutput,
-  CalculatorResultExplanation,
+import {
+  calculatorConfigs,
+  type CalculatorFaq,
+  type CalculatorInput,
+  type CalculatorOutput,
+  type CalculatorResultExplanation,
 } from '../data/calculators';
 import {
   createCommonMistakes,
@@ -25,6 +26,7 @@ interface Props {
   outputs: CalculatorOutput[];
   faq: CalculatorFaq[];
   relatedItems: RelatedItem[];
+  chart?: boolean;
   howToSteps?: string[];
   resultExplanation?: CalculatorResultExplanation[];
   commonMistakes?: string[];
@@ -38,11 +40,16 @@ const {
   outputs,
   faq,
   relatedItems,
+  chart: configuredChart,
   howToSteps: configuredHowToSteps,
   resultExplanation: configuredResultExplanation,
   commonMistakes: configuredCommonMistakes,
 } = Astro.props;
 
+const calculatorConfig = Object.values(calculatorConfigs).find(
+  (config) => config.url === Astro.url.pathname,
+);
+const chart = configuredChart ?? calculatorConfig?.chart ?? false;
 const howToSteps =
   configuredHowToSteps ?? createHowToSteps(title, inputs);
 const resultExplanation =
@@ -231,21 +238,25 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
           ))}
         </dl>
 
-        <div class="share-results">
-          <button id="copy-calculator-link" class="copy-link" type="button">
-            Copy link
+        <div id="share-calculation-controls" class="share-results" hidden>
+          <button id="share-calculation" class="copy-link" type="button">
+            Share calculation
           </button>
           <span
-            id="copy-link-status"
+            id="share-calculation-status"
             class="copy-link-status"
             role="status"
             aria-live="polite"
           ></span>
         </div>
 
-        <div id="chart" aria-label="Investment growth chart placeholder">
-          <span>Growth chart coming soon</span>
-        </div>
+        {chart && (
+          <div
+            id="chart"
+            role="img"
+            aria-label={`${title} chart`}
+          ></div>
+        )}
       </section>
     </section>
 
@@ -312,12 +323,21 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
 </Layout>
 
 <script>
+  const shareControls = document.querySelector<HTMLElement>(
+    '#share-calculation-controls',
+  );
   const copyLinkButton = document.querySelector<HTMLButtonElement>(
-    '#copy-calculator-link',
+    '#share-calculation',
   );
   const copyLinkStatus =
-    document.querySelector<HTMLElement>('#copy-link-status');
+    document.querySelector<HTMLElement>('#share-calculation-status');
   let copyStatusTimeout: number | undefined;
+
+  window.addEventListener('calculator:success', () => {
+    if (shareControls) {
+      shareControls.hidden = false;
+    }
+  });
 
   async function copyCurrentUrl(): Promise<void> {
     if (!copyLinkStatus) {
@@ -343,9 +363,9 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
         }
       }
 
-      copyLinkStatus.textContent = 'Link copied';
+      copyLinkStatus.textContent = '✓ Copied!';
     } catch {
-      copyLinkStatus.textContent = 'Unable to copy link';
+      copyLinkStatus.textContent = 'Unable to copy';
     }
 
     window.clearTimeout(copyStatusTimeout);
@@ -353,7 +373,7 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
       if (copyLinkStatus) {
         copyLinkStatus.textContent = '';
       }
-    }, 2500);
+    }, 2000);
   }
 
   copyLinkButton?.addEventListener('click', copyCurrentUrl);
@@ -624,6 +644,10 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
     margin-top: 1.25rem;
   }
 
+  .share-results[hidden] {
+    display: none;
+  }
+
   .copy-link {
     width: auto;
     margin: 0;
@@ -644,18 +668,31 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
   }
 
   #chart {
-    display: grid;
-    min-height: 190px;
+    min-height: 260px;
     margin-top: 1.5rem;
-    border: 1px dashed var(--input-border);
-    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
     background: var(--chart-background);
     color: var(--muted-text-color);
-    place-items: center;
+    padding: 0.75rem;
+    overflow: hidden;
   }
 
-  #chart span {
-    font-size: 0.9rem;
+  :global(#chart svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  :global(#chart .chart-state) {
+    display: grid;
+    min-height: 230px;
+    margin: 0;
+    color: var(--muted-text-color);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    place-items: center;
+    text-align: center;
   }
 
   .content-section {

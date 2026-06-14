@@ -132,11 +132,20 @@ test.describe('calculator QA', () => {
     await expect(page.locator('[name="annualExpenses"]')).toHaveValue('40000');
     await expect(page.locator('[name="withdrawalRate"]')).toHaveValue('4');
 
+    const shareButton = page.getByRole('button', {
+      name: 'Share calculation',
+      exact: true,
+    });
+    await expect(shareButton).toBeHidden();
+
     await page.getByRole('button', { name: 'Calculate', exact: true }).click();
 
     const currentUrl = page.url();
-    await page.getByRole('button', { name: 'Copy link', exact: true }).click();
-    await expect(page.locator('#copy-link-status')).toHaveText('Link copied');
+    await expect(shareButton).toBeVisible();
+    await shareButton.click();
+    await expect(page.locator('#share-calculation-status')).toHaveText(
+      '✓ Copied!',
+    );
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
       currentUrl,
     );

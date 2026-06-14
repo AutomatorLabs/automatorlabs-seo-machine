@@ -21,7 +21,10 @@ const relatedItems = investmentFeeCalculator.relatedIds.flatMap((id) => {
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';
     import { parseCalculatorNumber } from '../../../lib/input';
-    import { calculateInvestmentFeeImpact } from '../../../lib/math';
+    import {
+      calculateInvestmentFeeImpact,
+      futureValue,
+    } from '../../../lib/math';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
@@ -37,6 +40,7 @@ const relatedItems = investmentFeeCalculator.relatedIds.flatMap((id) => {
     const feeDragPercentageResult = document.querySelector<HTMLElement>(
       '#fee-drag-percentage-result',
     );
+    const chart = document.querySelector<HTMLElement>('#chart');
 
     const currency = new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -48,6 +52,240 @@ const relatedItems = investmentFeeCalculator.relatedIds.flatMap((id) => {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
+
+    const compactCurrency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    });
+
+    const svgNamespace = 'http://www.w3.org/2000/svg';
+
+    function createSvgElement<K extends keyof SVGElementTagNameMap>(
+      name: K,
+      attributes: Record<string, string>,
+    ): SVGElementTagNameMap[K] {
+      const element = document.createElementNS(svgNamespace, name);
+
+      Object.entries(attributes).forEach(([attribute, value]) => {
+        element.setAttribute(attribute, value);
+      });
+
+      return element;
+    }
+
+    function renderFeeDragChart({
+      startingInvestment,
+      monthlyContribution,
+      annualFee,
+      expectedReturn,
+      years,
+    }: {
+      startingInvestment: number;
+      monthlyContribution: number;
+      annualFee: number;
+      expectedReturn: number;
+      years: number;
+    }) {
+      if (!chart) return;
+
+      const wholeYears = Math.floor(years);
+      const plottedYears = Array.from(
+        { length: wholeYears + 1 },
+        (_, year) => year,
+      );
+
+      if (plottedYears.at(-1) !== years) {
+        plottedYears.push(years);
+      }
+
+      const beforeFeeMonthlyRate = expectedReturn / 100 / 12;
+      const afterFeeMonthlyRate =
+        (expectedReturn - annualFee) / 100 / 12;
+      const points = plottedYears.map((year) => ({
+        year,
+        beforeFees:
+          year === 0
+            ? startingInvestment
+            : futureValue({
+                principal: startingInvestment,
+                contributionPerPeriod: monthlyContribution,
+                ratePerPeriod: beforeFeeMonthlyRate,
+                numberOfPeriods: year * 12,
+              }),
+        afterFees:
+          year === 0
+            ? startingInvestment
+            : futureValue({
+                principal: startingInvestment,
+                contributionPerPeriod: monthlyContribution,
+                ratePerPeriod: afterFeeMonthlyRate,
+                numberOfPeriods: year * 12,
+              }),
+      }));
+      const finalPoint = points.at(-1);
+      const width = 680;
+      const height = 360;
+      const margin = { top: 58, right: 22, bottom: 52, left: 82 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      const maximumValue = Math.max(
+        ...points.flatMap((point) => [point.beforeFees, point.afterFees]),
+        1,
+      );
+      const minimumValue = Math.min(
+        0,
+        ...points.flatMap((point) => [point.beforeFees, point.afterFees]),
+      );
+      const valueRange = maximumValue - minimumValue || 1;
+      const xPosition = (year: number) =>
+        margin.left + (year / years) * plotWidth;
+      const yPosition = (value: number) =>
+        margin.top +
+        plotHeight -
+        ((value - minimumValue) / valueRange) * plotHeight;
+      const svg = createSvgElement('svg', {
+        viewBox: `0 0 ${width} ${height}`,
+        'aria-hidden': 'true',
+        focusable: 'false',
+      });
+
+      for (let index = 0; index <= 4; index += 1) {
+        const ratio = index / 4;
+        const y = margin.top + plotHeight - ratio * plotHeight;
+        const value = minimumValue + valueRange * ratio;
+
+        svg.append(
+          createSvgElement('line', {
+            x1: String(margin.left),
+            y1: String(y),
+            x2: String(width - margin.right),
+            y2: String(y),
+            stroke: 'var(--border-subtle)',
+            'stroke-width': '1',
+          }),
+        );
+
+        const label = createSvgElement('text', {
+          x: String(margin.left - 10),
+          y: String(y + 4),
+          fill: 'var(--muted-text-color)',
+          'font-size': '12',
+          'text-anchor': 'end',
+        });
+        label.textContent = compactCurrency.format(value);
+        svg.append(label);
+      }
+
+      const xTickCount = Math.min(6, Math.max(1, Math.ceil(years)));
+      for (let index = 0; index <= xTickCount; index += 1) {
+        const year = (years * index) / xTickCount;
+        const label = createSvgElement('text', {
+          x: String(xPosition(year)),
+          y: String(height - 22),
+          fill: 'var(--muted-text-color)',
+          'font-size': '12',
+          'text-anchor': 'middle',
+        });
+        label.textContent = Number.isInteger(year)
+          ? String(year)
+          : year.toFixed(1);
+        svg.append(label);
+      }
+
+      const xAxisLabel = createSvgElement('text', {
+        x: String(margin.left + plotWidth / 2),
+        y: String(height - 4),
+        fill: 'var(--muted-text-color)',
+        'font-size': '12',
+        'text-anchor': 'middle',
+      });
+      xAxisLabel.textContent = 'Years';
+      svg.append(xAxisLabel);
+
+      const yAxisLabel = createSvgElement('text', {
+        x: '17',
+        y: String(margin.top + plotHeight / 2),
+        fill: 'var(--muted-text-color)',
+        'font-size': '12',
+        'text-anchor': 'middle',
+        transform: `rotate(-90 17 ${margin.top + plotHeight / 2})`,
+      });
+      yAxisLabel.textContent = 'Portfolio value';
+      svg.append(yAxisLabel);
+
+      const legendItems = [
+        {
+          label: 'Balance before fees',
+          color: 'var(--link-color)',
+          x: margin.left,
+        },
+        {
+          label: 'Balance after fees',
+          color: 'var(--warning-text)',
+          x: margin.left + 190,
+        },
+      ];
+
+      legendItems.forEach((item) => {
+        svg.append(
+          createSvgElement('line', {
+            x1: String(item.x),
+            y1: '24',
+            x2: String(item.x + 24),
+            y2: '24',
+            stroke: item.color,
+            'stroke-width': '3',
+            'stroke-linecap': 'round',
+          }),
+        );
+        const label = createSvgElement('text', {
+          x: String(item.x + 32),
+          y: '28',
+          fill: 'var(--text-color)',
+          'font-size': '12',
+          'font-weight': '600',
+        });
+        label.textContent = item.label;
+        svg.append(label);
+      });
+
+      const createLinePath = (
+        key: 'beforeFees' | 'afterFees',
+      ) =>
+        points
+          .map(
+            (point, index) =>
+              `${index === 0 ? 'M' : 'L'} ${xPosition(point.year)} ${yPosition(point[key])}`,
+          )
+          .join(' ');
+
+      svg.append(
+        createSvgElement('path', {
+          d: createLinePath('beforeFees'),
+          fill: 'none',
+          stroke: 'var(--link-color)',
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round',
+          'stroke-width': '3',
+        }),
+        createSvgElement('path', {
+          d: createLinePath('afterFees'),
+          fill: 'none',
+          stroke: 'var(--warning-text)',
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round',
+          'stroke-width': '3',
+        }),
+      );
+
+      chart.replaceChildren(svg);
+      chart.setAttribute(
+        'aria-label',
+        `Fee drag projection over ${years} years. The estimated ending balance is ${currency.format(finalPoint?.beforeFees ?? startingInvestment)} before fees and ${currency.format(finalPoint?.afterFees ?? startingInvestment)} after fees, a difference of ${currency.format((finalPoint?.beforeFees ?? startingInvestment) - (finalPoint?.afterFees ?? startingInvestment))}.`,
+      );
+    }
 
     function calculate() {
       if (
@@ -115,6 +353,14 @@ const relatedItems = investmentFeeCalculator.relatedIds.flatMap((id) => {
       );
       feeDragPercentageResult.textContent =
         `${percentage.format(result.feeDragPercentage)}%`;
+
+      renderFeeDragChart({
+        startingInvestment,
+        monthlyContribution,
+        annualFee,
+        expectedReturn,
+        years,
+      });
       return true;
     }
 

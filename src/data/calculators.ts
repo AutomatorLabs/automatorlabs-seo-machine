@@ -41,6 +41,7 @@ export interface CalculatorConfig {
   title: string;
   eyebrow: string;
   description: string;
+  chart?: boolean;
   inputs: CalculatorInput[];
   outputs: CalculatorOutput[];
   faq: CalculatorFaq[];
@@ -58,6 +59,7 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
     eyebrow: 'Financial calculator',
     description:
       'Compound interest is interest earned on both your original investment and the interest it has already accumulated. Use this calculator to estimate how your savings could grow over time.',
+    chart: true,
     inputs: [
       {
         id: 'principal',
@@ -266,6 +268,7 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
     eyebrow: 'Financial Calculator',
     description:
       'Estimate your financial independence number based on annual expenses and withdrawal rate.',
+    chart: true,
     inputs: [
       {
         id: 'annual-expenses',
@@ -956,6 +959,7 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
     eyebrow: 'Investment Calculator',
     description:
       'Estimate how annual investment fees can reduce a growing portfolio with regular monthly contributions.',
+    chart: true,
     inputs: [
       {
         id: 'starting-investment',
@@ -1633,6 +1637,7 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
     eyebrow: 'Dividend Calculator',
     description:
       'Estimate portfolio growth and future dividend income when dividends are automatically reinvested through a dividend reinvestment plan.',
+    chart: true,
     inputs: [
       {
         id: 'initial-investment',
@@ -4309,6 +4314,7 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
     eyebrow: 'Mortgage Calculator',
     description:
       'Estimate your mortgage payment and see how extra monthly payments could reduce interest and shorten your payoff timeline.',
+    chart: true,
     inputs: [
       {
         id: 'loan-amount',
@@ -4532,6 +4538,7 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
     eyebrow: 'Debt Calculator',
     description:
       'Estimate how long it will take to pay off debt and how much interest an extra monthly payment could save.',
+    chart: true,
     inputs: [
       {
         id: 'debt-balance',

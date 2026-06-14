@@ -23,6 +23,7 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
     import {
       calculateFireNumber,
       calculateYearsToTarget,
+      futureValue,
     } from '../../../lib/math';
     import { parseCalculatorNumber } from '../../../lib/input';
     import { getTargetProgressExplanation } from '../../../lib/result-messages';
@@ -38,6 +39,7 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
     const yearsToFireResult = document.querySelector<HTMLElement>(
       '#years-to-fire-result',
     );
+    const chart = document.querySelector<HTMLElement>('#chart');
 
     const currency = new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -49,6 +51,245 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
       minimumFractionDigits: 1,
       maximumFractionDigits: 1,
     });
+    const compactCurrency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    });
+
+    const svgNamespace = 'http://www.w3.org/2000/svg';
+
+    function createSvgElement<K extends keyof SVGElementTagNameMap>(
+      name: K,
+      attributes: Record<string, string>,
+    ): SVGElementTagNameMap[K] {
+      const element = document.createElementNS(svgNamespace, name);
+
+      Object.entries(attributes).forEach(([attribute, value]) => {
+        element.setAttribute(attribute, value);
+      });
+
+      return element;
+    }
+
+    function renderChartState(message: string, ariaLabel: string) {
+      if (!chart) return;
+
+      const state = document.createElement('p');
+      state.className = 'chart-state';
+      state.textContent = message;
+      chart.replaceChildren(state);
+      chart.setAttribute('aria-label', ariaLabel);
+    }
+
+    function renderFireChart({
+      fireNumber,
+      currentAssets,
+      monthlyContribution,
+      expectedReturn,
+      yearsToFire,
+    }: {
+      fireNumber: number;
+      currentAssets: number;
+      monthlyContribution: number;
+      expectedReturn: number;
+      yearsToFire: number | null;
+    }) {
+      if (!chart) return;
+
+      if (currentAssets >= fireNumber) {
+        renderChartState(
+          'Your current invested assets already meet or exceed the FIRE number.',
+          `Already at FIRE with ${currency.format(currentAssets)} invested against a ${currency.format(fireNumber)} target.`,
+        );
+        return;
+      }
+
+      if (yearsToFire === null) {
+        renderChartState(
+          'No progress chart is shown because the FIRE number is unreachable under the current contribution and return assumptions.',
+          `The ${currency.format(fireNumber)} FIRE target is unreachable from ${currency.format(currentAssets)} with the current inputs.`,
+        );
+        return;
+      }
+
+      const maximumYears = 60;
+      const chartYears = Math.min(
+        maximumYears,
+        Math.max(1, Math.ceil(yearsToFire)),
+      );
+      const monthlyRate = expectedReturn / 100 / 12;
+      const points = Array.from(
+        { length: chartYears + 1 },
+        (_, year) => ({
+          year,
+          balance:
+            year === 0
+              ? currentAssets
+              : futureValue({
+                  principal: currentAssets,
+                  contributionPerPeriod: monthlyContribution,
+                  ratePerPeriod: monthlyRate,
+                  numberOfPeriods: year * 12,
+                }),
+        }),
+      );
+      const finalPoint = points.at(-1);
+      const reachedWithinChart =
+        (finalPoint?.balance ?? currentAssets) >= fireNumber;
+      const width = 640;
+      const height = 330;
+      const margin = { top: 34, right: 22, bottom: 50, left: 78 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      const maximumValue = Math.max(
+        fireNumber,
+        ...points.map((point) => point.balance),
+        1,
+      );
+      const xPosition = (year: number) =>
+        margin.left + (year / chartYears) * plotWidth;
+      const yPosition = (value: number) =>
+        margin.top +
+        plotHeight -
+        (value / maximumValue) * plotHeight;
+      const svg = createSvgElement('svg', {
+        viewBox: `0 0 ${width} ${height}`,
+        'aria-hidden': 'true',
+        focusable: 'false',
+      });
+
+      for (let index = 0; index <= 4; index += 1) {
+        const ratio = index / 4;
+        const y = margin.top + plotHeight - ratio * plotHeight;
+        const value = maximumValue * ratio;
+
+        svg.append(
+          createSvgElement('line', {
+            x1: String(margin.left),
+            y1: String(y),
+            x2: String(width - margin.right),
+            y2: String(y),
+            stroke: 'var(--border-subtle)',
+            'stroke-width': '1',
+          }),
+        );
+
+        const label = createSvgElement('text', {
+          x: String(margin.left - 10),
+          y: String(y + 4),
+          fill: 'var(--muted-text-color)',
+          'font-size': '12',
+          'text-anchor': 'end',
+        });
+        label.textContent = compactCurrency.format(value);
+        svg.append(label);
+      }
+
+      const targetY = yPosition(fireNumber);
+      svg.append(
+        createSvgElement('line', {
+          x1: String(margin.left),
+          y1: String(targetY),
+          x2: String(width - margin.right),
+          y2: String(targetY),
+          stroke: 'var(--warning-text)',
+          'stroke-dasharray': '7 5',
+          'stroke-width': '2',
+        }),
+      );
+      const targetLabel = createSvgElement('text', {
+        x: String(width - margin.right),
+        y: String(Math.max(14, targetY - 8)),
+        fill: 'var(--warning-text)',
+        'font-size': '12',
+        'font-weight': '700',
+        'text-anchor': 'end',
+      });
+      targetLabel.textContent = `FIRE target ${compactCurrency.format(fireNumber)}`;
+      svg.append(targetLabel);
+
+      const xTickCount = Math.min(6, chartYears);
+      for (let index = 0; index <= xTickCount; index += 1) {
+        const year = Math.round((chartYears * index) / xTickCount);
+        const label = createSvgElement('text', {
+          x: String(xPosition(year)),
+          y: String(height - 20),
+          fill: 'var(--muted-text-color)',
+          'font-size': '12',
+          'text-anchor': 'middle',
+        });
+        label.textContent = String(year);
+        svg.append(label);
+      }
+
+      const xAxisLabel = createSvgElement('text', {
+        x: String(margin.left + plotWidth / 2),
+        y: String(height - 3),
+        fill: 'var(--muted-text-color)',
+        'font-size': '12',
+        'text-anchor': 'middle',
+      });
+      xAxisLabel.textContent = 'Years';
+      svg.append(xAxisLabel);
+
+      const yAxisLabel = createSvgElement('text', {
+        x: '16',
+        y: String(margin.top + plotHeight / 2),
+        fill: 'var(--muted-text-color)',
+        'font-size': '12',
+        'text-anchor': 'middle',
+        transform: `rotate(-90 16 ${margin.top + plotHeight / 2})`,
+      });
+      yAxisLabel.textContent = 'Portfolio value';
+      svg.append(yAxisLabel);
+
+      const linePath = points
+        .map(
+          (point, index) =>
+            `${index === 0 ? 'M' : 'L'} ${xPosition(point.year)} ${yPosition(point.balance)}`,
+        )
+        .join(' ');
+      const areaPath = `${linePath} L ${xPosition(chartYears)} ${margin.top + plotHeight} L ${margin.left} ${margin.top + plotHeight} Z`;
+
+      svg.append(
+        createSvgElement('path', {
+          d: areaPath,
+          fill: 'var(--focus-ring)',
+          stroke: 'none',
+        }),
+        createSvgElement('path', {
+          d: linePath,
+          fill: 'none',
+          stroke: 'var(--link-color)',
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round',
+          'stroke-width': '3',
+        }),
+      );
+
+      points.forEach((point) => {
+        svg.append(
+          createSvgElement('circle', {
+            cx: String(xPosition(point.year)),
+            cy: String(yPosition(point.balance)),
+            r: points.length > 30 ? '2' : '3',
+            fill: 'var(--card-background)',
+            stroke: 'var(--link-color)',
+            'stroke-width': '2',
+          }),
+        );
+      });
+
+      chart.replaceChildren(svg);
+      chart.setAttribute(
+        'aria-label',
+        reachedWithinChart
+          ? `Estimated portfolio grows from ${currency.format(currentAssets)} to at least the ${currency.format(fireNumber)} FIRE target in about ${years.format(yearsToFire)} years.`
+          : `Estimated portfolio grows from ${currency.format(currentAssets)} to ${currency.format(finalPoint?.balance ?? currentAssets)} over 60 years but does not reach the ${currency.format(fireNumber)} FIRE target within the chart period.`,
+      );
+    }
 
     function calculate() {
       if (
@@ -122,6 +363,14 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
         yearsToFireResult.textContent =
           `${years.format(yearsToFire)} years`;
       }
+
+      renderFireChart({
+        fireNumber,
+        currentAssets,
+        monthlyContribution,
+        expectedReturn,
+        yearsToFire,
+      });
       return true;
     }
 

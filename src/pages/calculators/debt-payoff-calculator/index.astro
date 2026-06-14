@@ -37,12 +37,307 @@ const relatedItems = debtPayoffCalculator.relatedIds.flatMap((id) => {
     const interestSavedResult = document.querySelector<HTMLElement>(
       '#interest-saved-result',
     );
+    const chart = document.querySelector<HTMLElement>('#chart');
 
     const currency = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       maximumFractionDigits: 2,
     });
+
+    const compactCurrency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    });
+
+    const svgNamespace = 'http://www.w3.org/2000/svg';
+
+    function createSvgElement<K extends keyof SVGElementTagNameMap>(
+      name: K,
+      attributes: Record<string, string>,
+    ): SVGElementTagNameMap[K] {
+      const element = document.createElementNS(svgNamespace, name);
+
+      Object.entries(attributes).forEach(([attribute, value]) => {
+        element.setAttribute(attribute, value);
+      });
+
+      return element;
+    }
+
+    function renderChartState(message: string, ariaLabel: string) {
+      if (!chart) return;
+
+      const state = document.createElement('p');
+      state.className = 'chart-state';
+      state.textContent = message;
+      chart.replaceChildren(state);
+      chart.setAttribute('aria-label', ariaLabel);
+    }
+
+    function createDebtBalanceSchedule({
+      debtBalance,
+      monthlyInterestRate,
+      monthlyPayment,
+      payoffMonths,
+      sampleInterval,
+    }: {
+      debtBalance: number;
+      monthlyInterestRate: number;
+      monthlyPayment: number;
+      payoffMonths: number;
+      sampleInterval: number;
+    }) {
+      const points = [{ month: 0, balance: debtBalance }];
+      let balance = debtBalance;
+
+      for (let month = 1; month <= payoffMonths; month += 1) {
+        const interest = balance * monthlyInterestRate;
+        const payment = Math.min(monthlyPayment, balance + interest);
+
+        balance = Math.max(balance + interest - payment, 0);
+
+        if (
+          month % sampleInterval === 0 ||
+          month === payoffMonths ||
+          balance === 0
+        ) {
+          points.push({ month, balance });
+        }
+
+        if (balance === 0) break;
+      }
+
+      return points;
+    }
+
+    function renderDebtPayoffChart({
+      debtBalance,
+      annualInterestRatePercent,
+      monthlyPayment,
+      extraMonthlyPayment,
+      baselineReachable,
+      acceleratedReachable,
+      baselinePayoffMonths,
+      acceleratedPayoffMonths,
+    }: {
+      debtBalance: number;
+      annualInterestRatePercent: number;
+      monthlyPayment: number;
+      extraMonthlyPayment: number;
+      baselineReachable: boolean;
+      acceleratedReachable: boolean;
+      baselinePayoffMonths: number | null;
+      acceleratedPayoffMonths: number | null;
+    }) {
+      if (!chart) return;
+
+      const initialMonthlyInterest =
+        debtBalance * (annualInterestRatePercent / 100 / 12);
+
+      if (!acceleratedReachable || acceleratedPayoffMonths == null) {
+        renderChartState(
+          'No payoff chart is shown because the total monthly payment does not reduce the debt under the current interest rate.',
+          `The starting monthly interest is ${currency.format(initialMonthlyInterest)}, while the total payment is ${currency.format(monthlyPayment + extraMonthlyPayment)}. No finite payoff schedule is available.`,
+        );
+        return;
+      }
+
+      if (!baselineReachable || baselinePayoffMonths == null) {
+        renderChartState(
+          'The extra payment creates a payoff path, but the standard payment does not. A two-line comparison chart would be misleading.',
+          `The standard payment of ${currency.format(monthlyPayment)} does not produce a finite payoff, while the payment with the extra amount reaches payoff in ${formatMonths(acceleratedPayoffMonths)}.`,
+        );
+        return;
+      }
+
+      const maximumMonths = Math.max(
+        baselinePayoffMonths,
+        acceleratedPayoffMonths,
+      );
+      const sampleInterval = Math.max(1, Math.ceil(maximumMonths / 500));
+      const monthlyInterestRate =
+        annualInterestRatePercent / 100 / 12;
+      const standardPoints = createDebtBalanceSchedule({
+        debtBalance,
+        monthlyInterestRate,
+        monthlyPayment,
+        payoffMonths: baselinePayoffMonths,
+        sampleInterval,
+      });
+      const extraPaymentPoints = createDebtBalanceSchedule({
+        debtBalance,
+        monthlyInterestRate,
+        monthlyPayment: monthlyPayment + extraMonthlyPayment,
+        payoffMonths: acceleratedPayoffMonths,
+        sampleInterval,
+      });
+      const useYears = maximumMonths > 60;
+      const horizontalMaximum = useYears
+        ? maximumMonths / 12
+        : maximumMonths;
+      const width = 680;
+      const height = 360;
+      const margin = { top: 58, right: 22, bottom: 52, left: 82 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      const xPosition = (month: number) => {
+        const value = useYears ? month / 12 : month;
+        return margin.left + (value / horizontalMaximum) * plotWidth;
+      };
+      const yPosition = (balance: number) =>
+        margin.top +
+        plotHeight -
+        (balance / debtBalance) * plotHeight;
+      const svg = createSvgElement('svg', {
+        viewBox: `0 0 ${width} ${height}`,
+        'aria-hidden': 'true',
+        focusable: 'false',
+      });
+
+      for (let index = 0; index <= 4; index += 1) {
+        const ratio = index / 4;
+        const y = margin.top + plotHeight - ratio * plotHeight;
+        const balance = debtBalance * ratio;
+
+        svg.append(
+          createSvgElement('line', {
+            x1: String(margin.left),
+            y1: String(y),
+            x2: String(width - margin.right),
+            y2: String(y),
+            stroke: 'var(--border-subtle)',
+            'stroke-width': '1',
+          }),
+        );
+
+        const label = createSvgElement('text', {
+          x: String(margin.left - 10),
+          y: String(y + 4),
+          fill: 'var(--muted-text-color)',
+          'font-size': '12',
+          'text-anchor': 'end',
+        });
+        label.textContent = compactCurrency.format(balance);
+        svg.append(label);
+      }
+
+      const xTickCount = Math.min(
+        6,
+        Math.max(1, Math.ceil(horizontalMaximum)),
+      );
+      for (let index = 0; index <= xTickCount; index += 1) {
+        const value = (horizontalMaximum * index) / xTickCount;
+        const month = useYears ? value * 12 : value;
+        const label = createSvgElement('text', {
+          x: String(xPosition(month)),
+          y: String(height - 22),
+          fill: 'var(--muted-text-color)',
+          'font-size': '12',
+          'text-anchor': 'middle',
+        });
+        label.textContent = Number.isInteger(value)
+          ? String(value)
+          : value.toFixed(1);
+        svg.append(label);
+      }
+
+      const xAxisLabel = createSvgElement('text', {
+        x: String(margin.left + plotWidth / 2),
+        y: String(height - 4),
+        fill: 'var(--muted-text-color)',
+        'font-size': '12',
+        'text-anchor': 'middle',
+      });
+      xAxisLabel.textContent = useYears ? 'Years' : 'Months';
+      svg.append(xAxisLabel);
+
+      const yAxisLabel = createSvgElement('text', {
+        x: '17',
+        y: String(margin.top + plotHeight / 2),
+        fill: 'var(--muted-text-color)',
+        'font-size': '12',
+        'text-anchor': 'middle',
+        transform: `rotate(-90 17 ${margin.top + plotHeight / 2})`,
+      });
+      yAxisLabel.textContent = 'Remaining debt balance';
+      svg.append(yAxisLabel);
+
+      const legendItems = [
+        {
+          label: 'Standard payment',
+          color: 'var(--link-color)',
+          x: margin.left,
+        },
+        {
+          label: 'Extra-payment balance',
+          color: 'var(--warning-text)',
+          x: margin.left + 180,
+        },
+      ];
+
+      legendItems.forEach((item) => {
+        svg.append(
+          createSvgElement('line', {
+            x1: String(item.x),
+            y1: '24',
+            x2: String(item.x + 24),
+            y2: '24',
+            stroke: item.color,
+            'stroke-width': '3',
+            'stroke-linecap': 'round',
+          }),
+        );
+        const label = createSvgElement('text', {
+          x: String(item.x + 32),
+          y: '28',
+          fill: 'var(--text-color)',
+          'font-size': '12',
+          'font-weight': '600',
+        });
+        label.textContent = item.label;
+        svg.append(label);
+      });
+
+      const createLinePath = (
+        points: Array<{ month: number; balance: number }>,
+      ) =>
+        points
+          .map(
+            (point, index) =>
+              `${index === 0 ? 'M' : 'L'} ${xPosition(point.month)} ${yPosition(point.balance)}`,
+          )
+          .join(' ');
+
+      svg.append(
+        createSvgElement('path', {
+          d: createLinePath(standardPoints),
+          fill: 'none',
+          stroke: 'var(--link-color)',
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round',
+          'stroke-width': '3',
+        }),
+        createSvgElement('path', {
+          d: createLinePath(extraPaymentPoints),
+          fill: 'none',
+          stroke: 'var(--warning-text)',
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round',
+          'stroke-width': '3',
+        }),
+      );
+
+      chart.replaceChildren(svg);
+      chart.setAttribute(
+        'aria-label',
+        extraMonthlyPayment > 0
+          ? `Debt payoff projection for ${currency.format(debtBalance)}. The standard payment pays off the debt in ${formatMonths(baselinePayoffMonths)}, while the payment with an extra ${currency.format(extraMonthlyPayment)} pays it off in ${formatMonths(acceleratedPayoffMonths)}.`
+          : `Debt payoff projection for ${currency.format(debtBalance)}, reaching zero in ${formatMonths(baselinePayoffMonths)}. The two lines overlap because no extra payment was entered.`,
+      );
+    }
 
     function formatMonths(totalMonths: number): string {
       const years = Math.floor(totalMonths / 12);
@@ -121,6 +416,16 @@ const relatedItems = debtPayoffCalculator.relatedIds.flatMap((id) => {
           'No finite payoff total';
         interestSavedResult.textContent =
           'Increase payment above monthly interest';
+        renderDebtPayoffChart({
+          debtBalance,
+          annualInterestRatePercent,
+          monthlyPayment,
+          extraMonthlyPayment,
+          baselineReachable: result.baseline.reachable,
+          acceleratedReachable: result.accelerated.reachable,
+          baselinePayoffMonths: result.baseline.payoffTimeMonths,
+          acceleratedPayoffMonths: result.accelerated.payoffTimeMonths,
+        });
         return true;
       }
 
@@ -148,6 +453,16 @@ const relatedItems = debtPayoffCalculator.relatedIds.flatMap((id) => {
         error.hidden = false;
       }
 
+      renderDebtPayoffChart({
+        debtBalance,
+        annualInterestRatePercent,
+        monthlyPayment,
+        extraMonthlyPayment,
+        baselineReachable: result.baseline.reachable,
+        acceleratedReachable: result.accelerated.reachable,
+        baselinePayoffMonths: result.baseline.payoffTimeMonths,
+        acceleratedPayoffMonths: result.accelerated.payoffTimeMonths,
+      });
       return true;
     }
 

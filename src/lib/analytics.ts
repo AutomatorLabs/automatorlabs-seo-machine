@@ -45,6 +45,7 @@ export function trackSuccessfulCalculation(
   }
 
   updateCalculatorUrl();
+  window.dispatchEvent(new CustomEvent('calculator:success'));
 
   const gtag = (window as Window & { gtag?: Gtag }).gtag;
 

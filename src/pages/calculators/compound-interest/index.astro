@@ -28,12 +28,215 @@ const relatedItems = compoundInterestCalculator.relatedIds.flatMap((id) => {
     const finalBalance = document.querySelector<HTMLElement>('#final-balance');
     const totalContributions = document.querySelector<HTMLElement>('#total-contributions');
     const totalInterest = document.querySelector<HTMLElement>('#total-interest');
+    const chart = document.querySelector<HTMLElement>('#chart');
 
     const currency = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       maximumFractionDigits: 2,
     });
+    const compactCurrency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    });
+
+    const svgNamespace = 'http://www.w3.org/2000/svg';
+
+    function createSvgElement<K extends keyof SVGElementTagNameMap>(
+      name: K,
+      attributes: Record<string, string>,
+    ): SVGElementTagNameMap[K] {
+      const element = document.createElementNS(svgNamespace, name);
+
+      Object.entries(attributes).forEach(([attribute, value]) => {
+        element.setAttribute(attribute, value);
+      });
+
+      return element;
+    }
+
+    function renderChart({
+      principal,
+      monthlyContribution,
+      annualRatePercent,
+      years,
+      periodsPerYear,
+    }: {
+      principal: number;
+      monthlyContribution: number;
+      annualRatePercent: number;
+      years: number;
+      periodsPerYear: number;
+    }) {
+      if (!chart) return;
+
+      const wholeYears = Math.floor(years);
+      const points = Array.from(
+        { length: wholeYears + 1 },
+        (_, year) => ({
+          year,
+          balance:
+            year === 0
+              ? principal
+              : calculateCompoundInterest({
+                  principal,
+                  monthlyContribution,
+                  annualRatePercent,
+                  years: year,
+                  periodsPerYear,
+                }).finalBalance,
+        }),
+      );
+
+      if (years > wholeYears) {
+        points.push({
+          year: years,
+          balance: calculateCompoundInterest({
+            principal,
+            monthlyContribution,
+            annualRatePercent,
+            years,
+            periodsPerYear,
+          }).finalBalance,
+        });
+      }
+
+      const width = 640;
+      const height = 320;
+      const margin = { top: 24, right: 20, bottom: 48, left: 76 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      const maximumBalance = Math.max(
+        ...points.map((point) => point.balance),
+        1,
+      );
+      const xPosition = (year: number) =>
+        margin.left + (year / years) * plotWidth;
+      const yPosition = (balance: number) =>
+        margin.top +
+        plotHeight -
+        (balance / maximumBalance) * plotHeight;
+
+      const svg = createSvgElement('svg', {
+        viewBox: `0 0 ${width} ${height}`,
+        'aria-hidden': 'true',
+        focusable: 'false',
+      });
+
+      for (let index = 0; index <= 4; index += 1) {
+        const ratio = index / 4;
+        const y = margin.top + plotHeight - ratio * plotHeight;
+        const value = maximumBalance * ratio;
+
+        svg.append(
+          createSvgElement('line', {
+            x1: String(margin.left),
+            y1: String(y),
+            x2: String(width - margin.right),
+            y2: String(y),
+            stroke: 'var(--border-subtle)',
+            'stroke-width': '1',
+          }),
+        );
+
+        const label = createSvgElement('text', {
+          x: String(margin.left - 10),
+          y: String(y + 4),
+          fill: 'var(--muted-text-color)',
+          'font-size': '12',
+          'text-anchor': 'end',
+        });
+        label.textContent = compactCurrency.format(value);
+        svg.append(label);
+      }
+
+      const xTickCount = Math.min(5, Math.max(1, Math.ceil(years)));
+      const displayedYears = new Set<number>();
+
+      for (let index = 0; index <= xTickCount; index += 1) {
+        const year = (years * index) / xTickCount;
+        const roundedYear = Math.round(year * 10) / 10;
+        if (displayedYears.has(roundedYear)) continue;
+        displayedYears.add(roundedYear);
+
+        const x = xPosition(year);
+        const tick = createSvgElement('text', {
+          x: String(x),
+          y: String(height - 20),
+          fill: 'var(--muted-text-color)',
+          'font-size': '12',
+          'text-anchor': 'middle',
+        });
+        tick.textContent = `${roundedYear}`;
+        svg.append(tick);
+      }
+
+      const axisLabel = createSvgElement('text', {
+        x: String(margin.left + plotWidth / 2),
+        y: String(height - 3),
+        fill: 'var(--muted-text-color)',
+        'font-size': '12',
+        'text-anchor': 'middle',
+      });
+      axisLabel.textContent = 'Years';
+      svg.append(axisLabel);
+
+      const balanceAxisLabel = createSvgElement('text', {
+        x: '16',
+        y: String(margin.top + plotHeight / 2),
+        fill: 'var(--muted-text-color)',
+        'font-size': '12',
+        'text-anchor': 'middle',
+        transform: `rotate(-90 16 ${margin.top + plotHeight / 2})`,
+      });
+      balanceAxisLabel.textContent = 'Balance';
+      svg.append(balanceAxisLabel);
+
+      const linePath = points
+        .map(
+          (point, index) =>
+            `${index === 0 ? 'M' : 'L'} ${xPosition(point.year)} ${yPosition(point.balance)}`,
+        )
+        .join(' ');
+
+      const areaPath = `${linePath} L ${xPosition(years)} ${margin.top + plotHeight} L ${margin.left} ${margin.top + plotHeight} Z`;
+      svg.append(
+        createSvgElement('path', {
+          d: areaPath,
+          fill: 'var(--focus-ring)',
+          stroke: 'none',
+        }),
+        createSvgElement('path', {
+          d: linePath,
+          fill: 'none',
+          stroke: 'var(--link-color)',
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round',
+          'stroke-width': '3',
+        }),
+      );
+
+      points.forEach((point) => {
+        svg.append(
+          createSvgElement('circle', {
+            cx: String(xPosition(point.year)),
+            cy: String(yPosition(point.balance)),
+            r: points.length > 25 ? '2' : '3',
+            fill: 'var(--card-background)',
+            stroke: 'var(--link-color)',
+            'stroke-width': '2',
+          }),
+        );
+      });
+
+      chart.replaceChildren(svg);
+      chart.setAttribute(
+        'aria-label',
+        `Portfolio balance grows from ${currency.format(principal)} to ${currency.format(points.at(-1)?.balance ?? principal)} over ${years} ${years === 1 ? 'year' : 'years'}.`,
+      );
+    }
 
     function calculate() {
       if (!form || !error || !finalBalance || !totalContributions || !totalInterest) {
@@ -84,6 +287,13 @@ const relatedItems = compoundInterestCalculator.relatedIds.flatMap((id) => {
         result.totalContributions,
       );
       totalInterest.textContent = currency.format(result.totalInterest);
+      renderChart({
+        principal,
+        monthlyContribution,
+        annualRatePercent,
+        years,
+        periodsPerYear,
+      });
       return true;
     }
 

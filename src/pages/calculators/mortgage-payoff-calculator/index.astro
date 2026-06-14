@@ -24,7 +24,10 @@ const relatedItems = mortgagePayoffCalculator.relatedIds.flatMap((id) => {
       parseCalculatorNumber,
       parseOptionalCalculatorNumber,
     } from '../../../lib/input';
-    import { calculateMortgagePayoff } from '../../../lib/math';
+    import {
+      calculateMonthlyLoanPayment,
+      calculateMortgagePayoff,
+    } from '../../../lib/math';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
@@ -43,12 +46,257 @@ const relatedItems = mortgagePayoffCalculator.relatedIds.flatMap((id) => {
     const interestSavedResult = document.querySelector<HTMLElement>(
       '#interest-saved-result',
     );
+    const chart = document.querySelector<HTMLElement>('#chart');
 
     const currency = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       maximumFractionDigits: 2,
     });
+
+    const compactCurrency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    });
+
+    const svgNamespace = 'http://www.w3.org/2000/svg';
+
+    function createSvgElement<K extends keyof SVGElementTagNameMap>(
+      name: K,
+      attributes: Record<string, string>,
+    ): SVGElementTagNameMap[K] {
+      const element = document.createElementNS(svgNamespace, name);
+
+      Object.entries(attributes).forEach(([attribute, value]) => {
+        element.setAttribute(attribute, value);
+      });
+
+      return element;
+    }
+
+    function createBalanceSchedule({
+      loanAmount,
+      monthlyInterestRate,
+      monthlyPayment,
+      maximumMonths,
+    }: {
+      loanAmount: number;
+      monthlyInterestRate: number;
+      monthlyPayment: number;
+      maximumMonths: number;
+    }) {
+      const points = [{ month: 0, balance: loanAmount }];
+      let balance = loanAmount;
+      let month = 0;
+
+      while (balance > 0.005 && month < maximumMonths) {
+        const interest = balance * monthlyInterestRate;
+        const payment = Math.min(monthlyPayment, balance + interest);
+
+        balance = Math.max(balance + interest - payment, 0);
+        month += 1;
+
+        if (month % 12 === 0 || balance === 0) {
+          points.push({ month, balance });
+        }
+      }
+
+      return points;
+    }
+
+    function renderMortgagePayoffChart({
+      loanAmount,
+      annualInterestRatePercent,
+      loanTermYears,
+      extraMonthlyPayment,
+    }: {
+      loanAmount: number;
+      annualInterestRatePercent: number;
+      loanTermYears: number;
+      extraMonthlyPayment: number;
+    }) {
+      if (!chart) return;
+
+      const requiredMonthlyPayment = calculateMonthlyLoanPayment(
+        loanAmount,
+        annualInterestRatePercent,
+        loanTermYears,
+      );
+      const monthlyInterestRate =
+        annualInterestRatePercent / 100 / 12;
+      const maximumMonths = loanTermYears * 12;
+      const standardPoints = createBalanceSchedule({
+        loanAmount,
+        monthlyInterestRate,
+        monthlyPayment: requiredMonthlyPayment,
+        maximumMonths,
+      });
+      const extraPaymentPoints = createBalanceSchedule({
+        loanAmount,
+        monthlyInterestRate,
+        monthlyPayment: requiredMonthlyPayment + extraMonthlyPayment,
+        maximumMonths,
+      });
+      const standardPayoffMonth =
+        standardPoints.at(-1)?.month ?? maximumMonths;
+      const extraPayoffMonth =
+        extraPaymentPoints.at(-1)?.month ?? maximumMonths;
+      const width = 680;
+      const height = 360;
+      const margin = { top: 58, right: 22, bottom: 52, left: 82 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      const xPosition = (month: number) =>
+        margin.left + (month / maximumMonths) * plotWidth;
+      const yPosition = (balance: number) =>
+        margin.top +
+        plotHeight -
+        (balance / loanAmount) * plotHeight;
+      const svg = createSvgElement('svg', {
+        viewBox: `0 0 ${width} ${height}`,
+        'aria-hidden': 'true',
+        focusable: 'false',
+      });
+
+      for (let index = 0; index <= 4; index += 1) {
+        const ratio = index / 4;
+        const y = margin.top + plotHeight - ratio * plotHeight;
+        const balance = loanAmount * ratio;
+
+        svg.append(
+          createSvgElement('line', {
+            x1: String(margin.left),
+            y1: String(y),
+            x2: String(width - margin.right),
+            y2: String(y),
+            stroke: 'var(--border-subtle)',
+            'stroke-width': '1',
+          }),
+        );
+
+        const label = createSvgElement('text', {
+          x: String(margin.left - 10),
+          y: String(y + 4),
+          fill: 'var(--muted-text-color)',
+          'font-size': '12',
+          'text-anchor': 'end',
+        });
+        label.textContent = compactCurrency.format(balance);
+        svg.append(label);
+      }
+
+      const xTickCount = Math.min(6, loanTermYears);
+      for (let index = 0; index <= xTickCount; index += 1) {
+        const year = (loanTermYears * index) / xTickCount;
+        const label = createSvgElement('text', {
+          x: String(xPosition(year * 12)),
+          y: String(height - 22),
+          fill: 'var(--muted-text-color)',
+          'font-size': '12',
+          'text-anchor': 'middle',
+        });
+        label.textContent = Number.isInteger(year)
+          ? String(year)
+          : year.toFixed(1);
+        svg.append(label);
+      }
+
+      const xAxisLabel = createSvgElement('text', {
+        x: String(margin.left + plotWidth / 2),
+        y: String(height - 4),
+        fill: 'var(--muted-text-color)',
+        'font-size': '12',
+        'text-anchor': 'middle',
+      });
+      xAxisLabel.textContent = 'Years';
+      svg.append(xAxisLabel);
+
+      const yAxisLabel = createSvgElement('text', {
+        x: '17',
+        y: String(margin.top + plotHeight / 2),
+        fill: 'var(--muted-text-color)',
+        'font-size': '12',
+        'text-anchor': 'middle',
+        transform: `rotate(-90 17 ${margin.top + plotHeight / 2})`,
+      });
+      yAxisLabel.textContent = 'Remaining mortgage balance';
+      svg.append(yAxisLabel);
+
+      const legendItems = [
+        {
+          label: 'Standard payoff',
+          color: 'var(--link-color)',
+          x: margin.left,
+        },
+        {
+          label: 'Extra-payment payoff',
+          color: 'var(--warning-text)',
+          x: margin.left + 170,
+        },
+      ];
+
+      legendItems.forEach((item) => {
+        svg.append(
+          createSvgElement('line', {
+            x1: String(item.x),
+            y1: '24',
+            x2: String(item.x + 24),
+            y2: '24',
+            stroke: item.color,
+            'stroke-width': '3',
+            'stroke-linecap': 'round',
+          }),
+        );
+        const label = createSvgElement('text', {
+          x: String(item.x + 32),
+          y: '28',
+          fill: 'var(--text-color)',
+          'font-size': '12',
+          'font-weight': '600',
+        });
+        label.textContent = item.label;
+        svg.append(label);
+      });
+
+      const createLinePath = (
+        points: Array<{ month: number; balance: number }>,
+      ) =>
+        points
+          .map(
+            (point, index) =>
+              `${index === 0 ? 'M' : 'L'} ${xPosition(point.month)} ${yPosition(point.balance)}`,
+          )
+          .join(' ');
+
+      svg.append(
+        createSvgElement('path', {
+          d: createLinePath(standardPoints),
+          fill: 'none',
+          stroke: 'var(--link-color)',
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round',
+          'stroke-width': '3',
+        }),
+        createSvgElement('path', {
+          d: createLinePath(extraPaymentPoints),
+          fill: 'none',
+          stroke: 'var(--warning-text)',
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round',
+          'stroke-width': '3',
+        }),
+      );
+
+      chart.replaceChildren(svg);
+      chart.setAttribute(
+        'aria-label',
+        extraMonthlyPayment > 0
+          ? `Mortgage balance projection. The standard payment pays off the ${currency.format(loanAmount)} mortgage in ${formatMonths(standardPayoffMonth)}, while paying an extra ${currency.format(extraMonthlyPayment)} per month pays it off in ${formatMonths(extraPayoffMonth)}.`
+          : `Mortgage balance projection showing the ${currency.format(loanAmount)} mortgage declining to zero over ${formatMonths(standardPayoffMonth)}. The standard and extra-payment lines overlap because no extra payment was entered.`,
+      );
+    }
 
     function formatMonths(totalMonths: number): string {
       if (totalMonths === 0) {
@@ -134,6 +382,12 @@ const relatedItems = mortgagePayoffCalculator.relatedIds.flatMap((id) => {
         result.interestSaved,
       );
 
+      renderMortgagePayoffChart({
+        loanAmount,
+        annualInterestRatePercent,
+        loanTermYears,
+        extraMonthlyPayment,
+      });
       return true;
     }
 
