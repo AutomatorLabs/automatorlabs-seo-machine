@@ -6,7 +6,7 @@ interface Props {
 
 const {
 	title = 'AutomatorLabs',
-	description = 'Free calculators, tools, and practical guides for money, data, and automation.',
+	description = 'Free financial calculators and practical guides for better money decisions.',
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -62,8 +62,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 				<div class="nav-links">
 					<a href="/">Home</a>
 					<a href="/calculators/">Calculators</a>
-					<a href="/tools/">Tools</a>
 					<a href="/guides/">Guides</a>
+					<a href="/about/">About</a>
 				</div>
 				<button
 					id="theme-toggle"
@@ -83,6 +83,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 			<div class="footer-inner">
 				<a class="brand" href="/">AutomatorLabs</a>
 				<nav class="footer-links" aria-label="Footer navigation">
+					<a href="/about/">About</a>
 					<a href="/privacy/">Privacy</a>
 					<a href="/contact/">Contact</a>
 					<a

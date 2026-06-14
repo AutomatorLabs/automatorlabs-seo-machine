@@ -120,6 +120,7 @@ const latestGuides = guideHubs.slice(0, 6);
           a time, compare cautious and optimistic cases, and use the result as a
           starting point for a more informed decision.
         </p>
+        <a class="about-link" href="/about/">Learn about AutomatorLabs</a>
       </div>
     </section>
   </main>
@@ -316,6 +317,17 @@ const latestGuides = guideHubs.slice(0, 6);
 
   .purpose-copy p + p {
     margin-top: 1rem;
+  }
+
+  .about-link {
+    display: inline-block;
+    margin-top: 1.25rem;
+    color: var(--link-color);
+    font-weight: 750;
+  }
+
+  .about-link:hover {
+    color: var(--link-hover-color);
   }
 
   @media (max-width: 860px) {

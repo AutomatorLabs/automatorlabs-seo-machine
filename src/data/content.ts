@@ -1,4 +1,4 @@
-export type ContentCategory = 'calculator' | 'tool' | 'guide';
+export type ContentCategory = 'calculator' | 'guide';
 export type ContentStatus = 'live' | 'planned';
 
 export interface ContentItem {
