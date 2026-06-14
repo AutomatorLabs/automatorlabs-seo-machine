@@ -19,9 +19,30 @@ const calculators = contentItems
       guide.calculatorIds.indexOf(a.id) -
       guide.calculatorIds.indexOf(b.id),
   );
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: guide.faq.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+};
+const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
+  /</g,
+  '\\u003c',
+);
 ---
 
 <Layout title={guide.seoTitle} description={guide.metaDescription}>
+  <script
+    type="application/ld+json"
+    set:html={faqStructuredDataJson}
+  />
+
   <main>
     <nav class="breadcrumbs" aria-label="Breadcrumb">
       <ol>

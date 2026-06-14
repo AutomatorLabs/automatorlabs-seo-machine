@@ -69,12 +69,32 @@ const structuredDataJson = JSON.stringify(structuredData).replace(
   /</g,
   '\\u003c',
 );
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+};
+const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
+  /</g,
+  '\\u003c',
+);
 ---
 
 <Layout title={title} description={description}>
   <script
     type="application/ld+json"
     set:html={structuredDataJson}
+  />
+  <script
+    type="application/ld+json"
+    set:html={faqStructuredDataJson}
   />
 
   <main>
