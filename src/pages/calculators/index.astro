@@ -16,9 +16,37 @@ const calculators = contentItems
     <h1>Practical calculators for better decisions</h1>
     <p>Explore our growing collection of simple, useful calculators.</p>
 
-    <ul class="calculator-list">
+    <section class="calculator-search" aria-labelledby="calculator-search-label">
+      <label id="calculator-search-label" for="calculator-search">
+        Search calculators
+      </label>
+      <input
+        id="calculator-search"
+        type="search"
+        placeholder="Try FIRE, debt, mortgage, dividend..."
+        autocomplete="off"
+        aria-controls="calculator-list"
+        aria-describedby="calculator-count"
+      />
+      <p id="calculator-count" class="calculator-count" aria-live="polite">
+        Showing {calculators.length} calculators
+      </p>
+    </section>
+
+    <ul id="calculator-list" class="calculator-list">
       {calculators.map((item) => (
-        <li>
+        <li
+          data-calculator-card
+          data-search-text={[
+            item.title,
+            item.description,
+            item.category,
+            item.primaryKeyword,
+            ...item.secondaryKeywords,
+          ]
+            .join(' ')
+            .toLocaleLowerCase()}
+        >
           <div>
             {item.status === 'live' ? (
               <a href={item.url}>{item.title}</a>
@@ -33,8 +61,54 @@ const calculators = contentItems
         </li>
       ))}
     </ul>
+
+    <p id="no-calculators-found" class="no-results" role="status" hidden>
+      No calculators found.
+    </p>
   </main>
 </Layout>
+
+<script>
+  const searchInput =
+    document.querySelector<HTMLInputElement>('#calculator-search');
+  const calculatorCards = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-calculator-card]'),
+  );
+  const calculatorCount =
+    document.querySelector<HTMLElement>('#calculator-count');
+  const noResults =
+    document.querySelector<HTMLElement>('#no-calculators-found');
+
+  function normalizeSearch(value: string): string {
+    return value.trim().toLocaleLowerCase();
+  }
+
+  function updateCalculatorResults() {
+    if (!searchInput || !calculatorCount || !noResults) {
+      return;
+    }
+
+    const query = normalizeSearch(searchInput.value);
+    let visibleCount = 0;
+
+    calculatorCards.forEach((card) => {
+      const searchText = card.dataset.searchText ?? '';
+      const matches = query === '' || searchText.includes(query);
+
+      card.hidden = !matches;
+      if (matches) {
+        visibleCount += 1;
+      }
+    });
+
+    calculatorCount.textContent = `Showing ${visibleCount} ${
+      visibleCount === 1 ? 'calculator' : 'calculators'
+    }`;
+    noResults.hidden = visibleCount !== 0;
+  }
+
+  searchInput?.addEventListener('input', updateCalculatorResults);
+</script>
 
 <style>
   main {
@@ -62,10 +136,48 @@ const calculators = contentItems
     color: var(--muted-text-color);
   }
 
+  .calculator-search {
+    margin-top: 2rem;
+  }
+
+  .calculator-search label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .calculator-search input {
+    width: 100%;
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    background: var(--input-background);
+    color: var(--input-text);
+    font: inherit;
+    padding: 0.85rem 1rem;
+  }
+
+  .calculator-search input::placeholder {
+    color: var(--muted-text-color);
+    opacity: 1;
+  }
+
+  .calculator-search input:focus {
+    border-color: var(--link-color);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+    outline: none;
+  }
+
+  .calculator-count {
+    margin: 0.6rem 0 0;
+    font-size: 0.88rem;
+  }
+
   .calculator-list {
     display: grid;
     gap: 0.75rem;
-    margin-top: 2rem;
+    margin-top: 1.25rem;
     padding: 0;
     list-style: none;
   }
@@ -79,6 +191,10 @@ const calculators = contentItems
     justify-content: space-between;
     gap: 1rem;
     padding: 1rem;
+  }
+
+  .calculator-list li[hidden] {
+    display: none;
   }
 
   .calculator-list h2,
@@ -116,5 +232,19 @@ const calculators = contentItems
   .status.live {
     background: var(--success-background);
     color: var(--success-text);
+  }
+
+  .no-results {
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
+    margin-top: 1.25rem;
+    background: var(--card-background);
+    color: var(--muted-text-color);
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  .no-results[hidden] {
+    display: none;
   }
 </style>
