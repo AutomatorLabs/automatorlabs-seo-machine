@@ -29,6 +29,12 @@ export interface CalculatorFaq {
   answer: string;
 }
 
+export interface CalculatorResultExplanation {
+  outputId: string;
+  label: string;
+  explanation: string;
+}
+
 export interface CalculatorConfig {
   id: string;
   url: string;
@@ -39,6 +45,9 @@ export interface CalculatorConfig {
   outputs: CalculatorOutput[];
   faq: CalculatorFaq[];
   relatedIds: string[];
+  howToSteps?: string[];
+  resultExplanation?: CalculatorResultExplanation[];
+  commonMistakes?: string[];
 }
 
 export const calculatorConfigs: Record<string, CalculatorConfig> = {

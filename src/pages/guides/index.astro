@@ -1,4 +1,5 @@
 ---
+import { guideHubs } from '../../data/guide-hubs';
 import Layout from '../../layouts/Layout.astro';
 ---
 
@@ -9,7 +10,21 @@ import Layout from '../../layouts/Layout.astro';
   <main>
     <p class="eyebrow">Guides</p>
     <h1>Clear guides for practical problems</h1>
-    <p>Helpful guides on money, data, and automation are coming soon.</p>
+    <p class="intro">
+      Beginner-friendly explanations for financial decisions, with practical
+      calculators to help you explore the numbers.
+    </p>
+
+    <ul class="guide-list">
+      {guideHubs.map((guide) => (
+        <li>
+          <a href={`/guides/${guide.slug}/`}>
+            <span>{guide.title}</span>
+            <small>{guide.description}</small>
+          </a>
+        </li>
+      ))}
+    </ul>
   </main>
 </Layout>
 
@@ -35,7 +50,40 @@ import Layout from '../../layouts/Layout.astro';
     line-height: 1.08;
   }
 
-  p {
+  .intro {
     color: var(--muted-text-color);
+  }
+
+  .guide-list {
+    display: grid;
+    gap: 0.85rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .guide-list a {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--card-background);
+    color: var(--link-color);
+    font-weight: 750;
+    padding: 1rem;
+    text-decoration: none;
+  }
+
+  .guide-list a:hover {
+    border-color: var(--link-color);
+    background: var(--subtle-background);
+  }
+
+  .guide-list small {
+    margin-top: 0.35rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 1.5;
   }
 </style>

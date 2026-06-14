@@ -4,7 +4,13 @@ import type {
   CalculatorFaq,
   CalculatorInput,
   CalculatorOutput,
+  CalculatorResultExplanation,
 } from '../data/calculators';
+import {
+  createCommonMistakes,
+  createHowToSteps,
+  createResultExplanations,
+} from '../lib/calculator-education';
 
 interface RelatedItem {
   title: string;
@@ -19,6 +25,9 @@ interface Props {
   outputs: CalculatorOutput[];
   faq: CalculatorFaq[];
   relatedItems: RelatedItem[];
+  howToSteps?: string[];
+  resultExplanation?: CalculatorResultExplanation[];
+  commonMistakes?: string[];
 }
 
 const {
@@ -29,7 +38,18 @@ const {
   outputs,
   faq,
   relatedItems,
+  howToSteps: configuredHowToSteps,
+  resultExplanation: configuredResultExplanation,
+  commonMistakes: configuredCommonMistakes,
 } = Astro.props;
+
+const howToSteps =
+  configuredHowToSteps ?? createHowToSteps(title, inputs);
+const resultExplanation =
+  configuredResultExplanation ??
+  createResultExplanations(title, inputs, outputs);
+const commonMistakes =
+  configuredCommonMistakes ?? createCommonMistakes(title);
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -207,6 +227,40 @@ const structuredDataJson = JSON.stringify(structuredData).replace(
           <span>Growth chart coming soon</span>
         </div>
       </section>
+    </section>
+
+    <section class="education-grid" aria-label="Calculator guidance">
+      <section class="content-section education-section" aria-labelledby="how-to-heading">
+        <h2 id="how-to-heading">How to Use This Calculator</h2>
+        <ol class="guidance-list">
+          {howToSteps.map((step) => <li>{step}</li>)}
+        </ol>
+      </section>
+
+      <section
+        class="content-section education-section"
+        aria-labelledby="understanding-results-heading"
+      >
+        <h2 id="understanding-results-heading">Understanding the Results</h2>
+        <dl class="result-explanations">
+          {resultExplanation.map((result) => (
+            <div>
+              <dt>{result.label}</dt>
+              <dd>{result.explanation}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    </section>
+
+    <section
+      class="content-section mistakes-section"
+      aria-labelledby="common-mistakes-heading"
+    >
+      <h2 id="common-mistakes-heading">Common Mistakes</h2>
+      <ul class="guidance-list">
+        {commonMistakes.map((mistake) => <li>{mistake}</li>)}
+      </ul>
     </section>
 
     <section class="content-section" aria-labelledby="faq-heading">
@@ -589,6 +643,66 @@ const structuredDataJson = JSON.stringify(structuredData).replace(
     padding: clamp(1.25rem, 4vw, 2rem);
   }
 
+  .education-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.25rem;
+  }
+
+  .education-grid .content-section {
+    margin-top: 0;
+  }
+
+  .education-section,
+  .mistakes-section {
+    background: var(--card-background);
+  }
+
+  .guidance-list {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0;
+    padding-left: 1.25rem;
+    color: var(--text-color);
+  }
+
+  .guidance-list li {
+    padding-left: 0.2rem;
+  }
+
+  .guidance-list li::marker {
+    color: var(--link-color);
+    font-weight: 750;
+  }
+
+  .result-explanations {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+  }
+
+  .result-explanations div {
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 1rem;
+  }
+
+  .result-explanations div:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .result-explanations dt {
+    color: var(--text-color);
+    font-weight: 750;
+  }
+
+  .result-explanations dd {
+    margin: 0.3rem 0 0;
+    color: var(--muted-text-color);
+    line-height: 1.6;
+  }
+
   .content-section:has(.faq-list) {
     background: var(--faq-background);
   }
@@ -640,7 +754,8 @@ const structuredDataJson = JSON.stringify(structuredData).replace(
     }
 
     .calculator,
-    .related-links {
+    .related-links,
+    .education-grid {
       grid-template-columns: 1fr;
     }
   }

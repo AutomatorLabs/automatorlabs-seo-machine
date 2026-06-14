@@ -1,0 +1,9 @@
+---
+import GuideHubPage from '../../../components/GuideHubPage.astro';
+import { getGuideHub } from '../../../data/guide-hubs';
+
+const guide = getGuideHub('retirement-withdrawals');
+if (!guide) throw new Error('Missing retirement withdrawals guide');
+---
+
+<GuideHubPage guide={guide} />

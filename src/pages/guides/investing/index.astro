@@ -1,0 +1,9 @@
+---
+import GuideHubPage from '../../../components/GuideHubPage.astro';
+import { getGuideHub } from '../../../data/guide-hubs';
+
+const guide = getGuideHub('investing');
+if (!guide) throw new Error('Missing investing guide');
+---
+
+<GuideHubPage guide={guide} />

@@ -1,0 +1,9 @@
+---
+import GuideHubPage from '../../../components/GuideHubPage.astro';
+import { getGuideHub } from '../../../data/guide-hubs';
+
+const guide = getGuideHub('debt-payoff');
+if (!guide) throw new Error('Missing debt payoff guide');
+---
+
+<GuideHubPage guide={guide} />

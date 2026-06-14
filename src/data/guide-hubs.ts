@@ -1,0 +1,522 @@
+export interface GuideSection {
+  heading: string;
+  paragraphs: string[];
+}
+
+export interface GuideFaq {
+  question: string;
+  answer: string;
+}
+
+export interface GuideHub {
+  slug: string;
+  title: string;
+  eyebrow: string;
+  description: string;
+  seoTitle: string;
+  metaDescription: string;
+  categoryTitle: string;
+  categoryUrl: string;
+  calculatorIds: string[];
+  sections: GuideSection[];
+  faq: GuideFaq[];
+}
+
+export const guideHubs: GuideHub[] = [
+  {
+    slug: 'fire',
+    title: 'A Beginner\'s Guide to FIRE',
+    eyebrow: 'Financial independence',
+    description:
+      'Learn how financial independence planning connects spending, saving, investing, and a sustainable withdrawal strategy.',
+    seoTitle: 'FIRE Guide for Beginners | AutomatorLabs',
+    metaDescription:
+      'Learn the basics of FIRE, including your FIRE number, savings rate, investment assumptions, withdrawal rates, and ways to build a practical plan.',
+    categoryTitle: 'FIRE & Retirement Calculators',
+    categoryUrl: '/calculators/fire-retirement/',
+    calculatorIds: [
+      'fire-calculator',
+      'coast-fire-calculator',
+      'financial-independence-date-calculator',
+      'savings-rate-calculator',
+    ],
+    sections: [
+      {
+        heading: 'What FIRE means',
+        paragraphs: [
+          'FIRE stands for financial independence, retire early. The central idea is not that everyone must leave paid work at a very young age. It is that a sufficiently funded investment portfolio can make work optional, flexible, or easier to choose on your own terms. Some people want a full early retirement. Others want to change careers, work part time, care for family, or reduce financial stress.',
+          'A FIRE plan connects four moving parts: annual spending, current invested assets, ongoing contributions, and investment growth. Spending usually has the greatest influence because it affects both how much you can save today and how large a portfolio you may need later. A useful plan therefore starts with real household numbers instead of a generic target copied from someone else.',
+        ],
+      },
+      {
+        heading: 'Estimate your FIRE number',
+        paragraphs: [
+          'A common starting estimate divides annual expenses by a chosen withdrawal rate. For example, a lower withdrawal rate produces a larger target portfolio, while a higher rate produces a smaller target with less room for uncertainty. This is a planning estimate, not a guarantee. Taxes, fees, inflation, investment performance, healthcare, and the length of retirement can all change the result.',
+          'Separate current spending from the spending you expect after reaching financial independence. Housing costs may fall, but travel or healthcare may rise. Include irregular expenses such as repairs, insurance deductibles, and vehicle replacement. It can be useful to calculate a basic target and a more comfortable target rather than pretending one number captures every possible future.',
+        ],
+      },
+      {
+        heading: 'Use savings rate as a practical lever',
+        paragraphs: [
+          'Your savings rate is the percentage of income that is not spent. A higher savings rate can shorten a FIRE timeline in two ways: more money is invested and the lifestyle being funded may require less annual spending. However, an aggressive target that makes daily life unsustainable is unlikely to last. A repeatable plan is usually more valuable than a short burst of extreme saving.',
+          'Review large recurring costs before focusing on tiny purchases. Housing, transportation, debt, insurance, and taxes often create more room than occasional spending cuts. Then automate a contribution that fits your cash flow. When income rises, decide in advance how much of the increase will support current life and how much will move toward financial independence.',
+        ],
+      },
+      {
+        heading: 'Choose reasonable investment assumptions',
+        paragraphs: [
+          'FIRE calculators often use a constant annual return because a single assumption makes comparison possible. Real markets do not behave that way. Returns vary, inflation changes, and poor performance early in retirement can matter more than an identical average return delivered in a different order. Treat projections as scenarios rather than promises.',
+          'Run more than one scenario. A cautious case can use lower returns, higher spending, or a lower withdrawal rate. A middle case can reflect your normal planning assumptions. An optimistic case can show upside without becoming the only plan. Revisit the inputs periodically and after major changes in income, family needs, housing, or investment strategy.',
+        ],
+      },
+      {
+        heading: 'Build flexibility into the plan',
+        paragraphs: [
+          'Financial independence is rarely all or nothing. Coast FIRE describes having enough invested that future growth may carry the portfolio toward a later retirement target without additional contributions. Barista FIRE includes part-time income. Lean and Fat FIRE describe different spending levels. These labels are useful only when they help you explore tradeoffs.',
+          'Keep an emergency fund outside long-term investments, understand account access rules, and consider how health insurance and taxes fit into the years before traditional retirement age. A flexible spending plan, occasional income, or a willingness to delay the date can provide valuable resilience. The strongest plan is one that can adapt when actual life differs from the spreadsheet.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: 'Is the 4% rule guaranteed to work?',
+        answer:
+          'No. It is a historical planning guideline, not a guarantee. Retirement length, investment mix, fees, inflation, taxes, and the sequence of returns can affect sustainability.',
+      },
+      {
+        question: 'Should I include my home in my FIRE assets?',
+        answer:
+          'Usually only if your plan includes selling it, downsizing, renting part of it, or otherwise converting equity into spendable resources. A home you intend to keep does not directly fund routine withdrawals.',
+      },
+      {
+        question: 'What accounts count toward financial independence?',
+        answer:
+          'Taxable investments and retirement accounts can both count, but access timing and taxes differ. Build a withdrawal plan that covers the years before and after account restrictions change.',
+      },
+      {
+        question: 'How often should I update my FIRE plan?',
+        answer:
+          'Review it at least periodically and whenever spending, income, family circumstances, or investment assumptions change materially.',
+      },
+      {
+        question: 'Can I pursue FIRE with debt?',
+        answer:
+          'Yes, but high-interest debt can compete directly with investing. Compare the guaranteed cost of the debt with the uncertain return from investments and protect essential cash reserves.',
+      },
+    ],
+  },
+  {
+    slug: 'investing',
+    title: 'Investing Basics for Long-Term Growth',
+    eyebrow: 'Investing guide',
+    description:
+      'Understand compounding, risk, inflation, fees, diversification, and the assumptions behind long-term investment projections.',
+    seoTitle: 'Investing Guide for Beginners | AutomatorLabs',
+    metaDescription:
+      'Learn beginner investing concepts including compound growth, diversification, inflation, fees, risk, contributions, and realistic return assumptions.',
+    categoryTitle: 'Investing Calculators',
+    categoryUrl: '/calculators/investing/',
+    calculatorIds: [
+      'compound-interest-calculator',
+      'investment-fee-calculator',
+      'expense-ratio-calculator',
+      'inflation-adjusted-return-calculator',
+    ],
+    sections: [
+      {
+        heading: 'Start with purpose and time horizon',
+        paragraphs: [
+          'Investing is the process of putting money into assets that may grow or produce income over time. Before choosing an investment, define what the money is for and when it may be needed. A retirement goal several decades away can usually tolerate more short-term movement than a down payment needed next year. The goal and timeline should guide the level of risk, not the latest market headline.',
+          'Keep short-term obligations and emergency savings separate from money exposed to market risk. This reduces the chance that you must sell an investment during a decline to cover an immediate bill. Once the foundation is in place, regular contributions can turn investing from a series of predictions into a repeatable habit.',
+        ],
+      },
+      {
+        heading: 'How compounding works',
+        paragraphs: [
+          'Compounding means that returns can begin earning returns of their own. Growth depends on the starting balance, contribution amount, rate of return, and time. Time is especially powerful because each additional period builds on everything accumulated before it. Consistent contributions can matter as much as the initial investment, particularly early in the process.',
+          'A compound interest calculator uses a steady rate for clarity, but actual investment returns are uneven. A projection should be read as an illustration of what a set of assumptions produces. It is helpful to compare several rates and contribution levels rather than treating one ending balance as a forecast.',
+        ],
+      },
+      {
+        heading: 'Balance risk and diversification',
+        paragraphs: [
+          'Higher expected returns generally come with greater uncertainty and larger possible declines. Risk tolerance describes how much volatility you can emotionally accept, while risk capacity describes how much loss your plan can financially withstand. Both matter. An allocation that causes panic selling is not a good fit, even if it looked efficient on paper.',
+          'Diversification spreads exposure across companies, sectors, asset types, or regions. It cannot prevent every loss, but it can reduce dependence on a single outcome. Broad funds are one common way to diversify, though every fund still has risks, fees, tax considerations, and an investment objective that should be understood before purchase.',
+        ],
+      },
+      {
+        heading: 'Account for fees, taxes, and inflation',
+        paragraphs: [
+          'Investment returns are not the same as the amount you keep. Fund expense ratios, advisory fees, transaction costs, and taxes can reduce growth. A fee that looks small in one year can create a larger long-term difference because money paid in costs no longer compounds. Compare costs in both percentage and dollar terms.',
+          'Inflation reduces purchasing power. A portfolio can rise in nominal dollars while delivering much less real growth after prices increase. Use inflation-adjusted return when connecting an investment projection to a future lifestyle. Tax treatment also matters: taxable, tax-deferred, and tax-free accounts can produce different after-tax outcomes even when investments perform similarly.',
+        ],
+      },
+      {
+        heading: 'Create a process you can maintain',
+        paragraphs: [
+          'A simple investment policy can state the goal, target allocation, contribution schedule, and conditions for rebalancing. Automation reduces the temptation to wait for a perfect entry point. Periodic rebalancing can restore the intended risk level after market movements, but frequent changes based on emotion can undermine a long-term plan.',
+          'Measure progress against the goal rather than against whichever asset recently performed best. Increase contributions when cash flow allows, keep costs visible, and update assumptions when the timeline changes. Investing always involves uncertainty, so focus on decisions you can control: savings, diversification, fees, taxes, and disciplined behavior.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: 'How much money do I need to start investing?',
+        answer:
+          'There is no universal minimum. Some accounts and funds allow small purchases. First protect essential bills and emergency savings, then choose an amount you can contribute consistently.',
+      },
+      {
+        question: 'What return should I use in a calculator?',
+        answer:
+          'Use a range rather than one confident forecast. Consider a cautious, middle, and optimistic scenario, and remember that fees, taxes, and inflation reduce what you keep.',
+      },
+      {
+        question: 'Is investing monthly better than waiting?',
+        answer:
+          'Regular investing can simplify behavior and put available money to work on a schedule. It does not eliminate market risk or guarantee a better result over every period.',
+      },
+      {
+        question: 'What is an expense ratio?',
+        answer:
+          'It is an annual fund operating cost expressed as a percentage of assets. It is deducted within the fund and can reduce long-term compounding.',
+      },
+      {
+        question: 'Does diversification guarantee a profit?',
+        answer:
+          'No. Diversification manages concentration risk, but diversified portfolios can still lose value and do not guarantee returns.',
+      },
+    ],
+  },
+  {
+    slug: 'retirement-withdrawals',
+    title: 'Planning Retirement Withdrawals',
+    eyebrow: 'Retirement income',
+    description:
+      'Learn how spending, withdrawal rates, inflation, taxes, and market timing shape a practical retirement income plan.',
+    seoTitle: 'Retirement Withdrawal Planning Guide | AutomatorLabs',
+    metaDescription:
+      'Learn how to plan retirement withdrawals using spending needs, withdrawal rates, inflation, taxes, sequence risk, and flexible income strategies.',
+    categoryTitle: 'FIRE & Retirement Calculators',
+    categoryUrl: '/calculators/fire-retirement/',
+    calculatorIds: [
+      'retirement-withdrawal-calculator',
+      'safe-withdrawal-rate-calculator',
+      'four-percent-rule-calculator',
+      'portfolio-withdrawal-sustainability-calculator',
+    ],
+    sections: [
+      {
+        heading: 'Turn a portfolio into a spending plan',
+        paragraphs: [
+          'Saving for retirement focuses on accumulation. Retirement withdrawals reverse the process: investments must support spending while facing uncertain markets, inflation, taxes, and an unknown planning horizon. A useful plan begins with the amount the household expects to spend, then identifies which expenses are essential, flexible, or temporary.',
+          'Subtract dependable non-portfolio income such as Social Security, pensions, rental income, or part-time work. The remaining gap is the amount investments may need to support. Build the plan in annual and monthly terms so it connects long-range projections with the cash needed for routine bills.',
+        ],
+      },
+      {
+        heading: 'Understand withdrawal rates',
+        paragraphs: [
+          'A withdrawal rate is annual portfolio withdrawals divided by portfolio value. The 4% rule is a familiar starting guideline, but it is not a promise and it is not appropriate for every retirement. A longer horizon, higher fees, concentrated investments, or limited spending flexibility may call for a more cautious starting point.',
+          'Compare the rate required by your desired spending with the rate you are comfortable planning around. If the required rate is too high, the main choices are to increase the portfolio, reduce spending, add income, delay retirement, or accept more risk. A calculator makes those tradeoffs visible without deciding which choice is right for you.',
+        ],
+      },
+      {
+        heading: 'Plan for inflation and taxes',
+        paragraphs: [
+          'Inflation means a fixed dollar withdrawal buys less over time. Some expenses rise faster or slower than general prices, and spending often changes across retirement rather than following a perfectly smooth line. Test both level spending and inflation-adjusted spending, especially for essential categories that cannot easily be reduced.',
+          'Taxes depend on account type, withdrawal source, other income, and current law. A pre-tax account balance is not identical to spendable cash. Coordinate taxable, tax-deferred, and tax-free accounts carefully, and consider professional tax guidance when withdrawal choices affect brackets, benefits, or required distributions.',
+        ],
+      },
+      {
+        heading: 'Manage sequence-of-returns risk',
+        paragraphs: [
+          'Sequence risk is the danger that poor returns early in retirement cause lasting damage while withdrawals are being taken. Two retirees can earn the same average return but experience different outcomes if losses arrive in a different order. This is why a constant-return projection is useful for comparison but incomplete as a risk model.',
+          'Possible responses include keeping a cash reserve, holding a diversified allocation, reducing discretionary withdrawals after weak markets, or using income sources that are less dependent on selling investments. Each choice has costs and tradeoffs. The goal is not to remove uncertainty but to avoid relying on only one favorable path.',
+        ],
+      },
+      {
+        heading: 'Review and adjust',
+        paragraphs: [
+          'A withdrawal plan should be monitored rather than placed on autopilot forever. Review spending, portfolio value, asset allocation, taxes, and upcoming large costs. A strong market may create room for additional spending, while a decline may justify a temporary adjustment. Changes should follow a written rule where possible instead of emotion.',
+          'Track whether actual withdrawals match the plan and whether guaranteed income covers core expenses. Revisit beneficiaries, account access, insurance, and estate documents as circumstances change. Flexibility is valuable: a plan that allows modest adjustments may be more durable than one requiring exactly the same real spending every year.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: 'What is a safe withdrawal rate?',
+        answer:
+          'It is a planning rate intended to balance current spending with portfolio longevity. No single rate is safe in every future market or for every retirement horizon.',
+      },
+      {
+        question: 'Should withdrawals increase with inflation every year?',
+        answer:
+          'That is one approach, but actual household spending is rarely perfectly constant after inflation. Many plans separate essential expenses from flexible categories.',
+      },
+      {
+        question: 'Which account should I withdraw from first?',
+        answer:
+          'The answer depends on taxes, age, account rules, benefits, and estate goals. A coordinated tax plan can be more useful than a universal account order.',
+      },
+      {
+        question: 'How often should I review retirement withdrawals?',
+        answer:
+          'Review at least periodically and after major market, tax, health, or spending changes. More frequent monitoring may be useful near the start of retirement.',
+      },
+      {
+        question: 'Can part-time income improve withdrawal sustainability?',
+        answer:
+          'Yes. Income that covers part of spending can reduce portfolio withdrawals, though its reliability, taxes, and effect on lifestyle should be considered.',
+      },
+    ],
+  },
+  {
+    slug: 'debt-payoff',
+    title: 'How to Build a Debt Payoff Plan',
+    eyebrow: 'Debt strategy',
+    description:
+      'Organize balances, understand interest, compare payoff methods, and create a monthly debt plan that fits your budget.',
+    seoTitle: 'Debt Payoff Guide for Beginners | AutomatorLabs',
+    metaDescription:
+      'Learn how to build a debt payoff plan, calculate monthly interest, compare snowball and avalanche strategies, and use extra payments effectively.',
+    categoryTitle: 'Debt & Loan Calculators',
+    categoryUrl: '/calculators/debt-loans/',
+    calculatorIds: [
+      'debt-payoff-calculator',
+      'debt-avalanche-calculator',
+      'debt-snowball-calculator',
+      'credit-card-interest-calculator',
+    ],
+    sections: [
+      {
+        heading: 'Make a complete debt inventory',
+        paragraphs: [
+          'A payoff plan starts with accurate information. List every balance, annual percentage rate, minimum payment, due date, and whether the rate can change. Include credit cards, personal loans, auto loans, student loans, medical debt, and any other required payments. Avoid estimating from memory when statements are available.',
+          'Also note special terms such as promotional rates, deferred interest, prepayment penalties, or tax considerations. These details can change the best order of attack. Keep minimum payments current on every debt while deciding where additional money will go, because late fees and penalty rates can make the problem more expensive.',
+        ],
+      },
+      {
+        heading: 'Understand monthly interest',
+        paragraphs: [
+          'For a simple estimate, monthly interest is the balance multiplied by the annual rate divided by twelve. If a payment does not exceed the interest being added, the principal will not decline. The exact calculation can vary by lender and daily balance method, but the estimate quickly shows whether a payment creates a realistic payoff path.',
+          'A payoff calculator simulates how interest and payments interact over time. Use the current required payment first, then add a realistic extra amount. The comparison shows how extra principal payments may shorten the timeline and reduce interest, provided the lender applies them correctly.',
+        ],
+      },
+      {
+        heading: 'Compare snowball and avalanche methods',
+        paragraphs: [
+          'The debt snowball pays the smallest balance first while maintaining minimums on the others. It can create an early visible win and simplify the number of open balances. The debt avalanche directs extra money to the highest interest rate first, which generally reduces interest cost when all other conditions are equal.',
+          'The mathematically cheapest approach is not always the approach a person will sustain. Choose a clear rule, automate minimums, and roll each completed payment into the next target. You can also use a hybrid method when a small balance can be removed quickly before switching to the highest-rate debt.',
+        ],
+      },
+      {
+        heading: 'Find room for extra payments',
+        paragraphs: [
+          'Extra payments should come from a budget that still covers essentials and a basic cash buffer. Sending every available dollar to debt can backfire if the next repair or medical bill must go back on a credit card. Decide on a minimum emergency reserve based on job stability, household obligations, and access to other resources.',
+          'Look for recurring savings, temporary income, windfalls, or a fixed percentage of bonuses. Direct the money immediately rather than letting it blend into routine spending. Confirm that there is no prepayment penalty and that the lender applies extra money to principal rather than merely advancing the next due date.',
+        ],
+      },
+      {
+        heading: 'Know when to consider other options',
+        paragraphs: [
+          'Refinancing or consolidation may lower a rate or simplify payments, but fees, a longer term, and loss of borrower protections can offset the benefit. Compare total cost, not only the monthly payment. Moving unsecured debt onto a home also changes the risk because the property may secure the new balance.',
+          'If required payments are unaffordable, contact lenders early and consider a reputable nonprofit credit counselor or qualified professional. Avoid promises of guaranteed debt elimination. Track balances monthly, celebrate progress without adding new debt, and update the plan whenever rates, income, or required expenses change.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: 'Which is better, debt snowball or debt avalanche?',
+        answer:
+          'Avalanche generally minimizes interest when followed consistently. Snowball may offer faster psychological wins. The better method is the one you understand and can maintain.',
+      },
+      {
+        question: 'Should I save or pay off debt first?',
+        answer:
+          'Maintain enough cash for essential surprises, then compare debt cost, employer matches, and other priorities. High-interest debt often deserves urgent attention.',
+      },
+      {
+        question: 'Why is my balance not falling?',
+        answer:
+          'The payment may be close to or below monthly interest, or fees and new charges may be offsetting principal reduction. Review the statement allocation carefully.',
+      },
+      {
+        question: 'Does an extra payment always reduce interest?',
+        answer:
+          'Usually when it is applied to principal on an interest-bearing balance, but verify lender rules, prepayment penalties, and payment application.',
+      },
+      {
+        question: 'Is debt consolidation always cheaper?',
+        answer:
+          'No. Compare interest rates, fees, term length, protections, and total amount paid. A lower payment can still cost more if repayment lasts much longer.',
+      },
+    ],
+  },
+  {
+    slug: 'home-buying',
+    title: 'A Practical Guide to Buying a Home',
+    eyebrow: 'Home buying',
+    description:
+      'Prepare for a home purchase by connecting affordability, cash reserves, mortgage costs, ownership expenses, and your expected timeline.',
+    seoTitle: 'Home Buying Guide for Beginners | AutomatorLabs',
+    metaDescription:
+      'Learn how to evaluate home affordability, down payments, mortgage costs, closing expenses, maintenance, and rent-versus-buy tradeoffs.',
+    categoryTitle: 'Home & Mortgage Calculators',
+    categoryUrl: '/calculators/home-mortgage/',
+    calculatorIds: [
+      'home-affordability-calculator',
+      'down-payment-calculator',
+      'mortgage-payoff-calculator',
+      'rent-vs-buy-calculator',
+    ],
+    sections: [
+      {
+        heading: 'Start with your full financial picture',
+        paragraphs: [
+          'A lender may approve a loan based on income, debts, credit, and underwriting rules, but approval is not the same as personal affordability. Begin with take-home pay, monthly obligations, savings, job stability, and other goals. Decide how much housing cost leaves room for food, transportation, healthcare, retirement saving, and ordinary enjoyment.',
+          'Review your credit reports and correct errors before applying. Avoid taking on new debt or making major unexplained transfers during the mortgage process. Keep documentation for income, assets, and large deposits organized, because underwriting often requires a clear financial record.',
+        ],
+      },
+      {
+        heading: 'Estimate the complete monthly cost',
+        paragraphs: [
+          'The mortgage principal and interest payment is only part of homeownership. Add property taxes, homeowners insurance, mortgage insurance when applicable, homeowners association dues, utilities, and a maintenance allowance. Some costs are collected through escrow, while others arrive as separate or irregular bills.',
+          'Property taxes and insurance can rise even when a fixed-rate principal and interest payment does not. Maintenance is uneven: one year may be quiet and another may require a roof, appliance, plumbing repair, or exterior work. Build room for those costs instead of using the maximum payment a lender offers.',
+        ],
+      },
+      {
+        heading: 'Plan the down payment and closing cash',
+        paragraphs: [
+          'A larger down payment can reduce the loan amount and may change mortgage insurance or pricing, but it also ties up cash in the property. A smaller down payment may preserve reserves. Compare loan programs and ask for written estimates rather than assuming one percentage is always best.',
+          'Closing requires more than the down payment. Buyer costs may include lender charges, appraisal, inspection, title services, prepaid insurance, taxes, and escrow funding. Costs vary by location and transaction. Keep an emergency reserve after closing so the purchase does not leave the household unable to handle repairs or income disruption.',
+        ],
+      },
+      {
+        heading: 'Compare mortgage choices carefully',
+        paragraphs: [
+          'A fixed-rate mortgage offers predictable principal and interest payments. Adjustable-rate loans can begin differently but introduce future rate uncertainty. Loan term affects both monthly payment and total interest: a shorter term usually requires a higher payment but repays principal faster.',
+          'Compare annual percentage rate, interest rate, points, lender credits, fees, cash required, and total cost over the period you realistically expect to keep the loan. A refinance may be possible later, but it should not be assumed. Future rates, home value, credit, income, and closing costs are unknown.',
+        ],
+      },
+      {
+        heading: 'Decide whether buying fits the timeline',
+        paragraphs: [
+          'Buying has transaction costs and exposes you to property-specific risk. Renting can offer flexibility and transfer many repair responsibilities to the owner. The better financial result depends on rent, home price, mortgage terms, maintenance, appreciation, investment returns, transaction costs, and how long you stay.',
+          'Use a rent-versus-buy comparison as a scenario tool, not a verdict. Also consider nonfinancial preferences such as mobility, control over the space, commute, schools, and willingness to maintain a property. Before making an offer, inspect carefully, understand contingencies, and avoid relying on appreciation to rescue an unaffordable purchase.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: 'How much home can I afford?',
+        answer:
+          'Affordability depends on income, debts, down payment, rates, taxes, insurance, HOA costs, maintenance, and other goals. Use a personal budget as well as lender guidance.',
+      },
+      {
+        question: 'Do I need a 20% down payment?',
+        answer:
+          'Not always. Available loan programs vary. Compare mortgage insurance, rates, fees, cash reserves, and total cost before choosing a down payment.',
+      },
+      {
+        question: 'What costs should I expect beyond the mortgage?',
+        answer:
+          'Common costs include taxes, insurance, HOA dues, utilities, maintenance, repairs, and transaction costs. The exact list depends on the property and location.',
+      },
+      {
+        question: 'Is a shorter mortgage term always better?',
+        answer:
+          'It can reduce total interest but requires a higher payment. The right term should fit cash flow, reserves, and competing financial priorities.',
+      },
+      {
+        question: 'When does buying make more sense than renting?',
+        answer:
+          'It depends on local prices and rents, financing, costs, expected ownership period, and personal priorities. There is no universal break-even period.',
+      },
+    ],
+  },
+  {
+    slug: 'budgeting',
+    title: 'Budgeting and Saving for Real Life',
+    eyebrow: 'Money basics',
+    description:
+      'Build a flexible budget that covers essentials, prepares for irregular costs, and turns financial goals into repeatable monthly actions.',
+    seoTitle: 'Budgeting and Saving Guide for Beginners | AutomatorLabs',
+    metaDescription:
+      'Learn how to build a practical budget, track cash flow, plan irregular expenses, create emergency savings, and improve your savings rate.',
+    categoryTitle: 'Budgeting & Savings Calculators',
+    categoryUrl: '/calculators/budgeting-savings/',
+    calculatorIds: [
+      'budget-calculator',
+      'savings-rate-calculator',
+      'emergency-fund-calculator',
+      'savings-goal-calculator',
+    ],
+    sections: [
+      {
+        heading: 'Give the budget a purpose',
+        paragraphs: [
+          'A budget is a plan for directing income, not a punishment for spending. It should help cover current needs, prepare for future bills, and make room for goals and enjoyment. Start by choosing a short list of priorities, such as building an emergency fund, paying down debt, or saving for a move.',
+          'Use after-tax income that is actually available to spend. If income changes from month to month, build the core budget around a conservative baseline and create a rule for higher-income months. This makes the plan more stable than assuming every month will match the best one.',
+        ],
+      },
+      {
+        heading: 'Map actual cash flow',
+        paragraphs: [
+          'Review recent bank and card activity and sort spending into useful categories. Separate fixed obligations, flexible essentials, discretionary spending, debt payments, and savings. Blank estimates often miss subscriptions, fees, annual renewals, gifts, travel, repairs, and healthcare costs.',
+          'Do not worry about creating perfect categories. The goal is to see where money goes and which decisions are adjustable. Compare total expenses and savings with income. A surplus can be assigned to a goal. A deficit means the current plan depends on debt, savings withdrawals, or income that has not yet arrived.',
+        ],
+      },
+      {
+        heading: 'Plan for irregular expenses',
+        paragraphs: [
+          'Many so-called emergencies are predictable expenses with uncertain timing. Vehicle maintenance, insurance premiums, school costs, holidays, and home repairs may not occur monthly, but they still belong in the plan. Estimate the annual amount and set aside a monthly share in a dedicated category or account.',
+          'Sinking funds reduce the pressure on an emergency fund. The emergency fund can then focus on genuinely disruptive events such as income loss, urgent travel, or a major unexpected bill. Keep the money accessible and separate from long-term investments that may decline when cash is needed.',
+        ],
+      },
+      {
+        heading: 'Set savings targets that fit',
+        paragraphs: [
+          'Savings rate is monthly savings divided by income. It is useful for tracking direction, but there is no single correct percentage for every household. Income level, debt, housing, dependents, health, and goals all affect what is realistic. Start with an amount that can be repeated and increase it when circumstances improve.',
+          'Automate transfers shortly after income arrives. Give each account or category a clear purpose, whether emergency reserves, a near-term purchase, retirement, or investing. For a dated goal, compare the amount still needed with monthly contributions and possible growth. Remember that expected returns are uncertain, especially over short periods.',
+        ],
+      },
+      {
+        heading: 'Review without starting over',
+        paragraphs: [
+          'A budget should change when life changes. Review planned versus actual spending, but focus on patterns instead of judging every transaction. If one category repeatedly exceeds its target, the estimate may be unrealistic or another category may need to shrink. A useful plan reflects reality while still creating forward progress.',
+          'Use a brief monthly review to assign leftover money, fund upcoming irregular costs, and update goals. Keep the system simple enough to maintain. A spreadsheet, app, or a few bank accounts can all work if the process shows available cash, upcoming obligations, and progress toward priorities.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: 'What budgeting method should I use?',
+        answer:
+          'Use a method you can maintain and understand. Category budgets, zero-based plans, and percentage frameworks are all starting structures rather than universal rules.',
+      },
+      {
+        question: 'How large should an emergency fund be?',
+        answer:
+          'The target depends on essential expenses, income stability, insurance, dependents, and access to other resources. Calculate a range of months rather than assuming one number fits everyone.',
+      },
+      {
+        question: 'Should savings count as an expense?',
+        answer:
+          'Treating savings as a planned monthly allocation can make it more consistent. Keep it separate from consumption expenses when measuring cash flow and savings rate.',
+      },
+      {
+        question: 'What should I do with a monthly surplus?',
+        answer:
+          'Assign it intentionally to emergency savings, debt, near-term goals, investing, or planned enjoyment based on your priorities.',
+      },
+      {
+        question: 'How often should I update my budget?',
+        answer:
+          'A short monthly review works for many people. Update sooner after a major income, housing, debt, or household change.',
+      },
+    ],
+  },
+];
+
+export function getGuideHub(slug: string): GuideHub | undefined {
+  return guideHubs.find((guide) => guide.slug === slug);
+}
