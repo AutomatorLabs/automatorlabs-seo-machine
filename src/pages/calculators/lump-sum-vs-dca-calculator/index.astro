@@ -1,0 +1,114 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { lumpSumVsDcaCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = lumpSumVsDcaCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={lumpSumVsDcaCalculator.title}
+  eyebrow={lumpSumVsDcaCalculator.eyebrow}
+  description={lumpSumVsDcaCalculator.description}
+  inputs={lumpSumVsDcaCalculator.inputs}
+  outputs={lumpSumVsDcaCalculator.outputs}
+  faq={lumpSumVsDcaCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateLumpSumVsDca } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const lumpSumEndingBalanceResult = document.querySelector<HTMLElement>(
+      '#lump-sum-ending-balance-result',
+    );
+    const dcaEndingBalanceResult = document.querySelector<HTMLElement>(
+      '#dca-ending-balance-result',
+    );
+    const differenceResult =
+      document.querySelector<HTMLElement>('#difference-result');
+    const betterStrategyResult = document.querySelector<HTMLElement>(
+      '#better-strategy-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !lumpSumEndingBalanceResult ||
+        !dcaEndingBalanceResult ||
+        !differenceResult ||
+        !betterStrategyResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const totalAmount = parseCalculatorNumber(data.get('totalAmount'));
+      const dcaMonthlyAmount = parseCalculatorNumber(
+        data.get('dcaMonthlyAmount'),
+      );
+      const expectedReturn = parseCalculatorNumber(data.get('expectedReturn'));
+      const years = parseCalculatorNumber(data.get('years'));
+
+      if (
+        !Number.isFinite(totalAmount) ||
+        !Number.isFinite(dcaMonthlyAmount) ||
+        !Number.isFinite(expectedReturn) ||
+        !Number.isFinite(years) ||
+        totalAmount <= 0 ||
+        dcaMonthlyAmount <= 0 ||
+        expectedReturn < 0 ||
+        years <= 0
+      ) {
+        error.textContent =
+          'Total amount, monthly DCA amount, and years must be greater than 0. Expected return cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateLumpSumVsDca({
+        totalAmount,
+        dcaMonthlyAmount,
+        expectedAnnualReturnPercent: expectedReturn,
+        years,
+      });
+
+      lumpSumEndingBalanceResult.textContent = currency.format(
+        result.lumpSumEndingBalance,
+      );
+      dcaEndingBalanceResult.textContent = currency.format(
+        result.dcaEndingBalance,
+      );
+      differenceResult.textContent = currency.format(result.difference);
+      betterStrategyResult.textContent =
+        result.betterStrategy === 'Tie'
+          ? 'Tie under these assumptions'
+          : `${result.betterStrategy} by ${currency.format(
+              Math.abs(result.difference),
+            )}`;
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('lump_sum_vs_dca', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

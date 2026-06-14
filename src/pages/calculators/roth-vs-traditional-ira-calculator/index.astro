@@ -1,0 +1,129 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { rothVsTraditionalIraCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = rothVsTraditionalIraCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={rothVsTraditionalIraCalculator.title}
+  eyebrow={rothVsTraditionalIraCalculator.eyebrow}
+  description={rothVsTraditionalIraCalculator.description}
+  inputs={rothVsTraditionalIraCalculator.inputs}
+  outputs={rothVsTraditionalIraCalculator.outputs}
+  faq={rothVsTraditionalIraCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateRothVsTraditionalIra } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const rothEndingValueResult = document.querySelector<HTMLElement>(
+      '#roth-ending-value-result',
+    );
+    const traditionalAfterTaxEndingValueResult =
+      document.querySelector<HTMLElement>(
+        '#traditional-after-tax-ending-value-result',
+      );
+    const differenceResult =
+      document.querySelector<HTMLElement>('#difference-result');
+    const betterOptionResult = document.querySelector<HTMLElement>(
+      '#better-option-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !rothEndingValueResult ||
+        !traditionalAfterTaxEndingValueResult ||
+        !differenceResult ||
+        !betterOptionResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const annualContribution = parseCalculatorNumber(
+        data.get('annualContribution'),
+      );
+      const currentTaxRatePercent = parseCalculatorNumber(
+        data.get('currentTaxRate'),
+      );
+      const retirementTaxRatePercent = parseCalculatorNumber(
+        data.get('retirementTaxRate'),
+      );
+      const expectedAnnualReturnPercent = parseCalculatorNumber(
+        data.get('expectedAnnualReturn'),
+      );
+      const years = parseCalculatorNumber(data.get('years'));
+
+      if (
+        !Number.isFinite(annualContribution) ||
+        !Number.isFinite(currentTaxRatePercent) ||
+        !Number.isFinite(retirementTaxRatePercent) ||
+        !Number.isFinite(expectedAnnualReturnPercent) ||
+        !Number.isFinite(years) ||
+        annualContribution < 0 ||
+        currentTaxRatePercent < 0 ||
+        currentTaxRatePercent > 100 ||
+        retirementTaxRatePercent < 0 ||
+        retirementTaxRatePercent > 100 ||
+        expectedAnnualReturnPercent < 0 ||
+        years <= 0 ||
+        !Number.isInteger(years)
+      ) {
+        error.textContent =
+          'Contribution and expected return cannot be negative. Tax rates must be between 0% and 100%, and whole years must be greater than 0.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateRothVsTraditionalIra({
+        annualContribution,
+        currentTaxRatePercent,
+        retirementTaxRatePercent,
+        expectedAnnualReturnPercent,
+        years,
+      });
+
+      rothEndingValueResult.textContent = currency.format(
+        result.rothEndingValue,
+      );
+      traditionalAfterTaxEndingValueResult.textContent = currency.format(
+        result.traditionalAfterTaxEndingValue,
+      );
+      differenceResult.textContent = currency.format(result.difference);
+      betterOptionResult.textContent =
+        result.betterOption === 'roth'
+          ? 'Roth IRA'
+          : result.betterOption === 'traditional'
+            ? 'Traditional IRA'
+            : 'Equivalent under these assumptions';
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('roth_vs_traditional_ira', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

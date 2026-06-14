@@ -1,0 +1,142 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { autoLoanCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = autoLoanCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={autoLoanCalculator.title}
+  eyebrow={autoLoanCalculator.eyebrow}
+  description={autoLoanCalculator.description}
+  inputs={autoLoanCalculator.inputs}
+  outputs={autoLoanCalculator.outputs}
+  faq={autoLoanCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateAutoLoan } from '../../../lib/math';
+
+    const vehiclePriceInput =
+      document.querySelector<HTMLInputElement>('#vehicle-price');
+    const form = vehiclePriceInput?.form ?? null;
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const loanAmountResult =
+      document.querySelector<HTMLElement>('#loan-amount-result');
+    const monthlyPaymentResult =
+      document.querySelector<HTMLElement>('#monthly-payment-result');
+    const totalInterestPaidResult = document.querySelector<HTMLElement>(
+      '#total-interest-paid-result',
+    );
+    const totalCostOfLoanResult = document.querySelector<HTMLElement>(
+      '#total-cost-of-loan-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !loanAmountResult ||
+        !monthlyPaymentResult ||
+        !totalInterestPaidResult ||
+        !totalCostOfLoanResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const vehiclePrice = parseCalculatorNumber(data.get('vehiclePrice'));
+      const downPayment = parseCalculatorNumber(data.get('downPayment'));
+      const tradeInValue = parseCalculatorNumber(data.get('tradeInValue'));
+      const salesTaxRatePercent = parseCalculatorNumber(
+        data.get('salesTaxRate'),
+      );
+      const loanTermYears = parseCalculatorNumber(
+        data.get('loanTermYears'),
+      );
+      const annualInterestRatePercent = parseCalculatorNumber(
+        data.get('annualInterestRate'),
+      );
+      const values = [
+        vehiclePrice,
+        downPayment,
+        tradeInValue,
+        salesTaxRatePercent,
+        loanTermYears,
+        annualInterestRatePercent,
+      ];
+
+      if (
+        values.some((value) => !Number.isFinite(value)) ||
+        vehiclePrice <= 0 ||
+        downPayment < 0 ||
+        tradeInValue < 0 ||
+        salesTaxRatePercent < 0 ||
+        loanTermYears <= 0 ||
+        !Number.isInteger(loanTermYears) ||
+        annualInterestRatePercent < 0
+      ) {
+        error.textContent =
+          'Vehicle price and loan term must be greater than 0. The loan term must be a whole number of years, and all other values cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      const taxAmount = vehiclePrice * (salesTaxRatePercent / 100);
+      const loanAmount =
+        vehiclePrice + taxAmount - downPayment - tradeInValue;
+
+      if (loanAmount < 0) {
+        error.textContent =
+          'The loan amount cannot be negative. Reduce the down payment or trade-in value.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateAutoLoan({
+        vehiclePrice,
+        downPayment,
+        tradeInValue,
+        salesTaxRatePercent,
+        loanTermYears,
+        annualInterestRatePercent,
+      });
+
+      loanAmountResult.textContent = currency.format(result.loanAmount);
+      monthlyPaymentResult.textContent = currency.format(
+        result.monthlyPayment,
+      );
+      totalInterestPaidResult.textContent = currency.format(
+        result.totalInterestPaid,
+      );
+      totalCostOfLoanResult.textContent = currency.format(
+        result.totalCostOfLoan,
+      );
+
+      return true;
+    }
+
+    if (form) {
+      form.onsubmit = (event) => {
+        event.preventDefault();
+        trackSuccessfulCalculation('auto_loan', calculate);
+      };
+    }
+
+    calculate();
+  </script>
+</CalculatorPage>

@@ -1,0 +1,164 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { homeAffordabilityCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = homeAffordabilityCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={homeAffordabilityCalculator.title}
+  eyebrow={homeAffordabilityCalculator.eyebrow}
+  description={homeAffordabilityCalculator.description}
+  inputs={homeAffordabilityCalculator.inputs}
+  outputs={homeAffordabilityCalculator.outputs}
+  faq={homeAffordabilityCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateHomeAffordability } from '../../../lib/math';
+
+    const annualIncomeInput =
+      document.querySelector<HTMLInputElement>('#annual-gross-income');
+    const form = annualIncomeInput?.form ?? null;
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const warning = document.querySelector<HTMLElement>('#form-warning');
+    const affordableHomePriceResult = document.querySelector<HTMLElement>(
+      '#affordable-home-price-result',
+    );
+    const monthlyMortgagePaymentResult =
+      document.querySelector<HTMLElement>(
+        '#monthly-mortgage-payment-result',
+      );
+    const totalMonthlyHousingCostResult =
+      document.querySelector<HTMLElement>(
+        '#total-monthly-housing-cost-result',
+      );
+    const dtiResult = document.querySelector<HTMLElement>('#dti-result');
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !warning ||
+        !affordableHomePriceResult ||
+        !monthlyMortgagePaymentResult ||
+        !totalMonthlyHousingCostResult ||
+        !dtiResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const annualGrossIncome = parseCalculatorNumber(
+        data.get('annualGrossIncome'),
+      );
+      const monthlyDebtPayments = parseCalculatorNumber(
+        data.get('monthlyDebtPayments'),
+      );
+      const downPayment = parseCalculatorNumber(data.get('downPayment'));
+      const mortgageInterestRatePercent = parseCalculatorNumber(
+        data.get('mortgageInterestRate'),
+      );
+      const loanTermYears = parseCalculatorNumber(
+        data.get('loanTermYears'),
+      );
+      const propertyTaxRatePercent = parseCalculatorNumber(
+        data.get('propertyTaxRate'),
+      );
+      const homeInsurancePerYear = parseCalculatorNumber(
+        data.get('homeInsurancePerYear'),
+      );
+      const hoaPerMonth = parseCalculatorNumber(data.get('hoaPerMonth'));
+      const maximumDtiPercent = parseCalculatorNumber(
+        data.get('maximumDti'),
+      );
+      const values = [
+        annualGrossIncome,
+        monthlyDebtPayments,
+        downPayment,
+        mortgageInterestRatePercent,
+        loanTermYears,
+        propertyTaxRatePercent,
+        homeInsurancePerYear,
+        hoaPerMonth,
+        maximumDtiPercent,
+      ];
+
+      if (
+        values.some((value) => !Number.isFinite(value)) ||
+        annualGrossIncome <= 0 ||
+        monthlyDebtPayments < 0 ||
+        downPayment < 0 ||
+        mortgageInterestRatePercent < 0 ||
+        loanTermYears <= 0 ||
+        !Number.isInteger(loanTermYears) ||
+        propertyTaxRatePercent < 0 ||
+        homeInsurancePerYear < 0 ||
+        hoaPerMonth < 0 ||
+        maximumDtiPercent <= 0 ||
+        maximumDtiPercent > 100
+      ) {
+        error.textContent =
+          'Annual income and loan term must be greater than 0, maximum DTI must be above 0% and no more than 100%, and all costs and rates cannot be negative.';
+        error.hidden = false;
+        warning.hidden = true;
+        return false;
+      }
+
+      const result = calculateHomeAffordability({
+        annualGrossIncome,
+        monthlyDebtPayments,
+        downPayment,
+        mortgageInterestRatePercent,
+        loanTermYears,
+        propertyTaxRatePercent,
+        homeInsurancePerYear,
+        hoaPerMonth,
+        maximumDtiPercent,
+      });
+
+      error.hidden = true;
+      affordableHomePriceResult.textContent = currency.format(
+        result.affordableHomePrice,
+      );
+      monthlyMortgagePaymentResult.textContent = currency.format(
+        result.monthlyMortgagePayment,
+      );
+      totalMonthlyHousingCostResult.textContent = currency.format(
+        result.totalMonthlyHousingCost,
+      );
+      dtiResult.textContent = `${result.debtToIncomeRatio.toFixed(2)}%`;
+
+      if (result.affordableHomePrice === 0) {
+        warning.textContent =
+          'Existing debts and fixed housing costs leave no affordable home price under the selected DTI limit.';
+        warning.hidden = false;
+      } else {
+        warning.hidden = true;
+      }
+
+      return true;
+    }
+
+    if (form) {
+      form.onsubmit = (event) => {
+        event.preventDefault();
+        trackSuccessfulCalculation('home_affordability', calculate);
+      };
+    }
+
+    calculate();
+  </script>
+</CalculatorPage>

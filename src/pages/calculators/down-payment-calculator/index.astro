@@ -1,0 +1,164 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { downPaymentCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = downPaymentCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={downPaymentCalculator.title}
+  eyebrow={downPaymentCalculator.eyebrow}
+  description={downPaymentCalculator.description}
+  inputs={downPaymentCalculator.inputs}
+  outputs={downPaymentCalculator.outputs}
+  faq={downPaymentCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateSavingsGoal } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const targetDownPaymentResult = document.querySelector<HTMLElement>(
+      '#target-down-payment-result',
+    );
+    const amountStillNeededResult = document.querySelector<HTMLElement>(
+      '#amount-still-needed-result',
+    );
+    const estimatedMonthsResult = document.querySelector<HTMLElement>(
+      '#estimated-months-result',
+    );
+    const estimatedCompletionDateResult =
+      document.querySelector<HTMLElement>(
+        '#estimated-completion-date-result',
+      );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const completionDate = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    function addMonths(date: Date, months: number): Date {
+      const result = new Date(date);
+      const originalDay = result.getDate();
+
+      result.setDate(1);
+      result.setMonth(result.getMonth() + months);
+      const lastDayOfTargetMonth = new Date(
+        result.getFullYear(),
+        result.getMonth() + 1,
+        0,
+      ).getDate();
+      result.setDate(Math.min(originalDay, lastDayOfTargetMonth));
+
+      return result;
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !targetDownPaymentResult ||
+        !amountStillNeededResult ||
+        !estimatedMonthsResult ||
+        !estimatedCompletionDateResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const homePurchasePrice = parseCalculatorNumber(
+        data.get('homePurchasePrice'),
+      );
+      const downPaymentPercentage = parseCalculatorNumber(
+        data.get('downPaymentPercentage'),
+      );
+      const currentSavings = parseCalculatorNumber(
+        data.get('currentSavings'),
+      );
+      const monthlyContribution = parseCalculatorNumber(
+        data.get('monthlySavingsContribution'),
+      );
+      const expectedAnnualReturnPercent = parseCalculatorNumber(
+        data.get('expectedSavingsReturn'),
+      );
+      const values = [
+        homePurchasePrice,
+        downPaymentPercentage,
+        currentSavings,
+        monthlyContribution,
+        expectedAnnualReturnPercent,
+      ];
+
+      if (
+        values.some((value) => !Number.isFinite(value)) ||
+        homePurchasePrice <= 0 ||
+        downPaymentPercentage <= 0 ||
+        downPaymentPercentage > 100 ||
+        currentSavings < 0 ||
+        monthlyContribution < 0 ||
+        expectedAnnualReturnPercent < 0
+      ) {
+        error.textContent =
+          'Home price and down payment percentage must be greater than 0, the percentage cannot exceed 100%, and savings, contributions, and expected return cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      const targetDownPayment =
+        homePurchasePrice * (downPaymentPercentage / 100);
+      const result = calculateSavingsGoal({
+        goalAmount: targetDownPayment,
+        currentSavings,
+        monthlyContribution,
+        expectedAnnualReturnPercent,
+      });
+
+      error.hidden = true;
+      targetDownPaymentResult.textContent =
+        currency.format(targetDownPayment);
+      amountStillNeededResult.textContent = currency.format(
+        result.amountStillNeeded,
+      );
+
+      if (result.status === 'funded') {
+        estimatedMonthsResult.textContent = 'Already funded';
+        estimatedCompletionDateResult.textContent = 'Completed';
+      } else if (result.status === 'unreachable') {
+        estimatedMonthsResult.textContent =
+          'Unreachable with current contribution';
+        estimatedCompletionDateResult.textContent =
+          'Increase the monthly contribution';
+      } else {
+        const months = result.estimatedMonthsToGoal ?? 0;
+        estimatedMonthsResult.textContent =
+          `${months} ${months === 1 ? 'month' : 'months'}`;
+        estimatedCompletionDateResult.textContent = completionDate.format(
+          addMonths(new Date(), months),
+        );
+      }
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('down_payment', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

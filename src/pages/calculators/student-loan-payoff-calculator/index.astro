@@ -1,0 +1,158 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { studentLoanPayoffCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = studentLoanPayoffCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={studentLoanPayoffCalculator.title}
+  eyebrow={studentLoanPayoffCalculator.eyebrow}
+  description={studentLoanPayoffCalculator.description}
+  inputs={studentLoanPayoffCalculator.inputs}
+  outputs={studentLoanPayoffCalculator.outputs}
+  faq={studentLoanPayoffCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateDebtPayoff } from '../../../lib/math';
+
+    const balanceInput = document.querySelector<HTMLInputElement>(
+      '#student-loan-balance',
+    );
+    const form = balanceInput?.form ?? null;
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const payoffTimeResult =
+      document.querySelector<HTMLElement>('#payoff-time-result');
+    const totalInterestPaidResult = document.querySelector<HTMLElement>(
+      '#total-interest-paid-result',
+    );
+    const totalAmountPaidResult = document.querySelector<HTMLElement>(
+      '#total-amount-paid-result',
+    );
+    const interestSavedResult = document.querySelector<HTMLElement>(
+      '#interest-saved-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function formatMonths(totalMonths: number): string {
+      const years = Math.floor(totalMonths / 12);
+      const months = totalMonths % 12;
+      const parts: string[] = [];
+
+      if (years > 0) {
+        parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+      }
+
+      if (months > 0) {
+        parts.push(`${months} ${months === 1 ? 'month' : 'months'}`);
+      }
+
+      return parts.length > 0 ? parts.join(', ') : '0 months';
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !payoffTimeResult ||
+        !totalInterestPaidResult ||
+        !totalAmountPaidResult ||
+        !interestSavedResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const studentLoanBalance = parseCalculatorNumber(
+        data.get('studentLoanBalance'),
+      );
+      const annualInterestRatePercent = parseCalculatorNumber(
+        data.get('annualInterestRate'),
+      );
+      const currentMonthlyPayment = parseCalculatorNumber(
+        data.get('currentMonthlyPayment'),
+      );
+      const extraMonthlyPayment = parseCalculatorNumber(
+        data.get('extraMonthlyPayment'),
+      );
+
+      if (
+        !Number.isFinite(studentLoanBalance) ||
+        !Number.isFinite(annualInterestRatePercent) ||
+        !Number.isFinite(currentMonthlyPayment) ||
+        !Number.isFinite(extraMonthlyPayment) ||
+        studentLoanBalance <= 0 ||
+        annualInterestRatePercent < 0 ||
+        currentMonthlyPayment <= 0 ||
+        extraMonthlyPayment < 0
+      ) {
+        error.textContent =
+          'Student loan balance and current monthly payment must be greater than $0. Interest and extra payments cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      const result = calculateDebtPayoff({
+        debtBalance: studentLoanBalance,
+        annualInterestRatePercent,
+        monthlyPayment: currentMonthlyPayment,
+        extraMonthlyPayment,
+      });
+
+      if (!result.accelerated.reachable) {
+        error.textContent =
+          'Unreachable: the total monthly payment does not cover the interest being added. Increase the payment or reduce the interest rate.';
+        error.hidden = false;
+        payoffTimeResult.textContent = 'Unreachable';
+        totalInterestPaidResult.textContent = 'Unreachable';
+        totalAmountPaidResult.textContent = 'Unreachable';
+        interestSavedResult.textContent = 'Unreachable';
+        return true;
+      }
+
+      error.hidden = true;
+      payoffTimeResult.textContent = formatMonths(
+        result.accelerated.payoffTimeMonths ?? 0,
+      );
+      totalInterestPaidResult.textContent = currency.format(
+        result.accelerated.totalInterestPaid ?? 0,
+      );
+      totalAmountPaidResult.textContent = currency.format(
+        result.accelerated.totalAmountPaid ?? 0,
+      );
+      interestSavedResult.textContent =
+        result.interestSaved == null
+          ? 'Baseline unreachable'
+          : currency.format(result.interestSaved);
+
+      if (!result.baseline.reachable) {
+        error.textContent =
+          'The current payment alone does not cover monthly interest. The payoff shown depends on the extra monthly payment.';
+        error.hidden = false;
+      }
+
+      return true;
+    }
+
+    if (form) {
+      form.onsubmit = (event) => {
+        event.preventDefault();
+        trackSuccessfulCalculation('student_loan_payoff', calculate);
+      };
+    }
+
+    calculate();
+  </script>
+</CalculatorPage>

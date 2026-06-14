@@ -1,0 +1,191 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { rentVsBuyCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = rentVsBuyCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={rentVsBuyCalculator.title}
+  eyebrow={rentVsBuyCalculator.eyebrow}
+  description={rentVsBuyCalculator.description}
+  inputs={rentVsBuyCalculator.inputs}
+  outputs={rentVsBuyCalculator.outputs}
+  faq={rentVsBuyCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateRentVsBuy } from '../../../lib/math';
+
+    const monthlyRentInput =
+      document.querySelector<HTMLInputElement>('#monthly-rent');
+    const form = monthlyRentInput?.form ?? null;
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const totalRentingCostResult = document.querySelector<HTMLElement>(
+      '#total-renting-cost-result',
+    );
+    const totalBuyingCostResult = document.querySelector<HTMLElement>(
+      '#total-buying-cost-result',
+    );
+    const estimatedHomeEquityResult = document.querySelector<HTMLElement>(
+      '#estimated-home-equity-result',
+    );
+    const rentVsBuyDifferenceResult = document.querySelector<HTMLElement>(
+      '#rent-vs-buy-difference-result',
+    );
+    const betterOptionResult = document.querySelector<HTMLElement>(
+      '#better-option-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !totalRentingCostResult ||
+        !totalBuyingCostResult ||
+        !estimatedHomeEquityResult ||
+        !rentVsBuyDifferenceResult ||
+        !betterOptionResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const monthlyRent = parseCalculatorNumber(data.get('monthlyRent'));
+      const homePurchasePrice = parseCalculatorNumber(
+        data.get('homePurchasePrice'),
+      );
+      const downPayment = parseCalculatorNumber(data.get('downPayment'));
+      const mortgageInterestRatePercent = parseCalculatorNumber(
+        data.get('mortgageInterestRate'),
+      );
+      const loanTermYears = parseCalculatorNumber(
+        data.get('loanTermYears'),
+      );
+      const propertyTaxRatePercent = parseCalculatorNumber(
+        data.get('propertyTaxRate'),
+      );
+      const homeInsurancePerYear = parseCalculatorNumber(
+        data.get('homeInsurancePerYear'),
+      );
+      const hoaPerMonth = parseCalculatorNumber(data.get('hoaPerMonth'));
+      const maintenanceRatePercent = parseCalculatorNumber(
+        data.get('maintenanceRate'),
+      );
+      const homeAppreciationPercent = parseCalculatorNumber(
+        data.get('homeAppreciation'),
+      );
+      const investmentReturnPercent = parseCalculatorNumber(
+        data.get('investmentReturn'),
+      );
+      const comparisonYears = parseCalculatorNumber(
+        data.get('comparisonYears'),
+      );
+      const values = [
+        monthlyRent,
+        homePurchasePrice,
+        downPayment,
+        mortgageInterestRatePercent,
+        loanTermYears,
+        propertyTaxRatePercent,
+        homeInsurancePerYear,
+        hoaPerMonth,
+        maintenanceRatePercent,
+        homeAppreciationPercent,
+        investmentReturnPercent,
+        comparisonYears,
+      ];
+
+      if (
+        values.some((value) => !Number.isFinite(value)) ||
+        monthlyRent < 0 ||
+        homePurchasePrice <= 0 ||
+        downPayment < 0 ||
+        mortgageInterestRatePercent < 0 ||
+        loanTermYears <= 0 ||
+        !Number.isInteger(loanTermYears) ||
+        propertyTaxRatePercent < 0 ||
+        homeInsurancePerYear < 0 ||
+        hoaPerMonth < 0 ||
+        maintenanceRatePercent < 0 ||
+        homeAppreciationPercent <= -100 ||
+        investmentReturnPercent < 0 ||
+        comparisonYears <= 0 ||
+        !Number.isInteger(comparisonYears)
+      ) {
+        error.textContent =
+          'Enter valid values. Purchase price, loan term, and comparison years must be greater than 0; costs and investment return cannot be negative; and appreciation must be above -100%.';
+        error.hidden = false;
+        return false;
+      }
+
+      if (downPayment > homePurchasePrice) {
+        error.textContent =
+          'Down payment cannot exceed the home purchase price.';
+        error.hidden = false;
+        return false;
+      }
+
+      const result = calculateRentVsBuy({
+        monthlyRent,
+        homePurchasePrice,
+        downPayment,
+        mortgageInterestRatePercent,
+        loanTermYears,
+        propertyTaxRatePercent,
+        homeInsurancePerYear,
+        hoaPerMonth,
+        maintenanceRatePercent,
+        homeAppreciationPercent,
+        investmentReturnPercent,
+        comparisonYears,
+      });
+
+      error.hidden = true;
+      totalRentingCostResult.textContent = currency.format(
+        result.totalCostOfRenting,
+      );
+      totalBuyingCostResult.textContent = currency.format(
+        result.totalCostOfBuying,
+      );
+      estimatedHomeEquityResult.textContent = currency.format(
+        result.estimatedHomeEquity,
+      );
+      rentVsBuyDifferenceResult.textContent =
+        result.rentVsBuyDifference === 0
+          ? currency.format(0)
+          : `${currency.format(
+              Math.abs(result.rentVsBuyDifference),
+            )} less to ${result.rentVsBuyDifference > 0 ? 'buy' : 'rent'}`;
+      betterOptionResult.textContent =
+        result.betterOption === 'equal'
+          ? 'Approximately equal'
+          : result.betterOption === 'buy'
+            ? 'Buying'
+            : 'Renting';
+
+      return true;
+    }
+
+    if (form) {
+      form.onsubmit = (event) => {
+        event.preventDefault();
+        trackSuccessfulCalculation('rent_vs_buy', calculate);
+      };
+    }
+
+    calculate();
+  </script>
+</CalculatorPage>

@@ -1,0 +1,100 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { realRateOfReturnCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = realRateOfReturnCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={realRateOfReturnCalculator.title}
+  eyebrow={realRateOfReturnCalculator.eyebrow}
+  description={realRateOfReturnCalculator.description}
+  inputs={realRateOfReturnCalculator.inputs}
+  outputs={realRateOfReturnCalculator.outputs}
+  faq={realRateOfReturnCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateRealRateOfReturn } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const realAnnualReturnResult = document.querySelector<HTMLElement>(
+      '#real-annual-return-result',
+    );
+    const purchasingPowerChangeResult = document.querySelector<HTMLElement>(
+      '#purchasing-power-change-result',
+    );
+    const inflationAdjustedMultiplierResult =
+      document.querySelector<HTMLElement>(
+        '#inflation-adjusted-multiplier-result',
+      );
+
+    const percentage = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    const multiplier = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !realAnnualReturnResult ||
+        !purchasingPowerChangeResult ||
+        !inflationAdjustedMultiplierResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const nominalAnnualReturn = parseCalculatorNumber(
+        data.get('nominalAnnualReturn'),
+      );
+      const inflationRate = parseCalculatorNumber(data.get('inflationRate'));
+
+      if (
+        !Number.isFinite(nominalAnnualReturn) ||
+        !Number.isFinite(inflationRate) ||
+        inflationRate <= -100
+      ) {
+        error.textContent =
+          'Enter a valid nominal return. Inflation must be greater than -100%.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateRealRateOfReturn({
+        nominalAnnualReturnPercent: nominalAnnualReturn,
+        inflationRatePercent: inflationRate,
+      });
+
+      realAnnualReturnResult.textContent =
+        `${percentage.format(result.realAnnualReturn)}%`;
+      purchasingPowerChangeResult.textContent =
+        `${percentage.format(result.purchasingPowerChange)}%`;
+      inflationAdjustedMultiplierResult.textContent =
+        `${multiplier.format(result.inflationAdjustedMultiplier)}x`;
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('real_rate_of_return', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

@@ -1,0 +1,158 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { emergencyFundCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = emergencyFundCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item
+    ? [{
+        title: item.title,
+        url: item.status === 'live' ? item.url : '/calculators/',
+      }]
+    : [];
+});
+---
+
+<CalculatorPage
+  title={emergencyFundCalculator.title}
+  eyebrow={emergencyFundCalculator.eyebrow}
+  description={emergencyFundCalculator.description}
+  inputs={emergencyFundCalculator.inputs}
+  outputs={emergencyFundCalculator.outputs}
+  faq={emergencyFundCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateEmergencyFund } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const targetEmergencyFundResult = document.querySelector<HTMLElement>(
+      '#target-emergency-fund-result',
+    );
+    const amountStillNeededResult = document.querySelector<HTMLElement>(
+      '#amount-still-needed-result',
+    );
+    const estimatedMonthsResult = document.querySelector<HTMLElement>(
+      '#estimated-months-result',
+    );
+    const estimatedCompletionDateResult =
+      document.querySelector<HTMLElement>(
+        '#estimated-completion-date-result',
+      );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const completionDate = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    function addMonths(date: Date, months: number): Date {
+      const result = new Date(date);
+      const originalDay = result.getDate();
+
+      result.setDate(1);
+      result.setMonth(result.getMonth() + months);
+      const lastDayOfTargetMonth = new Date(
+        result.getFullYear(),
+        result.getMonth() + 1,
+        0,
+      ).getDate();
+      result.setDate(Math.min(originalDay, lastDayOfTargetMonth));
+
+      return result;
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !targetEmergencyFundResult ||
+        !amountStillNeededResult ||
+        !estimatedMonthsResult ||
+        !estimatedCompletionDateResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const monthlyEssentialExpenses = parseCalculatorNumber(
+        data.get('monthlyEssentialExpenses'),
+      );
+      const targetMonths = parseCalculatorNumber(data.get('targetMonths'));
+      const currentEmergencySavings = parseCalculatorNumber(
+        data.get('currentEmergencySavings'),
+      );
+      const monthlySavingsContribution = parseCalculatorNumber(
+        data.get('monthlySavingsContribution'),
+      );
+
+      if (
+        !Number.isFinite(monthlyEssentialExpenses) ||
+        !Number.isFinite(targetMonths) ||
+        !Number.isFinite(currentEmergencySavings) ||
+        !Number.isFinite(monthlySavingsContribution) ||
+        monthlyEssentialExpenses <= 0 ||
+        targetMonths <= 0 ||
+        currentEmergencySavings < 0 ||
+        monthlySavingsContribution < 0
+      ) {
+        error.textContent =
+          'Monthly expenses and target months must be greater than 0. Current savings and monthly contribution cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateEmergencyFund({
+        monthlyEssentialExpenses,
+        targetMonths,
+        currentEmergencySavings,
+        monthlySavingsContribution,
+      });
+
+      targetEmergencyFundResult.textContent = currency.format(
+        result.targetEmergencyFund,
+      );
+      amountStillNeededResult.textContent = currency.format(
+        result.amountStillNeeded,
+      );
+
+      if (result.status === 'funded') {
+        estimatedMonthsResult.textContent = 'Already funded';
+        estimatedCompletionDateResult.textContent = 'Completed';
+      } else if (result.status === 'unreachable') {
+        estimatedMonthsResult.textContent =
+          'Unreachable with current contribution';
+        estimatedCompletionDateResult.textContent =
+          'Increase the monthly contribution';
+      } else {
+        const months = result.estimatedMonthsToTarget ?? 0;
+        estimatedMonthsResult.textContent =
+          `${months} ${months === 1 ? 'month' : 'months'}`;
+        estimatedCompletionDateResult.textContent = completionDate.format(
+          addMonths(new Date(), months),
+        );
+      }
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('emergency_fund', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

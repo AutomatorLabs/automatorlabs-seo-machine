@@ -1,0 +1,134 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { budgetCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = budgetCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={budgetCalculator.title}
+  eyebrow={budgetCalculator.eyebrow}
+  description={budgetCalculator.description}
+  inputs={budgetCalculator.inputs}
+  outputs={budgetCalculator.outputs}
+  faq={budgetCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import {
+      parseCalculatorNumber,
+      parseOptionalCalculatorNumber,
+    } from '../../../lib/input';
+    import { calculateBudget } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const totalExpensesResult = document.querySelector<HTMLElement>(
+      '#total-expenses-result',
+    );
+    const totalSavingsResult = document.querySelector<HTMLElement>(
+      '#total-savings-result',
+    );
+    const surplusDeficitResult = document.querySelector<HTMLElement>(
+      '#surplus-deficit-result',
+    );
+    const savingsRateResult = document.querySelector<HTMLElement>(
+      '#savings-rate-result',
+    );
+    const expenseRatioResult = document.querySelector<HTMLElement>(
+      '#expense-ratio-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+    const percentage = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    function readOptionalAmount(data: FormData, name: string): number {
+      return parseOptionalCalculatorNumber(data.get(name)) ?? 0;
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !totalExpensesResult ||
+        !totalSavingsResult ||
+        !surplusDeficitResult ||
+        !savingsRateResult ||
+        !expenseRatioResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const monthlyIncome = parseCalculatorNumber(data.get('monthlyIncome'));
+      const expenses = [
+        readOptionalAmount(data, 'housing'),
+        readOptionalAmount(data, 'food'),
+        readOptionalAmount(data, 'transportation'),
+        readOptionalAmount(data, 'insurance'),
+        readOptionalAmount(data, 'debtPayments'),
+        readOptionalAmount(data, 'subscriptions'),
+        readOptionalAmount(data, 'entertainment'),
+        readOptionalAmount(data, 'otherExpenses'),
+      ];
+      const monthlySavings = readOptionalAmount(data, 'monthlySavings');
+      const optionalAmounts = [...expenses, monthlySavings];
+
+      if (
+        !Number.isFinite(monthlyIncome) ||
+        monthlyIncome <= 0 ||
+        optionalAmounts.some(
+          (amount) => !Number.isFinite(amount) || amount < 0,
+        )
+      ) {
+        error.textContent =
+          'Monthly income must be greater than $0. Expenses and savings cannot be negative, and blank fields count as $0.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateBudget({
+        monthlyIncome,
+        expenses,
+        monthlySavings,
+      });
+
+      totalExpensesResult.textContent = currency.format(
+        result.totalMonthlyExpenses,
+      );
+      totalSavingsResult.textContent = currency.format(
+        result.totalMonthlySavings,
+      );
+      surplusDeficitResult.textContent = currency.format(
+        result.monthlySurplusOrDeficit,
+      );
+      savingsRateResult.textContent =
+        `${percentage.format(result.savingsRate)}%`;
+      expenseRatioResult.textContent =
+        `${percentage.format(result.expenseRatio)}%`;
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('budget', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

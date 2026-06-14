@@ -1,0 +1,131 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { dripCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = dripCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={dripCalculator.title}
+  eyebrow={dripCalculator.eyebrow}
+  description={dripCalculator.description}
+  inputs={dripCalculator.inputs}
+  outputs={dripCalculator.outputs}
+  faq={dripCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateDrip } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const finalPortfolioValueResult = document.querySelector<HTMLElement>(
+      '#final-portfolio-value-result',
+    );
+    const totalDividendsEarnedResult = document.querySelector<HTMLElement>(
+      '#total-dividends-earned-result',
+    );
+    const totalContributionsResult = document.querySelector<HTMLElement>(
+      '#total-contributions-result',
+    );
+    const estimatedAnnualDividendIncomeResult =
+      document.querySelector<HTMLElement>(
+        '#estimated-annual-dividend-income-result',
+      );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !finalPortfolioValueResult ||
+        !totalDividendsEarnedResult ||
+        !totalContributionsResult ||
+        !estimatedAnnualDividendIncomeResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const initialInvestment = parseCalculatorNumber(
+        data.get('initialInvestment'),
+      );
+      const annualDividendYield = parseCalculatorNumber(
+        data.get('annualDividendYield'),
+      );
+      const annualSharePriceAppreciation = parseCalculatorNumber(
+        data.get('annualSharePriceAppreciation'),
+      );
+      const annualDividendGrowthRate = parseCalculatorNumber(
+        data.get('annualDividendGrowthRate'),
+      );
+      const monthlyContribution = parseCalculatorNumber(
+        data.get('monthlyContribution'),
+      );
+      const years = parseCalculatorNumber(data.get('years'));
+      const nonNegativeValues = [
+        initialInvestment,
+        annualDividendYield,
+        annualSharePriceAppreciation,
+        annualDividendGrowthRate,
+        monthlyContribution,
+      ];
+
+      if (
+        nonNegativeValues.some(
+          (value) => !Number.isFinite(value) || value < 0,
+        ) ||
+        !Number.isFinite(years) ||
+        years <= 0
+      ) {
+        error.textContent =
+          'Investment, contribution, and percentage values cannot be negative. Number of years must be greater than 0.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateDrip({
+        initialInvestment,
+        annualDividendYieldPercent: annualDividendYield,
+        annualSharePriceAppreciationPercent: annualSharePriceAppreciation,
+        annualDividendGrowthRatePercent: annualDividendGrowthRate,
+        monthlyContribution,
+        years,
+      });
+
+      finalPortfolioValueResult.textContent = currency.format(
+        result.finalPortfolioValue,
+      );
+      totalDividendsEarnedResult.textContent = currency.format(
+        result.totalDividendsEarned,
+      );
+      totalContributionsResult.textContent = currency.format(
+        result.totalContributions,
+      );
+      estimatedAnnualDividendIncomeResult.textContent = currency.format(
+        result.estimatedAnnualDividendIncome,
+      );
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('drip', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

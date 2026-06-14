@@ -159,7 +159,7 @@ const {
 
 <style>
   :global(body) {
-    background: #f6f7fb;
+    background: var(--page-background);
     line-height: 1.6;
   }
 
@@ -176,7 +176,7 @@ const {
 
   .eyebrow {
     margin: 0 0 0.4rem;
-    color: #3158d3;
+    color: var(--link-color);
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -205,7 +205,7 @@ const {
   .intro {
     max-width: 680px;
     margin-bottom: 0;
-    color: #586176;
+    color: var(--muted-text-color);
     font-size: 1.08rem;
   }
 
@@ -218,14 +218,18 @@ const {
 
   .panel,
   .content-section {
-    border: 1px solid #e1e4ec;
+    border: 1px solid var(--border-color);
     border-radius: 16px;
-    background: #fff;
-    box-shadow: 0 12px 35px rgb(22 32 51 / 6%);
+    background: var(--card-background);
+    box-shadow: 0 12px 35px var(--shadow-color);
   }
 
   .panel {
     padding: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .calculator > .panel:first-child {
+    background: var(--form-background);
   }
 
   .form-grid {
@@ -253,18 +257,18 @@ const {
   select {
     width: 100%;
     min-height: 46px;
-    border: 1px solid #cdd2df;
+    border: 1px solid var(--input-border);
     border-radius: 9px;
-    background: #fff;
-    color: inherit;
+    background: var(--input-background);
+    color: var(--input-text);
     font: inherit;
     padding: 0.65rem 0.75rem;
   }
 
   input:focus,
   select:focus {
-    border-color: #3158d3;
-    outline: 3px solid rgb(49 88 211 / 14%);
+    border-color: var(--link-color);
+    outline: 3px solid var(--focus-ring);
   }
 
   .input-with-prefix {
@@ -275,7 +279,7 @@ const {
     position: absolute;
     top: 50%;
     left: 0.8rem;
-    color: #6d7485;
+    color: var(--muted-text-color);
     transform: translateY(-50%);
     pointer-events: none;
   }
@@ -289,8 +293,8 @@ const {
     margin-top: 1.25rem;
     border: 0;
     border-radius: 9px;
-    background: #3158d3;
-    color: #fff;
+    background: var(--button-background);
+    color: var(--button-text);
     cursor: pointer;
     font: inherit;
     font-weight: 700;
@@ -301,7 +305,7 @@ const {
   }
 
   button:hover {
-    background: #2647b0;
+    background: var(--button-hover-background);
   }
 
   button:active {
@@ -309,19 +313,19 @@ const {
   }
 
   button:focus-visible {
-    outline: 3px solid rgb(49 88 211 / 25%);
+    outline: 3px solid var(--focus-ring);
     outline-offset: 3px;
   }
 
   .error {
     margin: 1rem 0 0;
-    color: #b42318;
+    color: var(--error-text);
     font-size: 0.9rem;
   }
 
   .warning {
     margin: 1rem 0 0;
-    color: #9a6700;
+    color: var(--warning-text);
     font-size: 0.9rem;
   }
 
@@ -335,7 +339,7 @@ const {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
-    border-bottom: 1px solid #eceef3;
+    border-bottom: 1px solid var(--border-subtle);
     padding: 1rem 0;
   }
 
@@ -344,7 +348,7 @@ const {
   }
 
   .results dt {
-    color: #626a7c;
+    color: var(--muted-text-color);
   }
 
   .results dd {
@@ -354,7 +358,7 @@ const {
   }
 
   .results .primary-result dd {
-    color: #3158d3;
+    color: var(--link-color);
     font-size: 1.25rem;
   }
 
@@ -362,10 +366,10 @@ const {
     display: grid;
     min-height: 190px;
     margin-top: 1.5rem;
-    border: 1px dashed #c9ceda;
+    border: 1px dashed var(--input-border);
     border-radius: 10px;
-    background: #f9faff;
-    color: #777f91;
+    background: var(--chart-background);
+    color: var(--muted-text-color);
     place-items: center;
   }
 
@@ -378,12 +382,17 @@ const {
     padding: clamp(1.25rem, 4vw, 2rem);
   }
 
+  .content-section:has(.faq-list) {
+    background: var(--faq-background);
+  }
+
   .faq-list {
-    border-top: 1px solid #e6e8ef;
+    border-top: 1px solid var(--border-subtle);
+    background: var(--faq-background);
   }
 
   details {
-    border-bottom: 1px solid #e6e8ef;
+    border-bottom: 1px solid var(--border-subtle);
     padding: 1rem 0;
   }
 
@@ -395,7 +404,7 @@ const {
   details p {
     max-width: 760px;
     margin: 0.65rem 0 0;
-    color: #5b6477;
+    color: var(--muted-text-color);
   }
 
   .related-links {
@@ -405,17 +414,17 @@ const {
   }
 
   .related-links a {
-    border: 1px solid #dfe3ec;
+    border: 1px solid var(--border-color);
     border-radius: 10px;
-    color: #2446ad;
+    color: var(--link-color);
     font-weight: 650;
     padding: 0.9rem 1rem;
     text-decoration: none;
   }
 
   .related-links a:hover {
-    border-color: #3158d3;
-    background: #f5f7ff;
+    border-color: var(--link-color);
+    background: var(--subtle-background);
   }
 
   @media (max-width: 760px) {

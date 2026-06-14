@@ -1,0 +1,158 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { helocCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = helocCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={helocCalculator.title}
+  eyebrow={helocCalculator.eyebrow}
+  description={helocCalculator.description}
+  inputs={helocCalculator.inputs}
+  outputs={helocCalculator.outputs}
+  faq={helocCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateHeloc } from '../../../lib/math';
+
+    const homeValueInput =
+      document.querySelector<HTMLInputElement>('#home-value');
+    const form = homeValueInput?.form ?? null;
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const warning = document.querySelector<HTMLElement>('#form-warning');
+    const maximumAvailableHelocResult = document.querySelector<HTMLElement>(
+      '#maximum-available-heloc-result',
+    );
+    const availableEquityResult = document.querySelector<HTMLElement>(
+      '#available-equity-result',
+    );
+    const interestOnlyMonthlyPaymentResult =
+      document.querySelector<HTMLElement>(
+        '#interest-only-monthly-payment-result',
+      );
+    const approvalBufferResult = document.querySelector<HTMLElement>(
+      '#approval-buffer-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !warning ||
+        !maximumAvailableHelocResult ||
+        !availableEquityResult ||
+        !interestOnlyMonthlyPaymentResult ||
+        !approvalBufferResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const homeValue = parseCalculatorNumber(data.get('homeValue'));
+      const currentMortgageBalance = parseCalculatorNumber(
+        data.get('currentMortgageBalance'),
+      );
+      const maximumCltvPercent = parseCalculatorNumber(
+        data.get('maximumCltv'),
+      );
+      const requestedHelocAmount = parseCalculatorNumber(
+        data.get('requestedHelocAmount'),
+      );
+      const annualInterestRatePercent = parseCalculatorNumber(
+        data.get('annualInterestRate'),
+      );
+      const drawPeriodYears = parseCalculatorNumber(
+        data.get('drawPeriodYears'),
+      );
+      const values = [
+        homeValue,
+        currentMortgageBalance,
+        maximumCltvPercent,
+        requestedHelocAmount,
+        annualInterestRatePercent,
+        drawPeriodYears,
+      ];
+
+      if (
+        values.some((value) => !Number.isFinite(value)) ||
+        homeValue <= 0 ||
+        currentMortgageBalance < 0 ||
+        maximumCltvPercent <= 0 ||
+        maximumCltvPercent > 100 ||
+        requestedHelocAmount < 0 ||
+        annualInterestRatePercent < 0 ||
+        drawPeriodYears <= 0
+      ) {
+        error.textContent =
+          'Home value and draw period must be greater than 0. CLTV must be above 0% and no more than 100%, and all other values cannot be negative.';
+        error.hidden = false;
+        warning.hidden = true;
+        return false;
+      }
+
+      if (currentMortgageBalance > homeValue) {
+        error.textContent =
+          'Current mortgage balance cannot exceed the home value.';
+        error.hidden = false;
+        warning.hidden = true;
+        return false;
+      }
+
+      const result = calculateHeloc({
+        homeValue,
+        currentMortgageBalance,
+        maximumCltvPercent,
+        requestedHelocAmount,
+        annualInterestRatePercent,
+      });
+
+      error.hidden = true;
+      maximumAvailableHelocResult.textContent = currency.format(
+        result.maximumAvailableHeloc,
+      );
+      availableEquityResult.textContent = currency.format(
+        result.availableEquity,
+      );
+      interestOnlyMonthlyPaymentResult.textContent = currency.format(
+        result.interestOnlyMonthlyPayment,
+      );
+      approvalBufferResult.textContent = currency.format(
+        result.approvalBufferOrShortfall,
+      );
+
+      if (result.approvalBufferOrShortfall < 0) {
+        warning.textContent = `The requested amount exceeds the estimated HELOC limit by ${currency.format(
+          Math.abs(result.approvalBufferOrShortfall),
+        )}.`;
+        warning.hidden = false;
+      } else {
+        warning.hidden = true;
+      }
+
+      return true;
+    }
+
+    if (form) {
+      form.onsubmit = (event) => {
+        event.preventDefault();
+        trackSuccessfulCalculation('heloc', calculate);
+      };
+    }
+
+    calculate();
+  </script>
+</CalculatorPage>

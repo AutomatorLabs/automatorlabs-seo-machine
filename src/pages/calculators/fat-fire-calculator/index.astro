@@ -1,0 +1,174 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { fatFireCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = fatFireCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={fatFireCalculator.title}
+  eyebrow={fatFireCalculator.eyebrow}
+  description={fatFireCalculator.description}
+  inputs={fatFireCalculator.inputs}
+  outputs={fatFireCalculator.outputs}
+  faq={fatFireCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateFinancialIndependenceDate } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const fatFireNumberResult = document.querySelector<HTMLElement>(
+      '#fat-fire-number-result',
+    );
+    const amountStillNeededResult = document.querySelector<HTMLElement>(
+      '#amount-still-needed-result',
+    );
+    const estimatedYearsResult = document.querySelector<HTMLElement>(
+      '#estimated-years-result',
+    );
+    const estimatedFatFireDateResult = document.querySelector<HTMLElement>(
+      '#estimated-fat-fire-date-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const fatFireDate = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+    });
+
+    function addMonths(date: Date, months: number): Date {
+      const result = new Date(date);
+      const originalDay = result.getDate();
+
+      result.setDate(1);
+      result.setMonth(result.getMonth() + months);
+      const lastDayOfTargetMonth = new Date(
+        result.getFullYear(),
+        result.getMonth() + 1,
+        0,
+      ).getDate();
+      result.setDate(Math.min(originalDay, lastDayOfTargetMonth));
+
+      return result;
+    }
+
+    function formatDuration(totalMonths: number): string {
+      const years = Math.floor(totalMonths / 12);
+      const months = totalMonths % 12;
+      const parts: string[] = [];
+
+      if (years > 0) {
+        parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+      }
+
+      if (months > 0) {
+        parts.push(`${months} ${months === 1 ? 'month' : 'months'}`);
+      }
+
+      return parts.length > 0 ? parts.join(', ') : 'Less than 1 month';
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !fatFireNumberResult ||
+        !amountStillNeededResult ||
+        !estimatedYearsResult ||
+        !estimatedFatFireDateResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const targetAnnualSpending = parseCalculatorNumber(
+        data.get('targetAnnualSpending'),
+      );
+      const withdrawalRatePercent = parseCalculatorNumber(
+        data.get('withdrawalRate'),
+      );
+      const currentInvestedAssets = parseCalculatorNumber(
+        data.get('currentInvestedAssets'),
+      );
+      const monthlyContribution = parseCalculatorNumber(
+        data.get('monthlyContribution'),
+      );
+      const expectedAnnualReturnPercent = parseCalculatorNumber(
+        data.get('expectedAnnualReturn'),
+      );
+
+      if (
+        !Number.isFinite(targetAnnualSpending) ||
+        !Number.isFinite(withdrawalRatePercent) ||
+        !Number.isFinite(currentInvestedAssets) ||
+        !Number.isFinite(monthlyContribution) ||
+        !Number.isFinite(expectedAnnualReturnPercent) ||
+        targetAnnualSpending <= 0 ||
+        withdrawalRatePercent <= 0 ||
+        currentInvestedAssets < 0 ||
+        monthlyContribution < 0 ||
+        expectedAnnualReturnPercent < 0
+      ) {
+        error.textContent =
+          'Target annual spending and withdrawal rate must be greater than 0. Current assets, monthly contributions, and expected return cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateFinancialIndependenceDate({
+        currentInvestedAssets,
+        annualExpenses: targetAnnualSpending,
+        monthlyContribution,
+        expectedAnnualReturnPercent,
+        withdrawalRatePercent,
+      });
+
+      fatFireNumberResult.textContent = currency.format(result.fireNumber);
+      amountStillNeededResult.textContent = currency.format(
+        result.amountStillNeeded,
+      );
+
+      if (result.status === 'independent') {
+        estimatedYearsResult.textContent = 'Already at Fat FIRE';
+        estimatedFatFireDateResult.textContent = 'Completed';
+      } else if (result.status === 'unreachable') {
+        estimatedYearsResult.textContent =
+          'Unreachable under current assumptions';
+        estimatedFatFireDateResult.textContent =
+          'Increase contributions or expected return';
+      } else {
+        const totalMonths = Math.round(
+          (result.estimatedYearsToFinancialIndependence ?? 0) * 12,
+        );
+        estimatedYearsResult.textContent = formatDuration(totalMonths);
+        estimatedFatFireDateResult.textContent = fatFireDate.format(
+          addMonths(new Date(), totalMonths),
+        );
+      }
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('fat_fire', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

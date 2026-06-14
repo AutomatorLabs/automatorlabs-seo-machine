@@ -1,0 +1,126 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { collegeSavings529Calculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = collegeSavings529Calculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={collegeSavings529Calculator.title}
+  eyebrow={collegeSavings529Calculator.eyebrow}
+  description={collegeSavings529Calculator.description}
+  inputs={collegeSavings529Calculator.inputs}
+  outputs={collegeSavings529Calculator.outputs}
+  faq={collegeSavings529Calculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculate529CollegeSavings } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const projectedBalanceResult = document.querySelector<HTMLElement>(
+      '#projected-balance-result',
+    );
+    const totalContributionsResult = document.querySelector<HTMLElement>(
+      '#total-contributions-result',
+    );
+    const investmentGrowthResult = document.querySelector<HTMLElement>(
+      '#investment-growth-result',
+    );
+    const surplusShortfallResult = document.querySelector<HTMLElement>(
+      '#surplus-shortfall-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !projectedBalanceResult ||
+        !totalContributionsResult ||
+        !investmentGrowthResult ||
+        !surplusShortfallResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const currentBalance = parseCalculatorNumber(data.get('currentBalance'));
+      const monthlyContribution = parseCalculatorNumber(
+        data.get('monthlyContribution'),
+      );
+      const expectedAnnualReturnPercent = parseCalculatorNumber(
+        data.get('expectedAnnualReturn'),
+      );
+      const yearsUntilCollege = parseCalculatorNumber(
+        data.get('yearsUntilCollege'),
+      );
+      const targetCollegeCost = parseCalculatorNumber(
+        data.get('targetCollegeCost'),
+      );
+
+      if (
+        !Number.isFinite(currentBalance) ||
+        !Number.isFinite(monthlyContribution) ||
+        !Number.isFinite(expectedAnnualReturnPercent) ||
+        !Number.isFinite(yearsUntilCollege) ||
+        !Number.isFinite(targetCollegeCost) ||
+        currentBalance < 0 ||
+        monthlyContribution < 0 ||
+        expectedAnnualReturnPercent < 0 ||
+        yearsUntilCollege <= 0 ||
+        !Number.isInteger(yearsUntilCollege) ||
+        targetCollegeCost < 0
+      ) {
+        error.textContent =
+          'Current balance, monthly contribution, expected return, and target cost cannot be negative. Whole years until college must be greater than 0.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculate529CollegeSavings({
+        currentBalance,
+        monthlyContribution,
+        expectedAnnualReturnPercent,
+        yearsUntilCollege,
+        targetCollegeCost,
+      });
+
+      projectedBalanceResult.textContent = currency.format(
+        result.projectedBalance,
+      );
+      totalContributionsResult.textContent = currency.format(
+        result.totalContributions,
+      );
+      investmentGrowthResult.textContent = currency.format(
+        result.investmentGrowth,
+      );
+      surplusShortfallResult.textContent = currency.format(
+        result.surplusOrShortfall,
+      );
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('529_college_savings', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

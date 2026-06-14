@@ -1,0 +1,166 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { yearsToRetirementCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = yearsToRetirementCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={yearsToRetirementCalculator.title}
+  eyebrow={yearsToRetirementCalculator.eyebrow}
+  description={yearsToRetirementCalculator.description}
+  inputs={yearsToRetirementCalculator.inputs}
+  outputs={yearsToRetirementCalculator.outputs}
+  faq={yearsToRetirementCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateYearsToRetirement } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const yearsByAgeTargetResult = document.querySelector<HTMLElement>(
+      '#years-by-age-target-result',
+    );
+    const portfolioGapResult = document.querySelector<HTMLElement>(
+      '#portfolio-gap-result',
+    );
+    const estimatedYearsToPortfolioResult =
+      document.querySelector<HTMLElement>(
+        '#estimated-years-to-portfolio-result',
+      );
+    const targetLikelihoodResult = document.querySelector<HTMLElement>(
+      '#target-likelihood-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function formatDuration(yearsValue: number): string {
+      const totalMonths = Math.round(yearsValue * 12);
+      const years = Math.floor(totalMonths / 12);
+      const months = totalMonths % 12;
+      const parts: string[] = [];
+
+      if (years > 0) {
+        parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+      }
+
+      if (months > 0) {
+        parts.push(`${months} ${months === 1 ? 'month' : 'months'}`);
+      }
+
+      return parts.length > 0 ? parts.join(', ') : 'Target reached';
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !yearsByAgeTargetResult ||
+        !portfolioGapResult ||
+        !estimatedYearsToPortfolioResult ||
+        !targetLikelihoodResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const currentAge = parseCalculatorNumber(data.get('currentAge'));
+      const targetRetirementAge = parseCalculatorNumber(
+        data.get('targetRetirementAge'),
+      );
+      const currentInvestedAssets = parseCalculatorNumber(
+        data.get('currentInvestedAssets'),
+      );
+      const targetRetirementPortfolio = parseCalculatorNumber(
+        data.get('targetRetirementPortfolio'),
+      );
+      const monthlyContribution = parseCalculatorNumber(
+        data.get('monthlyContribution'),
+      );
+      const expectedAnnualReturnPercent = parseCalculatorNumber(
+        data.get('expectedAnnualReturn'),
+      );
+
+      if (
+        !Number.isFinite(currentAge) ||
+        !Number.isFinite(targetRetirementAge) ||
+        !Number.isFinite(currentInvestedAssets) ||
+        !Number.isFinite(targetRetirementPortfolio) ||
+        !Number.isFinite(monthlyContribution) ||
+        !Number.isFinite(expectedAnnualReturnPercent) ||
+        currentAge <= 0 ||
+        targetRetirementAge <= currentAge ||
+        currentInvestedAssets < 0 ||
+        targetRetirementPortfolio <= 0 ||
+        monthlyContribution < 0 ||
+        expectedAnnualReturnPercent < 0
+      ) {
+        error.textContent =
+          'Current age and target portfolio must be greater than 0, and target retirement age must be greater than current age. Assets, contributions, and expected return cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateYearsToRetirement({
+        currentAge,
+        targetRetirementAge,
+        currentInvestedAssets,
+        targetRetirementPortfolio,
+        monthlyContribution,
+        expectedAnnualReturnPercent,
+      });
+
+      yearsByAgeTargetResult.textContent =
+        `${result.yearsByAgeTarget} ${result.yearsByAgeTarget === 1 ? 'year' : 'years'}`;
+      portfolioGapResult.textContent = currency.format(result.portfolioGap);
+
+      if (result.status === 'funded') {
+        estimatedYearsToPortfolioResult.textContent = 'Target reached';
+        targetLikelihoodResult.textContent =
+          'Yes, the portfolio target is already reached';
+      } else if (result.status === 'unreachable') {
+        estimatedYearsToPortfolioResult.textContent =
+          'Unreachable under current assumptions';
+        targetLikelihoodResult.textContent =
+          'No, increase contributions or expected return';
+      } else {
+        estimatedYearsToPortfolioResult.textContent = formatDuration(
+          result.estimatedYearsToTargetPortfolio ?? 0,
+        );
+
+        if (result.status === 'before-target') {
+          targetLikelihoodResult.textContent =
+            'Yes, before the target retirement age';
+        } else if (result.status === 'by-target') {
+          targetLikelihoodResult.textContent =
+            'Yes, by the target retirement age';
+        } else {
+          targetLikelihoodResult.textContent =
+            'No, the estimate is after the target retirement age';
+        }
+      }
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('years_to_retirement', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

@@ -1,0 +1,134 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { retirementIncomeGapCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = retirementIncomeGapCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={retirementIncomeGapCalculator.title}
+  eyebrow={retirementIncomeGapCalculator.eyebrow}
+  description={retirementIncomeGapCalculator.description}
+  inputs={retirementIncomeGapCalculator.inputs}
+  outputs={retirementIncomeGapCalculator.outputs}
+  faq={retirementIncomeGapCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import {
+      parseCalculatorNumber,
+      parseOptionalCalculatorNumber,
+    } from '../../../lib/input';
+    import { calculateRetirementIncomeGap } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const totalNonPortfolioIncomeResult =
+      document.querySelector<HTMLElement>(
+        '#total-non-portfolio-income-result',
+      );
+    const annualIncomeGapResult = document.querySelector<HTMLElement>(
+      '#annual-income-gap-result',
+    );
+    const portfolioWithdrawalSupportedResult =
+      document.querySelector<HTMLElement>(
+        '#portfolio-withdrawal-supported-result',
+      );
+    const surplusShortfallResult = document.querySelector<HTMLElement>(
+      '#surplus-shortfall-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function optionalIncome(data: FormData, name: string): number {
+      return parseOptionalCalculatorNumber(data.get(name)) ?? 0;
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !totalNonPortfolioIncomeResult ||
+        !annualIncomeGapResult ||
+        !portfolioWithdrawalSupportedResult ||
+        !surplusShortfallResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const desiredAnnualRetirementIncome = parseCalculatorNumber(
+        data.get('desiredAnnualRetirementIncome'),
+      );
+      const nonPortfolioIncome = [
+        optionalIncome(data, 'socialSecurityIncome'),
+        optionalIncome(data, 'pensionIncome'),
+        optionalIncome(data, 'rentalIncome'),
+        optionalIncome(data, 'dividendIncome'),
+        optionalIncome(data, 'otherPassiveIncome'),
+      ];
+      const portfolioValue = parseCalculatorNumber(data.get('portfolioValue'));
+      const withdrawalRatePercent = parseCalculatorNumber(
+        data.get('withdrawalRate'),
+      );
+
+      if (
+        !Number.isFinite(desiredAnnualRetirementIncome) ||
+        nonPortfolioIncome.some(
+          (income) => !Number.isFinite(income) || income < 0,
+        ) ||
+        !Number.isFinite(portfolioValue) ||
+        !Number.isFinite(withdrawalRatePercent) ||
+        desiredAnnualRetirementIncome <= 0 ||
+        portfolioValue < 0 ||
+        withdrawalRatePercent <= 0
+      ) {
+        error.textContent =
+          'Desired annual retirement income and withdrawal rate must be greater than 0. Income sources and portfolio value cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateRetirementIncomeGap({
+        desiredAnnualRetirementIncome,
+        nonPortfolioIncome,
+        portfolioValue,
+        withdrawalRatePercent,
+      });
+
+      totalNonPortfolioIncomeResult.textContent = currency.format(
+        result.totalNonPortfolioIncome,
+      );
+      annualIncomeGapResult.textContent = currency.format(
+        result.annualIncomeGap,
+      );
+      portfolioWithdrawalSupportedResult.textContent = currency.format(
+        result.portfolioWithdrawalSupported,
+      );
+
+      const difference = result.surplusOrShortfall;
+      surplusShortfallResult.textContent =
+        `${difference >= 0 ? 'Surplus' : 'Shortfall'}: ${currency.format(Math.abs(difference))}`;
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('retirement_income_gap', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

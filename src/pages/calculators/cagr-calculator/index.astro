@@ -1,0 +1,103 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { cagrCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = cagrCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={cagrCalculator.title}
+  eyebrow={cagrCalculator.eyebrow}
+  description={cagrCalculator.description}
+  inputs={cagrCalculator.inputs}
+  outputs={cagrCalculator.outputs}
+  faq={cagrCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateCagr } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const cagrResult = document.querySelector<HTMLElement>('#cagr-result');
+    const totalGrowthResult =
+      document.querySelector<HTMLElement>('#total-growth-result');
+    const growthMultipleResult = document.querySelector<HTMLElement>(
+      '#growth-multiple-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const percentage = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    const multiple = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !cagrResult ||
+        !totalGrowthResult ||
+        !growthMultipleResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const startingValue = parseCalculatorNumber(data.get('startingValue'));
+      const endingValue = parseCalculatorNumber(data.get('endingValue'));
+      const years = parseCalculatorNumber(data.get('years'));
+
+      if (
+        !Number.isFinite(startingValue) ||
+        !Number.isFinite(endingValue) ||
+        !Number.isFinite(years) ||
+        startingValue <= 0 ||
+        endingValue < 0 ||
+        years <= 0
+      ) {
+        error.textContent =
+          'Starting value and years must be greater than 0. Ending value cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateCagr({
+        startingValue,
+        endingValue,
+        years,
+      });
+
+      cagrResult.textContent = `${percentage.format(result.cagr)}%`;
+      totalGrowthResult.textContent = currency.format(result.totalGrowth);
+      growthMultipleResult.textContent =
+        `${multiple.format(result.growthMultiple)}x`;
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('cagr', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

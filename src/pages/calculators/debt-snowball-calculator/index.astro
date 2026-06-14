@@ -1,0 +1,141 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { debtSnowballCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = debtSnowballCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={debtSnowballCalculator.title}
+  eyebrow={debtSnowballCalculator.eyebrow}
+  description={debtSnowballCalculator.description}
+  inputs={debtSnowballCalculator.inputs}
+  outputs={debtSnowballCalculator.outputs}
+  faq={debtSnowballCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateDebtSnowball } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const totalDebtResult =
+      document.querySelector<HTMLElement>('#total-debt-result');
+    const totalMinimumPaymentsResult = document.querySelector<HTMLElement>(
+      '#total-minimum-payments-result',
+    );
+    const estimatedPayoffTimeResult = document.querySelector<HTMLElement>(
+      '#estimated-payoff-time-result',
+    );
+    const suggestedPayoffOrderResult = document.querySelector<HTMLElement>(
+      '#suggested-payoff-order-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function formatMonths(totalMonths: number): string {
+      const years = Math.floor(totalMonths / 12);
+      const months = totalMonths % 12;
+      const parts: string[] = [];
+
+      if (years > 0) {
+        parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+      }
+
+      if (months > 0) {
+        parts.push(`${months} ${months === 1 ? 'month' : 'months'}`);
+      }
+
+      return parts.length > 0 ? parts.join(', ') : '0 months';
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !totalDebtResult ||
+        !totalMinimumPaymentsResult ||
+        !estimatedPayoffTimeResult ||
+        !suggestedPayoffOrderResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const debts = [1, 2, 3].map((number) => ({
+        name: `Debt ${number}`,
+        balance: parseCalculatorNumber(data.get(`debt${number}Balance`)),
+        minimumMonthlyPayment: parseCalculatorNumber(
+          data.get(`debt${number}MinimumPayment`),
+        ),
+      }));
+      const extraMonthlyPayment = parseCalculatorNumber(
+        data.get('extraMonthlyPayment'),
+      );
+      const values = debts.flatMap((debt) => [
+        debt.balance,
+        debt.minimumMonthlyPayment,
+      ]);
+      const totalDebt = debts.reduce(
+        (total, debt) => total + debt.balance,
+        0,
+      );
+      const totalMonthlyPayment =
+        debts.reduce(
+          (total, debt) =>
+            total +
+            (debt.balance > 0 ? debt.minimumMonthlyPayment : 0),
+          0,
+        ) + extraMonthlyPayment;
+
+      if (
+        values.some((value) => !Number.isFinite(value) || value < 0) ||
+        !Number.isFinite(extraMonthlyPayment) ||
+        extraMonthlyPayment < 0 ||
+        totalDebt <= 0 ||
+        totalMonthlyPayment <= 0
+      ) {
+        error.textContent =
+          'Balances, minimum payments, and the extra payment cannot be negative. Enter at least one debt balance and a total monthly payment greater than $0.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateDebtSnowball({
+        debts,
+        extraMonthlyPayment,
+      });
+
+      totalDebtResult.textContent = currency.format(result.totalDebt);
+      totalMinimumPaymentsResult.textContent = currency.format(
+        result.totalMinimumPayments,
+      );
+      estimatedPayoffTimeResult.textContent = formatMonths(
+        result.estimatedPayoffMonths,
+      );
+      suggestedPayoffOrderResult.textContent =
+        result.suggestedPayoffOrder.join(' -> ');
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('debt_snowball', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

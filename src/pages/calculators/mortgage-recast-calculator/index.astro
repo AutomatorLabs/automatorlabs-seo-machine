@@ -1,0 +1,141 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { mortgageRecastCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = mortgageRecastCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={mortgageRecastCalculator.title}
+  eyebrow={mortgageRecastCalculator.eyebrow}
+  description={mortgageRecastCalculator.description}
+  inputs={mortgageRecastCalculator.inputs}
+  outputs={mortgageRecastCalculator.outputs}
+  faq={mortgageRecastCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateMortgageRecast } from '../../../lib/math';
+
+    const currentBalanceInput = document.querySelector<HTMLInputElement>(
+      '#current-mortgage-balance',
+    );
+    const form = currentBalanceInput?.form ?? null;
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const currentMonthlyPaymentResult = document.querySelector<HTMLElement>(
+      '#current-monthly-payment-result',
+    );
+    const newMonthlyPaymentResult = document.querySelector<HTMLElement>(
+      '#new-monthly-payment-result',
+    );
+    const monthlyPaymentReductionResult =
+      document.querySelector<HTMLElement>(
+        '#monthly-payment-reduction-result',
+      );
+    const totalInterestSavedResult = document.querySelector<HTMLElement>(
+      '#total-interest-saved-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !currentMonthlyPaymentResult ||
+        !newMonthlyPaymentResult ||
+        !monthlyPaymentReductionResult ||
+        !totalInterestSavedResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const currentMortgageBalance = parseCalculatorNumber(
+        data.get('currentMortgageBalance'),
+      );
+      const annualInterestRatePercent = parseCalculatorNumber(
+        data.get('annualInterestRate'),
+      );
+      const remainingLoanTermYears = parseCalculatorNumber(
+        data.get('remainingLoanTerm'),
+      );
+      const lumpSumRecastPayment = parseCalculatorNumber(
+        data.get('lumpSumRecastPayment'),
+      );
+      const recastFee = parseCalculatorNumber(data.get('recastFee'));
+      const values = [
+        currentMortgageBalance,
+        annualInterestRatePercent,
+        remainingLoanTermYears,
+        lumpSumRecastPayment,
+        recastFee,
+      ];
+
+      if (
+        values.some((value) => !Number.isFinite(value)) ||
+        currentMortgageBalance <= 0 ||
+        annualInterestRatePercent < 0 ||
+        remainingLoanTermYears <= 0 ||
+        !Number.isInteger(remainingLoanTermYears) ||
+        lumpSumRecastPayment <= 0 ||
+        recastFee < 0
+      ) {
+        error.textContent =
+          'Mortgage balance, remaining term, and lump-sum payment must be greater than 0. The term must be a whole number of years, and the interest rate and fee cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      if (lumpSumRecastPayment > currentMortgageBalance) {
+        error.textContent =
+          'The lump-sum recast payment cannot exceed the current mortgage balance.';
+        error.hidden = false;
+        return false;
+      }
+
+      const result = calculateMortgageRecast({
+        currentMortgageBalance,
+        annualInterestRatePercent,
+        remainingLoanTermYears,
+        lumpSumRecastPayment,
+        recastFee,
+      });
+
+      error.hidden = true;
+      currentMonthlyPaymentResult.textContent = currency.format(
+        result.currentMonthlyPayment,
+      );
+      newMonthlyPaymentResult.textContent = currency.format(
+        result.newMonthlyPayment,
+      );
+      monthlyPaymentReductionResult.textContent = currency.format(
+        result.monthlyPaymentReduction,
+      );
+      totalInterestSavedResult.textContent = currency.format(
+        result.totalInterestSaved,
+      );
+
+      return true;
+    }
+
+    if (form) {
+      form.onsubmit = (event) => {
+        event.preventDefault();
+        trackSuccessfulCalculation('mortgage_recast', calculate);
+      };
+    }
+
+    calculate();
+  </script>
+</CalculatorPage>

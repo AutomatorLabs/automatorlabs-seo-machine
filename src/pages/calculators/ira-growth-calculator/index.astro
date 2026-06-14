@@ -1,0 +1,116 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { iraGrowthCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = iraGrowthCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={iraGrowthCalculator.title}
+  eyebrow={iraGrowthCalculator.eyebrow}
+  description={iraGrowthCalculator.description}
+  inputs={iraGrowthCalculator.inputs}
+  outputs={iraGrowthCalculator.outputs}
+  faq={iraGrowthCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateIraGrowth } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const endingBalanceResult = document.querySelector<HTMLElement>(
+      '#ending-balance-result',
+    );
+    const totalContributionsResult = document.querySelector<HTMLElement>(
+      '#total-contributions-result',
+    );
+    const investmentGrowthResult = document.querySelector<HTMLElement>(
+      '#investment-growth-result',
+    );
+    const averageAnnualGrowthResult = document.querySelector<HTMLElement>(
+      '#average-annual-growth-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !endingBalanceResult ||
+        !totalContributionsResult ||
+        !investmentGrowthResult ||
+        !averageAnnualGrowthResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const currentBalance = parseCalculatorNumber(data.get('currentBalance'));
+      const annualContribution = parseCalculatorNumber(
+        data.get('annualContribution'),
+      );
+      const expectedAnnualReturnPercent = parseCalculatorNumber(
+        data.get('expectedAnnualReturn'),
+      );
+      const years = parseCalculatorNumber(data.get('years'));
+
+      if (
+        !Number.isFinite(currentBalance) ||
+        !Number.isFinite(annualContribution) ||
+        !Number.isFinite(expectedAnnualReturnPercent) ||
+        !Number.isFinite(years) ||
+        currentBalance < 0 ||
+        annualContribution < 0 ||
+        expectedAnnualReturnPercent < 0 ||
+        years <= 0 ||
+        !Number.isInteger(years)
+      ) {
+        error.textContent =
+          'Current balance, annual contribution, and expected return cannot be negative. Whole years must be greater than 0.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateIraGrowth({
+        currentBalance,
+        annualContribution,
+        expectedAnnualReturnPercent,
+        years,
+      });
+
+      endingBalanceResult.textContent = currency.format(result.endingBalance);
+      totalContributionsResult.textContent = currency.format(
+        result.totalContributions,
+      );
+      investmentGrowthResult.textContent = currency.format(
+        result.investmentGrowth,
+      );
+      averageAnnualGrowthResult.textContent = currency.format(
+        result.averageAnnualGrowth,
+      );
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('ira_growth', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

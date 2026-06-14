@@ -9,10 +9,14 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "test:calculators": "playwright test tests/calculators.spec.ts",
     "astro": "astro"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
     "astro": "^6.4.6"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
   }
 }

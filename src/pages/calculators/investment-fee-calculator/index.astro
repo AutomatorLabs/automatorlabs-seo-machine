@@ -1,0 +1,128 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { investmentFeeCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = investmentFeeCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={investmentFeeCalculator.title}
+  eyebrow={investmentFeeCalculator.eyebrow}
+  description={investmentFeeCalculator.description}
+  inputs={investmentFeeCalculator.inputs}
+  outputs={investmentFeeCalculator.outputs}
+  faq={investmentFeeCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateInvestmentFeeImpact } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const endingBalanceBeforeFeesResult = document.querySelector<HTMLElement>(
+      '#ending-balance-before-fees-result',
+    );
+    const endingBalanceAfterFeesResult = document.querySelector<HTMLElement>(
+      '#ending-balance-after-fees-result',
+    );
+    const totalCostOfFeesResult = document.querySelector<HTMLElement>(
+      '#total-cost-of-fees-result',
+    );
+    const feeDragPercentageResult = document.querySelector<HTMLElement>(
+      '#fee-drag-percentage-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const percentage = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !endingBalanceBeforeFeesResult ||
+        !endingBalanceAfterFeesResult ||
+        !totalCostOfFeesResult ||
+        !feeDragPercentageResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const startingInvestment = parseCalculatorNumber(
+        data.get('startingInvestment'),
+      );
+      const monthlyContribution = parseCalculatorNumber(
+        data.get('monthlyContribution'),
+      );
+      const annualFee = parseCalculatorNumber(data.get('annualFee'));
+      const expectedReturn = parseCalculatorNumber(data.get('expectedReturn'));
+      const years = parseCalculatorNumber(data.get('years'));
+
+      const values = [
+        startingInvestment,
+        monthlyContribution,
+        annualFee,
+        expectedReturn,
+        years,
+      ];
+      const isInvalid =
+        values.some((value) => !Number.isFinite(value)) ||
+        startingInvestment < 0 ||
+        monthlyContribution < 0 ||
+        annualFee < 0 ||
+        expectedReturn < 0 ||
+        years <= 0;
+
+      if (isInvalid) {
+        error.textContent =
+          'Starting investment, monthly contribution, annual fee, and expected return cannot be negative. Number of years must be greater than 0.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateInvestmentFeeImpact({
+        startingInvestment,
+        monthlyContribution,
+        annualFeePercent: annualFee,
+        expectedAnnualReturnPercent: expectedReturn,
+        years,
+      });
+
+      endingBalanceBeforeFeesResult.textContent = currency.format(
+        result.endingBalanceBeforeFees,
+      );
+      endingBalanceAfterFeesResult.textContent = currency.format(
+        result.endingBalanceAfterFees,
+      );
+      totalCostOfFeesResult.textContent = currency.format(
+        result.totalCostOfFees,
+      );
+      feeDragPercentageResult.textContent =
+        `${percentage.format(result.feeDragPercentage)}%`;
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('investment_fee', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

@@ -1,0 +1,124 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { collegeCostInflationCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = collegeCostInflationCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={collegeCostInflationCalculator.title}
+  eyebrow={collegeCostInflationCalculator.eyebrow}
+  description={collegeCostInflationCalculator.description}
+  inputs={collegeCostInflationCalculator.inputs}
+  outputs={collegeCostInflationCalculator.outputs}
+  faq={collegeCostInflationCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateCollegeCostInflation } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const firstYearCollegeCostResult = document.querySelector<HTMLElement>(
+      '#first-year-college-cost-result',
+    );
+    const totalCollegeCostResult = document.querySelector<HTMLElement>(
+      '#total-college-cost-result',
+    );
+    const totalIncreaseResult = document.querySelector<HTMLElement>(
+      '#total-increase-result',
+    );
+    const inflationMultiplierResult = document.querySelector<HTMLElement>(
+      '#inflation-multiplier-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+    const multiplier = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !firstYearCollegeCostResult ||
+        !totalCollegeCostResult ||
+        !totalIncreaseResult ||
+        !inflationMultiplierResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const currentAnnualCollegeCost = parseCalculatorNumber(
+        data.get('currentAnnualCollegeCost'),
+      );
+      const educationInflationRatePercent = parseCalculatorNumber(
+        data.get('educationInflationRate'),
+      );
+      const yearsUntilCollege = parseCalculatorNumber(
+        data.get('yearsUntilCollege'),
+      );
+      const numberOfCollegeYears = parseCalculatorNumber(
+        data.get('numberOfCollegeYears'),
+      );
+
+      if (
+        !Number.isFinite(currentAnnualCollegeCost) ||
+        !Number.isFinite(educationInflationRatePercent) ||
+        !Number.isFinite(yearsUntilCollege) ||
+        !Number.isFinite(numberOfCollegeYears) ||
+        currentAnnualCollegeCost < 0 ||
+        educationInflationRatePercent < 0 ||
+        yearsUntilCollege < 0 ||
+        !Number.isInteger(yearsUntilCollege) ||
+        numberOfCollegeYears <= 0 ||
+        !Number.isInteger(numberOfCollegeYears)
+      ) {
+        error.textContent =
+          'Current annual cost and education inflation cannot be negative. Years until college must be a whole number of 0 or more, and college years must be a whole number greater than 0.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateCollegeCostInflation({
+        currentAnnualCollegeCost,
+        educationInflationRatePercent,
+        yearsUntilCollege,
+        numberOfCollegeYears,
+      });
+
+      firstYearCollegeCostResult.textContent = currency.format(
+        result.firstYearCollegeCost,
+      );
+      totalCollegeCostResult.textContent = currency.format(
+        result.totalCollegeCost,
+      );
+      totalIncreaseResult.textContent = currency.format(result.totalIncrease);
+      inflationMultiplierResult.textContent =
+        `${multiplier.format(result.inflationMultiplier)}x`;
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('college_cost_inflation', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

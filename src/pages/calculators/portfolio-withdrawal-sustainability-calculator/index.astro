@@ -1,0 +1,136 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { portfolioWithdrawalSustainabilityCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems =
+  portfolioWithdrawalSustainabilityCalculator.relatedIds.flatMap((id) => {
+    const item = contentItems.find((contentItem) => contentItem.id === id);
+    return item ? [{ title: item.title, url: item.url }] : [];
+  });
+---
+
+<CalculatorPage
+  title={portfolioWithdrawalSustainabilityCalculator.title}
+  eyebrow={portfolioWithdrawalSustainabilityCalculator.eyebrow}
+  description={portfolioWithdrawalSustainabilityCalculator.description}
+  inputs={portfolioWithdrawalSustainabilityCalculator.inputs}
+  outputs={portfolioWithdrawalSustainabilityCalculator.outputs}
+  faq={portfolioWithdrawalSustainabilityCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import {
+      calculatePortfolioWithdrawalSustainability,
+    } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const endingPortfolioBalanceResult =
+      document.querySelector<HTMLElement>(
+        '#ending-portfolio-balance-result',
+      );
+    const totalWithdrawalsResult = document.querySelector<HTMLElement>(
+      '#total-withdrawals-result',
+    );
+    const realReturnResult = document.querySelector<HTMLElement>(
+      '#real-return-result',
+    );
+    const sustainabilityResult = document.querySelector<HTMLElement>(
+      '#sustainability-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const percent = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !endingPortfolioBalanceResult ||
+        !totalWithdrawalsResult ||
+        !realReturnResult ||
+        !sustainabilityResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const portfolioValue = parseCalculatorNumber(data.get('portfolioValue'));
+      const annualWithdrawalAmount = parseCalculatorNumber(
+        data.get('annualWithdrawalAmount'),
+      );
+      const expectedAnnualReturnPercent = parseCalculatorNumber(
+        data.get('expectedAnnualReturn'),
+      );
+      const inflationRatePercent = parseCalculatorNumber(
+        data.get('inflationRate'),
+      );
+      const years = parseCalculatorNumber(data.get('years'));
+
+      if (
+        !Number.isFinite(portfolioValue) ||
+        !Number.isFinite(annualWithdrawalAmount) ||
+        !Number.isFinite(expectedAnnualReturnPercent) ||
+        !Number.isFinite(inflationRatePercent) ||
+        !Number.isFinite(years) ||
+        portfolioValue <= 0 ||
+        annualWithdrawalAmount < 0 ||
+        expectedAnnualReturnPercent < 0 ||
+        inflationRatePercent <= -100 ||
+        years <= 0 ||
+        !Number.isInteger(years)
+      ) {
+        error.textContent =
+          'Portfolio value and whole years must be greater than 0. Annual withdrawals and expected return cannot be negative, and inflation must be greater than -100%.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculatePortfolioWithdrawalSustainability({
+        portfolioValue,
+        annualWithdrawalAmount,
+        expectedAnnualReturnPercent,
+        inflationRatePercent,
+        years,
+      });
+
+      endingPortfolioBalanceResult.textContent = currency.format(
+        result.endingPortfolioBalance,
+      );
+      totalWithdrawalsResult.textContent = currency.format(
+        result.totalWithdrawals,
+      );
+      realReturnResult.textContent =
+        `${percent.format(result.realReturnPercent)}%`;
+      sustainabilityResult.textContent =
+        result.status === 'sustainable'
+          ? 'Sustainable: portfolio remains above zero'
+          : 'Depleted: portfolio reaches zero';
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation(
+        'portfolio_withdrawal_sustainability',
+        calculate,
+      );
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

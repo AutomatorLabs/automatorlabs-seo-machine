@@ -1,0 +1,115 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { dividendYieldCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = dividendYieldCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={dividendYieldCalculator.title}
+  eyebrow={dividendYieldCalculator.eyebrow}
+  description={dividendYieldCalculator.description}
+  inputs={dividendYieldCalculator.inputs}
+  outputs={dividendYieldCalculator.outputs}
+  faq={dividendYieldCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import {
+      parseCalculatorNumber,
+      parseOptionalCalculatorNumber,
+    } from '../../../lib/input';
+    import { calculateDividendYield } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const dividendYieldResult = document.querySelector<HTMLElement>(
+      '#dividend-yield-result',
+    );
+    const annualDividendIncomeResult = document.querySelector<HTMLElement>(
+      '#annual-dividend-income-result',
+    );
+    const monthlyDividendIncomeResult = document.querySelector<HTMLElement>(
+      '#monthly-dividend-income-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const percentage = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    function readOptionalAmount(data: FormData, name: string): number {
+      return parseOptionalCalculatorNumber(data.get(name)) ?? 0;
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !dividendYieldResult ||
+        !annualDividendIncomeResult ||
+        !monthlyDividendIncomeResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const sharePrice = parseCalculatorNumber(data.get('sharePrice'));
+      const annualDividendPerShare = readOptionalAmount(
+        data,
+        'annualDividendPerShare',
+      );
+      const numberOfShares = readOptionalAmount(data, 'numberOfShares');
+
+      if (
+        !Number.isFinite(sharePrice) ||
+        !Number.isFinite(annualDividendPerShare) ||
+        !Number.isFinite(numberOfShares) ||
+        sharePrice <= 0 ||
+        annualDividendPerShare < 0 ||
+        numberOfShares < 0
+      ) {
+        error.textContent =
+          'Share price must be greater than 0. Annual dividend and number of shares cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateDividendYield({
+        sharePrice,
+        annualDividendPerShare,
+        numberOfShares,
+      });
+
+      dividendYieldResult.textContent =
+        `${percentage.format(result.dividendYield)}%`;
+      annualDividendIncomeResult.textContent = currency.format(
+        result.annualDividendIncome,
+      );
+      monthlyDividendIncomeResult.textContent = currency.format(
+        result.monthlyDividendIncome,
+      );
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('dividend_yield', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

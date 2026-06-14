@@ -1,0 +1,147 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { mortgagePayoffCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = mortgagePayoffCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={mortgagePayoffCalculator.title}
+  eyebrow={mortgagePayoffCalculator.eyebrow}
+  description={mortgagePayoffCalculator.description}
+  inputs={mortgagePayoffCalculator.inputs}
+  outputs={mortgagePayoffCalculator.outputs}
+  faq={mortgagePayoffCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import {
+      parseCalculatorNumber,
+      parseOptionalCalculatorNumber,
+    } from '../../../lib/input';
+    import { calculateMortgagePayoff } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const requiredMonthlyPaymentResult =
+      document.querySelector<HTMLElement>(
+        '#required-monthly-payment-result',
+      );
+    const totalInterestPaidResult = document.querySelector<HTMLElement>(
+      '#total-interest-paid-result',
+    );
+    const totalAmountPaidResult = document.querySelector<HTMLElement>(
+      '#total-amount-paid-result',
+    );
+    const timeSavedResult =
+      document.querySelector<HTMLElement>('#time-saved-result');
+    const interestSavedResult = document.querySelector<HTMLElement>(
+      '#interest-saved-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function formatMonths(totalMonths: number): string {
+      if (totalMonths === 0) {
+        return '0 months';
+      }
+
+      const years = Math.floor(totalMonths / 12);
+      const months = totalMonths % 12;
+      const parts: string[] = [];
+
+      if (years > 0) {
+        parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+      }
+
+      if (months > 0) {
+        parts.push(`${months} ${months === 1 ? 'month' : 'months'}`);
+      }
+
+      return parts.join(', ');
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !requiredMonthlyPaymentResult ||
+        !totalInterestPaidResult ||
+        !totalAmountPaidResult ||
+        !timeSavedResult ||
+        !interestSavedResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const loanAmount = parseCalculatorNumber(data.get('loanAmount'));
+      const annualInterestRatePercent = parseCalculatorNumber(
+        data.get('annualInterestRate'),
+      );
+      const loanTermYears = parseCalculatorNumber(
+        data.get('loanTermYears'),
+      );
+      const extraMonthlyPayment =
+        parseOptionalCalculatorNumber(data.get('extraMonthlyPayment')) ?? 0;
+
+      if (
+        !Number.isFinite(loanAmount) ||
+        !Number.isFinite(annualInterestRatePercent) ||
+        !Number.isFinite(loanTermYears) ||
+        !Number.isFinite(extraMonthlyPayment) ||
+        loanAmount <= 0 ||
+        annualInterestRatePercent < 0 ||
+        loanTermYears <= 0 ||
+        !Number.isInteger(loanTermYears) ||
+        extraMonthlyPayment < 0
+      ) {
+        error.textContent =
+          'Loan amount must be greater than $0. Interest and extra payments cannot be negative, and the loan term must be a whole number of years greater than 0.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateMortgagePayoff({
+        loanAmount,
+        annualInterestRatePercent,
+        loanTermYears,
+        extraMonthlyPayment,
+      });
+
+      requiredMonthlyPaymentResult.textContent = currency.format(
+        result.requiredMonthlyPayment,
+      );
+      totalInterestPaidResult.textContent = currency.format(
+        result.totalInterestPaid,
+      );
+      totalAmountPaidResult.textContent = currency.format(
+        result.totalAmountPaid,
+      );
+      timeSavedResult.textContent = formatMonths(result.timeSavedMonths);
+      interestSavedResult.textContent = currency.format(
+        result.interestSaved,
+      );
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('mortgage_payoff', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

@@ -1,0 +1,151 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { debtPayoffCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = debtPayoffCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={debtPayoffCalculator.title}
+  eyebrow={debtPayoffCalculator.eyebrow}
+  description={debtPayoffCalculator.description}
+  inputs={debtPayoffCalculator.inputs}
+  outputs={debtPayoffCalculator.outputs}
+  faq={debtPayoffCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateDebtPayoff } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const payoffTimeResult =
+      document.querySelector<HTMLElement>('#payoff-time-result');
+    const totalInterestPaidResult = document.querySelector<HTMLElement>(
+      '#total-interest-paid-result',
+    );
+    const totalAmountPaidResult = document.querySelector<HTMLElement>(
+      '#total-amount-paid-result',
+    );
+    const interestSavedResult = document.querySelector<HTMLElement>(
+      '#interest-saved-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function formatMonths(totalMonths: number): string {
+      const years = Math.floor(totalMonths / 12);
+      const months = totalMonths % 12;
+      const parts: string[] = [];
+
+      if (years > 0) {
+        parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+      }
+
+      if (months > 0) {
+        parts.push(`${months} ${months === 1 ? 'month' : 'months'}`);
+      }
+
+      return parts.length > 0 ? parts.join(', ') : '0 months';
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !payoffTimeResult ||
+        !totalInterestPaidResult ||
+        !totalAmountPaidResult ||
+        !interestSavedResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const debtBalance = parseCalculatorNumber(data.get('debtBalance'));
+      const annualInterestRatePercent = parseCalculatorNumber(
+        data.get('annualInterestRate'),
+      );
+      const monthlyPayment = parseCalculatorNumber(
+        data.get('monthlyPayment'),
+      );
+      const extraMonthlyPayment = parseCalculatorNumber(
+        data.get('extraMonthlyPayment'),
+      );
+
+      if (
+        !Number.isFinite(debtBalance) ||
+        !Number.isFinite(annualInterestRatePercent) ||
+        !Number.isFinite(monthlyPayment) ||
+        !Number.isFinite(extraMonthlyPayment) ||
+        debtBalance <= 0 ||
+        annualInterestRatePercent < 0 ||
+        monthlyPayment <= 0 ||
+        extraMonthlyPayment < 0
+      ) {
+        error.textContent =
+          'Debt balance and monthly payment must be greater than $0. Interest and extra payments cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      const result = calculateDebtPayoff({
+        debtBalance,
+        annualInterestRatePercent,
+        monthlyPayment,
+        extraMonthlyPayment,
+      });
+
+      if (!result.accelerated.reachable) {
+        error.textContent =
+          'Unreachable: the total monthly payment is too low to cover the interest being added. Increase the payment to create a payoff path.';
+        error.hidden = false;
+        payoffTimeResult.textContent = 'Unreachable';
+        totalInterestPaidResult.textContent = 'Unreachable';
+        totalAmountPaidResult.textContent = 'Unreachable';
+        interestSavedResult.textContent = 'Unreachable';
+        return true;
+      }
+
+      error.hidden = true;
+      payoffTimeResult.textContent = formatMonths(
+        result.accelerated.payoffTimeMonths ?? 0,
+      );
+      totalInterestPaidResult.textContent = currency.format(
+        result.accelerated.totalInterestPaid ?? 0,
+      );
+      totalAmountPaidResult.textContent = currency.format(
+        result.accelerated.totalAmountPaid ?? 0,
+      );
+      interestSavedResult.textContent =
+        result.interestSaved == null
+          ? 'Baseline unreachable'
+          : currency.format(result.interestSaved);
+
+      if (!result.baseline.reachable) {
+        error.textContent =
+          'Your regular payment alone does not cover monthly interest. The payoff shown depends on the extra monthly payment.';
+        error.hidden = false;
+      }
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('debt_payoff', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

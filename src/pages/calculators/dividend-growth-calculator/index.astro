@@ -1,0 +1,110 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { dividendGrowthCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = dividendGrowthCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={dividendGrowthCalculator.title}
+  eyebrow={dividendGrowthCalculator.eyebrow}
+  description={dividendGrowthCalculator.description}
+  inputs={dividendGrowthCalculator.inputs}
+  outputs={dividendGrowthCalculator.outputs}
+  faq={dividendGrowthCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateDividendGrowth } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const futureAnnualDividendIncomeResult =
+      document.querySelector<HTMLElement>(
+        '#future-annual-dividend-income-result',
+      );
+    const monthlyEquivalentIncomeResult = document.querySelector<HTMLElement>(
+      '#monthly-equivalent-income-result',
+    );
+    const totalPercentageIncreaseResult = document.querySelector<HTMLElement>(
+      '#total-percentage-increase-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const percentage = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !futureAnnualDividendIncomeResult ||
+        !monthlyEquivalentIncomeResult ||
+        !totalPercentageIncreaseResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const initialAnnualDividendIncome = parseCalculatorNumber(
+        data.get('initialAnnualDividendIncome'),
+      );
+      const annualDividendGrowthRate = parseCalculatorNumber(
+        data.get('annualDividendGrowthRate'),
+      );
+      const years = parseCalculatorNumber(data.get('years'));
+
+      if (
+        !Number.isFinite(initialAnnualDividendIncome) ||
+        !Number.isFinite(annualDividendGrowthRate) ||
+        !Number.isFinite(years) ||
+        initialAnnualDividendIncome < 0 ||
+        annualDividendGrowthRate < 0 ||
+        years <= 0
+      ) {
+        error.textContent =
+          'Initial dividend and growth rate cannot be negative. Number of years must be greater than 0.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateDividendGrowth({
+        initialAnnualDividendIncome,
+        annualDividendGrowthRatePercent: annualDividendGrowthRate,
+        years,
+      });
+
+      futureAnnualDividendIncomeResult.textContent = currency.format(
+        result.futureAnnualDividendIncome,
+      );
+      monthlyEquivalentIncomeResult.textContent = currency.format(
+        result.monthlyEquivalentIncome,
+      );
+      totalPercentageIncreaseResult.textContent =
+        `${percentage.format(result.totalPercentageIncrease)}%`;
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('dividend_growth', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

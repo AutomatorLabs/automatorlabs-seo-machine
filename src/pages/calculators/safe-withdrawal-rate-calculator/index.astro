@@ -1,0 +1,127 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { safeWithdrawalRateCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = safeWithdrawalRateCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={safeWithdrawalRateCalculator.title}
+  eyebrow={safeWithdrawalRateCalculator.eyebrow}
+  description={safeWithdrawalRateCalculator.description}
+  inputs={safeWithdrawalRateCalculator.inputs}
+  outputs={safeWithdrawalRateCalculator.outputs}
+  faq={safeWithdrawalRateCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import {
+      parseCalculatorNumber,
+      parseOptionalCalculatorNumber,
+    } from '../../../lib/input';
+    import { calculateSafeWithdrawalRate } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const withdrawalRateNeededResult = document.querySelector<HTMLElement>(
+      '#withdrawal-rate-needed-result',
+    );
+    const annualSpendingSupportedResult =
+      document.querySelector<HTMLElement>(
+        '#annual-spending-supported-result',
+      );
+    const monthlySpendingSupportedResult =
+      document.querySelector<HTMLElement>(
+        '#monthly-spending-supported-result',
+      );
+    const portfolioSurplusShortfallResult =
+      document.querySelector<HTMLElement>(
+        '#portfolio-surplus-shortfall-result',
+      );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const percent = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !withdrawalRateNeededResult ||
+        !annualSpendingSupportedResult ||
+        !monthlySpendingSupportedResult ||
+        !portfolioSurplusShortfallResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const portfolioValue = parseCalculatorNumber(data.get('portfolioValue'));
+      const annualSpending = parseOptionalCalculatorNumber(
+        data.get('annualSpending'),
+      );
+      const monthlySpending = parseOptionalCalculatorNumber(
+        data.get('monthlySpending'),
+      );
+
+      const isInvalid =
+        !Number.isFinite(portfolioValue) ||
+        portfolioValue <= 0 ||
+        (annualSpending !== null &&
+          (!Number.isFinite(annualSpending) || annualSpending < 0)) ||
+        (monthlySpending !== null &&
+          (!Number.isFinite(monthlySpending) || monthlySpending < 0)) ||
+        (annualSpending === null && monthlySpending === null);
+
+      if (isInvalid) {
+        error.textContent =
+          'Portfolio value must be greater than 0. Spending cannot be negative, and at least one spending field is required.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const resolvedAnnualSpending =
+        annualSpending ?? (monthlySpending as number) * 12;
+      const result = calculateSafeWithdrawalRate({
+        portfolioValue,
+        annualSpending: resolvedAnnualSpending,
+      });
+
+      withdrawalRateNeededResult.textContent =
+        `${percent.format(result.withdrawalRateNeeded)}%`;
+      annualSpendingSupportedResult.textContent = currency.format(
+        result.annualSpendingSupportedAtFourPercent,
+      );
+      monthlySpendingSupportedResult.textContent = currency.format(
+        result.monthlySpendingSupportedAtFourPercent,
+      );
+
+      const gap = result.portfolioSurplusOrShortfall;
+      portfolioSurplusShortfallResult.textContent =
+        `${gap >= 0 ? 'Surplus' : 'Shortfall'}: ${currency.format(Math.abs(gap))}`;
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('safe_withdrawal_rate', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

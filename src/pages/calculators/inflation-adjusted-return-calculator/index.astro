@@ -1,0 +1,135 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { inflationAdjustedReturnCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = inflationAdjustedReturnCalculator.relatedIds.flatMap(
+  (id) => {
+    const item = contentItems.find((contentItem) => contentItem.id === id);
+    return item ? [{ title: item.title, url: item.url }] : [];
+  },
+);
+---
+
+<CalculatorPage
+  title={inflationAdjustedReturnCalculator.title}
+  eyebrow={inflationAdjustedReturnCalculator.eyebrow}
+  description={inflationAdjustedReturnCalculator.description}
+  inputs={inflationAdjustedReturnCalculator.inputs}
+  outputs={inflationAdjustedReturnCalculator.outputs}
+  faq={inflationAdjustedReturnCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateInflationAdjustedReturn } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const nominalEndingBalanceResult = document.querySelector<HTMLElement>(
+      '#nominal-ending-balance-result',
+    );
+    const inflationAdjustedEndingBalanceResult =
+      document.querySelector<HTMLElement>(
+        '#inflation-adjusted-ending-balance-result',
+      );
+    const purchasingPowerLostResult = document.querySelector<HTMLElement>(
+      '#purchasing-power-lost-result',
+    );
+    const realAnnualReturnResult = document.querySelector<HTMLElement>(
+      '#real-annual-return-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const percentage = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !nominalEndingBalanceResult ||
+        !inflationAdjustedEndingBalanceResult ||
+        !purchasingPowerLostResult ||
+        !realAnnualReturnResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const startingInvestment = parseCalculatorNumber(
+        data.get('startingInvestment'),
+      );
+      const nominalAnnualReturn = parseCalculatorNumber(
+        data.get('nominalAnnualReturn'),
+      );
+      const inflationRate = parseCalculatorNumber(data.get('inflationRate'));
+      const years = parseCalculatorNumber(data.get('years'));
+
+      if (
+        !Number.isFinite(startingInvestment) ||
+        !Number.isFinite(nominalAnnualReturn) ||
+        !Number.isFinite(inflationRate) ||
+        !Number.isFinite(years) ||
+        startingInvestment < 0 ||
+        inflationRate <= -100 ||
+        years <= 0 ||
+        !Number.isInteger(years)
+      ) {
+        error.textContent =
+          'Starting investment cannot be negative. Inflation must be greater than -100%, and years must be a positive whole number.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateInflationAdjustedReturn({
+        startingInvestment,
+        nominalAnnualReturnPercent: nominalAnnualReturn,
+        inflationRatePercent: inflationRate,
+        years,
+      });
+
+      if (
+        !Number.isFinite(result.nominalEndingBalance) ||
+        !Number.isFinite(result.inflationAdjustedEndingBalance) ||
+        !Number.isFinite(result.purchasingPowerLost) ||
+        !Number.isFinite(result.realAnnualReturn)
+      ) {
+        error.textContent =
+          'These inputs produce a result outside the supported numeric range.';
+        error.hidden = false;
+        return false;
+      }
+
+      nominalEndingBalanceResult.textContent = currency.format(
+        result.nominalEndingBalance,
+      );
+      inflationAdjustedEndingBalanceResult.textContent = currency.format(
+        result.inflationAdjustedEndingBalance,
+      );
+      purchasingPowerLostResult.textContent = currency.format(
+        result.purchasingPowerLost,
+      );
+      realAnnualReturnResult.textContent =
+        `${percentage.format(result.realAnnualReturn)}%`;
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('inflation_adjusted_return', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

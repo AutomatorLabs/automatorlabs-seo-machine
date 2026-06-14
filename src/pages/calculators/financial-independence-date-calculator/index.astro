@@ -1,0 +1,175 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { financialIndependenceDateCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = financialIndependenceDateCalculator.relatedIds.flatMap(
+  (id) => {
+    const item = contentItems.find((contentItem) => contentItem.id === id);
+    return item ? [{ title: item.title, url: item.url }] : [];
+  },
+);
+---
+
+<CalculatorPage
+  title={financialIndependenceDateCalculator.title}
+  eyebrow={financialIndependenceDateCalculator.eyebrow}
+  description={financialIndependenceDateCalculator.description}
+  inputs={financialIndependenceDateCalculator.inputs}
+  outputs={financialIndependenceDateCalculator.outputs}
+  faq={financialIndependenceDateCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateFinancialIndependenceDate } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const fireNumberResult = document.querySelector<HTMLElement>(
+      '#fire-number-result',
+    );
+    const amountStillNeededResult = document.querySelector<HTMLElement>(
+      '#amount-still-needed-result',
+    );
+    const estimatedYearsResult = document.querySelector<HTMLElement>(
+      '#estimated-years-result',
+    );
+    const estimatedFiDateResult = document.querySelector<HTMLElement>(
+      '#estimated-fi-date-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const fiDate = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+    });
+
+    function addMonths(date: Date, months: number): Date {
+      const result = new Date(date);
+      const originalDay = result.getDate();
+
+      result.setDate(1);
+      result.setMonth(result.getMonth() + months);
+      const lastDayOfTargetMonth = new Date(
+        result.getFullYear(),
+        result.getMonth() + 1,
+        0,
+      ).getDate();
+      result.setDate(Math.min(originalDay, lastDayOfTargetMonth));
+
+      return result;
+    }
+
+    function formatDuration(totalMonths: number): string {
+      const years = Math.floor(totalMonths / 12);
+      const months = totalMonths % 12;
+      const parts: string[] = [];
+
+      if (years > 0) {
+        parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+      }
+
+      if (months > 0) {
+        parts.push(`${months} ${months === 1 ? 'month' : 'months'}`);
+      }
+
+      return parts.length > 0 ? parts.join(', ') : 'Less than 1 month';
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !fireNumberResult ||
+        !amountStillNeededResult ||
+        !estimatedYearsResult ||
+        !estimatedFiDateResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const currentInvestedAssets = parseCalculatorNumber(
+        data.get('currentInvestedAssets'),
+      );
+      const annualExpenses = parseCalculatorNumber(data.get('annualExpenses'));
+      const monthlyContribution = parseCalculatorNumber(
+        data.get('monthlyContribution'),
+      );
+      const expectedAnnualReturnPercent = parseCalculatorNumber(
+        data.get('expectedAnnualReturn'),
+      );
+      const withdrawalRatePercent = parseCalculatorNumber(
+        data.get('withdrawalRate'),
+      );
+
+      if (
+        !Number.isFinite(currentInvestedAssets) ||
+        !Number.isFinite(annualExpenses) ||
+        !Number.isFinite(monthlyContribution) ||
+        !Number.isFinite(expectedAnnualReturnPercent) ||
+        !Number.isFinite(withdrawalRatePercent) ||
+        currentInvestedAssets < 0 ||
+        annualExpenses <= 0 ||
+        monthlyContribution < 0 ||
+        expectedAnnualReturnPercent < 0 ||
+        withdrawalRatePercent <= 0
+      ) {
+        error.textContent =
+          'Annual expenses and withdrawal rate must be greater than 0. Current assets, monthly contributions, and expected return cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateFinancialIndependenceDate({
+        currentInvestedAssets,
+        annualExpenses,
+        monthlyContribution,
+        expectedAnnualReturnPercent,
+        withdrawalRatePercent,
+      });
+
+      fireNumberResult.textContent = currency.format(result.fireNumber);
+      amountStillNeededResult.textContent = currency.format(
+        result.amountStillNeeded,
+      );
+
+      if (result.status === 'independent') {
+        estimatedYearsResult.textContent =
+          'Already financially independent';
+        estimatedFiDateResult.textContent = 'Already reached';
+      } else if (result.status === 'unreachable') {
+        estimatedYearsResult.textContent =
+          'Unreachable with current assumptions';
+        estimatedFiDateResult.textContent =
+          'Increase contributions or expected return';
+      } else {
+        const totalMonths = Math.round(
+          (result.estimatedYearsToFinancialIndependence ?? 0) * 12,
+        );
+        estimatedYearsResult.textContent = formatDuration(totalMonths);
+        estimatedFiDateResult.textContent = fiDate.format(
+          addMonths(new Date(), totalMonths),
+        );
+      }
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('financial_independence_date', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

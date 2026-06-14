@@ -1,0 +1,122 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { retirementTaxDragCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = retirementTaxDragCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={retirementTaxDragCalculator.title}
+  eyebrow={retirementTaxDragCalculator.eyebrow}
+  description={retirementTaxDragCalculator.description}
+  inputs={retirementTaxDragCalculator.inputs}
+  outputs={retirementTaxDragCalculator.outputs}
+  faq={retirementTaxDragCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateRetirementTaxDrag } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const annualTaxesPaidResult = document.querySelector<HTMLElement>(
+      '#annual-taxes-paid-result',
+    );
+    const afterTaxAnnualIncomeResult = document.querySelector<HTMLElement>(
+      '#after-tax-annual-income-result',
+    );
+    const totalTaxesResult = document.querySelector<HTMLElement>(
+      '#total-taxes-result',
+    );
+    const inflationAdjustedTotalTaxesResult =
+      document.querySelector<HTMLElement>(
+        '#inflation-adjusted-total-taxes-result',
+      );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !annualTaxesPaidResult ||
+        !afterTaxAnnualIncomeResult ||
+        !totalTaxesResult ||
+        !inflationAdjustedTotalTaxesResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const annualRetirementWithdrawal = parseCalculatorNumber(
+        data.get('annualRetirementWithdrawal'),
+      );
+      const estimatedTaxRatePercent = parseCalculatorNumber(
+        data.get('estimatedTaxRate'),
+      );
+      const yearsInRetirement = parseCalculatorNumber(
+        data.get('yearsInRetirement'),
+      );
+      const inflationRatePercent = parseCalculatorNumber(
+        data.get('inflationRate'),
+      );
+
+      if (
+        !Number.isFinite(annualRetirementWithdrawal) ||
+        !Number.isFinite(estimatedTaxRatePercent) ||
+        !Number.isFinite(yearsInRetirement) ||
+        !Number.isFinite(inflationRatePercent) ||
+        annualRetirementWithdrawal < 0 ||
+        estimatedTaxRatePercent < 0 ||
+        estimatedTaxRatePercent > 100 ||
+        yearsInRetirement <= 0 ||
+        !Number.isInteger(yearsInRetirement) ||
+        inflationRatePercent <= -100
+      ) {
+        error.textContent =
+          'Annual withdrawal cannot be negative. Tax rate must be between 0% and 100%, whole years must be greater than 0, and inflation must be greater than -100%.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateRetirementTaxDrag({
+        annualRetirementWithdrawal,
+        estimatedTaxRatePercent,
+        yearsInRetirement,
+        inflationRatePercent,
+      });
+
+      annualTaxesPaidResult.textContent = currency.format(
+        result.annualTaxesPaid,
+      );
+      afterTaxAnnualIncomeResult.textContent = currency.format(
+        result.afterTaxAnnualIncome,
+      );
+      totalTaxesResult.textContent = currency.format(result.totalTaxes);
+      inflationAdjustedTotalTaxesResult.textContent = currency.format(
+        result.inflationAdjustedTotalTaxes,
+      );
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('retirement_tax_drag', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

@@ -1,0 +1,112 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { netWorthCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = netWorthCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={netWorthCalculator.title}
+  eyebrow={netWorthCalculator.eyebrow}
+  description={netWorthCalculator.description}
+  inputs={netWorthCalculator.inputs}
+  outputs={netWorthCalculator.outputs}
+  faq={netWorthCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseOptionalCalculatorNumber } from '../../../lib/input';
+    import { calculateNetWorth } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const totalAssetsResult =
+      document.querySelector<HTMLElement>('#total-assets-result');
+    const totalLiabilitiesResult = document.querySelector<HTMLElement>(
+      '#total-liabilities-result',
+    );
+    const netWorthResult =
+      document.querySelector<HTMLElement>('#net-worth-result');
+    const debtToAssetRatioResult = document.querySelector<HTMLElement>(
+      '#debt-to-asset-ratio-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    const percentage = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    function readAmount(data: FormData, name: string): number {
+      return parseOptionalCalculatorNumber(data.get(name)) ?? 0;
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !totalAssetsResult ||
+        !totalLiabilitiesResult ||
+        !netWorthResult ||
+        !debtToAssetRatioResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const assets = [
+        readAmount(data, 'cash'),
+        readAmount(data, 'investments'),
+        readAmount(data, 'realEstate'),
+        readAmount(data, 'crypto'),
+        readAmount(data, 'otherAssets'),
+      ];
+      const liabilities = [
+        readAmount(data, 'creditCardDebt'),
+        readAmount(data, 'loans'),
+        readAmount(data, 'mortgage'),
+        readAmount(data, 'otherLiabilities'),
+      ];
+      const values = [...assets, ...liabilities];
+
+      if (
+        values.some((value) => !Number.isFinite(value) || value < 0)
+      ) {
+        error.textContent =
+          'Enter valid, non-negative amounts. Empty fields will be counted as $0.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateNetWorth({ assets, liabilities });
+
+      totalAssetsResult.textContent = currency.format(result.totalAssets);
+      totalLiabilitiesResult.textContent = currency.format(
+        result.totalLiabilities,
+      );
+      netWorthResult.textContent = currency.format(result.netWorth);
+      debtToAssetRatioResult.textContent =
+        `${percentage.format(result.debtToAssetRatio)}%`;
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('net_worth', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

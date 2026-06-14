@@ -1,0 +1,177 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { refinanceCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = refinanceCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={refinanceCalculator.title}
+  eyebrow={refinanceCalculator.eyebrow}
+  description={refinanceCalculator.description}
+  inputs={refinanceCalculator.inputs}
+  outputs={refinanceCalculator.outputs}
+  faq={refinanceCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateRefinance } from '../../../lib/math';
+
+    const currentBalanceInput = document.querySelector<HTMLInputElement>(
+      '#current-loan-balance',
+    );
+    const form = currentBalanceInput?.form ?? null;
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const currentMonthlyPaymentResult = document.querySelector<HTMLElement>(
+      '#current-monthly-payment-result',
+    );
+    const newMonthlyPaymentResult = document.querySelector<HTMLElement>(
+      '#new-monthly-payment-result',
+    );
+    const monthlySavingsResult =
+      document.querySelector<HTMLElement>('#monthly-savings-result');
+    const breakEvenTimeResult =
+      document.querySelector<HTMLElement>('#break-even-time-result');
+    const totalInterestSavedResult = document.querySelector<HTMLElement>(
+      '#total-interest-saved-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function formatMonths(months: number): string {
+      if (months < 1) {
+        return 'Less than 1 month';
+      }
+
+      const roundedMonths = Math.ceil(months);
+      const years = Math.floor(roundedMonths / 12);
+      const remainingMonths = roundedMonths % 12;
+      const parts: string[] = [];
+
+      if (years > 0) {
+        parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+      }
+
+      if (remainingMonths > 0) {
+        parts.push(
+          `${remainingMonths} ${remainingMonths === 1 ? 'month' : 'months'}`,
+        );
+      }
+
+      return parts.join(', ');
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !currentMonthlyPaymentResult ||
+        !newMonthlyPaymentResult ||
+        !monthlySavingsResult ||
+        !breakEvenTimeResult ||
+        !totalInterestSavedResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const currentLoanBalance = parseCalculatorNumber(
+        data.get('currentLoanBalance'),
+      );
+      const currentAnnualInterestRatePercent = parseCalculatorNumber(
+        data.get('currentInterestRate'),
+      );
+      const currentRemainingLoanTermYears = parseCalculatorNumber(
+        data.get('currentRemainingTerm'),
+      );
+      const newAnnualInterestRatePercent = parseCalculatorNumber(
+        data.get('newInterestRate'),
+      );
+      const newLoanTermYears = parseCalculatorNumber(
+        data.get('newLoanTerm'),
+      );
+      const closingCosts = parseCalculatorNumber(data.get('closingCosts'));
+      const values = [
+        currentLoanBalance,
+        currentAnnualInterestRatePercent,
+        currentRemainingLoanTermYears,
+        newAnnualInterestRatePercent,
+        newLoanTermYears,
+        closingCosts,
+      ];
+
+      if (
+        values.some((value) => !Number.isFinite(value)) ||
+        currentLoanBalance <= 0 ||
+        currentAnnualInterestRatePercent < 0 ||
+        currentRemainingLoanTermYears <= 0 ||
+        !Number.isInteger(currentRemainingLoanTermYears) ||
+        newAnnualInterestRatePercent < 0 ||
+        newLoanTermYears <= 0 ||
+        !Number.isInteger(newLoanTermYears) ||
+        closingCosts < 0
+      ) {
+        error.textContent =
+          'Loan balance and both terms must be greater than 0. Terms must be whole years, and interest rates and closing costs cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      const result = calculateRefinance({
+        currentLoanBalance,
+        currentAnnualInterestRatePercent,
+        currentRemainingLoanTermYears,
+        newAnnualInterestRatePercent,
+        newLoanTermYears,
+        closingCosts,
+      });
+
+      currentMonthlyPaymentResult.textContent = currency.format(
+        result.currentMonthlyPayment,
+      );
+      newMonthlyPaymentResult.textContent = currency.format(
+        result.newMonthlyPayment,
+      );
+      monthlySavingsResult.textContent = currency.format(
+        result.monthlySavings,
+      );
+      totalInterestSavedResult.textContent = currency.format(
+        result.totalInterestSaved,
+      );
+
+      if (result.breakEvenMonths == null) {
+        error.textContent =
+          'This refinance does not reduce the monthly payment under the assumptions entered.';
+        error.hidden = false;
+        breakEvenTimeResult.textContent =
+          'Does not reduce monthly payment';
+      } else {
+        error.hidden = true;
+        breakEvenTimeResult.textContent = formatMonths(
+          result.breakEvenMonths,
+        );
+      }
+
+      return true;
+    }
+
+    if (form) {
+      form.onsubmit = (event) => {
+        event.preventDefault();
+        trackSuccessfulCalculation('refinance', calculate);
+      };
+    }
+
+    calculate();
+  </script>
+</CalculatorPage>

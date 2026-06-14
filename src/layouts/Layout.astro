@@ -17,6 +17,29 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
+		<script is:inline>
+			(() => {
+				const storageKey = 'automatorlabs-theme';
+				let savedTheme;
+
+				try {
+					savedTheme = localStorage.getItem(storageKey);
+				} catch {
+					// Storage can be unavailable in privacy-restricted contexts.
+				}
+
+				const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+					? 'dark'
+					: 'light';
+				const theme =
+					savedTheme === 'dark' || savedTheme === 'light'
+						? savedTheme
+						: systemTheme;
+
+				document.documentElement.dataset.theme = theme;
+				document.documentElement.style.colorScheme = theme;
+			})();
+		</script>
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
@@ -42,6 +65,15 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 					<a href="/tools/">Tools</a>
 					<a href="/guides/">Guides</a>
 				</div>
+				<button
+					id="theme-toggle"
+					class="theme-toggle"
+					type="button"
+					aria-label="Switch to dark mode"
+					aria-pressed="false"
+				>
+					Dark
+				</button>
 			</nav>
 		</header>
 
@@ -63,10 +95,110 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 				</nav>
 			</div>
 		</footer>
+
+		<script is:inline>
+			(() => {
+				const storageKey = 'automatorlabs-theme';
+				const root = document.documentElement;
+				const toggle = document.getElementById('theme-toggle');
+
+				if (!(toggle instanceof HTMLButtonElement)) {
+					return;
+				}
+
+				const updateToggle = () => {
+					const isDark = root.dataset.theme === 'dark';
+					toggle.textContent = isDark ? 'Light' : 'Dark';
+					toggle.setAttribute('aria-pressed', String(isDark));
+					toggle.setAttribute(
+						'aria-label',
+						isDark ? 'Switch to light mode' : 'Switch to dark mode',
+					);
+				};
+
+				toggle.addEventListener('click', () => {
+					const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+					root.dataset.theme = theme;
+					root.style.colorScheme = theme;
+
+					try {
+						localStorage.setItem(storageKey, theme);
+					} catch {
+						// The selected theme still applies for the current page.
+					}
+
+					updateToggle();
+				});
+
+				updateToggle();
+			})();
+		</script>
 	</body>
 </html>
 
 <style>
+	:global(:root) {
+		--page-background: #f6f7fb;
+		--card-background: #ffffff;
+		--text-color: #172033;
+		--muted-text-color: #586176;
+		--heading-color: #172033;
+		--border-color: #e1e4ec;
+		--border-subtle: #e6e8ef;
+		--link-color: #3158d3;
+		--link-hover-color: #2446ad;
+		--button-background: #3158d3;
+		--button-hover-background: #2647b0;
+		--button-text: #ffffff;
+		--form-background: #ffffff;
+		--input-background: #ffffff;
+		--input-text: #172033;
+		--input-border: #cdd2df;
+		--focus-ring: rgb(49 88 211 / 25%);
+		--faq-background: #ffffff;
+		--header-background: #ffffff;
+		--footer-background: #ffffff;
+		--subtle-background: #eef1f7;
+		--subtle-text: #697386;
+		--success-background: #e8f7ed;
+		--success-text: #217a3c;
+		--error-text: #b42318;
+		--warning-text: #875800;
+		--chart-background: #f9faff;
+		--shadow-color: rgb(22 32 51 / 6%);
+	}
+
+	:global(html[data-theme='dark']) {
+		--page-background: #0b1120;
+		--card-background: #151e2f;
+		--text-color: #f8fafc;
+		--muted-text-color: #cbd5e1;
+		--heading-color: #ffffff;
+		--border-color: #3b475a;
+		--border-subtle: #334155;
+		--link-color: #93c5fd;
+		--link-hover-color: #bfdbfe;
+		--button-background: #1d4ed8;
+		--button-hover-background: #2563eb;
+		--button-text: #ffffff;
+		--form-background: #151e2f;
+		--input-background: #0f172a;
+		--input-text: #f8fafc;
+		--input-border: #64748b;
+		--focus-ring: rgb(147 197 253 / 45%);
+		--faq-background: #151e2f;
+		--header-background: #101827;
+		--footer-background: #101827;
+		--subtle-background: #263348;
+		--subtle-text: #e2e8f0;
+		--success-background: #153c2a;
+		--success-text: #bbf7d0;
+		--error-text: #fca5a5;
+		--warning-text: #fde68a;
+		--chart-background: #0f172a;
+		--shadow-color: rgb(0 0 0 / 28%);
+	}
+
 	:global(*) {
 		box-sizing: border-box;
 	}
@@ -82,10 +214,21 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 		display: flex;
 		min-height: 100vh;
 		flex-direction: column;
-		color: #172033;
+		background: var(--page-background);
+		color: var(--text-color);
 		font-family:
 			Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
 			sans-serif;
+	}
+
+	:global(h1),
+	:global(h2),
+	:global(h3) {
+		color: var(--heading-color);
+	}
+
+	:global(a) {
+		color: var(--link-color);
 	}
 
 	:global(body > main) {
@@ -94,11 +237,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 	.site-header,
 	.site-footer {
-		background: #fff;
+		background: var(--header-background);
 	}
 
 	.site-header {
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-color);
 	}
 
 	.site-nav,
@@ -116,7 +259,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 	}
 
 	.brand {
-		color: #172033;
+		color: var(--heading-color);
 		font-weight: 800;
 		letter-spacing: -0.02em;
 		text-decoration: none;
@@ -131,7 +274,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 	.nav-links a,
 	.footer-links a {
-		color: #4b5563;
+		color: var(--muted-text-color);
 		font-size: 0.94rem;
 		font-weight: 600;
 		text-decoration: none;
@@ -139,12 +282,37 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 	.nav-links a:hover,
 	.footer-links a:hover {
-		color: #3158d3;
+		color: var(--link-hover-color);
+	}
+
+	.theme-toggle {
+		flex: 0 0 auto;
+		min-width: 4.5rem;
+		border: 1px solid var(--input-border);
+		border-radius: 999px;
+		background: var(--card-background);
+		color: var(--text-color);
+		cursor: pointer;
+		font: inherit;
+		font-size: 0.84rem;
+		font-weight: 700;
+		padding: 0.45rem 0.8rem;
+	}
+
+	.theme-toggle:hover {
+		border-color: var(--link-color);
+		color: var(--link-color);
+	}
+
+	.theme-toggle:focus-visible {
+		outline: 3px solid var(--focus-ring);
+		outline-offset: 2px;
 	}
 
 	.site-footer {
 		margin-top: auto;
-		border-top: 1px solid #e5e7eb;
+		border-top: 1px solid var(--border-color);
+		background: var(--footer-background);
 	}
 
 	.footer-inner {
@@ -162,6 +330,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 		.site-nav {
 			min-height: auto;
+			position: relative;
 		}
 
 		.nav-links,
@@ -169,6 +338,12 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 			width: 100%;
 			flex-wrap: wrap;
 			gap: 0.75rem 1rem;
+		}
+
+		.theme-toggle {
+			position: absolute;
+			top: 0.8rem;
+			right: 1rem;
 		}
 	}
 </style>

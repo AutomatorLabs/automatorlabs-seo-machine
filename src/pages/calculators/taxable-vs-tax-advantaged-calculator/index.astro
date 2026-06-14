@@ -1,0 +1,122 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { taxableVsTaxAdvantagedCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = taxableVsTaxAdvantagedCalculator.relatedIds.flatMap(
+  (id) => {
+    const item = contentItems.find((contentItem) => contentItem.id === id);
+    return item ? [{ title: item.title, url: item.url }] : [];
+  },
+);
+---
+
+<CalculatorPage
+  title={taxableVsTaxAdvantagedCalculator.title}
+  eyebrow={taxableVsTaxAdvantagedCalculator.eyebrow}
+  description={taxableVsTaxAdvantagedCalculator.description}
+  inputs={taxableVsTaxAdvantagedCalculator.inputs}
+  outputs={taxableVsTaxAdvantagedCalculator.outputs}
+  faq={taxableVsTaxAdvantagedCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateTaxableVsTaxAdvantaged } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const taxableEndingBalanceResult = document.querySelector<HTMLElement>(
+      '#taxable-ending-balance-result',
+    );
+    const taxAdvantagedEndingBalanceResult =
+      document.querySelector<HTMLElement>(
+        '#tax-advantaged-ending-balance-result',
+      );
+    const differenceResult =
+      document.querySelector<HTMLElement>('#difference-result');
+    const taxDragCostResult = document.querySelector<HTMLElement>(
+      '#tax-drag-cost-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !taxableEndingBalanceResult ||
+        !taxAdvantagedEndingBalanceResult ||
+        !differenceResult ||
+        !taxDragCostResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const startingInvestment = parseCalculatorNumber(
+        data.get('startingInvestment'),
+      );
+      const annualContribution = parseCalculatorNumber(
+        data.get('annualContribution'),
+      );
+      const expectedAnnualReturnPercent = parseCalculatorNumber(
+        data.get('expectedAnnualReturn'),
+      );
+      const taxDragPercent = parseCalculatorNumber(data.get('taxDrag'));
+      const years = parseCalculatorNumber(data.get('years'));
+
+      if (
+        !Number.isFinite(startingInvestment) ||
+        !Number.isFinite(annualContribution) ||
+        !Number.isFinite(expectedAnnualReturnPercent) ||
+        !Number.isFinite(taxDragPercent) ||
+        !Number.isFinite(years) ||
+        startingInvestment < 0 ||
+        annualContribution < 0 ||
+        expectedAnnualReturnPercent < 0 ||
+        taxDragPercent < 0 ||
+        years <= 0 ||
+        !Number.isInteger(years)
+      ) {
+        error.textContent =
+          'Starting investment, annual contribution, expected return, and tax drag cannot be negative. Whole years must be greater than 0.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      const result = calculateTaxableVsTaxAdvantaged({
+        startingInvestment,
+        annualContribution,
+        expectedAnnualReturnPercent,
+        taxDragPercent,
+        years,
+      });
+
+      taxableEndingBalanceResult.textContent = currency.format(
+        result.taxableEndingBalance,
+      );
+      taxAdvantagedEndingBalanceResult.textContent = currency.format(
+        result.taxAdvantagedEndingBalance,
+      );
+      differenceResult.textContent = currency.format(result.difference);
+      taxDragCostResult.textContent = currency.format(result.taxDragCost);
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('taxable_vs_tax_advantaged', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>
