@@ -30,9 +30,33 @@ const {
   faq,
   relatedItems,
 } = Astro.props;
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  description,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  url: new URL(Astro.url.pathname, Astro.site).toString(),
+};
+const structuredDataJson = JSON.stringify(structuredData).replace(
+  /</g,
+  '\\u003c',
+);
 ---
 
 <Layout title={title} description={description}>
+  <script
+    type="application/ld+json"
+    set:html={structuredDataJson}
+  />
+
   <main>
     <nav class="breadcrumbs" aria-label="Breadcrumb">
       <ol>
