@@ -22,6 +22,7 @@ const relatedItems = savingsGoalCalculator.relatedIds.flatMap((id) => {
     import { trackSuccessfulCalculation } from '../../../lib/analytics';
     import { parseCalculatorNumber } from '../../../lib/input';
     import { calculateSavingsGoal } from '../../../lib/math';
+    import { getTargetProgressExplanation } from '../../../lib/result-messages';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
@@ -124,11 +125,16 @@ const relatedItems = savingsGoalCalculator.relatedIds.flatMap((id) => {
         estimatedCompletionDateResult.textContent = 'Completed';
         totalContributionsNeededResult.textContent = currency.format(0);
       } else if (result.status === 'unreachable') {
-        estimatedMonthsResult.textContent =
-          'Unreachable with current contribution';
+        estimatedMonthsResult.textContent = getTargetProgressExplanation({
+          amountStillNeeded: result.amountStillNeeded,
+          monthlyContribution,
+          annualReturnPercent: expectedReturn,
+          targetName: 'the savings goal',
+        });
         estimatedCompletionDateResult.textContent =
-          'Increase the monthly contribution';
-        totalContributionsNeededResult.textContent = 'Unreachable';
+          'No completion date under current inputs';
+        totalContributionsNeededResult.textContent =
+          'Add a contribution above $0';
       } else {
         const months = result.estimatedMonthsToGoal ?? 0;
         estimatedMonthsResult.textContent =

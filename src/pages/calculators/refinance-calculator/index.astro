@@ -150,11 +150,14 @@ const relatedItems = refinanceCalculator.relatedIds.flatMap((id) => {
       );
 
       if (result.breakEvenMonths == null) {
+        const monthlyIncrease = Math.abs(result.monthlySavings);
         error.textContent =
-          'This refinance does not reduce the monthly payment under the assumptions entered.';
+          result.monthlySavings < 0
+            ? `The new payment is ${currency.format(monthlyIncrease)} higher per month, so the closing costs cannot be recovered through monthly savings. Lower the new rate, extend the term, or reduce closing costs.`
+            : 'The refinance produces no monthly savings, so there is no break-even date for recovering the closing costs. Lower the new rate, extend the term, or reduce closing costs.';
         error.hidden = false;
         breakEvenTimeResult.textContent =
-          'Does not reduce monthly payment';
+          'No break-even date without monthly savings';
       } else {
         error.hidden = true;
         breakEvenTimeResult.textContent = formatMonths(

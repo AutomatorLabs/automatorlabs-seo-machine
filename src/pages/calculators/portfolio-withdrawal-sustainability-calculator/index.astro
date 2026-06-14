@@ -118,7 +118,7 @@ const relatedItems =
       sustainabilityResult.textContent =
         result.status === 'sustainable'
           ? 'Sustainable: portfolio remains above zero'
-          : 'Depleted: portfolio reaches zero';
+          : `Portfolio is depleted within ${years} ${years === 1 ? 'year' : 'years'}. Lower the annual withdrawal, shorten the period, or use a higher return assumption.`;
 
       return true;
     }

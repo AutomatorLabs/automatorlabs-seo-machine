@@ -22,6 +22,7 @@ const relatedItems = downPaymentCalculator.relatedIds.flatMap((id) => {
     import { trackSuccessfulCalculation } from '../../../lib/analytics';
     import { parseCalculatorNumber } from '../../../lib/input';
     import { calculateSavingsGoal } from '../../../lib/math';
+    import { getTargetProgressExplanation } from '../../../lib/result-messages';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
@@ -138,10 +139,14 @@ const relatedItems = downPaymentCalculator.relatedIds.flatMap((id) => {
         estimatedMonthsResult.textContent = 'Already funded';
         estimatedCompletionDateResult.textContent = 'Completed';
       } else if (result.status === 'unreachable') {
-        estimatedMonthsResult.textContent =
-          'Unreachable with current contribution';
+        estimatedMonthsResult.textContent = getTargetProgressExplanation({
+          amountStillNeeded: result.amountStillNeeded,
+          monthlyContribution,
+          annualReturnPercent: expectedAnnualReturnPercent,
+          targetName: 'the down payment target',
+        });
         estimatedCompletionDateResult.textContent =
-          'Increase the monthly contribution';
+          'No completion date under current inputs';
       } else {
         const months = result.estimatedMonthsToGoal ?? 0;
         estimatedMonthsResult.textContent =

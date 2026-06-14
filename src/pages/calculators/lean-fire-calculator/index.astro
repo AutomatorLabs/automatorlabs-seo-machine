@@ -22,6 +22,7 @@ const relatedItems = leanFireCalculator.relatedIds.flatMap((id) => {
     import { trackSuccessfulCalculation } from '../../../lib/analytics';
     import { parseCalculatorNumber } from '../../../lib/input';
     import { calculateFinancialIndependenceDate } from '../../../lib/math';
+    import { getTargetProgressExplanation } from '../../../lib/result-messages';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
@@ -145,10 +146,14 @@ const relatedItems = leanFireCalculator.relatedIds.flatMap((id) => {
         estimatedYearsResult.textContent = 'Already at Lean FIRE';
         estimatedLeanFireDateResult.textContent = 'Completed';
       } else if (result.status === 'unreachable') {
-        estimatedYearsResult.textContent =
-          'Unreachable under current assumptions';
+        estimatedYearsResult.textContent = getTargetProgressExplanation({
+          amountStillNeeded: result.amountStillNeeded,
+          monthlyContribution,
+          annualReturnPercent: expectedAnnualReturnPercent,
+          targetName: 'Lean FIRE',
+        });
         estimatedLeanFireDateResult.textContent =
-          'Increase contributions or expected return';
+          'No Lean FIRE date under current inputs';
       } else {
         const totalMonths = Math.round(
           (result.estimatedYearsToFinancialIndependence ?? 0) * 12,

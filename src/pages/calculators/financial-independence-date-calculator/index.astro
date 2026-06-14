@@ -24,6 +24,7 @@ const relatedItems = financialIndependenceDateCalculator.relatedIds.flatMap(
     import { trackSuccessfulCalculation } from '../../../lib/analytics';
     import { parseCalculatorNumber } from '../../../lib/input';
     import { calculateFinancialIndependenceDate } from '../../../lib/math';
+    import { getTargetProgressExplanation } from '../../../lib/result-messages';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
@@ -148,10 +149,14 @@ const relatedItems = financialIndependenceDateCalculator.relatedIds.flatMap(
           'Already financially independent';
         estimatedFiDateResult.textContent = 'Already reached';
       } else if (result.status === 'unreachable') {
-        estimatedYearsResult.textContent =
-          'Unreachable with current assumptions';
+        estimatedYearsResult.textContent = getTargetProgressExplanation({
+          amountStillNeeded: result.amountStillNeeded,
+          monthlyContribution,
+          annualReturnPercent: expectedAnnualReturnPercent,
+          targetName: 'financial independence',
+        });
         estimatedFiDateResult.textContent =
-          'Increase contributions or expected return';
+          'No FI date under current inputs';
       } else {
         const totalMonths = Math.round(
           (result.estimatedYearsToFinancialIndependence ?? 0) * 12,

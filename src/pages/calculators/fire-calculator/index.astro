@@ -25,6 +25,7 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
       calculateYearsToTarget,
     } from '../../../lib/math';
     import { parseCalculatorNumber } from '../../../lib/input';
+    import { getTargetProgressExplanation } from '../../../lib/result-messages';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
@@ -109,7 +110,12 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
       amountNeededResult.textContent = currency.format(amountNeeded);
 
       if (yearsToFire === null) {
-        yearsToFireResult.textContent = 'Not reachable with current inputs';
+        yearsToFireResult.textContent = getTargetProgressExplanation({
+          amountStillNeeded: Math.max(amountNeeded, 0),
+          monthlyContribution,
+          annualReturnPercent: expectedReturn,
+          targetName: 'your FIRE number',
+        });
       } else if (yearsToFire === 0) {
         yearsToFireResult.textContent = 'Already reached';
       } else {

@@ -27,6 +27,7 @@ const relatedItems = emergencyFundCalculator.relatedIds.flatMap((id) => {
     import { trackSuccessfulCalculation } from '../../../lib/analytics';
     import { parseCalculatorNumber } from '../../../lib/input';
     import { calculateEmergencyFund } from '../../../lib/math';
+    import { getTargetProgressExplanation } from '../../../lib/result-messages';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
     const error = document.querySelector<HTMLElement>('#form-error');
@@ -132,10 +133,14 @@ const relatedItems = emergencyFundCalculator.relatedIds.flatMap((id) => {
         estimatedMonthsResult.textContent = 'Already funded';
         estimatedCompletionDateResult.textContent = 'Completed';
       } else if (result.status === 'unreachable') {
-        estimatedMonthsResult.textContent =
-          'Unreachable with current contribution';
+        estimatedMonthsResult.textContent = getTargetProgressExplanation({
+          amountStillNeeded: result.amountStillNeeded,
+          monthlyContribution: monthlySavingsContribution,
+          annualReturnPercent: 0,
+          targetName: 'the emergency fund target',
+        });
         estimatedCompletionDateResult.textContent =
-          'Increase the monthly contribution';
+          'No completion date until monthly savings exceed $0';
       } else {
         const months = result.estimatedMonthsToTarget ?? 0;
         estimatedMonthsResult.textContent =

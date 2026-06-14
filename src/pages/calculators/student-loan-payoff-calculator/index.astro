@@ -22,6 +22,7 @@ const relatedItems = studentLoanPayoffCalculator.relatedIds.flatMap((id) => {
     import { trackSuccessfulCalculation } from '../../../lib/analytics';
     import { parseCalculatorNumber } from '../../../lib/input';
     import { calculateDebtPayoff } from '../../../lib/math';
+    import { getDebtPaymentExplanation } from '../../../lib/result-messages';
 
     const balanceInput = document.querySelector<HTMLInputElement>(
       '#student-loan-balance',
@@ -112,13 +113,19 @@ const relatedItems = studentLoanPayoffCalculator.relatedIds.flatMap((id) => {
       });
 
       if (!result.accelerated.reachable) {
-        error.textContent =
-          'Unreachable: the total monthly payment does not cover the interest being added. Increase the payment or reduce the interest rate.';
+        error.textContent = getDebtPaymentExplanation({
+          balance: studentLoanBalance,
+          annualInterestRatePercent,
+          monthlyPayment: currentMonthlyPayment + extraMonthlyPayment,
+        });
         error.hidden = false;
-        payoffTimeResult.textContent = 'Unreachable';
-        totalInterestPaidResult.textContent = 'Unreachable';
-        totalAmountPaidResult.textContent = 'Unreachable';
-        interestSavedResult.textContent = 'Unreachable';
+        payoffTimeResult.textContent = 'No payoff under current payment';
+        totalInterestPaidResult.textContent =
+          'Continues growing while payment is too low';
+        totalAmountPaidResult.textContent =
+          'No finite payoff total';
+        interestSavedResult.textContent =
+          'Increase payment above monthly interest';
         return true;
       }
 
@@ -134,12 +141,15 @@ const relatedItems = studentLoanPayoffCalculator.relatedIds.flatMap((id) => {
       );
       interestSavedResult.textContent =
         result.interestSaved == null
-          ? 'Baseline unreachable'
+          ? 'Extra payment creates a payoff path'
           : currency.format(result.interestSaved);
 
       if (!result.baseline.reachable) {
-        error.textContent =
-          'The current payment alone does not cover monthly interest. The payoff shown depends on the extra monthly payment.';
+        error.textContent = `${getDebtPaymentExplanation({
+          balance: studentLoanBalance,
+          annualInterestRatePercent,
+          monthlyPayment: currentMonthlyPayment,
+        })} The payoff shown is possible because of the extra monthly payment.`;
         error.hidden = false;
       }
 
