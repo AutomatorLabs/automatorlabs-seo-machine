@@ -2,11 +2,13 @@
 interface Props {
 	title?: string;
 	description?: string;
+	noindex?: boolean;
 }
 
 const {
 	title = 'AutomatorLabs',
 	description = 'Free financial calculators and practical guides for better money decisions.',
+	noindex = false,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -46,6 +48,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 		<meta name="google-site-verification" content="Zn28Zp1xSsFTgvQj44O4oS1mdtKfQPqLFJ0Hsmr9OqY" />
 		<title>{title}</title>
 		<meta name="description" content={description} />
+		{noindex && <meta name="robots" content="noindex, nofollow" />}
 		<link rel="canonical" href={canonicalURL} />
 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-HW9Z98LRXL"></script>
 		<script is:inline>

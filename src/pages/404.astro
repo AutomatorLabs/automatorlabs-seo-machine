@@ -1,0 +1,388 @@
+---
+import { contentItems } from '../data/content';
+import Layout from '../layouts/Layout.astro';
+
+const popularCalculators = contentItems
+  .filter(
+    (item) =>
+      item.category === 'calculator' && item.status === 'live',
+  )
+  .sort((a, b) => a.priority - b.priority)
+  .slice(0, 6);
+---
+
+<Layout
+  title="Page Not Found | AutomatorLabs"
+  description="This AutomatorLabs page could not be found. Browse free financial calculators and educational guides."
+  noindex
+>
+  <main>
+    <section class="error-hero" aria-labelledby="error-heading">
+      <div class="artwork">
+        <svg
+          viewBox="0 0 520 390"
+          role="img"
+          aria-labelledby="mascot-title mascot-description"
+        >
+          <title id="mascot-title">A confused friendly calculator mascot</title>
+          <desc id="mascot-description">
+            A small round mascot studies an upside-down map beside a sign
+            pointing toward calculators and guides.
+          </desc>
+          <path
+            class="ground"
+            d="M44 340c81-25 151-18 218-2 70 17 142 18 214-2"
+          />
+          <g class="sign">
+            <path d="M390 100v230" />
+            <path d="M355 126h121l-18 27 18 27H355z" />
+            <path d="M348 202h115l-18 27 18 27H348z" />
+            <text x="370" y="158">CALCULATORS</text>
+            <text x="377" y="234">GUIDES</text>
+          </g>
+          <g class="map">
+            <path d="M135 235l49-22 48 20 51-22v83l-51 22-48-20-49 22z" />
+            <path d="M184 213v83M232 233v83" />
+            <path class="map-route" d="M151 284c25-41 62 5 93-32 13-15 23-10 27-5" />
+            <circle cx="153" cy="284" r="5" />
+            <path class="map-x" d="M262 239l17 17m0-17-17 17" />
+          </g>
+          <g class="mascot">
+            <path
+              class="body"
+              d="M94 152c11-60 66-92 121-78 55 14 85 73 66 128-17 50-64 80-115 69-54-12-82-65-72-119z"
+            />
+            <path class="arm" d="M105 207c-25 5-39 25-31 42 7 15 29 13 49-5" />
+            <path class="arm" d="M272 204c24 5 37 24 29 40-7 14-25 14-43-2" />
+            <circle class="eye" cx="151" cy="151" r="9" />
+            <circle class="eye" cx="220" cy="151" r="9" />
+            <path class="brow" d="M136 128c12-9 25-8 36 1M205 128c12-8 24-7 33 2" />
+            <path class="mouth" d="M170 198c13-11 28-10 41 1" />
+            <path class="antenna" d="M187 76l-5-27" />
+            <circle class="antenna-tip" cx="181" cy="42" r="10" />
+            <path class="foot" d="M132 263c-2 24-13 42-29 53M234 260c5 24 17 40 34 50" />
+          </g>
+          <g class="question-marks" aria-hidden="true">
+            <text x="62" y="116">?</text>
+            <text x="285" y="103">?</text>
+            <text x="310" y="170">?</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="error-copy">
+        <p class="error-code">404 · Wrong turn</p>
+        <h1 id="error-heading">Well... this page invested in disappearing.</h1>
+        <p class="intro">
+          The page you're looking for doesn't exist, but the rest of the
+          portfolio is doing just fine.
+        </p>
+        <div class="actions">
+          <a class="primary-action" href="/">Go Home</a>
+          <a href="/calculators/">Browse Calculators</a>
+          <a href="/guides/">Read Guides</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="popular" aria-labelledby="popular-heading">
+      <div class="section-heading">
+        <div>
+          <p>Back on the map</p>
+          <h2 id="popular-heading">Popular calculators</h2>
+        </div>
+        <a href="/calculators/">View all calculators</a>
+      </div>
+
+      <div class="calculator-grid">
+        {popularCalculators.map((calculator) => (
+          <a class="calculator-card" href={calculator.url}>
+            <span>Free calculator</span>
+            <h3>{calculator.title}</h3>
+            <p>{calculator.description}</p>
+            <strong>Open calculator →</strong>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  main {
+    width: min(1120px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 3.5rem 0 5rem;
+  }
+
+  .error-hero {
+    display: grid;
+    grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.1fr);
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: center;
+    min-height: 560px;
+  }
+
+  .artwork {
+    border: 1px solid var(--border-color);
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 50% 30%, var(--subtle-background), transparent 62%),
+      var(--card-background);
+    box-shadow: 0 18px 45px var(--shadow-color);
+    padding: clamp(0.75rem, 3vw, 1.5rem);
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .ground,
+  .sign path,
+  .arm,
+  .brow,
+  .mouth,
+  .antenna,
+  .foot {
+    fill: none;
+    stroke: var(--text-color);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 7;
+  }
+
+  .ground {
+    stroke: var(--border-color);
+    stroke-width: 5;
+  }
+
+  .sign path:first-child {
+    stroke-width: 10;
+  }
+
+  .sign path:not(:first-child) {
+    fill: var(--subtle-background);
+    stroke: var(--link-color);
+    stroke-width: 5;
+  }
+
+  .sign text {
+    fill: var(--text-color);
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+  }
+
+  .body {
+    fill: var(--card-background);
+    stroke: var(--link-color);
+    stroke-width: 8;
+  }
+
+  .eye,
+  .antenna-tip {
+    fill: var(--link-color);
+  }
+
+  .map path:first-child {
+    fill: var(--card-background);
+    stroke: var(--warning-text);
+    stroke-linejoin: round;
+    stroke-width: 6;
+  }
+
+  .map path:not(:first-child) {
+    fill: none;
+    stroke: var(--warning-text);
+    stroke-linecap: round;
+    stroke-width: 4;
+  }
+
+  .map .map-route {
+    stroke: var(--link-color);
+    stroke-dasharray: 7 7;
+  }
+
+  .map circle {
+    fill: var(--link-color);
+  }
+
+  .map .map-x {
+    stroke: var(--error-text);
+    stroke-width: 6;
+  }
+
+  .question-marks text {
+    fill: var(--warning-text);
+    font-family: ui-rounded, system-ui, sans-serif;
+    font-size: 44px;
+    font-weight: 900;
+  }
+
+  .error-code,
+  .section-heading > div > p,
+  .calculator-card > span {
+    margin: 0;
+    color: var(--link-color);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0.7rem 0 1rem;
+    font-size: clamp(2.6rem, 7vw, 5rem);
+    letter-spacing: -0.055em;
+    line-height: 0.98;
+  }
+
+  .intro {
+    max-width: 650px;
+    margin: 0;
+    color: var(--muted-text-color);
+    font-size: clamp(1.05rem, 2.5vw, 1.22rem);
+    line-height: 1.7;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+
+  .actions a {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--card-background);
+    color: var(--link-color);
+    font-weight: 750;
+    padding: 0.8rem 1rem;
+    text-decoration: none;
+  }
+
+  .actions a:hover {
+    border-color: var(--link-color);
+    background: var(--subtle-background);
+  }
+
+  .actions .primary-action {
+    border-color: var(--button-background);
+    background: var(--button-background);
+    color: var(--button-text);
+  }
+
+  .actions .primary-action:hover {
+    border-color: var(--button-hover-background);
+    background: var(--button-hover-background);
+  }
+
+  .popular {
+    border-top: 1px solid var(--border-color);
+    padding-top: 3.5rem;
+  }
+
+  .section-heading {
+    display: flex;
+    gap: 1rem;
+    align-items: end;
+    justify-content: space-between;
+    margin-bottom: 1.4rem;
+  }
+
+  .section-heading h2 {
+    margin: 0.35rem 0 0;
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    letter-spacing: -0.035em;
+  }
+
+  .section-heading > a {
+    flex: 0 0 auto;
+    color: var(--link-color);
+    font-weight: 750;
+  }
+
+  .calculator-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .calculator-card {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    background: var(--card-background);
+    color: var(--text-color);
+    box-shadow: 0 8px 24px transparent;
+    padding: 1.25rem;
+    text-decoration: none;
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease,
+      transform 160ms ease;
+  }
+
+  .calculator-card:hover {
+    border-color: var(--link-color);
+    box-shadow: 0 12px 30px var(--shadow-color);
+    transform: translateY(-2px);
+  }
+
+  .calculator-card h3 {
+    margin: 0.65rem 0 0;
+    font-size: 1.1rem;
+  }
+
+  .calculator-card p {
+    margin: 0.55rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .calculator-card strong {
+    margin-top: auto;
+    padding-top: 1rem;
+    color: var(--link-color);
+    font-size: 0.86rem;
+  }
+
+  @media (max-width: 850px) {
+    .error-hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+      padding-bottom: 3.5rem;
+    }
+
+    .artwork {
+      width: min(560px, 100%);
+      margin: 0 auto;
+    }
+
+    .calculator-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 580px) {
+    main {
+      padding-top: 2rem;
+    }
+
+    .calculator-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .section-heading {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>
