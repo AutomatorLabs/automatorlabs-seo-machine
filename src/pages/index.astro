@@ -1,33 +1,126 @@
 ---
+import { calculatorCategories } from '../data/calculator-categories';
 import { contentItems } from '../data/content';
+import { guideHubs } from '../data/guide-hubs';
 import Layout from '../layouts/Layout.astro';
 
-const calculators = contentItems
-  .filter((item) => item.category === 'calculator')
-  .sort((a, b) => a.priority - b.priority);
+const popularCalculators = contentItems
+  .filter(
+    (item) =>
+      item.category === 'calculator' && item.status === 'live',
+  )
+  .sort((a, b) => a.priority - b.priority)
+  .slice(0, 6);
+
+const latestGuides = guideHubs.slice(0, 6);
 ---
 
 <Layout
-  title="AutomatorLabs | Free Calculators and Tools"
-  description="Free calculators and tools for money, data, and automation."
+  title="AutomatorLabs | Free Financial Calculators and Guides"
+  description="Explore free financial calculators and beginner-friendly guides for investing, retirement, debt, home buying, budgeting, and savings."
 >
   <main>
-    <section>
-      <h1>AutomatorLabs</h1>
-      <p>Free calculators and tools for money, data, and automation.</p>
+    <section class="hero">
+      <p class="eyebrow">Clear numbers. Better questions.</p>
+      <h1>Practical financial calculators built to explain the results</h1>
+      <p class="hero-copy">
+        AutomatorLabs provides free calculators and beginner-friendly guides
+        for investing, retirement, debt, home buying, budgeting, and savings.
+        Test assumptions, compare scenarios, and understand what the numbers
+        mean before making a financial decision.
+      </p>
+      <div class="hero-actions">
+        <a class="primary-action" href="/calculators/">Explore calculators</a>
+        <a class="secondary-action" href="/guides/">Read the guides</a>
+      </div>
+    </section>
 
-      <ul class="content-list">
-        {calculators.map((item) => (
-          <li>
-            {item.status === 'live' ? (
-              <a href={item.url}>{item.title}</a>
-            ) : (
-              <span>{item.title}</span>
-            )}
-            <small>{item.status === 'live' ? 'Live' : 'Planned'}</small>
-          </li>
+    <section class="home-section" aria-labelledby="popular-heading">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">Start here</p>
+          <h2 id="popular-heading">Popular calculators</h2>
+        </div>
+        <a href="/calculators/">View all calculators</a>
+      </div>
+
+      <div class="card-grid calculator-grid">
+        {popularCalculators.map((calculator) => (
+          <a class="content-card" href={calculator.url}>
+            <span class="card-kicker">Free calculator</span>
+            <h3>{calculator.title}</h3>
+            <p>{calculator.description}</p>
+            <span class="card-action">Use calculator</span>
+          </a>
         ))}
-      </ul>
+      </div>
+    </section>
+
+    <section class="home-section" aria-labelledby="categories-heading">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">Browse by topic</p>
+          <h2 id="categories-heading">Calculator categories</h2>
+        </div>
+      </div>
+
+      <div class="category-grid">
+        {calculatorCategories.map((category) => (
+          <a
+            class="category-card"
+            href={`/calculators/${category.slug}/`}
+          >
+            <h3>{category.title}</h3>
+            <p>{category.description}</p>
+            <span>
+              {category.ids.length}
+              {category.ids.length === 1 ? ' calculator' : ' calculators'}
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="home-section" aria-labelledby="guides-heading">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">Learn the basics</p>
+          <h2 id="guides-heading">Latest guides</h2>
+        </div>
+        <a href="/guides/">Browse all guides</a>
+      </div>
+
+      <div class="card-grid guide-grid">
+        {latestGuides.map((guide) => (
+          <a class="content-card guide-card" href={`/guides/${guide.slug}/`}>
+            <span class="card-kicker">{guide.eyebrow}</span>
+            <h3>{guide.title}</h3>
+            <p>{guide.description}</p>
+            <span class="card-action">Read guide</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="purpose-section" aria-labelledby="purpose-heading">
+      <div>
+        <p class="section-label">Why AutomatorLabs</p>
+        <h2 id="purpose-heading">Why these tools exist</h2>
+      </div>
+      <div class="purpose-copy">
+        <p>
+          Financial questions often begin with a simple calculation, but a
+          number without context can be misleading. These tools pair clear
+          inputs and outputs with explanations, common mistakes, FAQs, and
+          related guides.
+        </p>
+        <p>
+          The calculators are designed for exploring scenarios, not predicting
+          the future or replacing professional advice. Change one assumption at
+          a time, compare cautious and optimistic cases, and use the result as a
+          starting point for a more informed decision.
+        </p>
+      </div>
     </section>
   </main>
 </Layout>
@@ -39,54 +132,221 @@ const calculators = contentItems
     padding: 5rem 0;
   }
 
-  section {
-    max-width: 720px;
+  .hero {
+    max-width: 900px;
+    padding: 2rem 0 3rem;
+  }
+
+  .eyebrow,
+  .section-label,
+  .card-kicker {
+    margin: 0;
+    color: var(--link-color);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
 
   h1 {
-    margin: 0 0 0.75rem;
-    font-size: clamp(2.5rem, 8vw, 4.5rem);
-    letter-spacing: -0.05em;
+    max-width: 880px;
+    margin: 0.65rem 0 1.25rem;
+    font-size: clamp(2.7rem, 8vw, 5rem);
+    letter-spacing: -0.055em;
     line-height: 1;
   }
 
-  p {
+  .hero-copy {
+    max-width: 760px;
+    margin: 0;
     color: var(--muted-text-color);
-    font-size: 1.15rem;
+    font-size: clamp(1.08rem, 2.5vw, 1.25rem);
+    line-height: 1.7;
   }
 
-  .content-list {
-    display: grid;
-    gap: 0.75rem;
-    margin-top: 2rem;
-    padding: 0;
-    list-style: none;
-  }
-
-  .content-list li {
+  .hero-actions {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
     gap: 0.75rem;
+    margin-top: 1.75rem;
   }
 
-  a {
+  .hero-actions a {
+    border-radius: 10px;
+    font-weight: 750;
+    padding: 0.8rem 1.05rem;
+    text-decoration: none;
+  }
+
+  .primary-action {
+    background: var(--button-background);
+    color: var(--button-text);
+  }
+
+  .primary-action:hover {
+    background: var(--button-hover-background);
+  }
+
+  .secondary-action {
+    border: 1px solid var(--border-color);
+    background: var(--card-background);
     color: var(--link-color);
-    font-weight: 700;
   }
 
-  .content-list span {
-    color: var(--muted-text-color);
-    font-weight: 700;
-  }
-
-  small {
-    border-radius: 999px;
+  .secondary-action:hover {
+    border-color: var(--link-color);
     background: var(--subtle-background);
-    color: var(--subtle-text);
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 0.04em;
-    padding: 0.15rem 0.5rem;
-    text-transform: uppercase;
+  }
+
+  .home-section {
+    border-top: 1px solid var(--border-color);
+    padding: 3.5rem 0;
+  }
+
+  .section-heading {
+    display: flex;
+    gap: 1rem;
+    align-items: end;
+    justify-content: space-between;
+    margin-bottom: 1.4rem;
+  }
+
+  .section-heading h2,
+  .purpose-section h2 {
+    margin: 0.35rem 0 0;
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+  }
+
+  .section-heading > a {
+    flex: 0 0 auto;
+    color: var(--link-color);
+    font-size: 0.9rem;
+    font-weight: 750;
+  }
+
+  .card-grid,
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .content-card,
+  .category-card {
+    display: flex;
+    min-width: 0;
+    min-height: 100%;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    background: var(--card-background);
+    color: var(--text-color);
+    box-shadow: 0 8px 24px transparent;
+    padding: 1.25rem;
+    text-decoration: none;
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease,
+      transform 160ms ease;
+  }
+
+  .content-card:hover,
+  .category-card:hover {
+    border-color: var(--link-color);
+    box-shadow: 0 12px 30px var(--shadow-color);
+    transform: translateY(-2px);
+  }
+
+  .content-card:focus-visible,
+  .category-card:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 3px;
+  }
+
+  .content-card h3,
+  .category-card h3 {
+    margin: 0.7rem 0 0;
+    font-size: 1.12rem;
+    line-height: 1.35;
+  }
+
+  .content-card p,
+  .category-card p {
+    margin: 0.55rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .card-action {
+    margin-top: auto;
+    padding-top: 1.15rem;
+    color: var(--link-color);
+    font-size: 0.86rem;
+    font-weight: 750;
+  }
+
+  .category-card span {
+    margin-top: auto;
+    padding-top: 1rem;
+    color: var(--link-color);
+    font-size: 0.82rem;
+    font-weight: 750;
+  }
+
+  .purpose-section {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.3fr);
+    gap: 3rem;
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    background: var(--card-background);
+    box-shadow: 0 12px 35px var(--shadow-color);
+    margin-top: 1rem;
+    padding: clamp(1.5rem, 5vw, 2.5rem);
+  }
+
+  .purpose-copy p {
+    margin: 0;
+    color: var(--muted-text-color);
+    line-height: 1.75;
+  }
+
+  .purpose-copy p + p {
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 860px) {
+    .card-grid,
+    .category-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 620px) {
+    main {
+      padding: 3rem 0;
+    }
+
+    .hero {
+      padding-top: 1rem;
+    }
+
+    .section-heading {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .card-grid,
+    .category-grid,
+    .purpose-section {
+      grid-template-columns: 1fr;
+    }
+
+    .purpose-section {
+      gap: 1.25rem;
+    }
   }
 </style>

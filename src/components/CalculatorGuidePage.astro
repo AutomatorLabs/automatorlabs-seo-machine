@@ -1,0 +1,451 @@
+---
+import type { CalculatorGuide } from '../data/calculator-guides';
+import Layout from '../layouts/Layout.astro';
+
+interface Props {
+  guide: CalculatorGuide;
+}
+
+const { guide } = Astro.props;
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: guide.faq.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+};
+const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
+  /</g,
+  '\\u003c',
+);
+---
+
+<Layout title={guide.seoTitle} description={guide.metaDescription}>
+  <script
+    type="application/ld+json"
+    set:html={faqStructuredDataJson}
+  />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/guides/">Guides</a></li>
+        <li aria-current="page">{guide.title}</li>
+      </ol>
+    </nav>
+
+    <article>
+      <header class="page-header">
+        <p class="eyebrow">Calculator guide</p>
+        <h1>{guide.title}</h1>
+        <p class="intro">{guide.intro}</p>
+      </header>
+
+      <aside class="calculator-callout" aria-labelledby="matching-calculator-heading">
+        <div>
+          <p class="callout-label">Try the numbers</p>
+          <h2 id="matching-calculator-heading">{guide.calculator.title}</h2>
+          <p>{guide.calculator.description}</p>
+        </div>
+        <a href={guide.calculator.url}>Open calculator</a>
+      </aside>
+
+      <div class="article-body">
+        {guide.sections.slice(0, 3).map((section) => (
+          <section>
+            <h2>{section.heading}</h2>
+            {section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+          </section>
+        ))}
+
+        <section>
+          <h2>Practical example using the default scenario</h2>
+          {guide.practicalExample.paragraphs.map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+          <dl class="example-inputs">
+            {guide.practicalExample.inputs.map((input) => (
+              <div>
+                <dt>{input.label}</dt>
+                <dd>{input.value}</dd>
+              </div>
+            ))}
+          </dl>
+          {guide.sections[3].paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+        </section>
+
+        <section>
+          <h2>{guide.sections[4].heading}</h2>
+          {guide.sections[4].paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+          <dl class="result-guide">
+            {guide.resultExplanations.map((result) => (
+              <div>
+                <dt>{result.label}</dt>
+                <dd>{result.explanation}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        {guide.sections.slice(5).map((section) => (
+          <section>
+            <h2>{section.heading}</h2>
+            {section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+          </section>
+        ))}
+      </div>
+
+      <section class="mistakes-section" aria-labelledby="mistakes-heading">
+        <h2 id="mistakes-heading">Common mistakes to avoid</h2>
+        <ul>
+          {guide.commonMistakes.map((mistake) => <li>{mistake}</li>)}
+        </ul>
+      </section>
+
+      <section class="internal-links" aria-labelledby="continue-heading">
+        <h2 id="continue-heading">Continue exploring</h2>
+        <div class="link-grid">
+          <a href={guide.calculator.url}>
+            <strong>{guide.calculator.title}</strong>
+            <span>Use the matching calculator</span>
+          </a>
+          <a href={`/calculators/${guide.category.slug}/`}>
+            <strong>{guide.category.title}</strong>
+            <span>Browse the full category</span>
+          </a>
+          {guide.relatedCalculators.map((calculator) => (
+            <a href={calculator.url}>
+              <strong>{calculator.title}</strong>
+              <span>{calculator.description}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section class="faq-section" aria-labelledby="faq-heading">
+        <h2 id="faq-heading">Frequently asked questions</h2>
+        <div class="faq-list">
+          {guide.faq.map((item) => (
+            <details>
+              <summary>{item.question}</summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <a class="back-link" href="/guides/">Browse all guides</a>
+    </article>
+  </main>
+</Layout>
+
+<style>
+  main {
+    width: min(1040px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 4.5rem 0;
+  }
+
+  article {
+    max-width: 820px;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
+  }
+
+  .breadcrumbs li + li::before {
+    color: var(--muted-text-color);
+    content: '›';
+  }
+
+  .breadcrumbs a,
+  .back-link {
+    color: var(--link-color);
+  }
+
+  .breadcrumbs a {
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover,
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  .breadcrumbs [aria-current='page'] {
+    color: var(--text-color);
+    font-weight: 650;
+  }
+
+  .page-header {
+    max-width: 780px;
+    margin-bottom: 2.25rem;
+  }
+
+  .eyebrow,
+  .callout-label {
+    margin: 0 0 0.5rem;
+    color: var(--link-color);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.35rem, 7vw, 4rem);
+    letter-spacing: -0.045em;
+    line-height: 1.06;
+  }
+
+  .intro {
+    margin: 1rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 1.12rem;
+    line-height: 1.7;
+  }
+
+  .calculator-callout {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--card-background);
+    box-shadow: 0 12px 35px var(--shadow-color);
+    margin-bottom: 3rem;
+    padding: 1.4rem;
+  }
+
+  .calculator-callout h2,
+  .calculator-callout p {
+    margin-top: 0;
+  }
+
+  .calculator-callout h2 {
+    margin-bottom: 0.4rem;
+    font-size: 1.2rem;
+  }
+
+  .calculator-callout p:last-child {
+    max-width: 590px;
+    margin-bottom: 0;
+    color: var(--muted-text-color);
+  }
+
+  .calculator-callout > a {
+    flex: 0 0 auto;
+    border-radius: 9px;
+    background: var(--button-background);
+    color: var(--button-text);
+    font-weight: 750;
+    padding: 0.75rem 0.95rem;
+    text-decoration: none;
+  }
+
+  .calculator-callout > a:hover {
+    background: var(--button-hover-background);
+  }
+
+  .article-body {
+    display: grid;
+    gap: 2.25rem;
+  }
+
+  .article-body section {
+    max-width: 780px;
+  }
+
+  .article-body h2,
+  .mistakes-section h2,
+  .internal-links h2,
+  .faq-section h2 {
+    margin: 0 0 0.85rem;
+    font-size: 1.55rem;
+    letter-spacing: -0.02em;
+  }
+
+  .article-body p {
+    margin: 0 0 1rem;
+    color: var(--text-color);
+    font-size: 1rem;
+    line-height: 1.78;
+  }
+
+  .example-inputs,
+  .result-guide {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--card-background);
+    margin: 1.25rem 0;
+    overflow: hidden;
+  }
+
+  .example-inputs div,
+  .result-guide div {
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 1rem;
+  }
+
+  .example-inputs div:nth-child(odd),
+  .result-guide div:nth-child(odd) {
+    border-right: 1px solid var(--border-subtle);
+  }
+
+  .example-inputs dt,
+  .result-guide dt {
+    color: var(--text-color);
+    font-weight: 750;
+  }
+
+  .example-inputs dd,
+  .result-guide dd {
+    margin: 0.3rem 0 0;
+    color: var(--muted-text-color);
+    line-height: 1.55;
+  }
+
+  .mistakes-section,
+  .internal-links,
+  .faq-section {
+    margin-top: 3rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+  }
+
+  .mistakes-section {
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--card-background);
+    padding: 1.5rem;
+  }
+
+  .mistakes-section ul {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  .mistakes-section li::marker {
+    color: var(--link-color);
+  }
+
+  .link-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+  }
+
+  .link-grid a {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--card-background);
+    color: var(--link-color);
+    padding: 1rem;
+    text-decoration: none;
+  }
+
+  .link-grid a:hover {
+    border-color: var(--link-color);
+    background: var(--subtle-background);
+  }
+
+  .link-grid span {
+    margin-top: 0.35rem;
+    color: var(--muted-text-color);
+    font-size: 0.86rem;
+    line-height: 1.5;
+  }
+
+  .faq-section {
+    border-radius: 16px;
+    background: var(--faq-background);
+    padding: 2rem;
+  }
+
+  .faq-list {
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  details {
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 1rem 0;
+  }
+
+  summary {
+    cursor: pointer;
+    color: var(--text-color);
+    font-weight: 750;
+  }
+
+  details p {
+    margin: 0.65rem 0 0;
+    color: var(--muted-text-color);
+    line-height: 1.65;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 2rem;
+    font-weight: 700;
+  }
+
+  @media (max-width: 680px) {
+    main {
+      padding: 3rem 0;
+    }
+
+    .calculator-callout {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .example-inputs,
+    .result-guide,
+    .link-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .example-inputs div:nth-child(odd),
+    .result-guide div:nth-child(odd) {
+      border-right: 0;
+    }
+
+    .faq-section {
+      padding: 1.25rem;
+    }
+  }
+</style>

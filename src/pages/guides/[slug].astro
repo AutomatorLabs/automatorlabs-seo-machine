@@ -1,0 +1,22 @@
+---
+import CalculatorGuidePage from '../../components/CalculatorGuidePage.astro';
+import {
+  calculatorGuides,
+  type CalculatorGuide,
+} from '../../data/calculator-guides';
+
+export function getStaticPaths() {
+  return calculatorGuides.map((guide) => ({
+    params: { slug: guide.slug },
+    props: { guide },
+  }));
+}
+
+interface Props {
+  guide: CalculatorGuide;
+}
+
+const { guide } = Astro.props;
+---
+
+<CalculatorGuidePage guide={guide} />

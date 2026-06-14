@@ -1,5 +1,6 @@
 ---
 import { guideHubs } from '../../data/guide-hubs';
+import { calculatorGuides } from '../../data/calculator-guides';
 import Layout from '../../layouts/Layout.astro';
 ---
 
@@ -15,12 +16,29 @@ import Layout from '../../layouts/Layout.astro';
       calculators to help you explore the numbers.
     </p>
 
+    <h2>Topic guides</h2>
     <ul class="guide-list">
       {guideHubs.map((guide) => (
         <li>
           <a href={`/guides/${guide.slug}/`}>
             <span>{guide.title}</span>
             <small>{guide.description}</small>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <h2 class="calculator-guides-heading">Calculator guides</h2>
+    <p class="section-intro">
+      Learn how each calculator works, walk through its inputs and results,
+      and review practical examples and common mistakes.
+    </p>
+    <ul class="guide-list calculator-guide-list">
+      {calculatorGuides.map((guide) => (
+        <li>
+          <a href={`/guides/${guide.slug}/`}>
+            <span>{guide.title}</span>
+            <small>{guide.intro}</small>
           </a>
         </li>
       ))}
@@ -54,6 +72,26 @@ import Layout from '../../layouts/Layout.astro';
     color: var(--muted-text-color);
   }
 
+  h2 {
+    margin: 2.5rem 0 0;
+    font-size: 1.45rem;
+    letter-spacing: -0.02em;
+  }
+
+  .section-intro {
+    margin: 0.45rem 0 0;
+    color: var(--muted-text-color);
+    line-height: 1.6;
+  }
+
+  .calculator-guides-heading {
+    margin-top: 3.5rem;
+  }
+
+  .calculator-guide-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .guide-list {
     display: grid;
     gap: 0.85rem;
@@ -85,5 +123,11 @@ import Layout from '../../layouts/Layout.astro';
     font-size: 0.9rem;
     font-weight: 400;
     line-height: 1.5;
+  }
+
+  @media (max-width: 620px) {
+    .calculator-guide-list {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
