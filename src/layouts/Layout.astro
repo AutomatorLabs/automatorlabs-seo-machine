@@ -19,7 +19,28 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-				<script is:inline>
+		<script is:inline>
+			(() => {
+				const storageKey = 'automatorlabs-theme';
+				let savedTheme;
+
+				try {
+					savedTheme = localStorage.getItem(storageKey);
+				} catch {}
+
+				const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+					? 'dark'
+					: 'light';
+				const theme =
+					savedTheme === 'dark' || savedTheme === 'light'
+						? savedTheme
+						: systemTheme;
+
+				document.documentElement.dataset.theme = theme;
+				document.documentElement.style.colorScheme = theme;
+			})();
+		</script>
+		<script is:inline>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
 			gtag('js', new Date());
