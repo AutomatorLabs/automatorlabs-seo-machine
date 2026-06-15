@@ -4,6 +4,166 @@ import { calculatorGuides } from '../../data/calculator-guides';
 import { comparisonGuides } from '../../data/comparison-guides';
 import { topicalGuides } from '../../data/topical-guides';
 import Layout from '../../layouts/Layout.astro';
+
+type GuideTopic =
+  | 'fire-retirement'
+  | 'investing'
+  | 'debt'
+  | 'home-buying'
+  | 'budgeting'
+  | 'tax-advantaged';
+
+interface GuideCard {
+  title: string;
+  description: string;
+  url: string;
+  topic: GuideTopic;
+  topicLabel: string;
+  keywords: string[];
+}
+
+const topicLabels: Record<GuideTopic, string> = {
+  'fire-retirement': 'FIRE & Retirement',
+  investing: 'Investing',
+  debt: 'Debt',
+  'home-buying': 'Home Buying',
+  budgeting: 'Budgeting',
+  'tax-advantaged': 'Tax-Advantaged Accounts',
+};
+
+const categoryTopics: Record<string, GuideTopic> = {
+  'fire-retirement': 'fire-retirement',
+  investing: 'investing',
+  'debt-loans': 'debt',
+  'home-mortgage': 'home-buying',
+  'budgeting-savings': 'budgeting',
+  'college-tax-advantaged': 'tax-advantaged',
+};
+
+const hubTopics: Record<string, GuideTopic> = {
+  fire: 'fire-retirement',
+  investing: 'investing',
+  'retirement-withdrawals': 'fire-retirement',
+  'debt-payoff': 'debt',
+  'home-buying': 'home-buying',
+  budgeting: 'budgeting',
+};
+
+const comparisonTopics: Record<string, GuideTopic> = {
+  'fire-vs-coast-fire': 'fire-retirement',
+  'lean-fire-vs-fat-fire': 'fire-retirement',
+  'debt-snowball-vs-debt-avalanche': 'debt',
+  'roth-vs-traditional-ira': 'tax-advantaged',
+  'lump-sum-vs-dollar-cost-averaging': 'investing',
+  'cagr-vs-compound-interest': 'investing',
+  'rent-vs-buy': 'home-buying',
+};
+
+function createCard(
+  title: string,
+  description: string,
+  url: string,
+  topic: GuideTopic,
+  keywords: string[] = [],
+): GuideCard {
+  return {
+    title,
+    description,
+    url,
+    topic,
+    topicLabel: topicLabels[topic],
+    keywords,
+  };
+}
+
+const hubCards = guideHubs.map((guide) =>
+  createCard(
+    guide.title,
+    guide.description,
+    `/guides/${guide.slug}/`,
+    hubTopics[guide.slug],
+    [guide.eyebrow, guide.categoryTitle, guide.metaDescription],
+  ),
+);
+
+const comparisonCards = comparisonGuides.map((guide) =>
+  createCard(
+    guide.title,
+    guide.metaDescription,
+    `/guides/${guide.slug}/`,
+    comparisonTopics[guide.slug],
+    [guide.leftLabel, guide.rightLabel, guide.intro],
+  ),
+);
+
+const topicalCards = topicalGuides.map((guide) =>
+  createCard(
+    guide.title,
+    guide.metaDescription,
+    `/guides/${guide.slug}/`,
+    'investing',
+    [
+      guide.intro,
+      ...guide.sections.map((section) => section.heading),
+    ],
+  ),
+);
+
+const calculatorGuideCards = calculatorGuides.map((guide) => {
+  const topic = categoryTopics[guide.category.slug];
+  return createCard(
+    guide.title,
+    guide.intro,
+    `/guides/${guide.slug}/`,
+    topic,
+    [
+      guide.calculator.title,
+      guide.category.title,
+      guide.contentItem.primaryKeyword,
+      ...guide.contentItem.secondaryKeywords,
+    ],
+  );
+});
+
+const guideGroups = [
+  {
+    id: 'topic-guides',
+    title: 'Topic guides',
+    description: '',
+    cards: hubCards,
+  },
+  {
+    id: 'comparison-guides',
+    title: 'Comparison guides',
+    description:
+      'Compare common financial strategies side by side, understand their tradeoffs, and choose the calculator that matches your question.',
+    cards: comparisonCards,
+  },
+  {
+    id: 'compound-interest-guides',
+    title: 'Compound interest learning',
+    description:
+      'Go deeper on rates, compounding frequency, inflation, and the difference between nominal growth and real purchasing power.',
+    cards: topicalCards,
+  },
+  {
+    id: 'calculator-guides',
+    title: 'Calculator guides',
+    description:
+      'Learn how each calculator works, walk through its inputs and results, and review practical examples and common mistakes.',
+    cards: calculatorGuideCards,
+  },
+];
+
+const totalGuides = guideGroups.reduce(
+  (total, group) => total + group.cards.length,
+  0,
+);
+
+const topicFilters = [
+  { value: 'all', label: 'All' },
+  ...Object.entries(topicLabels).map(([value, label]) => ({ value, label })),
+];
 ---
 
 <Layout
@@ -18,67 +178,135 @@ import Layout from '../../layouts/Layout.astro';
       calculators to help you explore the numbers.
     </p>
 
-    <h2>Topic guides</h2>
-    <ul class="guide-list">
-      {guideHubs.map((guide) => (
-        <li>
-          <a href={`/guides/${guide.slug}/`}>
-            <span>{guide.title}</span>
-            <small>{guide.description}</small>
-          </a>
-        </li>
-      ))}
-    </ul>
+    <section class="guide-controls" aria-labelledby="guide-search-heading">
+      <h2 id="guide-search-heading">Find a guide</h2>
+      <label for="guide-search">Search guides</label>
+      <input
+        id="guide-search"
+        type="search"
+        placeholder="Search FIRE, investing, debt, inflation..."
+        autocomplete="off"
+      />
 
-    <h2 class="comparison-guides-heading">Comparison guides</h2>
-    <p class="section-intro">
-      Compare common financial strategies side by side, understand their
-      tradeoffs, and choose the calculator that matches your question.
-    </p>
-    <ul class="guide-list comparison-guide-list">
-      {comparisonGuides.map((guide) => (
-        <li>
-          <a href={`/guides/${guide.slug}/`}>
-            <span>{guide.title}</span>
-            <small>{guide.metaDescription}</small>
-          </a>
-        </li>
-      ))}
-    </ul>
+      <div class="topic-filters" aria-label="Filter guides by topic">
+        {topicFilters.map((filter, index) => (
+          <button
+            type="button"
+            data-topic-filter={filter.value}
+            aria-pressed={index === 0 ? 'true' : 'false'}
+          >
+            {filter.label}
+          </button>
+        ))}
+      </div>
 
-    <h2 class="topical-guides-heading">Compound interest learning</h2>
-    <p class="section-intro">
-      Go deeper on rates, compounding frequency, inflation, and the difference
-      between nominal growth and real purchasing power.
-    </p>
-    <ul class="guide-list topical-guide-list">
-      {topicalGuides.map((guide) => (
-        <li>
-          <a href={`/guides/${guide.slug}/`}>
-            <span>{guide.title}</span>
-            <small>{guide.metaDescription}</small>
-          </a>
-        </li>
-      ))}
-    </ul>
+      <p id="guide-count" class="guide-count" aria-live="polite">
+        Showing {totalGuides} guides
+      </p>
+    </section>
 
-    <h2 class="calculator-guides-heading">Calculator guides</h2>
-    <p class="section-intro">
-      Learn how each calculator works, walk through its inputs and results,
-      and review practical examples and common mistakes.
-    </p>
-    <ul class="guide-list calculator-guide-list">
-      {calculatorGuides.map((guide) => (
-        <li>
-          <a href={`/guides/${guide.slug}/`}>
-            <span>{guide.title}</span>
-            <small>{guide.intro}</small>
-          </a>
-        </li>
+    <div id="guide-groups">
+      {guideGroups.map((group) => (
+        <section class="guide-group" data-guide-group>
+          <h2>{group.title}</h2>
+          {group.description && (
+            <p class="section-intro">{group.description}</p>
+          )}
+          <ul class="guide-list">
+            {group.cards.map((guide) => (
+              <li
+                data-guide-card
+                data-topic={guide.topic}
+                data-search={[
+                  guide.title,
+                  guide.description,
+                  guide.topicLabel,
+                  guide.url,
+                  ...guide.keywords,
+                ].join(' ').toLowerCase()}
+              >
+                <a href={guide.url}>
+                  <span class="guide-topic">{guide.topicLabel}</span>
+                  <strong>{guide.title}</strong>
+                  <small>{guide.description}</small>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
       ))}
-    </ul>
+    </div>
+
+    <p id="guide-empty-state" class="empty-state" role="status" hidden>
+      No guides found. Try a different search.
+    </p>
   </main>
 </Layout>
+
+<script>
+  const searchInput =
+    document.querySelector<HTMLInputElement>('#guide-search');
+  const filterButtons = Array.from(
+    document.querySelectorAll<HTMLButtonElement>('[data-topic-filter]'),
+  );
+  const guideCards = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-guide-card]'),
+  );
+  const guideGroups = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-guide-group]'),
+  );
+  const guideCount = document.querySelector<HTMLElement>('#guide-count');
+  const emptyState =
+    document.querySelector<HTMLElement>('#guide-empty-state');
+  let activeTopic = 'all';
+
+  function updateGuides() {
+    const query = searchInput?.value.trim().toLowerCase() ?? '';
+    let visibleCount = 0;
+
+    guideCards.forEach((card) => {
+      const matchesSearch = (card.dataset.search ?? '').includes(query);
+      const matchesTopic =
+        activeTopic === 'all' || card.dataset.topic === activeTopic;
+      const isVisible = matchesSearch && matchesTopic;
+
+      card.hidden = !isVisible;
+      if (isVisible) visibleCount += 1;
+    });
+
+    guideGroups.forEach((group) => {
+      const hasVisibleCards = Array.from(
+        group.querySelectorAll<HTMLElement>('[data-guide-card]'),
+      ).some((card) => !card.hidden);
+      group.hidden = !hasVisibleCards;
+    });
+
+    if (guideCount) {
+      guideCount.textContent = `Showing ${visibleCount} ${
+        visibleCount === 1 ? 'guide' : 'guides'
+      }`;
+    }
+
+    if (emptyState) {
+      emptyState.hidden = visibleCount !== 0;
+    }
+  }
+
+  searchInput?.addEventListener('input', updateGuides);
+
+  filterButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      activeTopic = button.dataset.topicFilter ?? 'all';
+      filterButtons.forEach((candidate) => {
+        candidate.setAttribute(
+          'aria-pressed',
+          String(candidate === button),
+        );
+      });
+      updateGuides();
+    });
+  });
+</script>
 
 <style>
   main {
@@ -106,6 +334,77 @@ import Layout from '../../layouts/Layout.astro';
     color: var(--muted-text-color);
   }
 
+  .guide-controls {
+    margin: 2.5rem 0 3.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--card-background);
+    padding: clamp(1.25rem, 4vw, 1.75rem);
+  }
+
+  .guide-controls h2 {
+    margin: 0 0 1rem;
+  }
+
+  .guide-controls label {
+    display: block;
+    margin-bottom: 0.45rem;
+    color: var(--text-color);
+    font-weight: 700;
+  }
+
+  .guide-controls input {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--form-background);
+    color: var(--input-text);
+    font: inherit;
+    padding: 0.8rem 0.9rem;
+  }
+
+  .guide-controls input:focus {
+    border-color: var(--link-color);
+    outline: 2px solid var(--link-color);
+    outline-offset: 2px;
+  }
+
+  .topic-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1rem;
+  }
+
+  .topic-filters button {
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: var(--form-background);
+    color: var(--text-color);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 0.55rem 0.8rem;
+  }
+
+  .topic-filters button:hover {
+    border-color: var(--link-color);
+  }
+
+  .topic-filters button[aria-pressed='true'] {
+    border-color: var(--button-background);
+    background: var(--button-background);
+    color: var(--button-text);
+  }
+
+  .guide-count {
+    margin: 1rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 0.92rem;
+    font-weight: 650;
+  }
+
   h2 {
     margin: 2.5rem 0 0;
     font-size: 1.45rem;
@@ -118,18 +417,11 @@ import Layout from '../../layouts/Layout.astro';
     line-height: 1.6;
   }
 
-  .calculator-guides-heading {
+  .guide-group + .guide-group h2 {
     margin-top: 3.5rem;
   }
 
-  .comparison-guides-heading,
-  .topical-guides-heading {
-    margin-top: 3.5rem;
-  }
-
-  .comparison-guide-list,
-  .topical-guide-list,
-  .calculator-guide-list {
+  .guide-group:not(:first-child) .guide-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -153,6 +445,18 @@ import Layout from '../../layouts/Layout.astro';
     text-decoration: none;
   }
 
+  .guide-list strong {
+    margin-top: 0.35rem;
+  }
+
+  .guide-topic {
+    color: var(--muted-text-color);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
   .guide-list a:hover {
     border-color: var(--link-color);
     background: var(--subtle-background);
@@ -166,10 +470,21 @@ import Layout from '../../layouts/Layout.astro';
     line-height: 1.5;
   }
 
+  .empty-state {
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
+    background: var(--subtle-background);
+    color: var(--text-color);
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
   @media (max-width: 620px) {
-    .comparison-guide-list,
-    .topical-guide-list,
-    .calculator-guide-list {
+    .guide-group:not(:first-child) .guide-list {
       grid-template-columns: 1fr;
     }
   }
