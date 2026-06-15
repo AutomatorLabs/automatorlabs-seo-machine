@@ -1,9 +1,118 @@
 import { expect, test } from '@playwright/test';
 import { calculatorConfigs } from '../src/data/calculators';
+import { calculatorCategories } from '../src/data/calculator-categories';
 
 const calculators = Object.values(calculatorConfigs).sort((a, b) =>
   a.title.localeCompare(b.title),
 );
+
+test.describe('calculator index search and filters', () => {
+  const calculatorCards = '[data-calculator-card]';
+
+  test.beforeEach(async ({ page }) => {
+    await page.route('https://www.googletagmanager.com/**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/javascript',
+        body: '',
+      });
+    });
+    await page.goto('/calculators/', { waitUntil: 'domcontentloaded' });
+  });
+
+  test('shows every calculator by default', async ({ page }) => {
+    await expect(page.locator(calculatorCards)).toHaveCount(calculators.length);
+    await expect(page.locator(`${calculatorCards}:visible`)).toHaveCount(
+      calculators.length,
+    );
+    await expect(page.locator('#calculator-count')).toHaveText(
+      `Showing ${calculators.length} calculators`,
+    );
+  });
+
+  for (const query of ['fire', 'mortgage']) {
+    test(`searching "${query}" filters calculator cards`, async ({ page }) => {
+      await page.getByLabel('Search calculators').fill(query);
+
+      const visibleCards = page.locator(`${calculatorCards}:visible`);
+      const visibleCount = await visibleCards.count();
+      expect(visibleCount).toBeGreaterThan(0);
+      expect(visibleCount).toBeLessThan(calculators.length);
+
+      const searchText = await visibleCards.evaluateAll((cards) =>
+        cards.map((card) => card.getAttribute('data-search-text') ?? ''),
+      );
+      expect(searchText.every((text) => text.includes(query))).toBe(true);
+      await expect(page.locator('#calculator-count')).toHaveText(
+        `Showing ${visibleCount} calculators`,
+      );
+    });
+  }
+
+  test('Debt & Loans category filter shows only that category', async ({
+    page,
+  }) => {
+    const debtCategory = calculatorCategories.find(
+      (category) => category.slug === 'debt-loans',
+    );
+    if (!debtCategory) throw new Error('Missing Debt & Loans category');
+
+    const filter = page.getByRole('button', {
+      name: 'Debt & Loans',
+      exact: true,
+    });
+    await filter.click();
+
+    await expect(filter).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator(`${calculatorCards}:visible`)).toHaveCount(
+      debtCategory.ids.length,
+    );
+    await expect(
+      page.locator(
+        `${calculatorCards}:visible:not([data-category="debt-loans"])`,
+      ),
+    ).toHaveCount(0);
+  });
+
+  test('nonsense search shows the accessible empty state', async ({ page }) => {
+    await page.getByLabel('Search calculators').fill('zzzz-no-calculator');
+
+    await expect(page.locator(`${calculatorCards}:visible`)).toHaveCount(0);
+    await expect(page.locator('#no-calculators-found')).toBeVisible();
+    await expect(page.locator('#no-calculators-found')).toHaveText(
+      'No calculators found. Try a different search.',
+    );
+    await expect(page.locator('#calculator-count')).toHaveText(
+      'Showing 0 calculators',
+    );
+  });
+
+  test('clear search restores every calculator and the All filter', async ({
+    page,
+  }) => {
+    await page.getByRole('button', {
+      name: 'Debt & Loans',
+      exact: true,
+    }).click();
+    await page.getByLabel('Search calculators').fill('zzzz-no-calculator');
+
+    const clearButton = page.getByRole('button', {
+      name: 'Clear search',
+      exact: true,
+    });
+    await expect(clearButton).toBeVisible();
+    await clearButton.click();
+
+    await expect(page.getByLabel('Search calculators')).toHaveValue('');
+    await expect(
+      page.getByRole('button', { name: 'All', exact: true }),
+    ).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator(`${calculatorCards}:visible`)).toHaveCount(
+      calculators.length,
+    );
+    await expect(clearButton).toBeHidden();
+  });
+});
 
 test.describe('calculator QA', () => {
   for (const calculator of calculators) {

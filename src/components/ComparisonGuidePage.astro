@@ -1,6 +1,7 @@
 ---
 import type { ComparisonGuide } from '../data/comparison-guides';
 import Layout from '../layouts/Layout.astro';
+import EmailSignup from './EmailSignup.astro';
 
 interface Props {
   guide: ComparisonGuide;
@@ -130,6 +131,8 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
           ))}
         </div>
       </section>
+
+      <EmailSignup />
 
       <a class="back-link" href="/guides/">Browse all guides</a>
     </article>

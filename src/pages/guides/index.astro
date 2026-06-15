@@ -3,6 +3,7 @@ import { guideHubs } from '../../data/guide-hubs';
 import { calculatorGuides } from '../../data/calculator-guides';
 import { comparisonGuides } from '../../data/comparison-guides';
 import { topicalGuides } from '../../data/topical-guides';
+import EmailSignup from '../../components/EmailSignup.astro';
 import Layout from '../../layouts/Layout.astro';
 
 type GuideTopic =
@@ -240,6 +241,8 @@ const topicFilters = [
     <p id="guide-empty-state" class="empty-state" role="status" hidden>
       No guides found. Try a different search.
     </p>
+
+    <EmailSignup />
   </main>
 </Layout>
 

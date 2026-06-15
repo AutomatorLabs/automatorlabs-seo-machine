@@ -15,6 +15,23 @@ const calculatorGroups = calculatorCategories.map((group) => {
     calculators: calculators.filter((item) => groupIds.has(item.id)),
   };
 });
+
+const categoryFilterLabels: Record<string, string> = {
+  'fire-retirement': 'FIRE & Retirement',
+  investing: 'Investing',
+  'debt-loans': 'Debt & Loans',
+  'home-mortgage': 'Home & Mortgage',
+  'budgeting-savings': 'Budgeting & Savings',
+  'college-tax-advantaged': 'College & Tax-Advantaged Accounts',
+};
+
+const categoryFilters = [
+  { slug: 'all', label: 'All' },
+  ...calculatorCategories.map((category) => ({
+    slug: category.slug,
+    label: categoryFilterLabels[category.slug],
+  })),
+];
 ---
 
 <Layout
@@ -30,14 +47,32 @@ const calculatorGroups = calculatorCategories.map((group) => {
       <label id="calculator-search-label" for="calculator-search">
         Search calculators
       </label>
-      <input
-        id="calculator-search"
-        type="search"
-        placeholder="Try FIRE, debt, mortgage, dividend..."
-        autocomplete="off"
-        aria-controls="calculator-groups"
-        aria-describedby="calculator-count"
-      />
+      <div class="search-row">
+        <input
+          id="calculator-search"
+          type="search"
+          placeholder="Search calculators..."
+          autocomplete="off"
+          aria-controls="calculator-groups"
+          aria-describedby="calculator-count"
+        />
+        <button id="clear-calculator-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+
+      <div class="category-filters" aria-label="Filter calculators by category">
+        {categoryFilters.map((filter, index) => (
+          <button
+            type="button"
+            data-category-filter={filter.slug}
+            aria-pressed={index === 0 ? 'true' : 'false'}
+          >
+            {filter.label}
+          </button>
+        ))}
+      </div>
+
       <p id="calculator-count" class="calculator-count" aria-live="polite">
         Showing {calculators.length} calculators
       </p>
@@ -45,7 +80,11 @@ const calculatorGroups = calculatorCategories.map((group) => {
 
     <div id="calculator-groups" class="calculator-groups">
       {calculatorGroups.map((group) => (
-        <section class="calculator-group" data-calculator-group>
+        <section
+          class="calculator-group"
+          data-calculator-group
+          data-category={group.slug}
+        >
           <header class="group-header">
             <div>
               <h2>{group.title}</h2>
@@ -59,10 +98,12 @@ const calculatorGroups = calculatorCategories.map((group) => {
               <li
                 class:list={{ 'is-live': item.status === 'live' }}
                 data-calculator-card
+                data-category={group.slug}
                 data-search-text={[
                   item.title,
                   item.description,
                   item.category,
+                  item.slug,
                   item.primaryKeyword,
                   ...item.secondaryKeywords,
                   group.title,
@@ -100,7 +141,7 @@ const calculatorGroups = calculatorCategories.map((group) => {
     </div>
 
     <p id="no-calculators-found" class="no-results" role="status" hidden>
-      No calculators found.
+      No calculators found. Try a different search.
     </p>
   </main>
 </Layout>
@@ -118,6 +159,13 @@ const calculatorGroups = calculatorCategories.map((group) => {
     document.querySelector<HTMLElement>('#calculator-count');
   const noResults =
     document.querySelector<HTMLElement>('#no-calculators-found');
+  const clearSearchButton = document.querySelector<HTMLButtonElement>(
+    '#clear-calculator-search',
+  );
+  const categoryFilterButtons = Array.from(
+    document.querySelectorAll<HTMLButtonElement>('[data-category-filter]'),
+  );
+  let activeCategory = 'all';
 
   function normalizeSearch(value: string): string {
     return value.trim().toLocaleLowerCase();
@@ -133,7 +181,11 @@ const calculatorGroups = calculatorCategories.map((group) => {
 
     calculatorCards.forEach((card) => {
       const searchText = card.dataset.searchText ?? '';
-      const matches = query === '' || searchText.includes(query);
+      const matchesSearch = query === '' || searchText.includes(query);
+      const matchesCategory =
+        activeCategory === 'all' ||
+        card.dataset.category === activeCategory;
+      const matches = matchesSearch && matchesCategory;
 
       card.hidden = !matches;
       if (matches) {
@@ -153,9 +205,40 @@ const calculatorGroups = calculatorCategories.map((group) => {
       visibleCount === 1 ? 'calculator' : 'calculators'
     }`;
     noResults.hidden = visibleCount !== 0;
+    if (clearSearchButton) {
+      clearSearchButton.hidden = query === '';
+    }
   }
 
   searchInput?.addEventListener('input', updateCalculatorResults);
+
+  categoryFilterButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      activeCategory = button.dataset.categoryFilter ?? 'all';
+      categoryFilterButtons.forEach((candidate) => {
+        candidate.setAttribute(
+          'aria-pressed',
+          String(candidate === button),
+        );
+      });
+      updateCalculatorResults();
+    });
+  });
+
+  clearSearchButton?.addEventListener('click', () => {
+    if (!searchInput) return;
+
+    searchInput.value = '';
+    activeCategory = 'all';
+    categoryFilterButtons.forEach((button) => {
+      button.setAttribute(
+        'aria-pressed',
+        String(button.dataset.categoryFilter === 'all'),
+      );
+    });
+    updateCalculatorResults();
+    searchInput.focus();
+  });
 </script>
 
 <style>
@@ -186,6 +269,10 @@ const calculatorGroups = calculatorCategories.map((group) => {
 
   .calculator-search {
     margin-top: 2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--card-background);
+    padding: clamp(1.25rem, 4vw, 1.75rem);
   }
 
   .calculator-search label {
@@ -194,6 +281,11 @@ const calculatorGroups = calculatorCategories.map((group) => {
     color: var(--text-color);
     font-size: 0.9rem;
     font-weight: 700;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 0.65rem;
   }
 
   .calculator-search input {
@@ -217,8 +309,60 @@ const calculatorGroups = calculatorCategories.map((group) => {
     outline: none;
   }
 
+  #clear-calculator-search {
+    flex: 0 0 auto;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--form-background);
+    color: var(--link-color);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    padding: 0.75rem 0.9rem;
+  }
+
+  #clear-calculator-search:hover {
+    border-color: var(--link-color);
+    background: var(--subtle-background);
+  }
+
+  #clear-calculator-search:focus-visible,
+  .category-filters button:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  .category-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1rem;
+  }
+
+  .category-filters button {
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: var(--form-background);
+    color: var(--text-color);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.86rem;
+    font-weight: 700;
+    padding: 0.52rem 0.78rem;
+  }
+
+  .category-filters button:hover {
+    border-color: var(--link-color);
+  }
+
+  .category-filters button[aria-pressed='true'] {
+    border-color: var(--button-background);
+    background: var(--button-background);
+    color: var(--button-text);
+  }
+
   .calculator-count {
-    margin: 0.6rem 0 0;
+    margin: 1rem 0 0;
     font-size: 0.88rem;
   }
 
@@ -408,6 +552,14 @@ const calculatorGroups = calculatorCategories.map((group) => {
     .group-header {
       align-items: flex-start;
       flex-direction: column;
+    }
+
+    .search-row {
+      flex-direction: column;
+    }
+
+    #clear-calculator-search {
+      width: 100%;
     }
   }
 </style>

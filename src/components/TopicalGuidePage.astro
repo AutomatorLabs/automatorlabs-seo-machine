@@ -1,6 +1,7 @@
 ---
 import type { TopicalGuide } from '../data/topical-guides';
 import Layout from '../layouts/Layout.astro';
+import EmailSignup from './EmailSignup.astro';
 
 interface Props {
   guide: TopicalGuide;
@@ -83,6 +84,8 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
           ))}
         </div>
       </section>
+
+      <EmailSignup />
 
       <a class="back-link" href="/guides/">Browse all guides</a>
     </article>
