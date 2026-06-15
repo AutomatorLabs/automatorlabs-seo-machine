@@ -12,6 +12,7 @@ import {
   createHowToSteps,
   createResultExplanations,
 } from '../lib/calculator-education';
+import { calculatorWorkedExamples } from '../data/calculator-examples';
 import { calculatorTableHeadings } from '../lib/calculator-tables';
 
 interface RelatedItem {
@@ -54,6 +55,9 @@ const calculatorConfig = Object.values(calculatorConfigs).find(
 );
 const tableHeading = calculatorConfig
   ? calculatorTableHeadings[calculatorConfig.id]
+  : undefined;
+const workedExample = calculatorConfig
+  ? calculatorWorkedExamples[calculatorConfig.url]
   : undefined;
 const chart = configuredChart ?? calculatorConfig?.chart ?? false;
 const howToSteps =
@@ -320,6 +324,42 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
         {commonMistakes.map((mistake) => <li>{mistake}</li>)}
       </ul>
     </section>
+
+    {workedExample && (
+      <section
+        class="content-section worked-example"
+        aria-labelledby="worked-example-heading"
+      >
+        <h2 id="worked-example-heading">Worked Example</h2>
+        <div class="worked-example-grid">
+          <div>
+            <h3>Example inputs</h3>
+            <dl>
+              {workedExample.inputs.map((input) => (
+                <div>
+                  <dt>{input.label}</dt>
+                  <dd>{input.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+          <div>
+            <h3>Example results</h3>
+            <dl>
+              {workedExample.outputs.map((output) => (
+                <div>
+                  <dt>{output.label}</dt>
+                  <dd>{output.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+        <p class="worked-example-interpretation">
+          {workedExample.interpretation}
+        </p>
+      </section>
+    )}
 
     <section class="content-section" aria-labelledby="faq-heading">
       <h2 id="faq-heading">Frequently asked questions</h2>
@@ -874,7 +914,8 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
   }
 
   .education-section,
-  .mistakes-section {
+  .mistakes-section,
+  .worked-example {
     background: var(--card-background);
   }
 
@@ -920,6 +961,57 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
     margin: 0.3rem 0 0;
     color: var(--muted-text-color);
     line-height: 1.6;
+  }
+
+  .worked-example-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .worked-example h3 {
+    margin: 0 0 0.75rem;
+    color: var(--heading-color);
+    font-size: 1rem;
+  }
+
+  .worked-example dl {
+    margin: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--subtle-background);
+    overflow: hidden;
+  }
+
+  .worked-example dl div {
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 0.75rem 0.85rem;
+  }
+
+  .worked-example dl div:last-child {
+    border-bottom: 0;
+  }
+
+  .worked-example dt {
+    color: var(--text-color);
+    font-weight: 650;
+  }
+
+  .worked-example dd {
+    margin: 0;
+    color: var(--heading-color);
+    font-weight: 750;
+    text-align: right;
+  }
+
+  .worked-example-interpretation {
+    margin: 1.25rem 0 0;
+    color: var(--muted-text-color);
+    line-height: 1.65;
   }
 
   .content-section:has(.faq-list) {
@@ -974,6 +1066,7 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
 
     .calculator,
     .related-links,
+    .worked-example-grid,
     .education-grid {
       grid-template-columns: 1fr;
     }
