@@ -31,6 +31,11 @@ export interface CalculatorGuide {
   contentItem: ContentItem;
   category: CalculatorCategory;
   relatedCalculators: ContentItem[];
+  relatedGuides?: {
+    title: string;
+    url: string;
+    description: string;
+  }[];
   sections: CalculatorGuideSection[];
   practicalExample: {
     inputs: { label: string; value: string }[];
@@ -247,6 +252,41 @@ function buildGuide(config: CalculatorConfig): CalculatorGuide {
   });
   const topic = topicName(config.title);
   const slug = guideSlug(config, contentItem);
+  const relatedGuides =
+    config.id === 'compound-interest'
+      ? [
+          {
+            title: 'APR vs APY',
+            url: '/guides/apr-vs-apy/',
+            description:
+              'Learn how compounding changes a nominal rate into an effective annual yield.',
+          },
+          {
+            title: 'Daily vs Monthly Compounding',
+            url: '/guides/daily-vs-monthly-compounding/',
+            description:
+              'Compare compounding frequencies and see when the difference matters.',
+          },
+          {
+            title: 'Effective Annual Rate Explained',
+            url: '/guides/effective-annual-rate/',
+            description:
+              'Put rates with different compounding schedules on one annual basis.',
+          },
+          {
+            title: 'Nominal Return vs Real Return',
+            url: '/guides/nominal-vs-real-return/',
+            description:
+              'Adjust investment growth for inflation and purchasing power.',
+          },
+          {
+            title: 'How Inflation Affects Compound Interest',
+            url: '/guides/inflation-and-compound-interest/',
+            description:
+              'Understand how investment growth and rising prices compound together.',
+          },
+        ]
+      : undefined;
 
   return {
     slug,
@@ -261,6 +301,7 @@ function buildGuide(config: CalculatorConfig): CalculatorGuide {
     contentItem,
     category,
     relatedCalculators,
+    relatedGuides,
     sections: buildSections(config, category),
     practicalExample: {
       inputs: config.inputs.map((input) => ({

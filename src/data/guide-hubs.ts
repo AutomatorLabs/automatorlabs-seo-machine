@@ -8,6 +8,12 @@ export interface GuideFaq {
   answer: string;
 }
 
+export interface GuideLink {
+  title: string;
+  url: string;
+  description: string;
+}
+
 export interface GuideHub {
   slug: string;
   title: string;
@@ -18,6 +24,7 @@ export interface GuideHub {
   categoryTitle: string;
   categoryUrl: string;
   calculatorIds: string[];
+  comparisonGuideLinks?: GuideLink[];
   sections: GuideSection[];
   faq: GuideFaq[];
 }
@@ -39,6 +46,20 @@ export const guideHubs: GuideHub[] = [
       'coast-fire-calculator',
       'financial-independence-date-calculator',
       'savings-rate-calculator',
+    ],
+    comparisonGuideLinks: [
+      {
+        title: 'FIRE vs Coast FIRE',
+        url: '/guides/fire-vs-coast-fire/',
+        description:
+          'Compare the savings milestones, contribution paths, and flexibility of FIRE and Coast FIRE.',
+      },
+      {
+        title: 'Lean FIRE vs Fat FIRE',
+        url: '/guides/lean-fire-vs-fat-fire/',
+        description:
+          'See how spending targets and lifestyle assumptions shape two different FIRE paths.',
+      },
     ],
     sections: [
       {
@@ -122,6 +143,50 @@ export const guideHubs: GuideHub[] = [
       'expense-ratio-calculator',
       'inflation-adjusted-return-calculator',
     ],
+    comparisonGuideLinks: [
+      {
+        title: 'Lump Sum vs Dollar Cost Averaging',
+        url: '/guides/lump-sum-vs-dollar-cost-averaging/',
+        description:
+          'Compare investing immediately with gradually putting the same cash to work.',
+      },
+      {
+        title: 'CAGR vs Compound Interest',
+        url: '/guides/cagr-vs-compound-interest/',
+        description:
+          'Learn when each growth measure is useful and what each one leaves out.',
+      },
+      {
+        title: 'APR vs APY',
+        url: '/guides/apr-vs-apy/',
+        description:
+          'Understand how nominal rates and effective yields describe compounding.',
+      },
+      {
+        title: 'Daily vs Monthly Compounding',
+        url: '/guides/daily-vs-monthly-compounding/',
+        description:
+          'See when a higher compounding frequency meaningfully changes growth.',
+      },
+      {
+        title: 'Effective Annual Rate Explained',
+        url: '/guides/effective-annual-rate/',
+        description:
+          'Compare rates with different compounding schedules on one annual basis.',
+      },
+      {
+        title: 'Nominal Return vs Real Return',
+        url: '/guides/nominal-vs-real-return/',
+        description:
+          'Separate account growth from the purchasing-power effect of inflation.',
+      },
+      {
+        title: 'How Inflation Affects Compound Interest',
+        url: '/guides/inflation-and-compound-interest/',
+        description:
+          'Learn how compounding returns and compounding prices interact over time.',
+      },
+    ],
     sections: [
       {
         heading: 'Start with purpose and time horizon',
@@ -203,6 +268,14 @@ export const guideHubs: GuideHub[] = [
       'safe-withdrawal-rate-calculator',
       'four-percent-rule-calculator',
       'portfolio-withdrawal-sustainability-calculator',
+    ],
+    comparisonGuideLinks: [
+      {
+        title: 'Roth IRA vs Traditional IRA',
+        url: '/guides/roth-vs-traditional-ira/',
+        description:
+          'Compare paying taxes now with deferring taxes until retirement.',
+      },
     ],
     sections: [
       {
@@ -286,6 +359,14 @@ export const guideHubs: GuideHub[] = [
       'debt-snowball-calculator',
       'credit-card-interest-calculator',
     ],
+    comparisonGuideLinks: [
+      {
+        title: 'Debt Snowball vs Debt Avalanche',
+        url: '/guides/debt-snowball-vs-debt-avalanche/',
+        description:
+          'Compare motivation-first and interest-first approaches to paying down debt.',
+      },
+    ],
     sections: [
       {
         heading: 'Make a complete debt inventory',
@@ -367,6 +448,14 @@ export const guideHubs: GuideHub[] = [
       'down-payment-calculator',
       'mortgage-payoff-calculator',
       'rent-vs-buy-calculator',
+    ],
+    comparisonGuideLinks: [
+      {
+        title: 'Rent vs Buy',
+        url: '/guides/rent-vs-buy/',
+        description:
+          'Compare the financial tradeoffs of renting and owning over your expected timeline.',
+      },
     ],
     sections: [
       {

@@ -125,6 +125,12 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
               <span>{calculator.description}</span>
             </a>
           ))}
+          {guide.relatedGuides?.map((link) => (
+            <a href={link.url}>
+              <strong>{link.title}</strong>
+              <span>{link.description}</span>
+            </a>
+          ))}
         </div>
       </section>
 

@@ -7,6 +7,12 @@ const relatedItems = cagrCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const guideItems = [
+  {
+    title: 'CAGR vs Compound Interest',
+    url: '/guides/cagr-vs-compound-interest/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +23,7 @@ const relatedItems = cagrCalculator.relatedIds.flatMap((id) => {
   outputs={cagrCalculator.outputs}
   faq={cagrCalculator.faq}
   relatedItems={relatedItems}
+  guideItems={guideItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

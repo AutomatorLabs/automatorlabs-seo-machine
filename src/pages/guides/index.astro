@@ -2,6 +2,7 @@
 import { guideHubs } from '../../data/guide-hubs';
 import { calculatorGuides } from '../../data/calculator-guides';
 import { comparisonGuides } from '../../data/comparison-guides';
+import { topicalGuides } from '../../data/topical-guides';
 import Layout from '../../layouts/Layout.astro';
 ---
 
@@ -36,6 +37,22 @@ import Layout from '../../layouts/Layout.astro';
     </p>
     <ul class="guide-list comparison-guide-list">
       {comparisonGuides.map((guide) => (
+        <li>
+          <a href={`/guides/${guide.slug}/`}>
+            <span>{guide.title}</span>
+            <small>{guide.metaDescription}</small>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <h2 class="topical-guides-heading">Compound interest learning</h2>
+    <p class="section-intro">
+      Go deeper on rates, compounding frequency, inflation, and the difference
+      between nominal growth and real purchasing power.
+    </p>
+    <ul class="guide-list topical-guide-list">
+      {topicalGuides.map((guide) => (
         <li>
           <a href={`/guides/${guide.slug}/`}>
             <span>{guide.title}</span>
@@ -105,11 +122,13 @@ import Layout from '../../layouts/Layout.astro';
     margin-top: 3.5rem;
   }
 
-  .comparison-guides-heading {
+  .comparison-guides-heading,
+  .topical-guides-heading {
     margin-top: 3.5rem;
   }
 
   .comparison-guide-list,
+  .topical-guide-list,
   .calculator-guide-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -149,6 +168,7 @@ import Layout from '../../layouts/Layout.astro';
 
   @media (max-width: 620px) {
     .comparison-guide-list,
+    .topical-guide-list,
     .calculator-guide-list {
       grid-template-columns: 1fr;
     }

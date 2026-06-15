@@ -7,6 +7,9 @@ const relatedItems = rentVsBuyCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const guideItems = [
+  { title: 'Rent vs Buy Guide', url: '/guides/rent-vs-buy/' },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +20,7 @@ const relatedItems = rentVsBuyCalculator.relatedIds.flatMap((id) => {
   outputs={rentVsBuyCalculator.outputs}
   faq={rentVsBuyCalculator.faq}
   relatedItems={relatedItems}
+  guideItems={guideItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

@@ -7,6 +7,12 @@ const relatedItems = lumpSumVsDcaCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const guideItems = [
+  {
+    title: 'Lump Sum vs Dollar Cost Averaging',
+    url: '/guides/lump-sum-vs-dollar-cost-averaging/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +23,7 @@ const relatedItems = lumpSumVsDcaCalculator.relatedIds.flatMap((id) => {
   outputs={lumpSumVsDcaCalculator.outputs}
   faq={lumpSumVsDcaCalculator.faq}
   relatedItems={relatedItems}
+  guideItems={guideItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

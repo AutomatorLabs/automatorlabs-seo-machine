@@ -1,22 +1,39 @@
 ---
 import CalculatorGuidePage from '../../components/CalculatorGuidePage.astro';
+import TopicalGuidePage from '../../components/TopicalGuidePage.astro';
 import {
   calculatorGuides,
   type CalculatorGuide,
 } from '../../data/calculator-guides';
+import {
+  topicalGuides,
+  type TopicalGuide,
+} from '../../data/topical-guides';
 
 export function getStaticPaths() {
-  return calculatorGuides.map((guide) => ({
-    params: { slug: guide.slug },
-    props: { guide },
-  }));
+  return [
+    ...calculatorGuides.map((guide) => ({
+      params: { slug: guide.slug },
+      props: { guideType: 'calculator' as const, guide },
+    })),
+    ...topicalGuides.map((guide) => ({
+      params: { slug: guide.slug },
+      props: { guideType: 'topical' as const, guide },
+    })),
+  ];
 }
 
-interface Props {
-  guide: CalculatorGuide;
-}
+type Props =
+  | { guideType: 'calculator'; guide: CalculatorGuide }
+  | { guideType: 'topical'; guide: TopicalGuide };
 
-const { guide } = Astro.props;
+const props = Astro.props;
 ---
 
-<CalculatorGuidePage guide={guide} />
+{
+  props.guideType === 'calculator' ? (
+    <CalculatorGuidePage guide={props.guide} />
+  ) : (
+    <TopicalGuidePage guide={props.guide} />
+  )
+}

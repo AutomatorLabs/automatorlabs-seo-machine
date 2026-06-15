@@ -7,6 +7,9 @@ const relatedItems = coastFireCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const guideItems = [
+  { title: 'FIRE vs Coast FIRE', url: '/guides/fire-vs-coast-fire/' },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +20,7 @@ const relatedItems = coastFireCalculator.relatedIds.flatMap((id) => {
   outputs={coastFireCalculator.outputs}
   faq={coastFireCalculator.faq}
   relatedItems={relatedItems}
+  guideItems={guideItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

@@ -7,6 +7,12 @@ const relatedItems = rothVsTraditionalIraCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const guideItems = [
+  {
+    title: 'Roth IRA vs Traditional IRA',
+    url: '/guides/roth-vs-traditional-ira/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +23,7 @@ const relatedItems = rothVsTraditionalIraCalculator.relatedIds.flatMap((id) => {
   outputs={rothVsTraditionalIraCalculator.outputs}
   faq={rothVsTraditionalIraCalculator.faq}
   relatedItems={relatedItems}
+  guideItems={guideItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

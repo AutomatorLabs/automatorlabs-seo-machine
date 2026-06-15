@@ -1,24 +1,12 @@
 ---
-import type { GuideHub } from '../data/guide-hubs';
-import { contentItems } from '../data/content';
+import type { TopicalGuide } from '../data/topical-guides';
 import Layout from '../layouts/Layout.astro';
 
 interface Props {
-  guide: GuideHub;
+  guide: TopicalGuide;
 }
 
 const { guide } = Astro.props;
-const calculatorIds = new Set(guide.calculatorIds);
-const calculators = contentItems
-  .filter(
-    (item) =>
-      item.category === 'calculator' && calculatorIds.has(item.id),
-  )
-  .sort(
-    (a, b) =>
-      guide.calculatorIds.indexOf(a.id) -
-      guide.calculatorIds.indexOf(b.id),
-  );
 const faqStructuredData = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
@@ -38,10 +26,7 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
 ---
 
 <Layout title={guide.seoTitle} description={guide.metaDescription}>
-  <script
-    type="application/ld+json"
-    set:html={faqStructuredDataJson}
-  />
+  <script type="application/ld+json" set:html={faqStructuredDataJson} />
 
   <main>
     <nav class="breadcrumbs" aria-label="Breadcrumb">
@@ -54,57 +39,38 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
 
     <article>
       <header class="page-header">
-        <p class="eyebrow">{guide.eyebrow}</p>
+        <p class="eyebrow">Investing guide</p>
         <h1>{guide.title}</h1>
-        <p class="intro">{guide.description}</p>
+        <p class="intro">{guide.intro}</p>
       </header>
-
-      <aside class="calculator-callout" aria-labelledby="calculator-callout-heading">
-        <div>
-          <p class="callout-label">Explore the numbers</p>
-          <h2 id="calculator-callout-heading">{guide.categoryTitle}</h2>
-          <p>
-            Use the related calculators to compare assumptions and turn the
-            concepts in this guide into practical scenarios.
-          </p>
-        </div>
-        <a href={guide.categoryUrl}>View calculator collection</a>
-      </aside>
 
       <div class="article-body">
         {guide.sections.map((section) => (
           <section>
             <h2>{section.heading}</h2>
-            {section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+            {section.intro && <p>{section.intro}</p>}
+            {section.subsections?.map((subsection) => (
+              <div class="subsection">
+                <h3>{subsection.heading}</h3>
+                {subsection.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+              </div>
+            ))}
+            {section.paragraphs?.map((paragraph) => <p>{paragraph}</p>)}
           </section>
         ))}
       </div>
 
-      <section class="related-calculators" aria-labelledby="related-calculators-heading">
-        <h2 id="related-calculators-heading">Related calculators</h2>
-        <div class="calculator-links">
-          {calculators.map((calculator) => (
-            <a href={calculator.url}>
-              <span>{calculator.title}</span>
-              <small>{calculator.description}</small>
+      <section class="internal-links" aria-labelledby="related-heading">
+        <h2 id="related-heading">Related calculators and guides</h2>
+        <div class="link-grid">
+          {guide.links.map((link) => (
+            <a href={link.url}>
+              <strong>{link.title}</strong>
+              <span>{link.description}</span>
             </a>
           ))}
         </div>
       </section>
-
-      {guide.comparisonGuideLinks && guide.comparisonGuideLinks.length > 0 && (
-        <section class="related-guides" aria-labelledby="related-guides-heading">
-          <h2 id="related-guides-heading">Related guides</h2>
-          <div class="calculator-links">
-            {guide.comparisonGuideLinks.map((link) => (
-              <a href={link.url}>
-                <span>{link.title}</span>
-                <small>{link.description}</small>
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
 
       <section class="faq-section" aria-labelledby="faq-heading">
         <h2 id="faq-heading">Frequently asked questions</h2>
@@ -181,12 +147,11 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
   }
 
   .page-header {
-    max-width: 760px;
-    margin-bottom: 2.25rem;
+    max-width: 800px;
+    margin-bottom: 3rem;
   }
 
-  .eyebrow,
-  .callout-label {
+  .eyebrow {
     margin: 0 0 0.5rem;
     color: var(--link-color);
     font-size: 0.78rem;
@@ -206,120 +171,81 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
     margin: 1rem 0 0;
     color: var(--muted-text-color);
     font-size: 1.12rem;
-    line-height: 1.7;
-  }
-
-  .calculator-callout {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-    justify-content: space-between;
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    background: var(--card-background);
-    box-shadow: 0 12px 35px var(--shadow-color);
-    margin-bottom: 3rem;
-    padding: 1.4rem;
-  }
-
-  .calculator-callout h2,
-  .calculator-callout p {
-    margin-top: 0;
-  }
-
-  .calculator-callout h2 {
-    margin-bottom: 0.4rem;
-    font-size: 1.2rem;
-  }
-
-  .calculator-callout p:last-child {
-    max-width: 590px;
-    margin-bottom: 0;
-    color: var(--muted-text-color);
-  }
-
-  .calculator-callout > a {
-    flex: 0 0 auto;
-    border-radius: 9px;
-    background: var(--button-background);
-    color: var(--button-text);
-    font-weight: 750;
-    padding: 0.75rem 0.95rem;
-    text-decoration: none;
-  }
-
-  .calculator-callout > a:hover {
-    background: var(--button-hover-background);
+    line-height: 1.72;
   }
 
   .article-body {
     display: grid;
-    gap: 2rem;
+    gap: 2.5rem;
   }
 
   .article-body section {
-    max-width: 760px;
+    max-width: 800px;
   }
 
   .article-body h2,
-  .related-calculators h2,
-  .related-guides h2,
+  .internal-links h2,
   .faq-section h2 {
-    margin: 0 0 0.75rem;
+    margin: 0 0 0.9rem;
+    color: var(--heading-color);
     font-size: 1.55rem;
     letter-spacing: -0.02em;
+  }
+
+  .article-body h3 {
+    margin: 1.5rem 0 0.55rem;
+    color: var(--heading-color);
+    font-size: 1.12rem;
   }
 
   .article-body p {
     margin: 0 0 1rem;
     color: var(--text-color);
     font-size: 1rem;
-    line-height: 1.78;
+    line-height: 1.8;
   }
 
-  .related-calculators,
-  .related-guides,
+  .internal-links,
   .faq-section {
     margin-top: 3rem;
     border-top: 1px solid var(--border-color);
     padding-top: 2rem;
   }
 
-  .calculator-links {
+  .link-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.85rem;
   }
 
-  .calculator-links a {
+  .link-grid a {
     display: flex;
     flex-direction: column;
     border: 1px solid var(--border-color);
     border-radius: 12px;
     background: var(--card-background);
     color: var(--link-color);
-    font-weight: 750;
     padding: 1rem;
     text-decoration: none;
   }
 
-  .calculator-links a:hover {
+  .link-grid a:hover {
     border-color: var(--link-color);
     background: var(--subtle-background);
   }
 
-  .calculator-links small {
+  .link-grid span {
     margin-top: 0.35rem;
     color: var(--muted-text-color);
-    font-size: 0.86rem;
-    font-weight: 400;
+    font-size: 0.88rem;
     line-height: 1.5;
   }
 
   .faq-section {
+    border: 1px solid var(--border-color);
     border-radius: 16px;
     background: var(--faq-background);
-    padding: 2rem;
+    padding: clamp(1.25rem, 4vw, 2rem);
   }
 
   .faq-list {
@@ -340,7 +266,7 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
   details p {
     margin: 0.65rem 0 0;
     color: var(--muted-text-color);
-    line-height: 1.65;
+    line-height: 1.68;
   }
 
   .back-link {
@@ -354,17 +280,8 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
       padding: 3rem 0;
     }
 
-    .calculator-callout {
-      align-items: flex-start;
-      flex-direction: column;
-    }
-
-    .calculator-links {
+    .link-grid {
       grid-template-columns: 1fr;
-    }
-
-    .faq-section {
-      padding: 1.25rem;
     }
   }
 </style>

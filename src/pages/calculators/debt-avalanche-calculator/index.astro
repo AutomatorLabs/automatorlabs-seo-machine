@@ -7,6 +7,12 @@ const relatedItems = debtAvalancheCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const guideItems = [
+  {
+    title: 'Debt Snowball vs Debt Avalanche',
+    url: '/guides/debt-snowball-vs-debt-avalanche/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +23,7 @@ const relatedItems = debtAvalancheCalculator.relatedIds.flatMap((id) => {
   outputs={debtAvalancheCalculator.outputs}
   faq={debtAvalancheCalculator.faq}
   relatedItems={relatedItems}
+  guideItems={guideItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

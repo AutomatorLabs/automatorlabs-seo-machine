@@ -7,6 +7,9 @@ const relatedItems = fatFireCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const guideItems = [
+  { title: 'Lean FIRE vs Fat FIRE', url: '/guides/lean-fire-vs-fat-fire/' },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +20,7 @@ const relatedItems = fatFireCalculator.relatedIds.flatMap((id) => {
   outputs={fatFireCalculator.outputs}
   faq={fatFireCalculator.faq}
   relatedItems={relatedItems}
+  guideItems={guideItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';
