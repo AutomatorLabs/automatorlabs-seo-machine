@@ -1890,7 +1890,7 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
         label: 'Target months of expenses',
         type: 'number',
         value: '6',
-        min: '0.01',
+        min: '0.5',
         step: '0.5',
         required: true,
       },

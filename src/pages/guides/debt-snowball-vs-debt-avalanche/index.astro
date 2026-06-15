@@ -1,0 +1,9 @@
+---
+import ComparisonGuidePage from '../../../components/ComparisonGuidePage.astro';
+import { getComparisonGuide } from '../../../data/comparison-guides';
+
+const guide = getComparisonGuide('debt-snowball-vs-debt-avalanche');
+if (!guide) throw new Error('Missing debt payoff comparison guide');
+---
+
+<ComparisonGuidePage guide={guide} />

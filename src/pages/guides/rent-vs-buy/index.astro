@@ -1,0 +1,9 @@
+---
+import ComparisonGuidePage from '../../../components/ComparisonGuidePage.astro';
+import { getComparisonGuide } from '../../../data/comparison-guides';
+
+const guide = getComparisonGuide('rent-vs-buy');
+if (!guide) throw new Error('Missing rent vs buy guide');
+---
+
+<ComparisonGuidePage guide={guide} />

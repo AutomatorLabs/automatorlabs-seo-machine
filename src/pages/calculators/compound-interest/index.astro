@@ -103,9 +103,9 @@ const relatedItems = compoundInterestCalculator.relatedIds.flatMap((id) => {
         });
       }
 
-      const width = 640;
-      const height = 320;
-      const margin = { top: 24, right: 20, bottom: 48, left: 76 };
+      const width = 720;
+      const height = 400;
+      const margin = { top: 42, right: 28, bottom: 66, left: 100 };
       const plotWidth = width - margin.left - margin.right;
       const plotHeight = height - margin.top - margin.bottom;
       const maximumBalance = Math.max(
@@ -145,7 +145,7 @@ const relatedItems = compoundInterestCalculator.relatedIds.flatMap((id) => {
           x: String(margin.left - 10),
           y: String(y + 4),
           fill: 'var(--muted-text-color)',
-          'font-size': '12',
+          'font-size': '14',
           'text-anchor': 'end',
         });
         label.textContent = compactCurrency.format(value);
@@ -166,7 +166,7 @@ const relatedItems = compoundInterestCalculator.relatedIds.flatMap((id) => {
           x: String(x),
           y: String(height - 20),
           fill: 'var(--muted-text-color)',
-          'font-size': '12',
+          'font-size': '14',
           'text-anchor': 'middle',
         });
         tick.textContent = `${roundedYear}`;
@@ -177,19 +177,21 @@ const relatedItems = compoundInterestCalculator.relatedIds.flatMap((id) => {
         x: String(margin.left + plotWidth / 2),
         y: String(height - 3),
         fill: 'var(--muted-text-color)',
-        'font-size': '12',
+        'font-size': '15',
+        'font-weight': '600',
         'text-anchor': 'middle',
       });
       axisLabel.textContent = 'Years';
       svg.append(axisLabel);
 
       const balanceAxisLabel = createSvgElement('text', {
-        x: '16',
+        x: '22',
         y: String(margin.top + plotHeight / 2),
         fill: 'var(--muted-text-color)',
-        'font-size': '12',
+        'font-size': '15',
+        'font-weight': '600',
         'text-anchor': 'middle',
-        transform: `rotate(-90 16 ${margin.top + plotHeight / 2})`,
+        transform: `rotate(-90 22 ${margin.top + plotHeight / 2})`,
       });
       balanceAxisLabel.textContent = 'Balance';
       svg.append(balanceAxisLabel);
@@ -214,7 +216,7 @@ const relatedItems = compoundInterestCalculator.relatedIds.flatMap((id) => {
           stroke: 'var(--link-color)',
           'stroke-linecap': 'round',
           'stroke-linejoin': 'round',
-          'stroke-width': '3',
+          'stroke-width': '4',
         }),
       );
 
@@ -223,10 +225,10 @@ const relatedItems = compoundInterestCalculator.relatedIds.flatMap((id) => {
           createSvgElement('circle', {
             cx: String(xPosition(point.year)),
             cy: String(yPosition(point.balance)),
-            r: points.length > 25 ? '2' : '3',
+            r: points.length > 25 ? '3' : '4.5',
             fill: 'var(--card-background)',
             stroke: 'var(--link-color)',
-            'stroke-width': '2',
+            'stroke-width': '2.5',
           }),
         );
       });

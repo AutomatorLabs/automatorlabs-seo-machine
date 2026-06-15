@@ -138,9 +138,9 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
       const finalPoint = points.at(-1);
       const reachedWithinChart =
         (finalPoint?.balance ?? currentAssets) >= fireNumber;
-      const width = 640;
-      const height = 330;
-      const margin = { top: 34, right: 22, bottom: 50, left: 78 };
+      const width = 720;
+      const height = 400;
+      const margin = { top: 46, right: 28, bottom: 66, left: 100 };
       const plotWidth = width - margin.left - margin.right;
       const plotHeight = height - margin.top - margin.bottom;
       const maximumValue = Math.max(
@@ -180,7 +180,7 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
           x: String(margin.left - 10),
           y: String(y + 4),
           fill: 'var(--muted-text-color)',
-          'font-size': '12',
+          'font-size': '14',
           'text-anchor': 'end',
         });
         label.textContent = compactCurrency.format(value);
@@ -196,14 +196,14 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
           y2: String(targetY),
           stroke: 'var(--warning-text)',
           'stroke-dasharray': '7 5',
-          'stroke-width': '2',
+          'stroke-width': '3',
         }),
       );
       const targetLabel = createSvgElement('text', {
         x: String(width - margin.right),
         y: String(Math.max(14, targetY - 8)),
         fill: 'var(--warning-text)',
-        'font-size': '12',
+        'font-size': '14',
         'font-weight': '700',
         'text-anchor': 'end',
       });
@@ -217,7 +217,7 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
           x: String(xPosition(year)),
           y: String(height - 20),
           fill: 'var(--muted-text-color)',
-          'font-size': '12',
+          'font-size': '14',
           'text-anchor': 'middle',
         });
         label.textContent = String(year);
@@ -228,19 +228,21 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
         x: String(margin.left + plotWidth / 2),
         y: String(height - 3),
         fill: 'var(--muted-text-color)',
-        'font-size': '12',
+        'font-size': '15',
+        'font-weight': '600',
         'text-anchor': 'middle',
       });
       xAxisLabel.textContent = 'Years';
       svg.append(xAxisLabel);
 
       const yAxisLabel = createSvgElement('text', {
-        x: '16',
+        x: '22',
         y: String(margin.top + plotHeight / 2),
         fill: 'var(--muted-text-color)',
-        'font-size': '12',
+        'font-size': '15',
+        'font-weight': '600',
         'text-anchor': 'middle',
-        transform: `rotate(-90 16 ${margin.top + plotHeight / 2})`,
+        transform: `rotate(-90 22 ${margin.top + plotHeight / 2})`,
       });
       yAxisLabel.textContent = 'Portfolio value';
       svg.append(yAxisLabel);
@@ -265,7 +267,7 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
           stroke: 'var(--link-color)',
           'stroke-linecap': 'round',
           'stroke-linejoin': 'round',
-          'stroke-width': '3',
+          'stroke-width': '4',
         }),
       );
 
@@ -274,10 +276,10 @@ const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
           createSvgElement('circle', {
             cx: String(xPosition(point.year)),
             cy: String(yPosition(point.balance)),
-            r: points.length > 30 ? '2' : '3',
+            r: points.length > 30 ? '3' : '4.5',
             fill: 'var(--card-background)',
             stroke: 'var(--link-color)',
-            'stroke-width': '2',
+            'stroke-width': '2.5',
           }),
         );
       });

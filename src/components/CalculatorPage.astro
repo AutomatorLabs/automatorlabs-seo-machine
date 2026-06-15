@@ -12,6 +12,7 @@ import {
   createHowToSteps,
   createResultExplanations,
 } from '../lib/calculator-education';
+import { calculatorTableHeadings } from '../lib/calculator-tables';
 
 interface RelatedItem {
   title: string;
@@ -49,6 +50,9 @@ const {
 const calculatorConfig = Object.values(calculatorConfigs).find(
   (config) => config.url === Astro.url.pathname,
 );
+const tableHeading = calculatorConfig
+  ? calculatorTableHeadings[calculatorConfig.id]
+  : undefined;
 const chart = configuredChart ?? calculatorConfig?.chart ?? false;
 const howToSteps =
   configuredHowToSteps ?? createHowToSteps(title, inputs);
@@ -260,6 +264,27 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
       </section>
     </section>
 
+    {tableHeading && calculatorConfig && (
+      <section
+        id="result-table-section"
+        class="content-section result-table-section"
+        data-calculator-id={calculatorConfig.id}
+        aria-labelledby="result-table-heading"
+        hidden
+      >
+        <h2 id="result-table-heading">{tableHeading}</h2>
+        <p id="result-table-warning" class="table-warning" role="status" hidden></p>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr id="result-table-head"></tr>
+            </thead>
+            <tbody id="result-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+    )}
+
     <section class="education-grid" aria-label="Calculator guidance">
       <section class="content-section education-section" aria-labelledby="how-to-heading">
         <h2 id="how-to-heading">How to Use This Calculator</h2>
@@ -323,6 +348,8 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
 </Layout>
 
 <script>
+  import { buildCalculatorTable } from '../lib/calculator-tables';
+
   const shareControls = document.querySelector<HTMLElement>(
     '#share-calculation-controls',
   );
@@ -337,6 +364,69 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
     if (shareControls) {
       shareControls.hidden = false;
     }
+
+    const tableSection = document.querySelector<HTMLElement>(
+      '#result-table-section',
+    );
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const tableHeading =
+      document.querySelector<HTMLElement>('#result-table-heading');
+    const tableHead = document.querySelector<HTMLTableRowElement>(
+      '#result-table-head',
+    );
+    const tableBody =
+      document.querySelector<HTMLTableSectionElement>('#result-table-body');
+    const tableWarning =
+      document.querySelector<HTMLElement>('#result-table-warning');
+
+    if (
+      !tableSection ||
+      !form ||
+      !tableHeading ||
+      !tableHead ||
+      !tableBody ||
+      !tableWarning
+    ) {
+      return;
+    }
+
+    const tableData = buildCalculatorTable(
+      tableSection.dataset.calculatorId ?? '',
+      form,
+    );
+
+    if (!tableData) {
+      return;
+    }
+
+    tableHeading.textContent = tableData.heading;
+    tableHead.replaceChildren(
+      ...tableData.columns.map((column) => {
+        const heading = document.createElement('th');
+        heading.scope = 'col';
+        heading.textContent = column;
+        return heading;
+      }),
+    );
+    tableBody.replaceChildren(
+      ...tableData.rows.map((row) => {
+        const tableRow = document.createElement('tr');
+        tableRow.replaceChildren(
+          ...row.map((cell, index) => {
+            const element = document.createElement(index === 0 ? 'th' : 'td');
+            if (element instanceof HTMLTableCellElement && index === 0) {
+              element.scope = 'row';
+            }
+            element.textContent = cell;
+            return element;
+          }),
+        );
+        return tableRow;
+      }),
+    );
+    tableWarning.textContent = tableData.warning ?? '';
+    tableWarning.hidden = !tableData.warning;
+    tableSection.hidden = false;
   });
 
   async function copyCurrentUrl(): Promise<void> {
@@ -668,36 +758,95 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
   }
 
   #chart {
-    min-height: 260px;
+    height: clamp(360px, 38vw, 400px);
+    min-height: 360px;
     margin-top: 1.5rem;
     border: 1px solid var(--border-color);
     border-radius: 12px;
     background: var(--chart-background);
     color: var(--muted-text-color);
-    padding: 0.75rem;
+    padding: 1rem;
     overflow: hidden;
   }
 
   :global(#chart svg) {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    max-width: 100%;
   }
 
   :global(#chart .chart-state) {
     display: grid;
-    min-height: 230px;
+    min-height: 100%;
     margin: 0;
     color: var(--muted-text-color);
-    font-size: 0.95rem;
+    font-size: 1rem;
     line-height: 1.6;
     place-items: center;
     text-align: center;
   }
 
+  :global(#chart .chart-tooltip) {
+    font-size: 0.95rem;
+  }
+
   .content-section {
     margin-top: 1.25rem;
     padding: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .result-table-section[hidden] {
+    display: none;
+  }
+
+  .table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .result-table-section table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    color: var(--text-color);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .result-table-section th,
+  .result-table-section td {
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 0.8rem 0.9rem;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .result-table-section th:first-child,
+  .result-table-section td:first-child {
+    text-align: left;
+  }
+
+  .result-table-section thead th {
+    background: var(--subtle-background);
+    color: var(--heading-color);
+    font-size: 0.85rem;
+    font-weight: 750;
+  }
+
+  .result-table-section tbody th {
+    color: var(--text-color);
+    font-weight: 700;
+  }
+
+  .result-table-section tbody tr:last-child th,
+  .result-table-section tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .table-warning {
+    margin: 0 0 1rem;
+    color: var(--warning-text);
   }
 
   .education-grid {
@@ -818,6 +967,12 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
   }
 
   @media (max-width: 520px) {
+    #chart {
+      height: 310px;
+      min-height: 310px;
+      padding: 0.5rem;
+    }
+
     .form-grid {
       grid-template-columns: 1fr;
     }

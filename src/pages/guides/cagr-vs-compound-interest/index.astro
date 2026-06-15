@@ -1,0 +1,9 @@
+---
+import ComparisonGuidePage from '../../../components/ComparisonGuidePage.astro';
+import { getComparisonGuide } from '../../../data/comparison-guides';
+
+const guide = getComparisonGuide('cagr-vs-compound-interest');
+if (!guide) throw new Error('Missing CAGR vs compound interest guide');
+---
+
+<ComparisonGuidePage guide={guide} />

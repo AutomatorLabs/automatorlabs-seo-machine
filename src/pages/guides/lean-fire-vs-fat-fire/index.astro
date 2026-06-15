@@ -1,0 +1,9 @@
+---
+import ComparisonGuidePage from '../../../components/ComparisonGuidePage.astro';
+import { getComparisonGuide } from '../../../data/comparison-guides';
+
+const guide = getComparisonGuide('lean-fire-vs-fat-fire');
+if (!guide) throw new Error('Missing Lean FIRE vs Fat FIRE guide');
+---
+
+<ComparisonGuidePage guide={guide} />

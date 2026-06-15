@@ -1,0 +1,9 @@
+---
+import ComparisonGuidePage from '../../../components/ComparisonGuidePage.astro';
+import { getComparisonGuide } from '../../../data/comparison-guides';
+
+const guide = getComparisonGuide('fire-vs-coast-fire');
+if (!guide) throw new Error('Missing FIRE vs Coast FIRE guide');
+---
+
+<ComparisonGuidePage guide={guide} />

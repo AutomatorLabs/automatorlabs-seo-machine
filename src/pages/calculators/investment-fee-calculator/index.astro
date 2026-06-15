@@ -125,9 +125,9 @@ const relatedItems = investmentFeeCalculator.relatedIds.flatMap((id) => {
               }),
       }));
       const finalPoint = points.at(-1);
-      const width = 680;
-      const height = 360;
-      const margin = { top: 58, right: 22, bottom: 52, left: 82 };
+      const width = 720;
+      const height = 400;
+      const margin = { top: 68, right: 28, bottom: 66, left: 100 };
       const plotWidth = width - margin.left - margin.right;
       const plotHeight = height - margin.top - margin.bottom;
       const maximumValue = Math.max(
@@ -171,7 +171,7 @@ const relatedItems = investmentFeeCalculator.relatedIds.flatMap((id) => {
           x: String(margin.left - 10),
           y: String(y + 4),
           fill: 'var(--muted-text-color)',
-          'font-size': '12',
+          'font-size': '14',
           'text-anchor': 'end',
         });
         label.textContent = compactCurrency.format(value);
@@ -185,7 +185,7 @@ const relatedItems = investmentFeeCalculator.relatedIds.flatMap((id) => {
           x: String(xPosition(year)),
           y: String(height - 22),
           fill: 'var(--muted-text-color)',
-          'font-size': '12',
+          'font-size': '14',
           'text-anchor': 'middle',
         });
         label.textContent = Number.isInteger(year)
@@ -198,19 +198,21 @@ const relatedItems = investmentFeeCalculator.relatedIds.flatMap((id) => {
         x: String(margin.left + plotWidth / 2),
         y: String(height - 4),
         fill: 'var(--muted-text-color)',
-        'font-size': '12',
+        'font-size': '15',
+        'font-weight': '600',
         'text-anchor': 'middle',
       });
       xAxisLabel.textContent = 'Years';
       svg.append(xAxisLabel);
 
       const yAxisLabel = createSvgElement('text', {
-        x: '17',
+        x: '22',
         y: String(margin.top + plotHeight / 2),
         fill: 'var(--muted-text-color)',
-        'font-size': '12',
+        'font-size': '15',
+        'font-weight': '600',
         'text-anchor': 'middle',
-        transform: `rotate(-90 17 ${margin.top + plotHeight / 2})`,
+        transform: `rotate(-90 22 ${margin.top + plotHeight / 2})`,
       });
       yAxisLabel.textContent = 'Portfolio value';
       svg.append(yAxisLabel);
@@ -236,7 +238,7 @@ const relatedItems = investmentFeeCalculator.relatedIds.flatMap((id) => {
             x2: String(item.x + 24),
             y2: '24',
             stroke: item.color,
-            'stroke-width': '3',
+            'stroke-width': '4',
             'stroke-linecap': 'round',
           }),
         );
@@ -244,7 +246,7 @@ const relatedItems = investmentFeeCalculator.relatedIds.flatMap((id) => {
           x: String(item.x + 32),
           y: '28',
           fill: 'var(--text-color)',
-          'font-size': '12',
+          'font-size': '14',
           'font-weight': '600',
         });
         label.textContent = item.label;
@@ -268,7 +270,7 @@ const relatedItems = investmentFeeCalculator.relatedIds.flatMap((id) => {
           stroke: 'var(--link-color)',
           'stroke-linecap': 'round',
           'stroke-linejoin': 'round',
-          'stroke-width': '3',
+          'stroke-width': '4',
         }),
         createSvgElement('path', {
           d: createLinePath('afterFees'),
@@ -276,7 +278,7 @@ const relatedItems = investmentFeeCalculator.relatedIds.flatMap((id) => {
           stroke: 'var(--warning-text)',
           'stroke-linecap': 'round',
           'stroke-linejoin': 'round',
-          'stroke-width': '3',
+          'stroke-width': '4',
         }),
       );
 

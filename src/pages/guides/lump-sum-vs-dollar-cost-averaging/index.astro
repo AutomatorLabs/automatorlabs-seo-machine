@@ -1,0 +1,9 @@
+---
+import ComparisonGuidePage from '../../../components/ComparisonGuidePage.astro';
+import { getComparisonGuide } from '../../../data/comparison-guides';
+
+const guide = getComparisonGuide('lump-sum-vs-dollar-cost-averaging');
+if (!guide) throw new Error('Missing lump sum vs DCA guide');
+---
+
+<ComparisonGuidePage guide={guide} />

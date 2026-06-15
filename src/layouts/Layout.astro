@@ -40,6 +40,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 				document.documentElement.style.colorScheme = theme;
 			})();
 		</script>
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		{noindex && <meta name="robots" content="noindex, nofollow" />}
+		<link rel="canonical" href={canonicalURL} />
 		<script is:inline>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}

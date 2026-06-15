@@ -151,3 +151,60 @@ test.describe('calculator QA', () => {
     );
   });
 });
+
+test.describe('calculator result tables', () => {
+  const tableCases = [
+    {
+      title: 'Compound Interest',
+      url: '/calculators/compound-interest/',
+      firstCell: '1',
+    },
+    {
+      title: 'FIRE',
+      url: '/calculators/fire-calculator/',
+      firstCell: '0',
+    },
+    {
+      title: 'Mortgage Payoff',
+      url: '/calculators/mortgage-payoff-calculator/',
+      firstCell: '1',
+    },
+    {
+      title: 'Debt Payoff',
+      url: '/calculators/debt-payoff-calculator/',
+      firstCell: '1',
+    },
+    {
+      title: 'DRIP',
+      url: '/calculators/drip-calculator/',
+      firstCell: '1',
+    },
+  ];
+
+  for (const tableCase of tableCases) {
+    test(`${tableCase.title} table appears after calculation`, async ({
+      page,
+    }) => {
+      await page.route('https://www.googletagmanager.com/**', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/javascript',
+          body: '',
+        });
+      });
+      await page.goto(tableCase.url, { waitUntil: 'domcontentloaded' });
+
+      const tableSection = page.locator('#result-table-section');
+      await expect(tableSection).toBeHidden();
+
+      await page.getByRole('button', { name: 'Calculate', exact: true }).click();
+
+      await expect(tableSection).toBeVisible();
+      await expect(tableSection.locator('table')).toBeVisible();
+      await expect(tableSection.locator('tbody tr').first()).toBeVisible();
+      await expect(
+        tableSection.locator('tbody tr').first().locator('th'),
+      ).toHaveText(tableCase.firstCell);
+    });
+  }
+});
