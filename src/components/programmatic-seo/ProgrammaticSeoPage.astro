@@ -24,6 +24,23 @@ const currency = new Intl.NumberFormat('en-US', {
   currency: 'USD',
   maximumFractionDigits: 2,
 });
+const formulaHeading = page.formula.heading ?? 'Compound Interest Formula';
+const showChart = page.showChart ?? true;
+const chartHeading = page.chartHeading ?? 'Growth Over Time';
+const chartDescription =
+  page.chartDescription ??
+  'The chart shows the estimated ending balance after each year under the fixed assumptions used on this page.';
+const calculatorCta = page.calculatorCta ?? {
+  heading: 'Try Your Own Numbers',
+  description:
+    'Use the full calculator to change the starting amount, contribution, return, time period, or compounding frequency.',
+  url: '/calculators/compound-interest/',
+  label: 'Open the Compound Interest Calculator',
+  examplesUrl: '/calculators/compound-interest/examples/',
+  examplesLabel: 'Browse All Compound Interest Examples',
+};
+const relatedPagesHeading =
+  page.relatedPagesHeading ?? 'Related Compound Interest Examples';
 ---
 
 <Layout title={page.seoTitle} description={page.metaDescription}>
@@ -69,7 +86,7 @@ const currency = new Intl.NumberFormat('en-US', {
       </section>
 
       <section class="content-panel" aria-labelledby="formula-heading">
-        <h2 id="formula-heading">Compound Interest Formula</h2>
+        <h2 id="formula-heading">{formulaHeading}</h2>
         <p class="formula">{page.formula.expression}</p>
         <p>{page.formula.explanation}</p>
         <ol>
@@ -77,39 +94,57 @@ const currency = new Intl.NumberFormat('en-US', {
         </ol>
       </section>
 
-      <section class="content-panel" aria-labelledby="chart-heading">
-        <h2 id="chart-heading">Growth Over Time</h2>
-        <p>
-          The chart shows the estimated ending balance after each year under
-          the fixed assumptions used on this page.
-        </p>
-        <ProjectionChart
-          points={page.chartPoints}
-          ariaLabel={page.chartLabel}
-        />
-      </section>
+      {showChart && (
+        <section class="content-panel" aria-labelledby="chart-heading">
+          <h2 id="chart-heading">{chartHeading}</h2>
+          <p>{chartDescription}</p>
+          <ProjectionChart
+            points={page.chartPoints}
+            ariaLabel={page.chartLabel}
+          />
+        </section>
+      )}
 
       <section class="content-panel" aria-labelledby="projection-heading">
-        <h2 id="projection-heading">{page.projectionHeading}</h2>
+        <h2 id="projection-heading">
+          {page.table?.heading ?? page.projectionHeading}
+        </h2>
         <div class="table-scroll">
           <table>
             <thead>
-              <tr>
-                <th scope="col">Year</th>
-                <th scope="col">Contributions</th>
-                <th scope="col">Interest / Growth</th>
-                <th scope="col">Ending Balance</th>
-              </tr>
+              {page.table ? (
+                <tr>
+                  {page.table.columns.map((column) => (
+                    <th scope="col">{column}</th>
+                  ))}
+                </tr>
+              ) : (
+                <tr>
+                  <th scope="col">Year</th>
+                  <th scope="col">Contributions</th>
+                  <th scope="col">Interest / Growth</th>
+                  <th scope="col">Ending Balance</th>
+                </tr>
+              )}
             </thead>
             <tbody>
-              {page.projectionRows.map((row) => (
-                <tr>
-                  <th scope="row">{row.period}</th>
-                  <td>{currency.format(row.contributions)}</td>
-                  <td>{currency.format(row.growth)}</td>
-                  <td>{currency.format(row.endingBalance)}</td>
-                </tr>
-              ))}
+              {page.table ? (
+                page.table.rows.map((row) => (
+                  <tr>
+                    <th scope="row">{row.label}</th>
+                    {row.cells.map((cell) => <td>{cell}</td>)}
+                  </tr>
+                ))
+              ) : (
+                page.projectionRows.map((row) => (
+                  <tr>
+                    <th scope="row">{row.period}</th>
+                    <td>{currency.format(row.contributions)}</td>
+                    <td>{currency.format(row.growth)}</td>
+                    <td>{currency.format(row.endingBalance)}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -125,33 +160,34 @@ const currency = new Intl.NumberFormat('en-US', {
       </div>
 
       <section class="link-section" aria-labelledby="main-calculator-heading">
-        <h2 id="main-calculator-heading">Try Your Own Numbers</h2>
-        <p>
-          Use the full calculator to change the starting amount, contribution,
-          return, time period, or compounding frequency.
-        </p>
-        <a class="primary-link" href="/calculators/compound-interest/">
-          Open the Compound Interest Calculator
+        <h2 id="main-calculator-heading">{calculatorCta.heading}</h2>
+        <p>{calculatorCta.description}</p>
+        <a class="primary-link" href={calculatorCta.url}>
+          {calculatorCta.label}
         </a>
-        <a
-          class="secondary-link"
-          href="/calculators/compound-interest/examples/"
-        >
-          Browse All Compound Interest Examples
-        </a>
+        {calculatorCta.examplesUrl && calculatorCta.examplesLabel && (
+          <a
+            class="secondary-link"
+            href={calculatorCta.examplesUrl}
+          >
+            {calculatorCta.examplesLabel}
+          </a>
+        )}
       </section>
 
-      <section class="link-section" aria-labelledby="related-examples-heading">
-        <h2 id="related-examples-heading">Related Compound Interest Examples</h2>
-        <div class="link-grid">
-          {page.relatedPages.map((link) => (
-            <a href={link.url}>
-              <strong>{link.title}</strong>
-              <span>{link.description}</span>
-            </a>
-          ))}
-        </div>
-      </section>
+      {page.relatedPages.length > 0 && (
+        <section class="link-section" aria-labelledby="related-examples-heading">
+          <h2 id="related-examples-heading">{relatedPagesHeading}</h2>
+          <div class="link-grid">
+            {page.relatedPages.map((link) => (
+              <a href={link.url}>
+                <strong>{link.title}</strong>
+                <span>{link.description}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section class="link-section" aria-labelledby="related-tools-heading">
         <h2 id="related-tools-heading">Related Calculators</h2>

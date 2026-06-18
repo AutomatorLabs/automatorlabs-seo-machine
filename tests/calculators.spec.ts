@@ -9,6 +9,11 @@ import {
   originalCompoundInterestSeoRecords,
 } from '../src/data/programmatic-seo/compound-interest';
 import { auditCompoundInterestSeoRecords } from '../src/lib/programmatic-seo/compound-interest';
+import {
+  EXPECTED_FIRE_SEO_PAGE_COUNT,
+  fireSeoRecords,
+} from '../src/data/programmatic-seo/fire';
+import { auditFireSeoRecords } from '../src/lib/programmatic-seo/fire';
 
 const calculators = Object.values(calculatorConfigs).sort((a, b) =>
   a.title.localeCompare(b.title),
@@ -228,6 +233,110 @@ test.describe('compound interest programmatic SEO', () => {
       expect(pageErrors).toEqual([]);
     });
   }
+});
+
+test.describe('FIRE programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditFireSeoRecords(
+      fireSeoRecords,
+      EXPECTED_FIRE_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: 30,
+      actualCount: 30,
+      uniqueSlugCount: 30,
+      uniqueTitleCount: 30,
+      uniqueDescriptionCount: 30,
+      uniqueCanonicalPathCount: 30,
+    });
+  });
+
+  test('FIRE examples index exposes and searches all generated pages', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/fire/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'FIRE Number Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('[data-fire-example-group]')).toHaveCount(2);
+    await expect(page.locator('[data-fire-example-card]')).toHaveCount(30);
+    await expect(page.locator('[data-fire-example-card] a')).toHaveCount(30);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/fire/examples/',
+    );
+    await expect(
+      page.getByRole('link', { name: 'Calculate your FIRE number' }),
+    ).toHaveAttribute('href', '/calculators/fire-calculator/');
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search FIRE examples',
+    });
+    await searchBox.fill('1,000,000');
+    await expect(page.locator('[data-fire-example-card]:visible')).toHaveCount(
+      2,
+    );
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(page.locator('[data-fire-example-card]:visible')).toHaveCount(
+      30,
+    );
+    expect(pageErrors).toEqual([]);
+  });
+
+  test('renders a generated FIRE page with canonical and calculator link', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+    const record = fireSeoRecords.find(
+      (candidate) =>
+        candidate.slug ===
+        'can-i-retire-with-1000000-and-40000-spending',
+    );
+    if (!record) throw new Error('Missing representative FIRE SEO record');
+
+    const url = `/calculators/fire/${record.slug}/`;
+    const response = await page.goto(url, {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', { level: 1, name: record.question }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      `https://automatorlabs.co${url}`,
+    );
+    await expect(
+      page.getByRole('link', { name: 'Open the FIRE Calculator' }),
+    ).toHaveAttribute('href', '/calculators/fire-calculator/');
+    await expect(
+      page.getByRole('heading', {
+        level: 2,
+        name: 'Withdrawal-Rate Comparison',
+      }),
+    ).toBeVisible();
+    await expect(page.locator('tbody tr')).toHaveCount(5);
+    expect(pageErrors).toEqual([]);
+  });
 });
 
 test.describe('calculator QA', () => {

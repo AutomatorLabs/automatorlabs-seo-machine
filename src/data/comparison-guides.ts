@@ -138,6 +138,12 @@ export const comparisonGuides: ComparisonGuide[] = [
     ],
     links: [
       {
+        title: 'FIRE Number Examples',
+        url: '/calculators/fire/examples/',
+        description:
+          'Browse 30 worked spending-target and portfolio-check FIRE scenarios.',
+      },
+      {
         title: 'FIRE Calculator',
         url: '/calculators/fire-calculator/',
         description: 'Estimate a full FIRE number and timeline using contributions and returns.',

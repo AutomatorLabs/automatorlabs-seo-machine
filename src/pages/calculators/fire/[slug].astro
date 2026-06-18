@@ -1,0 +1,30 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_FIRE_SEO_PAGE_COUNT,
+  fireSeoRecords,
+  type FireSeoRecord,
+} from '../../../data/programmatic-seo/fire';
+import {
+  auditFireSeoRecords,
+  createFireSeoPage,
+} from '../../../lib/programmatic-seo/fire';
+
+auditFireSeoRecords(fireSeoRecords, EXPECTED_FIRE_SEO_PAGE_COUNT);
+
+export function getStaticPaths() {
+  return fireSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: { record },
+  }));
+}
+
+interface Props {
+  record: FireSeoRecord;
+}
+
+const { record } = Astro.props;
+const page = createFireSeoPage(record, fireSeoRecords);
+---
+
+<ProgrammaticSeoPage page={page} />

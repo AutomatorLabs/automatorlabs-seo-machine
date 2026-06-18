@@ -37,6 +37,15 @@ export interface ProgrammaticSeoSection {
   paragraphs: string[];
 }
 
+export interface ProgrammaticSeoTable {
+  heading: string;
+  columns: string[];
+  rows: {
+    label: string;
+    cells: string[];
+  }[];
+}
+
 export interface ProgrammaticSeoPageModel {
   slug: string;
   url: string;
@@ -48,12 +57,17 @@ export interface ProgrammaticSeoPageModel {
   summary: string;
   results: ProgrammaticSeoResult[];
   formula: {
+    heading?: string;
     expression: string;
     explanation: string;
     steps: string[];
   };
+  showChart?: boolean;
+  chartHeading?: string;
+  chartDescription?: string;
   projectionHeading: string;
   projectionRows: ProgrammaticSeoProjectionRow[];
+  table?: ProgrammaticSeoTable;
   chartPoints: ProgrammaticSeoChartPoint[];
   sections: ProgrammaticSeoSection[];
   faq: ProgrammaticSeoFaq[];
@@ -62,4 +76,13 @@ export interface ProgrammaticSeoPageModel {
   relatedCalculators: ProgrammaticSeoLink[];
   relatedGuides: ProgrammaticSeoLink[];
   chartLabel: string;
+  calculatorCta?: {
+    heading: string;
+    description: string;
+    url: string;
+    label: string;
+    examplesUrl?: string;
+    examplesLabel?: string;
+  };
+  relatedPagesHeading?: string;
 }

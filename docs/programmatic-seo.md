@@ -183,3 +183,65 @@ Every generated page must have:
 
 Do not mass-generate additional clusters until their records, templates,
 internal links, audits, and browser coverage meet the same standard.
+
+## FIRE proof-of-concept cluster
+
+Status: implemented as a controlled 30-page static cluster.
+
+Routes:
+
+- Main calculator: `/calculators/fire-calculator/`
+- Browsable examples index: `/calculators/fire/examples/`
+- Generated example: `/calculators/fire/{slug}/`
+
+The dataset is defined in `src/data/programmatic-seo/fire.ts` and contains:
+
+- 20 FIRE-number pages based on annual retirement spending.
+- 10 portfolio-versus-spending checks.
+- A fixed expected count of 30.
+
+The page-model builder in `src/lib/programmatic-seo/fire.ts` reuses:
+
+- `calculateFireNumber`
+- `calculateWithdrawalIncome`
+- `calculateWithdrawalPlan`
+
+No FIRE calculator formula is copied or changed. The generated content uses the
+same math helpers as the interactive calculator.
+
+Each page includes:
+
+- A unique title and meta description.
+- A canonical path under `/calculators/fire/`.
+- One H1.
+- A short calculated answer.
+- FIRE number and annual/monthly spending assumptions.
+- A withdrawal-rate explanation.
+- A five-row withdrawal-rate comparison table.
+- Assumptions and limitations.
+- FAQPage and breadcrumb structured data.
+- Related FIRE examples, calculators, and guides.
+- Links to the FIRE Calculator, FIRE examples index, Beginner’s Guide to FIRE,
+  What Is FIRE guide, and FIRE vs Coast FIRE guide.
+
+The examples index exposes all 30 links in server-rendered HTML and groups them
+into:
+
+- FIRE numbers by annual spending.
+- Portfolio and spending checks.
+
+Client-side search filters by question, slug, spending amount, portfolio
+amount, or intent without removing links from the indexable source HTML.
+
+`auditFireSeoRecords` runs during static generation and fails the build when
+the cluster has:
+
+- A count other than 30.
+- Invalid or duplicate slugs.
+- Duplicate titles.
+- Duplicate descriptions.
+- Incorrect or duplicate canonical paths.
+
+Playwright coverage checks the FIRE audit, all 30 index links, index search,
+one H1, canonical URLs, the internal FIRE Calculator link, the comparison
+table, successful responses, and absence of page errors.

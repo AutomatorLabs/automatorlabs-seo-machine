@@ -292,6 +292,21 @@ function buildGuide(config: CalculatorConfig): CalculatorGuide {
               'Understand how investment growth and rising prices compound together.',
           },
         ]
+      : config.id === 'fire'
+        ? [
+            {
+              title: 'FIRE Number Examples',
+              url: '/calculators/fire/examples/',
+              description:
+                'Browse 30 worked FIRE examples by annual spending and invested portfolio.',
+            },
+            {
+              title: 'FIRE vs Coast FIRE',
+              url: '/guides/fire-vs-coast-fire/',
+              description:
+                'Compare full financial independence with the Coast FIRE milestone.',
+            },
+          ]
       : undefined;
 
   return {

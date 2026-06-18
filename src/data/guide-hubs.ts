@@ -49,6 +49,12 @@ export const guideHubs: GuideHub[] = [
     ],
     comparisonGuideLinks: [
       {
+        title: 'FIRE Number Examples',
+        url: '/calculators/fire/examples/',
+        description:
+          'Browse 30 spending-target and portfolio-check examples with explicit withdrawal-rate assumptions.',
+      },
+      {
         title: 'FIRE vs Coast FIRE',
         url: '/guides/fire-vs-coast-fire/',
         description:
