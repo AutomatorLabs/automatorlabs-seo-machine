@@ -17,6 +17,21 @@ const relatedItems = mortgagePayoffCalculator.relatedIds.flatMap((id) => {
   outputs={mortgagePayoffCalculator.outputs}
   faq={mortgagePayoffCalculator.faq}
   relatedItems={relatedItems}
+  exampleHeading="Mortgage Payment Examples"
+  exampleItems={[
+    {
+      title: 'Browse all 40 mortgage payment examples',
+      url: '/calculators/mortgage/examples/',
+    },
+    {
+      title: 'Payment on a $300,000 mortgage at 6% for 30 years',
+      url: '/calculators/mortgage/300000-mortgage-at-6-percent-for-30-years/',
+    },
+    {
+      title: 'Payment on a $750,000 mortgage at 5.5% for 15 years',
+      url: '/calculators/mortgage/750000-mortgage-at-5-5-percent-for-15-years/',
+    },
+  ]}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

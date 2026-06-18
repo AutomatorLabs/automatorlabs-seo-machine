@@ -1,0 +1,33 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
+  mortgageSeoRecords,
+  type MortgageSeoRecord,
+} from '../../../data/programmatic-seo/mortgage';
+import {
+  auditMortgageSeoRecords,
+  createMortgageSeoPage,
+} from '../../../lib/programmatic-seo/mortgage';
+
+auditMortgageSeoRecords(
+  mortgageSeoRecords,
+  EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return mortgageSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: { record },
+  }));
+}
+
+interface Props {
+  record: MortgageSeoRecord;
+}
+
+const { record } = Astro.props;
+const page = createMortgageSeoPage(record, mortgageSeoRecords);
+---
+
+<ProgrammaticSeoPage page={page} />

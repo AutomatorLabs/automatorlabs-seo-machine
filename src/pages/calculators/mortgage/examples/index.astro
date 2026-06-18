@@ -1,0 +1,463 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
+  mortgageSeoRecords,
+} from '../../../../data/programmatic-seo/mortgage';
+import { auditMortgageSeoRecords } from '../../../../lib/programmatic-seo/mortgage';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditMortgageSeoRecords(
+  mortgageSeoRecords,
+  EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Mortgage Calculator',
+        url: '/calculators/mortgage-payoff-calculator/',
+      },
+      {
+        name: 'Mortgage Examples',
+        url: '/calculators/mortgage/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(
+  mortgageSeoRecords,
+  [
+    {
+      id: '30-year',
+      title: '30-Year Mortgage Payments',
+      description:
+        'Longer-term fixed-rate examples across realistic loan amounts and rates.',
+      matches: (record) => record.loanTermYears === 30,
+    },
+    {
+      id: '20-year',
+      title: '20-Year Mortgage Payments',
+      description:
+        'Mid-length mortgage examples balancing monthly payment and total interest.',
+      matches: (record) => record.loanTermYears === 20,
+    },
+    {
+      id: '15-year',
+      title: '15-Year Mortgage Payments',
+      description:
+        'Shorter-term examples with faster principal repayment and higher payments.',
+      matches: (record) => record.loanTermYears === 15,
+    },
+  ],
+  (a, b) =>
+    a.loanAmount - b.loanAmount ||
+    a.annualInterestRatePercent - b.annualInterestRatePercent,
+);
+---
+
+<Layout
+  title="Mortgage Payment Examples | AutomatorLabs"
+  description="Browse and search 40 mortgage payment examples by loan amount, interest rate, and 15-, 20-, or 30-year term, with total interest and repayment estimates."
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/mortgage-payoff-calculator/">
+            Mortgage Calculator
+          </a>
+        </li>
+        <li aria-current="page">Mortgage Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Mortgage payment library</p>
+      <h1>Mortgage Payment Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} fixed-rate mortgage examples covering
+        realistic loan amounts, rates, and terms. Each page shows the monthly
+        principal-and-interest payment, total interest, total repayment,
+        assumptions, and amortization context.
+      </p>
+      <a class="primary-link" href="/calculators/mortgage-payoff-calculator/">
+        Calculate your mortgage payment
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section class="example-search" aria-label="Search mortgage examples">
+      <label for="mortgage-example-search">Search mortgage examples</label>
+      <div class="search-row">
+        <input
+          id="mortgage-example-search"
+          type="search"
+          placeholder="Try 300,000, 6%, or 15 years"
+          autocomplete="off"
+          aria-controls="mortgage-example-groups"
+          aria-describedby="mortgage-example-count"
+        />
+        <button id="clear-mortgage-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="mortgage-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="mortgage-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-mortgage-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-mortgage-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.loanAmount,
+                  record.loanAmount.toLocaleString('en-US'),
+                  record.annualInterestRatePercent,
+                  `${record.annualInterestRatePercent}%`,
+                  record.loanTermYears,
+                  `${record.loanTermYears} years`,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/mortgage/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.loanAmount)} · {record.annualInterestRatePercent}% fixed · {record.loanTermYears} years
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p id="no-mortgage-examples" class="no-results" role="status" hidden>
+      No mortgage examples found. Try a loan amount, rate, or term.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#mortgage-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-mortgage-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#mortgage-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-mortgage-examples',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-mortgage-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-mortgage-example-group]',
+    ),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      group.hidden = !group.querySelector(
+        '[data-mortgage-example-card]:not([hidden])',
+      );
+    });
+
+    count.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'example' : 'examples'}`;
+    noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query === '';
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateExamples();
+    input.focus();
+  });
+</script>
+
+<style>
+  main {
+    width: min(1120px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 4.5rem 0;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
+  }
+
+  .breadcrumbs li + li::before {
+    color: var(--muted-text-color);
+    content: '›';
+  }
+
+  .breadcrumbs a {
+    color: var(--link-color);
+    text-decoration: none;
+  }
+
+  .page-header {
+    max-width: 880px;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.5rem;
+    color: var(--link-color);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 7vw, 4.2rem);
+    letter-spacing: -0.045em;
+    line-height: 1.05;
+  }
+
+  .intro {
+    margin: 1rem 0 1.25rem;
+    color: var(--muted-text-color);
+    font-size: 1.12rem;
+    line-height: 1.72;
+  }
+
+  .primary-link {
+    display: inline-block;
+    border-radius: 10px;
+    background: var(--button-background);
+    color: var(--button-text);
+    font-weight: 750;
+    padding: 0.8rem 1rem;
+    text-decoration: none;
+  }
+
+  .secondary-link {
+    display: inline-block;
+    margin-left: 0.75rem;
+    color: var(--link-color);
+    font-weight: 750;
+  }
+
+  .example-search {
+    margin: 3rem 0;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--card-background);
+    padding: 1.25rem;
+  }
+
+  .example-search label {
+    display: block;
+    margin-bottom: 0.6rem;
+    color: var(--heading-color);
+    font-weight: 750;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 0.7rem;
+  }
+
+  .search-row input {
+    width: 100%;
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    background: var(--input-background);
+    color: var(--input-text);
+    font: inherit;
+    padding: 0.8rem 0.9rem;
+  }
+
+  .search-row input:focus {
+    border-color: var(--link-color);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+    outline: none;
+  }
+
+  .search-row button {
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    background: var(--subtle-background);
+    color: var(--text-color);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    padding: 0.8rem 1rem;
+    white-space: nowrap;
+  }
+
+  #mortgage-example-count {
+    margin: 0.75rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 0.92rem;
+  }
+
+  .example-groups {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .example-group > header {
+    display: flex;
+    gap: 1rem;
+    align-items: end;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .example-group h2 {
+    margin: 0;
+    color: var(--heading-color);
+    font-size: 1.65rem;
+  }
+
+  .example-group header p {
+    margin: 0.35rem 0 0;
+    color: var(--muted-text-color);
+  }
+
+  .example-group header span {
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+
+  .example-group ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .example-group a {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--card-background);
+    color: var(--link-color);
+    padding: 1rem;
+    text-decoration: none;
+  }
+
+  .example-group a:hover {
+    border-color: var(--link-color);
+    background: var(--subtle-background);
+  }
+
+  .example-group a span {
+    margin-top: 0.4rem;
+    color: var(--muted-text-color);
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .no-results {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--subtle-background);
+    padding: 1rem;
+  }
+
+  @media (max-width: 720px) {
+    main {
+      padding: 3rem 0;
+    }
+
+    .search-row,
+    .example-group > header {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .example-group ul {
+      grid-template-columns: 1fr;
+    }
+
+    .secondary-link {
+      display: block;
+      margin: 1rem 0 0;
+    }
+  }
+</style>

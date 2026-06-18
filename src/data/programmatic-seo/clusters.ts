@@ -1,5 +1,6 @@
 import { compoundInterestSeoRecords } from './compound-interest';
 import { fireSeoRecords } from './fire';
+import { mortgageSeoRecords } from './mortgage';
 
 export interface ProgrammaticSeoClusterSummary {
   id: string;
@@ -37,6 +38,17 @@ const fireRepresentatives = [
   fireSeoRecords.find(
     (record) =>
       record.slug === 'can-i-retire-with-1000000-and-40000-spending',
+  ),
+].filter((record) => record !== undefined);
+
+const mortgageRepresentatives = [
+  mortgageSeoRecords.find(
+    (record) =>
+      record.slug === '300000-mortgage-at-6-percent-for-30-years',
+  ),
+  mortgageSeoRecords.find(
+    (record) =>
+      record.slug === '750000-mortgage-at-5-5-percent-for-15-years',
   ),
 ].filter((record) => record !== undefined);
 
@@ -79,6 +91,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: fireRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/fire/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'mortgage',
+    title: 'Mortgage Payment Examples',
+    description:
+      'Compare fixed-rate monthly payments, total interest, and repayment across realistic loan amounts, rates, and terms.',
+    examplesUrl: '/calculators/mortgage/examples/',
+    calculator: {
+      title: 'Mortgage Payoff Calculator',
+      url: '/calculators/mortgage-payoff-calculator/',
+    },
+    guide: {
+      title: 'A Practical Guide to Buying a Home',
+      url: '/guides/home-buying/',
+    },
+    pageCount: mortgageSeoRecords.length,
+    representativePages: mortgageRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/mortgage/${record.slug}/`,
     })),
   },
 ];

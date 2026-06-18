@@ -307,6 +307,21 @@ function buildGuide(config: CalculatorConfig): CalculatorGuide {
                 'Compare full financial independence with the Coast FIRE milestone.',
             },
           ]
+      : config.id === 'mortgage-payoff'
+        ? [
+            {
+              title: 'Mortgage Payment Examples',
+              url: '/calculators/mortgage/examples/',
+              description:
+                'Browse 40 fixed-rate examples by loan amount, interest rate, and term.',
+            },
+            {
+              title: 'Rent vs Buy',
+              url: '/guides/rent-vs-buy/',
+              description:
+                'Compare mortgage costs with rent, equity, maintenance, and flexibility.',
+            },
+          ]
       : undefined;
 
   return {

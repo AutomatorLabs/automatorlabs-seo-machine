@@ -1050,6 +1050,12 @@ export const comparisonGuides: ComparisonGuide[] = [
         url: '/calculators/mortgage-payoff-calculator/',
         description: 'Explore amortization and the effect of extra payments.',
       },
+      {
+        title: 'Mortgage Payment Examples',
+        url: '/calculators/mortgage/examples/',
+        description:
+          'Compare monthly principal-and-interest payments across realistic loan amounts, rates, and terms.',
+      },
     ],
     faq: [
       {

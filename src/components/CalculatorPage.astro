@@ -31,6 +31,7 @@ interface Props {
   relatedItems: RelatedItem[];
   guideItems?: RelatedItem[];
   exampleItems?: RelatedItem[];
+  exampleHeading?: string;
   chart?: boolean;
   howToSteps?: string[];
   resultExplanation?: CalculatorResultExplanation[];
@@ -47,6 +48,7 @@ const {
   relatedItems,
   guideItems = [],
   exampleItems = [],
+  exampleHeading = 'Compound Interest Examples',
   chart: configuredChart,
   howToSteps: configuredHowToSteps,
   resultExplanation: configuredResultExplanation,
@@ -392,8 +394,8 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
 
     {exampleItems.length > 0 && (
       <section class="content-section" aria-labelledby="examples-heading">
-        <h2 id="examples-heading">Compound Interest Examples</h2>
-        <nav class="related-links" aria-label="Compound interest examples">
+        <h2 id="examples-heading">{exampleHeading}</h2>
+        <nav class="related-links" aria-label={exampleHeading}>
           {exampleItems.map((item) => (
             <a href={item.url}>{item.title}</a>
           ))}

@@ -457,6 +457,12 @@ export const guideHubs: GuideHub[] = [
     ],
     comparisonGuideLinks: [
       {
+        title: 'Mortgage Payment Examples',
+        url: '/calculators/mortgage/examples/',
+        description:
+          'Browse 40 fixed-rate mortgage scenarios by loan amount, rate, and term.',
+      },
+      {
         title: 'Rent vs Buy',
         url: '/guides/rent-vs-buy/',
         description:

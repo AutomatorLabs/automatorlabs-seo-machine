@@ -15,6 +15,11 @@ import {
 } from '../src/data/programmatic-seo/fire';
 import { auditFireSeoRecords } from '../src/lib/programmatic-seo/fire';
 import { programmaticSeoClusters } from '../src/data/programmatic-seo/clusters';
+import {
+  EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
+  mortgageSeoRecords,
+} from '../src/data/programmatic-seo/mortgage';
+import { auditMortgageSeoRecords } from '../src/lib/programmatic-seo/mortgage';
 
 const calculators = Object.values(calculatorConfigs).sort((a, b) =>
   a.title.localeCompare(b.title),
@@ -351,6 +356,118 @@ test.describe('FIRE programmatic SEO', () => {
       }),
     ).toBeVisible();
     await expect(page.locator('tbody tr')).toHaveCount(5);
+    expect(pageErrors).toEqual([]);
+  });
+});
+
+test.describe('mortgage programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditMortgageSeoRecords(
+      mortgageSeoRecords,
+      EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: 40,
+      actualCount: 40,
+      uniqueSlugCount: 40,
+      uniqueTitleCount: 40,
+      uniqueDescriptionCount: 40,
+      uniqueCanonicalPathCount: 40,
+    });
+  });
+
+  test('mortgage examples index exposes and searches all generated pages', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/mortgage/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Mortgage Payment Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('[data-mortgage-example-group]')).toHaveCount(
+      3,
+    );
+    await expect(page.locator('[data-mortgage-example-card]')).toHaveCount(
+      40,
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/mortgage/examples/',
+    );
+    await expect(
+      page.getByRole('link', { name: 'Calculate your mortgage payment' }),
+    ).toHaveAttribute('href', '/calculators/mortgage-payoff-calculator/');
+
+    const hrefs = await page
+      .locator('[data-mortgage-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(40);
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search mortgage examples',
+    });
+    await searchBox.fill('750,000');
+    await expect(
+      page.locator('[data-mortgage-example-card]:visible'),
+    ).toHaveCount(2);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-mortgage-example-card]:visible'),
+    ).toHaveCount(40);
+    expect(pageErrors).toEqual([]);
+  });
+
+  test('renders a generated mortgage page with canonical and calculator backlink', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+    const record = mortgageSeoRecords.find(
+      (candidate) =>
+        candidate.slug ===
+        '300000-mortgage-at-6-percent-for-30-years',
+    );
+    if (!record) throw new Error('Missing representative mortgage record');
+
+    const url = `/calculators/mortgage/${record.slug}/`;
+    const response = await page.goto(url, {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', { level: 1, name: record.question }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      `https://automatorlabs.co${url}`,
+    );
+    await expect(
+      page.getByRole('link', { name: 'Open the Mortgage Calculator' }),
+    ).toHaveAttribute('href', '/calculators/mortgage-payoff-calculator/');
+    await expect(
+      page.getByRole('heading', {
+        level: 2,
+        name: 'Mortgage Payment Summary',
+      }),
+    ).toBeVisible();
+    await expect(page.locator('tbody tr')).toHaveCount(3);
     expect(pageErrors).toEqual([]);
   });
 });
