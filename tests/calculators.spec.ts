@@ -25,6 +25,69 @@ const calculators = Object.values(calculatorConfigs).sort((a, b) =>
   a.title.localeCompare(b.title),
 );
 
+test.describe('newsletter acquisition', () => {
+  test('newsletter landing page loads with canonical, signup area, and key tools', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/newsletter/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Practical financial tools, delivered when they are useful',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/newsletter/',
+    );
+    await expect(page.locator('[data-newsletter-signup-area]')).toBeVisible();
+    await expect(
+      page.locator('a[href="/calculators/compound-interest/"]'),
+    ).toContainText('Compound Interest Calculator');
+    await expect(
+      page.locator('a[href="/calculators/fire-calculator/"]'),
+    ).toContainText('FIRE Calculator');
+    await expect(
+      page.locator('a[href="/calculators/mortgage-payoff-calculator/"]'),
+    ).toContainText('Mortgage Calculator');
+    await expect(page.locator('a[href="/examples/"]').first()).toContainText(
+      'Examples Hub',
+    );
+    const structuredData = await page
+      .locator('script[type="application/ld+json"]')
+      .evaluateAll((scripts) =>
+        scripts.map((script) => script.textContent ?? '').join('\n'),
+      );
+    expect(structuredData).toContain('"@type":"FAQPage"');
+    expect(pageErrors).toEqual([]);
+  });
+
+  for (const route of ['/', '/examples/']) {
+    test(`${route} links to the newsletter landing page`, async ({ page }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error.message));
+
+      const response = await page.goto(route, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(page.locator('a[href="/newsletter/"]').first()).toBeVisible();
+      expect(pageErrors).toEqual([]);
+    });
+  }
+});
+
 test.describe('calculator index search and filters', () => {
   const calculatorCards = '[data-calculator-card]';
   const searchBox = (page: Page) =>

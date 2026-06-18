@@ -1,6 +1,7 @@
 ---
 import { contentItems } from '../../data/content';
 import { calculatorCategories } from '../../data/calculator-categories';
+import NewsletterCta from '../../components/NewsletterCta.astro';
 import Layout from '../../layouts/Layout.astro';
 
 const calculators = contentItems
@@ -149,6 +150,8 @@ const categoryFilters = [
     <p id="no-calculators-found" class="no-results" role="status" hidden>
       No calculators found. Try a different search.
     </p>
+
+    <NewsletterCta compact />
   </main>
 </Layout>
 

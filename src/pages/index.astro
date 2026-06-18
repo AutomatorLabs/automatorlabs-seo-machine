@@ -2,7 +2,7 @@
 import { calculatorCategories } from '../data/calculator-categories';
 import { contentItems } from '../data/content';
 import { guideHubs } from '../data/guide-hubs';
-import EmailSignup from '../components/EmailSignup.astro';
+import NewsletterCta from '../components/NewsletterCta.astro';
 import Layout from '../layouts/Layout.astro';
 
 const popularCalculators = contentItems
@@ -126,7 +126,10 @@ const latestGuides = guideHubs.slice(0, 6);
       </div>
     </section>
 
-    <EmailSignup />
+    <NewsletterCta
+      headline="Follow new calculators and practical planning guides"
+      description="Get useful AutomatorLabs updates covering investing, retirement, mortgages, savings, debt, and new worked examples."
+    />
   </main>
 </Layout>
 

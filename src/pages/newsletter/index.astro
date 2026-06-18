@@ -1,0 +1,350 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { newsletterConfig } from '../../data/newsletter';
+import {
+  createFaqSchema,
+  serializeJsonLd,
+} from '../../lib/programmatic-seo/schema';
+
+const faq = [
+  {
+    question: 'What will I receive?',
+    answer:
+      'You will receive practical updates when AutomatorLabs publishes useful financial calculators, investing tools, retirement planning resources, mortgage calculators, and personal finance guides.',
+  },
+  {
+    question: 'How often are emails sent?',
+    answer:
+      'Emails are sent when there is a useful new tool, guide, or meaningful site update to share. AutomatorLabs does not promise a fixed schedule or send email simply to fill a calendar.',
+  },
+  {
+    question: 'Is the AutomatorLabs newsletter free?',
+    answer:
+      'Yes. Newsletter signup and the calculators and guides linked from these updates are free to access.',
+  },
+  {
+    question: 'Can I unsubscribe?',
+    answer:
+      'Yes. Every newsletter email will include an unsubscribe option managed through Beehiiv.',
+  },
+  {
+    question: 'What topics does AutomatorLabs cover?',
+    answer:
+      'Topics include financial calculators, compound interest, investing, FIRE and retirement planning, mortgages and home buying, debt payoff, budgeting, savings, and practical personal finance decisions.',
+  },
+];
+const faqSchema = serializeJsonLd(createFaqSchema(faq));
+const publicationUrl = newsletterConfig.publicationUrl;
+---
+
+<Layout
+  title="AutomatorLabs Newsletter | New Financial Calculators and Guides"
+  description="Get new financial calculators, investing tools, retirement planning resources, mortgage calculators, and practical personal finance guides from AutomatorLabs."
+>
+  <script type="application/ld+json" set:html={faqSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li aria-current="page">Newsletter</li>
+      </ol>
+    </nav>
+
+    <article>
+      <header class="page-header">
+        <p class="eyebrow">AutomatorLabs newsletter</p>
+        <h1>Practical financial tools, delivered when they are useful</h1>
+        <p class="intro">
+          Get new financial calculators, investing tools, and practical
+          planning guides delivered to your inbox. Updates focus on clear
+          numbers and useful context—not hype.
+        </p>
+      </header>
+
+      <section class="benefits" aria-labelledby="benefits-heading">
+        <div>
+          <p class="section-label">What to expect</p>
+          <h2 id="benefits-heading">Useful additions to your planning toolkit</h2>
+        </div>
+        <ul>
+          <li>New calculators and meaningful improvements to existing tools</li>
+          <li>Investing and compound-interest resources</li>
+          <li>FIRE, retirement, and withdrawal-planning guides</li>
+          <li>Mortgage, home-buying, savings, and debt tools</li>
+          <li>Worked examples that make financial assumptions easier to compare</li>
+        </ul>
+      </section>
+
+      <section
+        id="newsletter-signup"
+        class="signup-area"
+        aria-labelledby="signup-heading"
+      >
+        <div>
+          <p class="section-label">Subscribe</p>
+          <h2 id="signup-heading">Join the AutomatorLabs newsletter</h2>
+          <p>
+            Beehiiv will handle subscription details, consent, and
+            unsubscribes. The signup embed is being connected to this page.
+          </p>
+        </div>
+
+        <!-- TODO: Replace this placeholder with the verified Beehiiv embed code and publication URL. -->
+        <div class="embed-placeholder" data-newsletter-signup-area>
+          {publicationUrl ? (
+            <a class="signup-link" href={publicationUrl}>
+              Subscribe on Beehiiv
+            </a>
+          ) : (
+            <>
+              <p>
+                Newsletter signup is not connected yet. Please check back
+                after the Beehiiv publication URL and embed are configured.
+              </p>
+              <a href="/contact/">Contact AutomatorLabs</a>
+            </>
+          )}
+        </div>
+      </section>
+
+      <section class="tools-section" aria-labelledby="tools-heading">
+        <p class="section-label">Explore now</p>
+        <h2 id="tools-heading">Start with the most useful tools</h2>
+        <div class="tool-grid">
+          <a href="/calculators/compound-interest/">
+            <strong>Compound Interest Calculator</strong>
+            <span>Explore how principal, contributions, rates, and time interact.</span>
+          </a>
+          <a href="/calculators/fire-calculator/">
+            <strong>FIRE Calculator</strong>
+            <span>Estimate a financial independence target and timeline.</span>
+          </a>
+          <a href="/calculators/mortgage-payoff-calculator/">
+            <strong>Mortgage Calculator</strong>
+            <span>Estimate payments, interest, and the effect of extra principal.</span>
+          </a>
+          <a href="/examples/">
+            <strong>Examples Hub</strong>
+            <span>Browse worked scenarios with transparent assumptions.</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="faq-section" aria-labelledby="faq-heading">
+        <h2 id="faq-heading">Newsletter FAQs</h2>
+        <div class="faq-list">
+          {faq.map((item) => (
+            <details>
+              <summary>{item.question}</summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+    </article>
+  </main>
+</Layout>
+
+<style>
+  main {
+    width: min(1040px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 4.5rem 0;
+  }
+
+  article {
+    max-width: 880px;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li + li::before {
+    margin-right: 0.45rem;
+    color: var(--muted-text-color);
+    content: '›';
+  }
+
+  .breadcrumbs a {
+    text-decoration: none;
+  }
+
+  .page-header {
+    max-width: 820px;
+    margin-bottom: 2.5rem;
+  }
+
+  .eyebrow,
+  .section-label {
+    margin: 0 0 0.5rem;
+    color: var(--link-color);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.45rem, 7vw, 4.4rem);
+    letter-spacing: -0.05em;
+    line-height: 1.04;
+  }
+
+  .intro {
+    max-width: 760px;
+    margin: 1rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 1.16rem;
+    line-height: 1.72;
+  }
+
+  .benefits,
+  .signup-area,
+  .tools-section,
+  .faq-section {
+    margin-top: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--card-background);
+    box-shadow: 0 12px 35px var(--shadow-color);
+    padding: clamp(1.3rem, 4vw, 2rem);
+  }
+
+  .benefits {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 1.5rem;
+  }
+
+  .benefits h2,
+  .signup-area h2,
+  .tools-section h2,
+  .faq-section h2 {
+    margin: 0;
+    font-size: 1.65rem;
+    letter-spacing: -0.025em;
+  }
+
+  .benefits ul {
+    display: grid;
+    gap: 0.7rem;
+    margin: 0;
+    padding-left: 1.3rem;
+    line-height: 1.55;
+  }
+
+  .benefits li::marker {
+    color: var(--link-color);
+  }
+
+  .signup-area {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .signup-area p {
+    color: var(--muted-text-color);
+    line-height: 1.65;
+  }
+
+  .embed-placeholder {
+    border: 1px dashed var(--input-border);
+    border-radius: 12px;
+    background: var(--subtle-background);
+    padding: 1.25rem;
+  }
+
+  .embed-placeholder p {
+    margin-top: 0;
+  }
+
+  .embed-placeholder a,
+  .signup-link {
+    font-weight: 750;
+  }
+
+  .signup-link {
+    display: inline-block;
+    border-radius: 10px;
+    background: var(--button-background);
+    color: var(--button-text);
+    padding: 0.8rem 1rem;
+    text-decoration: none;
+  }
+
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+    margin-top: 1.25rem;
+  }
+
+  .tool-grid a {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--subtle-background);
+    padding: 1rem;
+    text-decoration: none;
+  }
+
+  .tool-grid span {
+    margin-top: 0.4rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .faq-list {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  .faq-list details {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--faq-background);
+    padding: 0.9rem 1rem;
+  }
+
+  .faq-list summary {
+    color: var(--heading-color);
+    cursor: pointer;
+    font-weight: 750;
+  }
+
+  .faq-list p {
+    margin-bottom: 0;
+    color: var(--muted-text-color);
+    line-height: 1.65;
+  }
+
+  @media (max-width: 720px) {
+    main {
+      padding: 3rem 0;
+    }
+
+    .benefits,
+    .signup-area,
+    .tool-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
