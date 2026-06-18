@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { calculatorConfigs } from '../src/data/calculators';
 import { calculatorCategories } from '../src/data/calculator-categories';
 
@@ -8,6 +9,8 @@ const calculators = Object.values(calculatorConfigs).sort((a, b) =>
 
 test.describe('calculator index search and filters', () => {
   const calculatorCards = '[data-calculator-card]';
+  const searchBox = (page: Page) =>
+    page.getByRole('searchbox', { name: 'Search calculators' });
 
   test.beforeEach(async ({ page }) => {
     await page.route('https://www.googletagmanager.com/**', async (route) => {
@@ -32,7 +35,7 @@ test.describe('calculator index search and filters', () => {
 
   for (const query of ['fire', 'mortgage']) {
     test(`searching "${query}" filters calculator cards`, async ({ page }) => {
-      await page.getByLabel('Search calculators').fill(query);
+      await searchBox(page).fill(query);
 
       const visibleCards = page.locator(`${calculatorCards}:visible`);
       const visibleCount = await visibleCards.count();
@@ -75,7 +78,7 @@ test.describe('calculator index search and filters', () => {
   });
 
   test('nonsense search shows the accessible empty state', async ({ page }) => {
-    await page.getByLabel('Search calculators').fill('zzzz-no-calculator');
+    await searchBox(page).fill('zzzz-no-calculator');
 
     await expect(page.locator(`${calculatorCards}:visible`)).toHaveCount(0);
     await expect(page.locator('#no-calculators-found')).toBeVisible();
@@ -94,7 +97,7 @@ test.describe('calculator index search and filters', () => {
       name: 'Debt & Loans',
       exact: true,
     }).click();
-    await page.getByLabel('Search calculators').fill('zzzz-no-calculator');
+    await searchBox(page).fill('zzzz-no-calculator');
 
     const clearButton = page.getByRole('button', {
       name: 'Clear search',
@@ -103,7 +106,7 @@ test.describe('calculator index search and filters', () => {
     await expect(clearButton).toBeVisible();
     await clearButton.click();
 
-    await expect(page.getByLabel('Search calculators')).toHaveValue('');
+    await expect(searchBox(page)).toHaveValue('');
     await expect(
       page.getByRole('button', { name: 'All', exact: true }),
     ).toHaveAttribute('aria-pressed', 'true');

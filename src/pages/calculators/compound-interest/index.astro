@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { compoundInterestCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredCompoundInterestSeoRecords } from '../../../data/programmatic-seo/compound-interest';
 
 const relatedItems = compoundInterestCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -13,6 +14,10 @@ const guideItems = [
     url: '/guides/cagr-vs-compound-interest/',
   },
 ];
+const exampleItems = featuredCompoundInterestSeoRecords.map((record) => ({
+  title: record.question,
+  url: `/calculators/compound-interest/${record.slug}/`,
+}));
 ---
 
 <CalculatorPage
@@ -23,6 +28,7 @@ const guideItems = [
   outputs={compoundInterestCalculator.outputs}
   faq={compoundInterestCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
   guideItems={guideItems}
 >
   <script>

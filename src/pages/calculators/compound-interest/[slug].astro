@@ -1,0 +1,27 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  compoundInterestSeoRecords,
+  type CompoundInterestSeoRecord,
+} from '../../../data/programmatic-seo/compound-interest';
+import { createCompoundInterestSeoPage } from '../../../lib/programmatic-seo/compound-interest';
+
+export function getStaticPaths() {
+  return compoundInterestSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: { record },
+  }));
+}
+
+interface Props {
+  record: CompoundInterestSeoRecord;
+}
+
+const { record } = Astro.props;
+const page = createCompoundInterestSeoPage(
+  record,
+  compoundInterestSeoRecords,
+);
+---
+
+<ProgrammaticSeoPage page={page} />

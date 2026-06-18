@@ -30,6 +30,7 @@ interface Props {
   faq: CalculatorFaq[];
   relatedItems: RelatedItem[];
   guideItems?: RelatedItem[];
+  exampleItems?: RelatedItem[];
   chart?: boolean;
   howToSteps?: string[];
   resultExplanation?: CalculatorResultExplanation[];
@@ -45,6 +46,7 @@ const {
   faq,
   relatedItems,
   guideItems = [],
+  exampleItems = [],
   chart: configuredChart,
   howToSteps: configuredHowToSteps,
   resultExplanation: configuredResultExplanation,
@@ -382,6 +384,17 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
         <h2 id="related-heading">Related Calculators</h2>
         <nav class="related-links" aria-label="Related calculators">
           {relatedItems.map((item) => (
+            <a href={item.url}>{item.title}</a>
+          ))}
+        </nav>
+      </section>
+    )}
+
+    {exampleItems.length > 0 && (
+      <section class="content-section" aria-labelledby="examples-heading">
+        <h2 id="examples-heading">Compound Interest Examples</h2>
+        <nav class="related-links" aria-label="Compound interest examples">
+          {exampleItems.map((item) => (
             <a href={item.url}>{item.title}</a>
           ))}
         </nav>
