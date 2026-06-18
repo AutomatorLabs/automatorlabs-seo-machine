@@ -221,6 +221,10 @@ export function createCompoundInterestSeoPage(
         name: 'Compound Interest Calculator',
         url: '/calculators/compound-interest/',
       },
+      {
+        name: 'Examples',
+        url: '/calculators/compound-interest/examples/',
+      },
       { name: title, url: `/calculators/compound-interest/${record.slug}/` },
     ],
     relatedPages: createRelatedPages(record, records),
@@ -259,5 +263,119 @@ export function createCompoundInterestSeoPage(
       },
     ],
     chartLabel: `${principal} compound-interest projection at ${rate}% for ${record.years} years`,
+  };
+}
+
+export interface CompoundInterestSeoAuditResult {
+  expectedCount: number;
+  actualCount: number;
+  uniqueSlugCount: number;
+  uniqueTitleCount: number;
+  uniqueDescriptionCount: number;
+  uniqueCanonicalPathCount: number;
+}
+
+function duplicateValues(values: string[]): string[] {
+  const counts = new Map<string, number>();
+
+  values.forEach((value) => {
+    counts.set(value, (counts.get(value) ?? 0) + 1);
+  });
+
+  return [...counts.entries()]
+    .filter(([, count]) => count > 1)
+    .map(([value]) => value);
+}
+
+export function auditCompoundInterestSeoRecords(
+  records: CompoundInterestSeoRecord[],
+  expectedCount: number,
+): CompoundInterestSeoAuditResult {
+  const errors: string[] = [];
+  const pages = records.map((record) =>
+    createCompoundInterestSeoPage(record, records),
+  );
+  const slugs = records.map((record) => record.slug);
+  const titles = pages.map((page) => page.title);
+  const seoTitles = pages.map((page) => page.seoTitle);
+  const descriptions = pages.map((page) => page.metaDescription);
+  const canonicalPaths = pages.map((page) => page.url);
+
+  if (records.length !== expectedCount) {
+    errors.push(
+      `Expected ${expectedCount} compound-interest records, received ${records.length}.`,
+    );
+  }
+
+  const invalidSlugs = slugs.filter(
+    (slug) => !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug),
+  );
+  if (invalidSlugs.length > 0) {
+    errors.push(`Invalid slugs: ${invalidSlugs.join(', ')}`);
+  }
+
+  const duplicateSlugs = duplicateValues(slugs);
+  if (duplicateSlugs.length > 0) {
+    errors.push(`Duplicate slugs: ${duplicateSlugs.join(', ')}`);
+  }
+
+  const duplicateTitles = duplicateValues(titles);
+  if (duplicateTitles.length > 0) {
+    errors.push(`Duplicate titles: ${duplicateTitles.join(', ')}`);
+  }
+
+  const duplicateSeoTitles = duplicateValues(seoTitles);
+  if (duplicateSeoTitles.length > 0) {
+    errors.push(`Duplicate SEO titles: ${duplicateSeoTitles.join(', ')}`);
+  }
+
+  const emptyDescriptions = pages
+    .filter((page) => page.metaDescription.trim().length === 0)
+    .map((page) => page.slug);
+  if (emptyDescriptions.length > 0) {
+    errors.push(
+      `Empty meta descriptions for: ${emptyDescriptions.join(', ')}`,
+    );
+  }
+
+  const duplicateDescriptions = duplicateValues(descriptions);
+  if (duplicateDescriptions.length > 0) {
+    errors.push(
+      `Duplicate meta descriptions: ${duplicateDescriptions.join(' | ')}`,
+    );
+  }
+
+  const invalidCanonicalPaths = pages
+    .filter(
+      (page) =>
+        page.url !== `/calculators/compound-interest/${page.slug}/`,
+    )
+    .map((page) => page.url);
+  if (invalidCanonicalPaths.length > 0) {
+    errors.push(
+      `Invalid canonical paths: ${invalidCanonicalPaths.join(', ')}`,
+    );
+  }
+
+  const duplicateCanonicalPaths = duplicateValues(canonicalPaths);
+  if (duplicateCanonicalPaths.length > 0) {
+    errors.push(
+      `Duplicate canonical paths: ${duplicateCanonicalPaths.join(', ')}`,
+    );
+  }
+
+  if (errors.length > 0) {
+    throw new Error(
+      `Compound-interest programmatic SEO audit failed:\n- ${errors.join('\n- ')}`,
+    );
+  }
+
+  return {
+    expectedCount,
+    actualCount: records.length,
+    uniqueSlugCount: new Set(slugs).size,
+    uniqueTitleCount: new Set(titles).size,
+    uniqueDescriptionCount: new Set(descriptions).size,
+    uniqueCanonicalPathCount: new Set(canonicalPaths).size,
   };
 }

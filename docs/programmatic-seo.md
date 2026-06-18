@@ -1,113 +1,185 @@
-# Programmatic SEO Master Plan
+# Programmatic SEO System
 
-## Objective
+## Current production scope
 
-Generate high-quality static pages that answer specific financial questions while reusing existing calculator logic.
+The first production cluster contains 100 static compound-interest examples.
+The original 30 proof-of-concept records remain unchanged, with 70 controlled
+records added around them.
 
-Do not generate thin content.
+Routes:
 
-Every generated page must provide genuine value beyond the calculator itself.
+- Main calculator: `/calculators/compound-interest/`
+- Browsable examples index: `/calculators/compound-interest/examples/`
+- Generated example: `/calculators/compound-interest/{slug}/`
 
----
+The build currently treats 100 generated compound-interest pages as an
+invariant. Changing that number requires an intentional update to both the data
+and expected-count constant.
 
-# Cluster 1: Compound Interest
+## Architecture
 
-## Template
+The system separates source data, calculation/content generation, rendering,
+and validation:
 
-How much will \$X grow at Y% for Z years?
+- `src/data/programmatic-seo/compound-interest.ts`
+  - Defines the record shape.
+  - Preserves the original 30 records.
+  - Generates the controlled 70-record expansion.
+  - Exports the expected page count.
+- `src/lib/programmatic-seo/compound-interest.ts`
+  - Reuses the existing compound-interest formula from `src/lib/math`.
+  - Builds page titles, descriptions, results, projections, FAQs, related
+    links, and canonical paths.
+  - Audits count and metadata uniqueness.
+- `src/components/programmatic-seo/ProgrammaticSeoPage.astro`
+  - Renders the shared article, result summary, formula, chart, projection
+    table, FAQs, and internal links.
+- `src/pages/calculators/compound-interest/[slug].astro`
+  - Runs the audit during static generation.
+  - Creates one route for every valid record.
+- `src/pages/calculators/compound-interest/examples/index.astro`
+  - Renders grouped links to all 100 examples in indexable HTML.
+  - Adds client-side search without hiding links from crawlers.
 
-## URL
+## Record model
 
-/compound-interest/{amount}-at-{rate}-percent-for-{years}-years/
+Each compound-interest record contains:
 
-## Variables
+- `slug`
+- `question`
+- `principal`
+- `annualRatePercent`
+- `years`
+- `monthlyContribution`
+- `periodsPerYear`
+- optional `featured`
 
-- amount
-- rate
-- years
+The current cluster intentionally uses no recurring contributions and annual
+compounding. That keeps search intent and page comparisons focused on the
+question:
 
-## Example
+> How much will $X grow at Y% for Z years?
 
-How much will \$10,000 grow at 8% for 30 years?
+The calculator formula itself is not duplicated or modified. Generated pages
+call the same `calculateCompoundInterest` implementation as the interactive
+calculator.
 
-## Required Sections
+## Expansion strategy
 
-- H1
-- Short answer summary
-- Final value
-- Total gain
-- Formula explanation
-- Year-by-year projection table
-- Growth chart
-- FAQ
-- Related calculators
-- Related guides
+The first 30 records are listed explicitly and must not be removed or have
+their slugs changed.
 
-## Related Guides
+The additional 70 records use ten starting amounts:
 
-- What Is Compound Interest?
-- APR vs APY
-- Effective Annual Rate
-- Nominal vs Real Return
-- Inflation and Compound Interest
+- $2,000
+- $3,000
+- $6,000
+- $12,000
+- $18,000
+- $35,000
+- $60,000
+- $80,000
+- $125,000
+- $150,000
 
-## Related Calculators
+Each amount is paired with seven rate/time scenarios:
 
-- CAGR Calculator
-- Savings Goal Calculator
-- Investment Fee Calculator
-- DRIP Calculator
+- 3% for 5 years
+- 4% for 10 years
+- 5% for 15 years
+- 6% for 20 years
+- 7% for 25 years
+- 8% for 30 years
+- 9% for 40 years
 
----
+This matrix broadens coverage without creating thousands of thin,
+near-duplicate pages.
 
-# Cluster 2: FIRE
+## Examples index
 
-## Template
+The examples index groups records into four starting-balance ranges:
 
-Can I retire spending \$X per year with a portfolio of \$Y?
+- Below $5,000
+- $5,000 to $24,999
+- $25,000 to $74,999
+- $75,000 and above
 
-## URL
+All links are present in the server-rendered HTML. Search filters cards and
+groups in the browser by question, slug, principal, formatted principal, rate,
+or years.
 
-/fire/{spending}-annual-spending-{portfolio}-portfolio/
+## Internal linking
 
-## Variables
+The cluster is connected through:
 
-- annual spending
-- portfolio
+- A prominent examples-index link on the Compound Interest Calculator.
+- Featured example links on the calculator.
+- An examples-index link on every generated page.
+- Four related generated examples selected by numeric similarity.
+- Links from the main compound-interest guide.
+- Links from topical compound-interest guides.
+- A link from the CAGR vs Compound Interest comparison guide.
+- Related calculator and guide links on each generated page.
 
-## Required Sections
+## Build audit
 
-- FIRE number
-- Safe withdrawal discussion
-- Summary
-- FAQ
-- Related calculators
-- Related guides
+`auditCompoundInterestSeoRecords` runs during static path generation and throws
+on any failure. It validates:
 
----
+- Expected record count.
+- Valid and unique slugs.
+- Unique SEO titles.
+- Non-empty and unique meta descriptions.
+- Canonical paths matching
+  `/calculators/compound-interest/{slug}/`.
+- Unique canonical paths.
 
-# Global Rules
+A failed audit stops `npm run build`; it is not a warning.
+
+## Browser coverage
+
+`tests/calculators.spec.ts` covers:
+
+- The all-record metadata audit.
+- The examples index heading, canonical URL, four groups, 100 links, and unique
+  hrefs.
+- Search and clear behavior on the examples index.
+- Representative generated pages from both the original and expanded datasets.
+- One H1, title, description, canonical URL, projection-row count, internal
+  examples link, successful response, and absence of page errors.
+
+## Adding or changing records
+
+1. Preserve existing live slugs.
+2. Add records in the data module or extend the controlled expansion matrix.
+3. Update `EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT`.
+4. Confirm the scenario adds distinct search intent and useful comparison
+   value.
+5. Run:
+
+   ```sh
+   npm run build
+   npm run test:calculators
+   ```
+
+6. Do not ship if the audit reports duplicate metadata or canonical paths.
+
+## Quality rules
 
 Every generated page must have:
 
-- unique title
-- unique meta description
-- canonical tag
-- one H1 only
-- FAQPage schema
-- breadcrumb schema
-- responsive layout
-- dark mode support
-- internal links
-- indexable HTML
-- static generation
+- A unique title and meta description.
+- One H1.
+- A canonical URL.
+- FAQ and breadcrumb structured data.
+- A calculated answer and contribution/growth breakdown.
+- A formula explanation.
+- A year-by-year projection table.
+- A growth chart.
+- Assumptions and limitations.
+- Links to the main calculator, examples index, related examples, calculators,
+  and guides.
+- Responsive layout, dark-mode support, static HTML, and indexable content.
 
-Never mass-generate thousands of pages before validating quality.
-
-First rollout target:
-30 pages.
-
-Second rollout target:
-200 pages.
-
-Only expand after indexing and traffic data justify it.
+Do not mass-generate additional clusters until their records, templates,
+internal links, audits, and browser coverage meet the same standard.

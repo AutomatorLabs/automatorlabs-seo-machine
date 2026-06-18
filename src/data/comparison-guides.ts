@@ -883,6 +883,11 @@ export const comparisonGuides: ComparisonGuide[] = [
         description: 'Project a balance with recurring contributions and compounding.',
       },
       {
+        title: 'Compound Interest Examples',
+        url: '/calculators/compound-interest/examples/',
+        description: 'Compare 100 worked scenarios across different amounts, rates, and time periods.',
+      },
+      {
         title: 'CAGR Calculator Guide',
         url: '/guides/how-to-use-the-cagr-calculator/',
         description: 'Review CAGR inputs, outputs, examples, and limitations.',

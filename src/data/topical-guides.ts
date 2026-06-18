@@ -37,6 +37,11 @@ const coreCalculatorLinks: TopicalGuideLink[] = [
     description: 'Project growth using a starting balance, contributions, rate, time, and compounding frequency.',
   },
   {
+    title: 'Compound Interest Examples',
+    url: '/calculators/compound-interest/examples/',
+    description: 'Browse 100 worked compound-interest scenarios by starting amount, rate, and time.',
+  },
+  {
     title: 'Inflation Calculator',
     url: '/calculators/inflation-calculator/',
     description: 'Estimate how inflation changes future purchasing power.',

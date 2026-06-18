@@ -9,6 +9,8 @@ export interface CompoundInterestSeoRecord {
   featured?: boolean;
 }
 
+export const EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT = 100;
+
 function record(
   principal: number,
   annualRatePercent: number,
@@ -29,7 +31,7 @@ function record(
   };
 }
 
-export const compoundInterestSeoRecords: CompoundInterestSeoRecord[] = [
+export const originalCompoundInterestSeoRecords: CompoundInterestSeoRecord[] = [
   record(1000, 5, 10, true),
   record(1000, 8, 20),
   record(2500, 6, 15),
@@ -60,6 +62,41 @@ export const compoundInterestSeoRecords: CompoundInterestSeoRecord[] = [
   record(100000, 6, 20),
   record(100000, 8, 30, true),
   record(100000, 10, 10),
+];
+
+const expansionPrincipals = [
+  2000,
+  3000,
+  6000,
+  12000,
+  18000,
+  35000,
+  60000,
+  80000,
+  125000,
+  150000,
+];
+
+const expansionScenarios = [
+  { annualRatePercent: 3, years: 5 },
+  { annualRatePercent: 4, years: 10 },
+  { annualRatePercent: 5, years: 15 },
+  { annualRatePercent: 6, years: 20 },
+  { annualRatePercent: 7, years: 25 },
+  { annualRatePercent: 8, years: 30 },
+  { annualRatePercent: 9, years: 40 },
+];
+
+export const expandedCompoundInterestSeoRecords =
+  expansionPrincipals.flatMap((principal) =>
+    expansionScenarios.map(({ annualRatePercent, years }) =>
+      record(principal, annualRatePercent, years),
+    ),
+  );
+
+export const compoundInterestSeoRecords: CompoundInterestSeoRecord[] = [
+  ...originalCompoundInterestSeoRecords,
+  ...expandedCompoundInterestSeoRecords,
 ];
 
 export const featuredCompoundInterestSeoRecords =

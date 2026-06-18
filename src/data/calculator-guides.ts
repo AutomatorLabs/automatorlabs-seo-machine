@@ -256,6 +256,12 @@ function buildGuide(config: CalculatorConfig): CalculatorGuide {
     config.id === 'compound-interest'
       ? [
           {
+            title: 'Compound Interest Examples',
+            url: '/calculators/compound-interest/examples/',
+            description:
+              'Browse 100 worked examples grouped by starting amount and searchable by amount, rate, or time.',
+          },
+          {
             title: 'APR vs APY',
             url: '/guides/apr-vs-apy/',
             description:

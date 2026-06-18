@@ -2,6 +2,13 @@ import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { calculatorConfigs } from '../src/data/calculators';
 import { calculatorCategories } from '../src/data/calculator-categories';
+import {
+  compoundInterestSeoRecords,
+  EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
+  expandedCompoundInterestSeoRecords,
+  originalCompoundInterestSeoRecords,
+} from '../src/data/programmatic-seo/compound-interest';
+import { auditCompoundInterestSeoRecords } from '../src/lib/programmatic-seo/compound-interest';
 
 const calculators = Object.values(calculatorConfigs).sort((a, b) =>
   a.title.localeCompare(b.title),
@@ -115,6 +122,112 @@ test.describe('calculator index search and filters', () => {
     );
     await expect(clearButton).toBeHidden();
   });
+});
+
+test.describe('compound interest programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditCompoundInterestSeoRecords(
+      compoundInterestSeoRecords,
+      EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: 100,
+      actualCount: 100,
+      uniqueSlugCount: 100,
+      uniqueTitleCount: 100,
+      uniqueDescriptionCount: 100,
+      uniqueCanonicalPathCount: 100,
+    });
+  });
+
+  test('examples index groups, exposes, and searches every page', async ({
+    page,
+  }) => {
+    await page.goto('/calculators/compound-interest/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Compound Interest Examples',
+      }),
+    ).toBeVisible();
+    await expect(page.locator('[data-example-group]')).toHaveCount(4);
+    await expect(page.locator('[data-example-card]')).toHaveCount(100);
+    await expect(page.locator('[data-example-card] a')).toHaveCount(100);
+    await expect(page.locator('#example-count')).toHaveText(
+      'Showing 100 examples',
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/compound-interest/examples/',
+    );
+
+    const hrefs = await page
+      .locator('[data-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(100);
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search compound interest examples',
+    });
+    await searchBox.fill('125,000');
+    await expect(page.locator('[data-example-card]:visible')).toHaveCount(7);
+    await expect(page.locator('#example-count')).toHaveText(
+      'Showing 7 examples',
+    );
+
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(searchBox).toHaveValue('');
+    await expect(page.locator('[data-example-card]:visible')).toHaveCount(100);
+  });
+
+  const representativeRecords = [
+    originalCompoundInterestSeoRecords[0],
+    originalCompoundInterestSeoRecords.at(-1),
+    expandedCompoundInterestSeoRecords[0],
+    expandedCompoundInterestSeoRecords.at(-1),
+  ].filter((record) => record !== undefined);
+
+  for (const record of representativeRecords) {
+    test(`renders generated example ${record.slug}`, async ({ page }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error.message));
+
+      const url = `/calculators/compound-interest/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      expect(
+        await page.evaluate(() => document.querySelectorAll('h1').length),
+      ).toBe(1);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://automatorlabs.co${url}`,
+      );
+      await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+        'content',
+        /See the formula, annual projection, chart, interest earned, and assumptions\.$/,
+      );
+      await expect(page.locator('tbody tr')).toHaveCount(record.years);
+      await expect(
+        page.getByRole('link', {
+          name: 'Browse All Compound Interest Examples',
+        }),
+      ).toHaveAttribute(
+        'href',
+        '/calculators/compound-interest/examples/',
+      );
+      expect(pageErrors).toEqual([]);
+    });
+  }
 });
 
 test.describe('calculator QA', () => {

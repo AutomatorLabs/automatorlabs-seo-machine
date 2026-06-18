@@ -2,9 +2,18 @@
 import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
 import {
   compoundInterestSeoRecords,
+  EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
   type CompoundInterestSeoRecord,
 } from '../../../data/programmatic-seo/compound-interest';
-import { createCompoundInterestSeoPage } from '../../../lib/programmatic-seo/compound-interest';
+import {
+  auditCompoundInterestSeoRecords,
+  createCompoundInterestSeoPage,
+} from '../../../lib/programmatic-seo/compound-interest';
+
+auditCompoundInterestSeoRecords(
+  compoundInterestSeoRecords,
+  EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
+);
 
 export function getStaticPaths() {
   return compoundInterestSeoRecords.map((record) => ({

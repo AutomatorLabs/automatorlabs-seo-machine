@@ -18,6 +18,10 @@ const exampleItems = featuredCompoundInterestSeoRecords.map((record) => ({
   title: record.question,
   url: `/calculators/compound-interest/${record.slug}/`,
 }));
+exampleItems.unshift({
+  title: 'Browse all 100 compound interest examples',
+  url: '/calculators/compound-interest/examples/',
+});
 ---
 
 <CalculatorPage
