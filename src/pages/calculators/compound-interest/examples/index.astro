@@ -5,6 +5,7 @@ import {
   EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
 } from '../../../../data/programmatic-seo/compound-interest';
 import { auditCompoundInterestSeoRecords } from '../../../../lib/programmatic-seo/compound-interest';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
 import {
   createBreadcrumbSchema,
   serializeJsonLd,
@@ -65,17 +66,18 @@ const groupDefinitions = [
   },
 ];
 
-const groups = groupDefinitions.map((group) => ({
-  ...group,
-  records: compoundInterestSeoRecords
-    .filter((record) => group.matches(record.principal))
-    .sort(
-      (a, b) =>
-        a.principal - b.principal ||
-        a.annualRatePercent - b.annualRatePercent ||
-        a.years - b.years,
-    ),
-}));
+const groups = createProgrammaticExampleGroups(
+  compoundInterestSeoRecords,
+  groupDefinitions.map((group) => ({
+    ...group,
+    matches: (record: (typeof compoundInterestSeoRecords)[number]) =>
+      group.matches(record.principal),
+  })),
+  (a, b) =>
+    a.principal - b.principal ||
+    a.annualRatePercent - b.annualRatePercent ||
+    a.years - b.years,
+);
 ---
 
 <Layout
@@ -104,6 +106,9 @@ const groups = groupDefinitions.map((group) => ({
       </p>
       <a class="primary-link" href="/calculators/compound-interest/">
         Try your own numbers
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
       </a>
     </header>
 
@@ -320,6 +325,13 @@ const groups = groupDefinitions.map((group) => ({
     background: var(--button-hover-background);
   }
 
+  .secondary-link {
+    display: inline-block;
+    margin-left: 0.75rem;
+    color: var(--link-color);
+    font-weight: 750;
+  }
+
   .example-search {
     margin: 3rem 0;
     border: 1px solid var(--border-color);
@@ -458,6 +470,11 @@ const groups = groupDefinitions.map((group) => ({
 
     .example-list {
       grid-template-columns: 1fr;
+    }
+
+    .secondary-link {
+      display: block;
+      margin: 1rem 0 0;
     }
   }
 </style>

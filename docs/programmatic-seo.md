@@ -1,25 +1,53 @@
 # Programmatic SEO System
 
-## Current production scope
+## Current clusters
 
-The first production cluster contains 100 static compound-interest examples.
-The original 30 proof-of-concept records remain unchanged, with 70 controlled
-records added around them.
+- Compound Interest: 100 generated pages.
+- FIRE: 30 generated pages.
+- Global examples hub: `/examples/`.
 
-Routes:
+Cluster routes:
 
 - Main calculator: `/calculators/compound-interest/`
 - Browsable examples index: `/calculators/compound-interest/examples/`
 - Generated example: `/calculators/compound-interest/{slug}/`
+- Main FIRE calculator: `/calculators/fire-calculator/`
+- Browsable FIRE examples index: `/calculators/fire/examples/`
+- Generated FIRE example: `/calculators/fire/{slug}/`
 
-The build currently treats 100 generated compound-interest pages as an
-invariant. Changing that number requires an intentional update to both the data
-and expected-count constant.
+The original 30 compound-interest proof-of-concept records remain unchanged,
+with 70 controlled records added around them. FIRE remains a controlled
+30-page proof of concept.
 
-## Architecture
+## Shared architecture
 
 The system separates source data, calculation/content generation, rendering,
 and validation:
+
+- `src/lib/programmatic-seo/audit.ts`
+  - Enforces expected count, valid and unique slugs, unique visible and SEO
+    titles, unique non-empty descriptions, and correct unique canonical paths.
+- `src/lib/programmatic-seo/paths.ts`
+  - Builds normalized canonical paths for generated pages.
+- `src/lib/programmatic-seo/examples.ts`
+  - Groups records for server-rendered examples indexes.
+- `src/lib/programmatic-seo/types.ts`
+  - Defines reusable page-model, table, link, FAQ, breadcrumb, result, section,
+    and chart types.
+- `src/lib/programmatic-seo/metadata.ts`
+  - Creates consistent SEO titles and meta descriptions.
+- `src/lib/programmatic-seo/schema.ts`
+  - Creates FAQPage and breadcrumb structured data and safely serializes JSON-LD.
+- `src/components/programmatic-seo/ProgrammaticSeoPage.astro`
+  - Renders the shared article shell while allowing cluster-specific formula,
+    table, chart, CTA, and related-page labels.
+- `src/data/programmatic-seo/clusters.ts`
+  - Registers each cluster for the global `/examples/` hub.
+- `src/pages/examples/index.astro`
+  - Provides a crawlable overview of every current cluster and representative
+    generated pages.
+
+Cluster-specific modules remain responsible for calculations and content:
 
 - `src/data/programmatic-seo/compound-interest.ts`
   - Defines the record shape.
@@ -29,17 +57,22 @@ and validation:
 - `src/lib/programmatic-seo/compound-interest.ts`
   - Reuses the existing compound-interest formula from `src/lib/math`.
   - Builds page titles, descriptions, results, projections, FAQs, related
-    links, and canonical paths.
-  - Audits count and metadata uniqueness.
-- `src/components/programmatic-seo/ProgrammaticSeoPage.astro`
-  - Renders the shared article, result summary, formula, chart, projection
-    table, FAQs, and internal links.
+    links, and the Compound Interest page model.
+- `src/data/programmatic-seo/fire.ts`
+  - Defines the controlled FIRE record set and expected count.
+- `src/lib/programmatic-seo/fire.ts`
+  - Reuses FIRE math helpers and builds FIRE-specific answers, sensitivity
+    tables, FAQs, related links, and page models.
 - `src/pages/calculators/compound-interest/[slug].astro`
   - Runs the audit during static generation.
   - Creates one route for every valid record.
 - `src/pages/calculators/compound-interest/examples/index.astro`
   - Renders grouped links to all 100 examples in indexable HTML.
   - Adds client-side search without hiding links from crawlers.
+
+The shared layer intentionally does not know how compound interest or FIRE is
+calculated. It also does not choose record variables, write cluster-specific
+copy, score related pages, or define index card text.
 
 ## Record model
 
@@ -121,48 +154,61 @@ The cluster is connected through:
 - A link from the CAGR vs Compound Interest comparison guide.
 - Related calculator and guide links on each generated page.
 
-## Build audit
+## Required build audit
 
-`auditCompoundInterestSeoRecords` runs during static path generation and throws
-on any failure. It validates:
+Every cluster audit must call `auditProgrammaticSeoRecords` during static path
+generation. It validates:
 
 - Expected record count.
 - Valid and unique slugs.
-- Unique SEO titles.
+- Unique visible titles and SEO titles.
 - Non-empty and unique meta descriptions.
-- Canonical paths matching
-  `/calculators/compound-interest/{slug}/`.
+- Canonical paths matching the cluster route pattern.
 - Unique canonical paths.
 
 A failed audit stops `npm run build`; it is not a warning.
 
-## Browser coverage
+## Required browser coverage
 
-`tests/calculators.spec.ts` covers:
+Every cluster must test:
 
-- The all-record metadata audit.
-- The examples index heading, canonical URL, four groups, 100 links, and unique
-  hrefs.
-- Search and clear behavior on the examples index.
-- Representative generated pages from both the original and expanded datasets.
-- One H1, title, description, canonical URL, projection-row count, internal
-  examples link, successful response, and absence of page errors.
+- The all-record metadata audit and exact expected count.
+- The examples index heading, canonical URL, total links, and unique hrefs.
+- Search and clear behavior when the index is searchable.
+- At least one representative generated page.
+- One H1, canonical URL, internal calculator/examples links, successful
+  response, and absence of page errors.
 
-## Adding or changing records
+The global `/examples/` hub must test its canonical URL, one H1, all registered
+cluster links, representative generated-page links, and absence of page errors.
 
-1. Preserve existing live slugs.
-2. Add records in the data module or extend the controlled expansion matrix.
-3. Update `EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT`.
-4. Confirm the scenario adds distinct search intent and useful comparison
-   value.
-5. Run:
+## Adding a new cluster
+
+1. Define a typed record module under `src/data/programmatic-seo/`.
+2. Set an explicit expected page count.
+3. Create a cluster page-model builder under `src/lib/programmatic-seo/` that
+   reuses existing calculator/math helpers.
+4. Use `createProgrammaticCanonicalPath` for generated URLs.
+5. Wrap `auditProgrammaticSeoRecords` with a small cluster-specific audit
+   function.
+6. Add a static `[slug].astro` route that runs the audit before returning paths.
+7. Add a crawlable examples index. Use `createProgrammaticExampleGroups` when
+   records are grouped.
+8. Register the cluster in `src/data/programmatic-seo/clusters.ts`.
+9. Add calculator, guide, cluster-index, and global-hub internal links.
+10. Add the required audit, index, generated-page, and no-page-error tests.
+11. Preserve existing live slugs and routes.
+12. Run:
 
    ```sh
    npm run build
    npm run test:calculators
    ```
 
-6. Do not ship if the audit reports duplicate metadata or canonical paths.
+Do not scale a cluster beyond its controlled validation size until the
+previous cluster has real production indexing data. Build success and local
+tests prove technical correctness; they do not prove search demand, index
+quality, or traffic value.
 
 ## Quality rules
 
@@ -182,7 +228,8 @@ Every generated page must have:
 - Responsive layout, dark-mode support, static HTML, and indexable content.
 
 Do not mass-generate additional clusters until their records, templates,
-internal links, audits, and browser coverage meet the same standard.
+internal links, audits, and browser coverage meet the same standard, and the
+previous cluster has production indexing data.
 
 ## FIRE proof-of-concept cluster
 

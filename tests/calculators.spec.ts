@@ -14,6 +14,7 @@ import {
   fireSeoRecords,
 } from '../src/data/programmatic-seo/fire';
 import { auditFireSeoRecords } from '../src/lib/programmatic-seo/fire';
+import { programmaticSeoClusters } from '../src/data/programmatic-seo/clusters';
 
 const calculators = Object.values(calculatorConfigs).sort((a, b) =>
   a.title.localeCompare(b.title),
@@ -149,6 +150,9 @@ test.describe('compound interest programmatic SEO', () => {
   test('examples index groups, exposes, and searches every page', async ({
     page,
   }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
     await page.goto('/calculators/compound-interest/examples/', {
       waitUntil: 'domcontentloaded',
     });
@@ -187,6 +191,10 @@ test.describe('compound interest programmatic SEO', () => {
     await page.getByRole('button', { name: 'Clear search' }).click();
     await expect(searchBox).toHaveValue('');
     await expect(page.locator('[data-example-card]:visible')).toHaveCount(100);
+    await expect(
+      page.getByRole('link', { name: 'Browse all financial examples' }),
+    ).toHaveAttribute('href', '/examples/');
+    expect(pageErrors).toEqual([]);
   });
 
   const representativeRecords = [
@@ -282,6 +290,14 @@ test.describe('FIRE programmatic SEO', () => {
     await expect(
       page.getByRole('link', { name: 'Calculate your FIRE number' }),
     ).toHaveAttribute('href', '/calculators/fire-calculator/');
+    await expect(
+      page.getByRole('link', { name: 'Browse all financial examples' }),
+    ).toHaveAttribute('href', '/examples/');
+
+    const hrefs = await page
+      .locator('[data-fire-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(30);
 
     const searchBox = page.getByRole('searchbox', {
       name: 'Search FIRE examples',
@@ -335,6 +351,66 @@ test.describe('FIRE programmatic SEO', () => {
       }),
     ).toBeVisible();
     await expect(page.locator('tbody tr')).toHaveCount(5);
+    expect(pageErrors).toEqual([]);
+  });
+});
+
+test.describe('global programmatic examples hub', () => {
+  test('links to every cluster and representative generated pages', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Financial Examples' }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/examples/',
+    );
+    await expect(page.locator('.cluster-card')).toHaveCount(
+      programmaticSeoClusters.length,
+    );
+
+    for (const cluster of programmaticSeoClusters) {
+      await expect(
+        page.getByRole('link', {
+          name: `Browse ${cluster.title}`,
+          exact: true,
+        }),
+      ).toHaveAttribute('href', cluster.examplesUrl);
+      await expect(
+        page.getByRole('link', {
+          name: cluster.calculator.title,
+          exact: true,
+        }),
+      ).toHaveAttribute('href', cluster.calculator.url);
+      await expect(
+        page.getByRole('link', {
+          name: cluster.guide.title,
+          exact: true,
+        }),
+      ).toHaveAttribute('href', cluster.guide.url);
+
+      for (const representativePage of cluster.representativePages) {
+        await expect(
+          page.getByRole('link', {
+            name: representativePage.title,
+            exact: true,
+          }),
+        ).toHaveAttribute('href', representativePage.url);
+      }
+    }
+
     expect(pageErrors).toEqual([]);
   });
 });

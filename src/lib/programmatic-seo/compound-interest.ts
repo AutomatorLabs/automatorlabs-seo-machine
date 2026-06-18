@@ -4,6 +4,11 @@ import {
 } from '../math';
 import type { CompoundInterestSeoRecord } from '../../data/programmatic-seo/compound-interest';
 import { createProgrammaticMetadata } from './metadata';
+import {
+  auditProgrammaticSeoRecords,
+  type ProgrammaticSeoAuditResult,
+} from './audit';
+import { createProgrammaticCanonicalPath } from './paths';
 import type {
   ProgrammaticSeoLink,
   ProgrammaticSeoPageModel,
@@ -25,6 +30,11 @@ const wholeCurrency = new Intl.NumberFormat('en-US', {
 const percentage = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 2,
 });
+const compoundInterestClusterPath = 'calculators/compound-interest';
+
+export function createCompoundInterestCanonicalPath(slug: string): string {
+  return createProgrammaticCanonicalPath(compoundInterestClusterPath, slug);
+}
 
 export function createCompoundInterestProjection(
   record: CompoundInterestSeoRecord,
@@ -116,7 +126,7 @@ function createRelatedPages(
     .slice(0, 4)
     .map(({ record: candidate }) => ({
       title: candidate.question,
-      url: `/calculators/compound-interest/${candidate.slug}/`,
+      url: createCompoundInterestCanonicalPath(candidate.slug),
       description: `${wholeCurrency.format(candidate.principal)} at ${percentage.format(candidate.annualRatePercent)}% for ${candidate.years} years.`,
     }));
 }
@@ -149,7 +159,7 @@ export function createCompoundInterestSeoPage(
 
   return {
     slug: record.slug,
-    url: `/calculators/compound-interest/${record.slug}/`,
+    url: createCompoundInterestCanonicalPath(record.slug),
     title,
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
@@ -225,7 +235,7 @@ export function createCompoundInterestSeoPage(
         name: 'Examples',
         url: '/calculators/compound-interest/examples/',
       },
-      { name: title, url: `/calculators/compound-interest/${record.slug}/` },
+      { name: title, url: createCompoundInterestCanonicalPath(record.slug) },
     ],
     relatedPages: createRelatedPages(record, records),
     relatedCalculators: [
@@ -266,116 +276,21 @@ export function createCompoundInterestSeoPage(
   };
 }
 
-export interface CompoundInterestSeoAuditResult {
-  expectedCount: number;
-  actualCount: number;
-  uniqueSlugCount: number;
-  uniqueTitleCount: number;
-  uniqueDescriptionCount: number;
-  uniqueCanonicalPathCount: number;
-}
-
-function duplicateValues(values: string[]): string[] {
-  const counts = new Map<string, number>();
-
-  values.forEach((value) => {
-    counts.set(value, (counts.get(value) ?? 0) + 1);
-  });
-
-  return [...counts.entries()]
-    .filter(([, count]) => count > 1)
-    .map(([value]) => value);
-}
+export type CompoundInterestSeoAuditResult = ProgrammaticSeoAuditResult;
 
 export function auditCompoundInterestSeoRecords(
   records: CompoundInterestSeoRecord[],
   expectedCount: number,
 ): CompoundInterestSeoAuditResult {
-  const errors: string[] = [];
   const pages = records.map((record) =>
     createCompoundInterestSeoPage(record, records),
   );
-  const slugs = records.map((record) => record.slug);
-  const titles = pages.map((page) => page.title);
-  const seoTitles = pages.map((page) => page.seoTitle);
-  const descriptions = pages.map((page) => page.metaDescription);
-  const canonicalPaths = pages.map((page) => page.url);
 
-  if (records.length !== expectedCount) {
-    errors.push(
-      `Expected ${expectedCount} compound-interest records, received ${records.length}.`,
-    );
-  }
-
-  const invalidSlugs = slugs.filter(
-    (slug) => !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug),
-  );
-  if (invalidSlugs.length > 0) {
-    errors.push(`Invalid slugs: ${invalidSlugs.join(', ')}`);
-  }
-
-  const duplicateSlugs = duplicateValues(slugs);
-  if (duplicateSlugs.length > 0) {
-    errors.push(`Duplicate slugs: ${duplicateSlugs.join(', ')}`);
-  }
-
-  const duplicateTitles = duplicateValues(titles);
-  if (duplicateTitles.length > 0) {
-    errors.push(`Duplicate titles: ${duplicateTitles.join(', ')}`);
-  }
-
-  const duplicateSeoTitles = duplicateValues(seoTitles);
-  if (duplicateSeoTitles.length > 0) {
-    errors.push(`Duplicate SEO titles: ${duplicateSeoTitles.join(', ')}`);
-  }
-
-  const emptyDescriptions = pages
-    .filter((page) => page.metaDescription.trim().length === 0)
-    .map((page) => page.slug);
-  if (emptyDescriptions.length > 0) {
-    errors.push(
-      `Empty meta descriptions for: ${emptyDescriptions.join(', ')}`,
-    );
-  }
-
-  const duplicateDescriptions = duplicateValues(descriptions);
-  if (duplicateDescriptions.length > 0) {
-    errors.push(
-      `Duplicate meta descriptions: ${duplicateDescriptions.join(' | ')}`,
-    );
-  }
-
-  const invalidCanonicalPaths = pages
-    .filter(
-      (page) =>
-        page.url !== `/calculators/compound-interest/${page.slug}/`,
-    )
-    .map((page) => page.url);
-  if (invalidCanonicalPaths.length > 0) {
-    errors.push(
-      `Invalid canonical paths: ${invalidCanonicalPaths.join(', ')}`,
-    );
-  }
-
-  const duplicateCanonicalPaths = duplicateValues(canonicalPaths);
-  if (duplicateCanonicalPaths.length > 0) {
-    errors.push(
-      `Duplicate canonical paths: ${duplicateCanonicalPaths.join(', ')}`,
-    );
-  }
-
-  if (errors.length > 0) {
-    throw new Error(
-      `Compound-interest programmatic SEO audit failed:\n- ${errors.join('\n- ')}`,
-    );
-  }
-
-  return {
+  return auditProgrammaticSeoRecords({
+    clusterName: 'Compound-interest',
+    records,
+    pages,
     expectedCount,
-    actualCount: records.length,
-    uniqueSlugCount: new Set(slugs).size,
-    uniqueTitleCount: new Set(titles).size,
-    uniqueDescriptionCount: new Set(descriptions).size,
-    uniqueCanonicalPathCount: new Set(canonicalPaths).size,
-  };
+    canonicalPathForSlug: createCompoundInterestCanonicalPath,
+  });
 }

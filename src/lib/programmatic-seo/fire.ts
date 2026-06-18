@@ -5,6 +5,11 @@ import {
   calculateWithdrawalPlan,
 } from '../math';
 import { createProgrammaticMetadata } from './metadata';
+import {
+  auditProgrammaticSeoRecords,
+  type ProgrammaticSeoAuditResult,
+} from './audit';
+import { createProgrammaticCanonicalPath } from './paths';
 import type {
   ProgrammaticSeoLink,
   ProgrammaticSeoPageModel,
@@ -22,6 +27,11 @@ const percentage = new Intl.NumberFormat('en-US', {
 });
 
 const sensitivityRates = [3, 3.5, 4, 4.5, 5];
+const fireClusterPath = 'calculators/fire';
+
+export function createFireCanonicalPath(slug: string): string {
+  return createProgrammaticCanonicalPath(fireClusterPath, slug);
+}
 
 function relatedPages(
   record: FireSeoRecord,
@@ -44,7 +54,7 @@ function relatedPages(
     .slice(0, 4)
     .map(({ candidate }) => ({
       title: candidate.question,
-      url: `/calculators/fire/${candidate.slug}/`,
+      url: createFireCanonicalPath(candidate.slug),
       description:
         candidate.intent === 'portfolio-check'
           ? `${currency.format(candidate.portfolioValue ?? 0)} portfolio with ${currency.format(candidate.annualSpending)} annual spending.`
@@ -168,7 +178,7 @@ export function createFireSeoPage(
 
   return {
     slug: record.slug,
-    url: `/calculators/fire/${record.slug}/`,
+    url: createFireCanonicalPath(record.slug),
     title,
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
@@ -267,7 +277,7 @@ export function createFireSeoPage(
       { name: 'Calculators', url: '/calculators/' },
       { name: 'FIRE Calculator', url: '/calculators/fire-calculator/' },
       { name: 'FIRE Examples', url: '/calculators/fire/examples/' },
-      { name: title, url: `/calculators/fire/${record.slug}/` },
+      { name: title, url: createFireCanonicalPath(record.slug) },
     ],
     relatedPages: relatedPages(record, records),
     relatedPagesHeading: 'Related FIRE Examples',
@@ -323,76 +333,19 @@ export function createFireSeoPage(
   };
 }
 
-export interface FireSeoAuditResult {
-  expectedCount: number;
-  actualCount: number;
-  uniqueSlugCount: number;
-  uniqueTitleCount: number;
-  uniqueDescriptionCount: number;
-  uniqueCanonicalPathCount: number;
-}
-
-function duplicates(values: string[]): string[] {
-  const counts = new Map<string, number>();
-  values.forEach((value) => counts.set(value, (counts.get(value) ?? 0) + 1));
-  return [...counts.entries()]
-    .filter(([, count]) => count > 1)
-    .map(([value]) => value);
-}
+export type FireSeoAuditResult = ProgrammaticSeoAuditResult;
 
 export function auditFireSeoRecords(
   records: FireSeoRecord[],
   expectedCount: number,
 ): FireSeoAuditResult {
   const pages = records.map((record) => createFireSeoPage(record, records));
-  const slugs = records.map((record) => record.slug);
-  const titles = pages.map((page) => page.title);
-  const descriptions = pages.map((page) => page.metaDescription);
-  const canonicalPaths = pages.map((page) => page.url);
-  const errors: string[] = [];
 
-  if (records.length !== expectedCount) {
-    errors.push(`Expected ${expectedCount} FIRE records, received ${records.length}.`);
-  }
-
-  const invalidSlugs = slugs.filter(
-    (slug) => !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug),
-  );
-  if (invalidSlugs.length > 0) errors.push(`Invalid slugs: ${invalidSlugs.join(', ')}`);
-
-  const duplicateSlugs = duplicates(slugs);
-  if (duplicateSlugs.length > 0) errors.push(`Duplicate slugs: ${duplicateSlugs.join(', ')}`);
-
-  const duplicateTitles = duplicates(titles);
-  if (duplicateTitles.length > 0) errors.push(`Duplicate titles: ${duplicateTitles.join(', ')}`);
-
-  const duplicateDescriptions = duplicates(descriptions);
-  if (duplicateDescriptions.length > 0) {
-    errors.push(`Duplicate descriptions: ${duplicateDescriptions.join(' | ')}`);
-  }
-
-  const invalidCanonicalPaths = pages
-    .filter((page) => page.url !== `/calculators/fire/${page.slug}/`)
-    .map((page) => page.url);
-  if (invalidCanonicalPaths.length > 0) {
-    errors.push(`Invalid canonical paths: ${invalidCanonicalPaths.join(', ')}`);
-  }
-
-  const duplicateCanonicalPaths = duplicates(canonicalPaths);
-  if (duplicateCanonicalPaths.length > 0) {
-    errors.push(`Duplicate canonical paths: ${duplicateCanonicalPaths.join(', ')}`);
-  }
-
-  if (errors.length > 0) {
-    throw new Error(`FIRE programmatic SEO audit failed:\n- ${errors.join('\n- ')}`);
-  }
-
-  return {
+  return auditProgrammaticSeoRecords({
+    clusterName: 'FIRE',
+    records,
+    pages,
     expectedCount,
-    actualCount: records.length,
-    uniqueSlugCount: new Set(slugs).size,
-    uniqueTitleCount: new Set(titles).size,
-    uniqueDescriptionCount: new Set(descriptions).size,
-    uniqueCanonicalPathCount: new Set(canonicalPaths).size,
-  };
+    canonicalPathForSlug: createFireCanonicalPath,
+  });
 }
