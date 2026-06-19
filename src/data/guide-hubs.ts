@@ -271,6 +271,8 @@ export const guideHubs: GuideHub[] = [
     categoryUrl: '/calculators/fire-retirement/',
     calculatorIds: [
       'retirement-withdrawal-calculator',
+      'roth-ira-calculator',
+      'roth-ira-early-withdrawal-calculator',
       'safe-withdrawal-rate-calculator',
       'four-percent-rule-calculator',
       'portfolio-withdrawal-sustainability-calculator',

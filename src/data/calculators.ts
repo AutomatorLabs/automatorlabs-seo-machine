@@ -1,3 +1,5 @@
+import { rothIraPlanningDefaults } from '../config/roth-ira';
+
 export interface CalculatorOption {
   label: string;
   value: string;
@@ -303,7 +305,273 @@ function savingsTargetVariant({
   };
 }
 
+const rothClusterRelatedIds = [
+  'ira-growth-calculator',
+  'roth-vs-traditional-ira-calculator',
+  '401k-growth-calculator',
+  'taxable-vs-tax-advantaged-calculator',
+  'compound-interest-calculator',
+  'investment-growth-calculator',
+  'fire-calculator',
+  'retirement-withdrawal-calculator',
+];
+
+function rothGrowthVariant({
+  id,
+  url,
+  title,
+  description,
+  contributionName,
+  contributionLabel,
+  contributionValue,
+  periodsPerYear,
+}: {
+  id: string;
+  url: string;
+  title: string;
+  description: string;
+  contributionName: string;
+  contributionLabel: string;
+  contributionValue: string;
+  periodsPerYear: number;
+}): CalculatorConfig {
+  return {
+    id,
+    url,
+    title,
+    eyebrow: 'Roth IRA Calculator',
+    description,
+    inputs: [
+      {
+        id: `${id}-current-balance`,
+        name: 'currentBalance',
+        label: 'Current Roth IRA balance',
+        type: 'number',
+        value: '25000',
+        min: '0',
+        step: '500',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: `${id}-contribution`,
+        name: contributionName,
+        label: contributionLabel,
+        type: 'number',
+        value: contributionValue,
+        min: '0',
+        step: '50',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: `${id}-return`,
+        name: 'expectedAnnualReturn',
+        label: 'Expected annual return (%)',
+        type: 'number',
+        value: '7',
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: `${id}-years`,
+        name: 'years',
+        label: 'Years invested',
+        type: 'number',
+        value: '25',
+        min: '1',
+        step: '1',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'roth-ending-balance-result',
+        label: 'Projected Roth IRA balance',
+        initialValue: '$0.00',
+        primary: true,
+      },
+      {
+        id: 'roth-future-contributions-result',
+        label: 'Future contributions',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'roth-investment-growth-result',
+        label: 'Estimated investment growth',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'roth-total-funded-result',
+        label: 'Starting balance plus contributions',
+        initialValue: '$0.00',
+      },
+    ],
+    faq: [
+      {
+        question: `How does the ${title} project account growth?`,
+        answer: `It compounds the current balance and adds the entered ${periodsPerYear === 12 ? 'monthly' : 'annual'} contribution at the end of each period.`,
+      },
+      {
+        question: `Does the ${title} guarantee tax-free withdrawals?`,
+        answer:
+          'No. Qualified distribution treatment depends on applicable rules and individual circumstances. This tool only projects account growth.',
+      },
+      {
+        question: `Does the ${title} enforce contribution limits or income phaseouts?`,
+        answer:
+          'No. Contribution limits, income phaseouts, eligibility, deadlines, and tax law can change. Confirm current rules separately.',
+      },
+      {
+        question: `Are fees, inflation, and investment losses included in the ${title}?`,
+        answer:
+          'No. The projection uses a constant nominal return and excludes fees, inflation, taxes, withdrawals, and market volatility.',
+      },
+      {
+        question: `When are contributions added in the ${title}?`,
+        answer: `Contributions are modeled at the end of each ${periodsPerYear === 12 ? 'month' : 'year'}, which is a simplifying timing assumption.`,
+      },
+    ],
+    relatedIds: rothClusterRelatedIds,
+  };
+}
+
 export const calculatorConfigs: Record<string, CalculatorConfig> = {
+  'roth-ira': rothGrowthVariant({
+    id: 'roth-ira',
+    url: '/calculators/roth-ira-calculator/',
+    title: 'Roth IRA Calculator',
+    description:
+      'Project a Roth IRA balance using your current account value, monthly contribution, expected return, and investment timeline.',
+    contributionName: 'monthlyContribution',
+    contributionLabel: 'Monthly Roth IRA contribution',
+    contributionValue: '500',
+    periodsPerYear: 12,
+  }),
+  'roth-ira-growth': rothGrowthVariant({
+    id: 'roth-ira-growth',
+    url: '/calculators/roth-ira-growth-calculator/',
+    title: 'Roth IRA Growth Calculator',
+    description:
+      'Estimate long-term Roth IRA growth from a current balance, annual contributions, return assumption, and years invested.',
+    contributionName: 'annualContribution',
+    contributionLabel: 'Annual Roth IRA contribution',
+    contributionValue: '7000',
+    periodsPerYear: 1,
+  }),
+  'roth-ira-contribution': {
+    id: 'roth-ira-contribution',
+    url: '/calculators/roth-ira-contribution-calculator/',
+    title: 'Roth IRA Contribution Calculator',
+    eyebrow: 'Roth IRA Calculator',
+    description:
+      'Project annual Roth IRA contributions from an editable target, contributions made so far, paycheck amount, and remaining paychecks.',
+    inputs: [
+      { id: 'roth-contribution-target', name: 'annualTarget', label: 'Annual contribution target', type: 'number', value: String(rothIraPlanningDefaults.assumedAnnualContributionLimit), min: '0.01', step: '100', prefix: '$', required: true },
+      { id: 'roth-contributed-so-far', name: 'contributedSoFar', label: 'Contributed so far', type: 'number', value: '2000', min: '0', step: '50', prefix: '$', required: true },
+      { id: 'roth-per-paycheck', name: 'contributionPerPaycheck', label: 'Contribution per remaining paycheck', type: 'number', value: '250', min: '0', step: '10', prefix: '$', required: true },
+      { id: 'roth-remaining-paychecks', name: 'remainingPaychecks', label: 'Remaining paychecks', type: 'number', value: '20', min: '0', step: '1', required: true },
+    ],
+    outputs: [
+      { id: 'projected-annual-contribution-result', label: 'Projected annual contribution', initialValue: '$0.00', primary: true },
+      { id: 'remaining-to-target-result', label: 'Remaining to target', initialValue: '$0.00' },
+      { id: 'target-progress-result', label: 'Target progress', initialValue: '0.00%' },
+    ],
+    faq: [
+      { question: 'How does the Roth IRA Contribution Calculator estimate my annual contribution?', answer: 'It adds contributions already made to the planned amount per remaining paycheck multiplied by remaining paychecks.' },
+      { question: 'Is the annual target in this Roth IRA contribution tool an official limit?', answer: 'No. It is an editable planning target. Current contribution limits and eligibility rules must be verified separately.' },
+      { question: 'Does this Roth IRA Contribution Calculator model income phaseouts?', answer: 'No. It does not determine eligibility, modified adjusted gross income, filing status, or phaseout rules.' },
+      { question: 'What if the projected contribution exceeds my target?', answer: 'The progress percentage can exceed 100%, while remaining to target stays at zero. Compare the projection with current rules before contributing.' },
+      { question: 'Are employer contributions included in this Roth IRA calculation?', answer: 'No. This calculator models personal Roth IRA contributions, not workplace plan contributions or employer matching.' },
+    ],
+    relatedIds: rothClusterRelatedIds,
+  },
+  'roth-ira-max-contribution': {
+    id: 'roth-ira-max-contribution',
+    url: '/calculators/roth-ira-max-contribution-calculator/',
+    title: 'Roth IRA Max Contribution Calculator',
+    eyebrow: 'Roth IRA Calculator',
+    description:
+      'Plan contributions toward an editable assumed Roth IRA annual limit using contributions made and months remaining.',
+    inputs: [
+      { id: 'assumed-roth-limit', name: 'assumedAnnualLimit', label: 'Assumed annual contribution limit', type: 'number', value: String(rothIraPlanningDefaults.assumedAnnualContributionLimit), min: '0.01', step: '100', prefix: '$', required: true },
+      { id: 'max-contributed-so-far', name: 'contributedSoFar', label: 'Contributed so far', type: 'number', value: '2000', min: '0', step: '50', prefix: '$', required: true },
+      { id: 'months-remaining', name: 'monthsRemaining', label: 'Months remaining in contribution plan', type: 'number', value: '8', min: '0', step: '1', required: true },
+    ],
+    outputs: [
+      { id: 'remaining-available-result', label: 'Remaining under assumed limit', initialValue: '$0.00', primary: true },
+      { id: 'monthly-to-limit-result', label: 'Monthly amount to assumed limit', initialValue: '$0.00' },
+      { id: 'weekly-to-limit-result', label: 'Weekly amount to assumed limit', initialValue: '$0.00' },
+    ],
+    faq: [
+      { question: 'Does the Roth IRA Max Contribution Calculator use a current legal limit?', answer: 'It uses the editable assumed limit shown in the form. Verify current limits, age rules, deadlines, income phaseouts, and eligibility before contributing.' },
+      { question: 'Why is the assumed Roth IRA limit editable?', answer: 'Contribution rules can change and personal eligibility can differ, so the calculator avoids treating one stored number as permanent tax guidance.' },
+      { question: 'How is the monthly amount to the assumed limit calculated?', answer: 'The calculator subtracts contributions made from the entered assumed limit and divides the remainder by months left.' },
+      { question: 'What happens if I already entered more than the assumed limit?', answer: 'The remaining amount is shown as zero. The tool does not determine excess-contribution corrections or penalties.' },
+      { question: 'Does this max contribution tool include catch-up contributions?', answer: 'No automatic catch-up amount is added. Enter the annual limit that you believe applies after checking current authoritative guidance.' },
+    ],
+    relatedIds: rothClusterRelatedIds,
+  },
+  'roth-ira-vs-taxable': {
+    id: 'roth-ira-vs-taxable',
+    url: '/calculators/roth-ira-vs-taxable-account-calculator/',
+    title: 'Roth IRA vs Taxable Account Calculator',
+    eyebrow: 'Investment Account Calculator',
+    description:
+      'Compare projected Roth IRA growth with a taxable account using editable contribution, return, and annual tax-drag assumptions.',
+    inputs: [
+      { id: 'roth-taxable-starting-balance', name: 'startingBalance', label: 'Starting balance in each account', type: 'number', value: '25000', min: '0', step: '500', prefix: '$', required: true },
+      { id: 'roth-taxable-annual-contribution', name: 'annualContribution', label: 'Annual contribution to each account', type: 'number', value: '7000', min: '0', step: '100', prefix: '$', required: true },
+      { id: 'roth-taxable-return', name: 'expectedAnnualReturn', label: 'Expected annual return (%)', type: 'number', value: '7', min: '0', step: '0.01', required: true },
+      { id: 'roth-taxable-tax-drag', name: 'taxableTaxDrag', label: 'Estimated taxable account tax drag (%)', type: 'number', value: '1', min: '0', step: '0.01', required: true },
+      { id: 'roth-taxable-years', name: 'years', label: 'Years invested', type: 'number', value: '25', min: '1', step: '1', required: true },
+    ],
+    outputs: [
+      { id: 'roth-comparison-ending-result', label: 'Projected Roth IRA balance', initialValue: '$0.00', primary: true },
+      { id: 'taxable-comparison-ending-result', label: 'Projected taxable account balance', initialValue: '$0.00' },
+      { id: 'estimated-roth-advantage-result', label: 'Estimated Roth IRA advantage', initialValue: '$0.00' },
+      { id: 'taxable-growth-drag-result', label: 'Estimated taxable growth drag', initialValue: '$0.00' },
+    ],
+    faq: [
+      { question: 'How does the Roth IRA vs Taxable Account Calculator compare growth?', answer: 'It applies the full entered return to the Roth scenario and reduces the taxable scenario return by the editable annual tax-drag assumption.' },
+      { question: 'Does the comparison include taxes when the taxable account is sold?', answer: 'No. It models annual growth drag only and excludes final capital-gains taxes, tax-loss harvesting, basis, withdrawals, and account fees.' },
+      { question: 'Does this calculator guarantee qualified Roth IRA treatment?', answer: 'No. Eligibility and qualified distribution treatment depend on applicable rules and personal circumstances.' },
+      { question: 'How should I estimate tax drag for the Roth IRA vs taxable comparison?', answer: 'Use a range based on investment income, turnover, distributions, tax rates, and holding period rather than assuming one precise figure.' },
+      { question: 'Are contribution limits modeled in the Roth-versus-taxable comparison?', answer: 'No. The same editable annual contribution is used in both scenarios without enforcing limits or income phaseouts.' },
+    ],
+    relatedIds: rothClusterRelatedIds,
+  },
+  'roth-ira-early-withdrawal': {
+    id: 'roth-ira-early-withdrawal',
+    url: '/calculators/roth-ira-early-withdrawal-calculator/',
+    title: 'Roth IRA Early Withdrawal Calculator',
+    eyebrow: 'Retirement Withdrawal Calculator',
+    description:
+      'Estimate a Roth IRA withdrawal using user-entered contribution basis, earnings subject to tax and penalty, and editable rate assumptions.',
+    inputs: [
+      { id: 'roth-withdrawal-amount', name: 'withdrawalAmount', label: 'Planned withdrawal amount', type: 'number', value: '10000', min: '0.01', step: '100', prefix: '$', required: true },
+      { id: 'roth-contribution-basis', name: 'contributionBasisAvailable', label: 'Contribution basis available', type: 'number', value: '7000', min: '0', step: '100', prefix: '$', required: true },
+      { id: 'roth-earnings-subject', name: 'earningsSubject', label: 'Earnings potentially subject to tax and penalty', type: 'number', value: '3000', min: '0', step: '100', prefix: '$', required: true },
+      { id: 'roth-assumed-tax-rate', name: 'assumedTaxRate', label: 'Assumed tax rate on entered earnings (%)', type: 'number', value: String(rothIraPlanningDefaults.assumedTaxRatePercent), min: '0', step: '0.01', required: true },
+      { id: 'roth-assumed-penalty-rate', name: 'assumedPenaltyRate', label: 'Assumed penalty rate on entered earnings (%)', type: 'number', value: String(rothIraPlanningDefaults.assumedEarlyWithdrawalPenaltyPercent), min: '0', step: '0.01', required: true },
+    ],
+    outputs: [
+      { id: 'withdrawal-contribution-portion-result', label: 'Modeled contribution portion', initialValue: '$0.00' },
+      { id: 'withdrawal-earnings-portion-result', label: 'Modeled earnings portion', initialValue: '$0.00' },
+      { id: 'withdrawal-tax-result', label: 'Estimated tax', initialValue: '$0.00' },
+      { id: 'withdrawal-penalty-result', label: 'Estimated penalty', initialValue: '$0.00' },
+      { id: 'withdrawal-net-result', label: 'Estimated net withdrawal', initialValue: '$0.00', primary: true },
+    ],
+    faq: [
+      { question: 'Does the Roth IRA Early Withdrawal Calculator determine the legal tax treatment?', answer: 'No. It applies your entered basis, earnings, tax rate, and penalty rate as a simplified estimate, not a legal determination.' },
+      { question: 'Why do I enter contribution basis separately?', answer: 'Roth IRA contribution basis and earnings can receive different treatment. This tool requires you to supply the amount you want modeled as available basis.' },
+      { question: 'Does this early withdrawal calculator apply ordering rules automatically?', answer: 'No. Roth IRA ordering rules, conversions, holding periods, age, and exceptions are not automatically modeled.' },
+      { question: 'Are penalty exceptions included?', answer: 'No. Enter a zero penalty rate only if you have independently determined that assumption is appropriate.' },
+      { question: 'Should I rely on this estimate before taking a distribution?', answer: 'No. Confirm current rules and your account history with authoritative guidance or a qualified tax professional before acting.' },
+    ],
+    relatedIds: rothClusterRelatedIds,
+  },
   'monthly-savings': savingsTargetVariant({
     id: 'monthly-savings',
     url: '/calculators/monthly-savings-calculator/',
@@ -3918,6 +4186,8 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       },
     ],
     relatedIds: [
+      'roth-ira-calculator',
+      'roth-ira-growth-calculator',
       'retirement-tax-drag-calculator',
       'compound-interest-calculator',
       'fire-calculator',
@@ -4036,6 +4306,7 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       },
     ],
     relatedIds: [
+      'roth-ira-calculator',
       'roth-vs-traditional-ira-calculator',
       'compound-interest-calculator',
       'fire-calculator',
@@ -4143,6 +4414,8 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       },
     ],
     relatedIds: [
+      'roth-ira-calculator',
+      'roth-ira-growth-calculator',
       'roth-vs-traditional-ira-calculator',
       '401k-growth-calculator',
       'compound-interest-calculator',
@@ -4260,6 +4533,8 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       },
     ],
     relatedIds: [
+      'roth-ira-vs-taxable-account-calculator',
+      'roth-ira-calculator',
       'roth-vs-traditional-ira-calculator',
       'ira-growth-calculator',
       'investment-fee-calculator',
@@ -6730,6 +7005,16 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
 };
 
 export const compoundInterestCalculator = calculatorConfigs['compound-interest'];
+export const rothIraCalculator = calculatorConfigs['roth-ira'];
+export const rothIraGrowthCalculator = calculatorConfigs['roth-ira-growth'];
+export const rothIraContributionCalculator =
+  calculatorConfigs['roth-ira-contribution'];
+export const rothIraMaxContributionCalculator =
+  calculatorConfigs['roth-ira-max-contribution'];
+export const rothIraVsTaxableCalculator =
+  calculatorConfigs['roth-ira-vs-taxable'];
+export const rothIraEarlyWithdrawalCalculator =
+  calculatorConfigs['roth-ira-early-withdrawal'];
 export const dailyCompoundInterestCalculator =
   calculatorConfigs['daily-compound-interest'];
 export const monthlyCompoundInterestCalculator =

@@ -565,6 +565,76 @@ export interface RothVsTraditionalIraResult {
   betterOption: 'roth' | 'traditional' | 'equal';
 }
 
+export interface RothIraProjectionInput {
+  currentBalance: number;
+  contributionPerPeriod: number;
+  expectedAnnualReturnPercent: number;
+  years: number;
+  periodsPerYear: number;
+}
+
+export interface RothIraProjectionResult {
+  endingBalance: number;
+  futureContributions: number;
+  investmentGrowth: number;
+}
+
+export interface RothContributionPlanInput {
+  annualTarget: number;
+  contributedSoFar: number;
+  contributionPerPaycheck: number;
+  remainingPaychecks: number;
+}
+
+export interface RothContributionPlanResult {
+  projectedAnnualContribution: number;
+  remainingToTarget: number;
+  targetProgressPercent: number;
+}
+
+export interface RothMaxContributionInput {
+  assumedAnnualLimit: number;
+  contributedSoFar: number;
+  monthsRemaining: number;
+}
+
+export interface RothMaxContributionResult {
+  remainingAvailable: number;
+  monthlyAmountToReachLimit: number;
+  weeklyAmountToReachLimit: number;
+}
+
+export interface RothVsTaxableInput {
+  startingBalance: number;
+  annualContribution: number;
+  expectedAnnualReturnPercent: number;
+  taxableAccountTaxDragPercent: number;
+  years: number;
+}
+
+export interface RothVsTaxableResult {
+  rothEndingBalance: number;
+  taxableEndingBalance: number;
+  estimatedRothAdvantage: number;
+  taxableGrowthDrag: number;
+}
+
+export interface RothEarlyWithdrawalInput {
+  withdrawalAmount: number;
+  contributionBasisAvailable: number;
+  earningsAmountSubjectToTaxAndPenalty: number;
+  assumedTaxRatePercent: number;
+  assumedPenaltyRatePercent: number;
+}
+
+export interface RothEarlyWithdrawalResult {
+  contributionPortion: number;
+  earningsPortion: number;
+  estimatedTax: number;
+  estimatedPenalty: number;
+  estimatedNetWithdrawal: number;
+}
+
 export interface FourOhOneKGrowthInput {
   currentBalance: number;
   employeeMonthlyContribution: number;
@@ -2064,6 +2134,135 @@ export function calculateRothVsTraditionalIra({
         : difference > 0
           ? 'roth'
           : 'traditional',
+  };
+}
+
+export function calculateRothIraProjection({
+  currentBalance,
+  contributionPerPeriod,
+  expectedAnnualReturnPercent,
+  years,
+  periodsPerYear,
+}: RothIraProjectionInput): RothIraProjectionResult {
+  const numberOfPeriods = years * periodsPerYear;
+  const futureContributions = contributionPerPeriod * numberOfPeriods;
+  const endingBalance = futureValue({
+    principal: currentBalance,
+    contributionPerPeriod,
+    ratePerPeriod: expectedAnnualReturnPercent / 100 / periodsPerYear,
+    numberOfPeriods,
+  });
+
+  return {
+    endingBalance,
+    futureContributions,
+    investmentGrowth:
+      endingBalance - currentBalance - futureContributions,
+  };
+}
+
+export function calculateRothContributionPlan({
+  annualTarget,
+  contributedSoFar,
+  contributionPerPaycheck,
+  remainingPaychecks,
+}: RothContributionPlanInput): RothContributionPlanResult {
+  const projectedAnnualContribution =
+    contributedSoFar + contributionPerPaycheck * remainingPaychecks;
+  const remainingToTarget = Math.max(
+    annualTarget - projectedAnnualContribution,
+    0,
+  );
+
+  return {
+    projectedAnnualContribution,
+    remainingToTarget,
+    targetProgressPercent:
+      annualTarget > 0
+        ? (projectedAnnualContribution / annualTarget) * 100
+        : 0,
+  };
+}
+
+export function calculateRothMaxContribution({
+  assumedAnnualLimit,
+  contributedSoFar,
+  monthsRemaining,
+}: RothMaxContributionInput): RothMaxContributionResult {
+  const remainingAvailable = Math.max(
+    assumedAnnualLimit - contributedSoFar,
+    0,
+  );
+
+  return {
+    remainingAvailable,
+    monthlyAmountToReachLimit:
+      monthsRemaining > 0 ? remainingAvailable / monthsRemaining : 0,
+    weeklyAmountToReachLimit:
+      monthsRemaining > 0
+        ? remainingAvailable / (monthsRemaining * 52 / 12)
+        : 0,
+  };
+}
+
+export function calculateRothVsTaxable({
+  startingBalance,
+  annualContribution,
+  expectedAnnualReturnPercent,
+  taxableAccountTaxDragPercent,
+  years,
+}: RothVsTaxableInput): RothVsTaxableResult {
+  const rothEndingBalance = futureValue({
+    principal: startingBalance,
+    contributionPerPeriod: annualContribution,
+    ratePerPeriod: expectedAnnualReturnPercent / 100,
+    numberOfPeriods: years,
+  });
+  const taxableEndingBalance = futureValue({
+    principal: startingBalance,
+    contributionPerPeriod: annualContribution,
+    ratePerPeriod:
+      Math.max(
+        expectedAnnualReturnPercent - taxableAccountTaxDragPercent,
+        0,
+      ) / 100,
+    numberOfPeriods: years,
+  });
+
+  return {
+    rothEndingBalance,
+    taxableEndingBalance,
+    estimatedRothAdvantage: rothEndingBalance - taxableEndingBalance,
+    taxableGrowthDrag: rothEndingBalance - taxableEndingBalance,
+  };
+}
+
+export function calculateRothEarlyWithdrawal({
+  withdrawalAmount,
+  contributionBasisAvailable,
+  earningsAmountSubjectToTaxAndPenalty,
+  assumedTaxRatePercent,
+  assumedPenaltyRatePercent,
+}: RothEarlyWithdrawalInput): RothEarlyWithdrawalResult {
+  const contributionPortion = Math.min(
+    withdrawalAmount,
+    contributionBasisAvailable,
+  );
+  const earningsPortion = Math.min(
+    Math.max(withdrawalAmount - contributionPortion, 0),
+    earningsAmountSubjectToTaxAndPenalty,
+  );
+  const estimatedTax = earningsPortion * (assumedTaxRatePercent / 100);
+  const estimatedPenalty =
+    earningsPortion * (assumedPenaltyRatePercent / 100);
+
+  return {
+    contributionPortion,
+    earningsPortion,
+    estimatedTax,
+    estimatedPenalty,
+    estimatedNetWithdrawal:
+      withdrawalAmount - estimatedTax - estimatedPenalty,
   };
 }
 

@@ -38,6 +38,7 @@ import {
   calculateCompoundInterest,
   calculateRequiredPeriodicSavings,
 } from '../src/lib/math';
+import { rothIraPlanningDefaults } from '../src/config/roth-ira';
 
 const calculators = Object.values(calculatorConfigs).sort((a, b) =>
   a.title.localeCompare(b.title),
@@ -69,6 +70,9 @@ test.describe('newsletter acquisition', () => {
       'https://automatorlabs.co/newsletter/',
     );
     await expect(page.locator('[data-newsletter-signup-area]')).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Subscribe to AutomatorLabs' }),
+    ).toHaveAttribute('href', 'https://newsletter.automatorlabs.co/');
     await expect(
       page.locator('a[href="/calculators/compound-interest/"]'),
     ).toContainText('Compound Interest Calculator');
@@ -749,6 +753,54 @@ test.describe('global programmatic examples hub', () => {
 });
 
 test.describe('calculator QA', () => {
+  test('Roth IRA cluster routes, editable defaults, and related tools are registered', () => {
+    const expectedRoutes = [
+      '/calculators/roth-ira-calculator/',
+      '/calculators/roth-ira-growth-calculator/',
+      '/calculators/roth-ira-contribution-calculator/',
+      '/calculators/roth-ira-max-contribution-calculator/',
+      '/calculators/roth-ira-vs-taxable-account-calculator/',
+      '/calculators/roth-ira-early-withdrawal-calculator/',
+    ];
+    const calculatorUrls = new Set(calculators.map((item) => item.url));
+
+    expect(expectedRoutes.every((route) => calculatorUrls.has(route))).toBe(
+      true,
+    );
+    expect(rothIraPlanningDefaults.assumedAnnualContributionLimit).toBeGreaterThan(
+      0,
+    );
+
+    for (const route of expectedRoutes) {
+      const relatedUrls = new Set(
+        createRelatedCalculatorLinks(route).map((item) => item.url),
+      );
+      expect(relatedUrls.has('/calculators/ira-growth-calculator/')).toBe(true);
+      expect(
+        relatedUrls.has('/calculators/roth-vs-traditional-ira-calculator/'),
+      ).toBe(true);
+      expect(relatedUrls.has('/calculators/401k-growth-calculator/')).toBe(
+        true,
+      );
+    }
+  });
+
+  test('Roth IRA calculator pages include the newsletter acquisition CTA', async ({
+    page,
+  }) => {
+    for (const route of [
+      '/calculators/roth-ira-calculator/',
+      '/calculators/roth-ira-growth-calculator/',
+      '/calculators/roth-ira-contribution-calculator/',
+      '/calculators/roth-ira-max-contribution-calculator/',
+      '/calculators/roth-ira-vs-taxable-account-calculator/',
+      '/calculators/roth-ira-early-withdrawal-calculator/',
+    ]) {
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('a[href="/newsletter/"]').last()).toBeVisible();
+    }
+  });
+
   test('savings goal calculator cluster routes and relationships are registered', () => {
     const expectedRoutes = [
       '/calculators/monthly-savings-calculator/',

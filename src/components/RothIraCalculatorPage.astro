@@ -1,0 +1,279 @@
+---
+import type { CalculatorConfig } from '../data/calculators';
+import { contentItems } from '../data/content';
+import CalculatorPage from './CalculatorPage.astro';
+
+interface Props {
+  calculator: CalculatorConfig;
+  periodsPerYear?: number;
+}
+
+const { calculator, periodsPerYear = 1 } = Astro.props;
+const relatedItems = calculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((candidate) => candidate.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+const guideItems = [
+  {
+    title: 'Roth IRA vs Traditional IRA',
+    url: '/guides/roth-vs-traditional-ira/',
+  },
+  {
+    title: 'Planning Retirement Withdrawals',
+    url: '/guides/retirement-withdrawals/',
+  },
+  {
+    title: 'A Beginner’s Guide to FIRE',
+    url: '/guides/fire/',
+  },
+];
+const retirementToolItems = [
+  {
+    title: 'FIRE Calculator',
+    url: '/calculators/fire-calculator/',
+  },
+  {
+    title: 'Retirement Withdrawal Calculator',
+    url: '/calculators/retirement-withdrawal-calculator/',
+  },
+];
+---
+
+<CalculatorPage
+  title={calculator.title}
+  eyebrow={calculator.eyebrow}
+  description={calculator.description}
+  inputs={calculator.inputs}
+  outputs={calculator.outputs}
+  faq={calculator.faq}
+  relatedItems={relatedItems}
+  guideItems={guideItems}
+  exampleItems={retirementToolItems}
+  exampleHeading="More Retirement Planning Tools"
+  calculatorData={{
+    'calculator-id': calculator.id,
+    'periods-per-year': periodsPerYear,
+  }}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../lib/analytics';
+    import { parseCalculatorNumber } from '../lib/input';
+    import {
+      calculateRothContributionPlan,
+      calculateRothEarlyWithdrawal,
+      calculateRothIraProjection,
+      calculateRothMaxContribution,
+      calculateRothVsTaxable,
+    } from '../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const calculatorId = form?.dataset.calculatorId ?? '';
+    const periodsPerYear = Number(form?.dataset.periodsPerYear ?? 1);
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+    const percentage = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    function setText(id: string, value: string) {
+      const element = document.querySelector<HTMLElement>(`#${id}`);
+      if (element) element.textContent = value;
+    }
+
+    function number(data: FormData, name: string) {
+      return parseCalculatorNumber(data.get(name));
+    }
+
+    function calculate() {
+      if (!form || !error) return false;
+      const data = new FormData(form);
+      const values = Array.from(data.values()).map((value) =>
+        parseCalculatorNumber(value),
+      );
+
+      if (values.some((value) => !Number.isFinite(value) || value < 0)) {
+        error.textContent =
+          'Enter valid values greater than or equal to zero in every field.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+
+      if (
+        calculatorId === 'roth-ira' ||
+        calculatorId === 'roth-ira-growth'
+      ) {
+        const years = number(data, 'years');
+        if (years <= 0 || !Number.isInteger(years)) {
+          error.textContent = 'Years invested must be a whole number above 0.';
+          error.hidden = false;
+          return false;
+        }
+        const contribution =
+          calculatorId === 'roth-ira'
+            ? number(data, 'monthlyContribution')
+            : number(data, 'annualContribution');
+        const currentBalance = number(data, 'currentBalance');
+        const result = calculateRothIraProjection({
+          currentBalance,
+          contributionPerPeriod: contribution,
+          expectedAnnualReturnPercent: number(
+            data,
+            'expectedAnnualReturn',
+          ),
+          years,
+          periodsPerYear,
+        });
+        setText(
+          'roth-ending-balance-result',
+          currency.format(result.endingBalance),
+        );
+        setText(
+          'roth-future-contributions-result',
+          currency.format(result.futureContributions),
+        );
+        setText(
+          'roth-investment-growth-result',
+          currency.format(result.investmentGrowth),
+        );
+        setText(
+          'roth-total-funded-result',
+          currency.format(currentBalance + result.futureContributions),
+        );
+      } else if (calculatorId === 'roth-ira-contribution') {
+        const result = calculateRothContributionPlan({
+          annualTarget: number(data, 'annualTarget'),
+          contributedSoFar: number(data, 'contributedSoFar'),
+          contributionPerPaycheck: number(data, 'contributionPerPaycheck'),
+          remainingPaychecks: number(data, 'remainingPaychecks'),
+        });
+        setText(
+          'projected-annual-contribution-result',
+          currency.format(result.projectedAnnualContribution),
+        );
+        setText(
+          'remaining-to-target-result',
+          currency.format(result.remainingToTarget),
+        );
+        setText(
+          'target-progress-result',
+          `${percentage.format(result.targetProgressPercent)}%`,
+        );
+      } else if (calculatorId === 'roth-ira-max-contribution') {
+        const monthsRemaining = number(data, 'monthsRemaining');
+        if (monthsRemaining > 12 || !Number.isInteger(monthsRemaining)) {
+          error.textContent =
+            'Months remaining must be a whole number from 0 through 12.';
+          error.hidden = false;
+          return false;
+        }
+        const result = calculateRothMaxContribution({
+          assumedAnnualLimit: number(data, 'assumedAnnualLimit'),
+          contributedSoFar: number(data, 'contributedSoFar'),
+          monthsRemaining,
+        });
+        setText(
+          'remaining-available-result',
+          currency.format(result.remainingAvailable),
+        );
+        setText(
+          'monthly-to-limit-result',
+          currency.format(result.monthlyAmountToReachLimit),
+        );
+        setText(
+          'weekly-to-limit-result',
+          currency.format(result.weeklyAmountToReachLimit),
+        );
+      } else if (calculatorId === 'roth-ira-vs-taxable') {
+        const years = number(data, 'years');
+        if (years <= 0 || !Number.isInteger(years)) {
+          error.textContent = 'Years invested must be a whole number above 0.';
+          error.hidden = false;
+          return false;
+        }
+        const result = calculateRothVsTaxable({
+          startingBalance: number(data, 'startingBalance'),
+          annualContribution: number(data, 'annualContribution'),
+          expectedAnnualReturnPercent: number(
+            data,
+            'expectedAnnualReturn',
+          ),
+          taxableAccountTaxDragPercent: number(data, 'taxableTaxDrag'),
+          years,
+        });
+        setText(
+          'roth-comparison-ending-result',
+          currency.format(result.rothEndingBalance),
+        );
+        setText(
+          'taxable-comparison-ending-result',
+          currency.format(result.taxableEndingBalance),
+        );
+        setText(
+          'estimated-roth-advantage-result',
+          currency.format(result.estimatedRothAdvantage),
+        );
+        setText(
+          'taxable-growth-drag-result',
+          currency.format(result.taxableGrowthDrag),
+        );
+      } else if (calculatorId === 'roth-ira-early-withdrawal') {
+        const assumedTaxRatePercent = number(data, 'assumedTaxRate');
+        const assumedPenaltyRatePercent = number(data, 'assumedPenaltyRate');
+        if (
+          assumedTaxRatePercent > 100 ||
+          assumedPenaltyRatePercent > 100
+        ) {
+          error.textContent = 'Tax and penalty rates cannot exceed 100%.';
+          error.hidden = false;
+          return false;
+        }
+        const result = calculateRothEarlyWithdrawal({
+          withdrawalAmount: number(data, 'withdrawalAmount'),
+          contributionBasisAvailable: number(
+            data,
+            'contributionBasisAvailable',
+          ),
+          earningsAmountSubjectToTaxAndPenalty: number(
+            data,
+            'earningsSubject',
+          ),
+          assumedTaxRatePercent,
+          assumedPenaltyRatePercent,
+        });
+        setText(
+          'withdrawal-contribution-portion-result',
+          currency.format(result.contributionPortion),
+        );
+        setText(
+          'withdrawal-earnings-portion-result',
+          currency.format(result.earningsPortion),
+        );
+        setText('withdrawal-tax-result', currency.format(result.estimatedTax));
+        setText(
+          'withdrawal-penalty-result',
+          currency.format(result.estimatedPenalty),
+        );
+        setText(
+          'withdrawal-net-result',
+          currency.format(result.estimatedNetWithdrawal),
+        );
+      }
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation(calculatorId, calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

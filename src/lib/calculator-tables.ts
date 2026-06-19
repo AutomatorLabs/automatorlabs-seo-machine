@@ -5,6 +5,8 @@ import {
   calculateMonthlyLoanPayment,
   calculateRealRateOfReturn,
   calculateRequiredPeriodicSavings,
+  calculateRothIraProjection,
+  calculateRothVsTaxable,
   calculateYearsToTarget,
   futureValue,
 } from './math';
@@ -32,6 +34,9 @@ export const calculatorTableHeadings: Record<string, string> = {
   'barista-fire': 'Year-by-Year Projection',
   '401k-growth': 'Year-by-Year Projection',
   'ira-growth': 'Year-by-Year Projection',
+  'roth-ira': 'Year-by-Year Projection',
+  'roth-ira-growth': 'Year-by-Year Projection',
+  'roth-ira-vs-taxable': 'Account Growth Comparison',
   'hsa-growth': 'Year-by-Year Projection',
   '529-college-savings': 'Year-by-Year Projection',
   drip: 'Year-by-Year Projection',
@@ -571,6 +576,77 @@ export function buildCalculatorTable(
         periodsPerYear: 1,
         years: value(data, 'years'),
       });
+    case 'roth-ira':
+    case 'roth-ira-growth': {
+      const periodsPerYear = calculatorId === 'roth-ira' ? 12 : 1;
+      const contribution =
+        calculatorId === 'roth-ira'
+          ? value(data, 'monthlyContribution')
+          : value(data, 'annualContribution');
+      const years = value(data, 'years');
+      const currentBalance = value(data, 'currentBalance');
+      const rows = Array.from(
+        { length: cappedCount(years, 60) },
+        (_, index) => {
+          const year = index + 1;
+          const result = calculateRothIraProjection({
+            currentBalance,
+            contributionPerPeriod: contribution,
+            expectedAnnualReturnPercent: value(
+              data,
+              'expectedAnnualReturn',
+            ),
+            years: year,
+            periodsPerYear,
+          });
+          return [
+            String(year),
+            currency.format(
+              currentBalance + result.futureContributions,
+            ),
+            currency.format(result.investmentGrowth),
+            currency.format(result.endingBalance),
+          ];
+        },
+      );
+      return {
+        heading: 'Year-by-Year Projection',
+        columns: ['Year', 'Balance Funded', 'Growth', 'Projected Balance'],
+        rows,
+        warning: capWarning('years', years, 60),
+      };
+    }
+    case 'roth-ira-vs-taxable': {
+      const years = value(data, 'years');
+      const rows = Array.from(
+        { length: cappedCount(years, 60) },
+        (_, index) => {
+          const year = index + 1;
+          const result = calculateRothVsTaxable({
+            startingBalance: value(data, 'startingBalance'),
+            annualContribution: value(data, 'annualContribution'),
+            expectedAnnualReturnPercent: value(
+              data,
+              'expectedAnnualReturn',
+            ),
+            taxableAccountTaxDragPercent: value(data, 'taxableTaxDrag'),
+            years: year,
+          });
+          return [
+            String(year),
+            currency.format(result.rothEndingBalance),
+            currency.format(result.taxableEndingBalance),
+            currency.format(result.estimatedRothAdvantage),
+          ];
+        },
+      );
+      return {
+        heading: 'Account Growth Comparison',
+        columns: ['Year', 'Roth IRA', 'Taxable Account', 'Difference'],
+        rows,
+        warning: capWarning('years', years, 60),
+      };
+    }
     case '529-college-savings':
       return growthTable({
         initialBalance: value(data, 'currentBalance'),

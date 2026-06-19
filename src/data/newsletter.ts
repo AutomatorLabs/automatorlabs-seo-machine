@@ -1,3 +1,3 @@
 export const newsletterConfig = {
-  publicationUrl: null as string | null,
+  publicationUrl: 'https://newsletter.automatorlabs.co/',
 };

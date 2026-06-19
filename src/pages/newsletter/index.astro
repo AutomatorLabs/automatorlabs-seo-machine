@@ -85,26 +85,20 @@ const publicationUrl = newsletterConfig.publicationUrl;
           <p class="section-label">Subscribe</p>
           <h2 id="signup-heading">Join the AutomatorLabs newsletter</h2>
           <p>
-            Beehiiv will handle subscription details, consent, and
-            unsubscribes. The signup embed is being connected to this page.
+            Continue to the secure Beehiiv subscription page to enter your
+            email, review the signup details, and subscribe.
           </p>
         </div>
 
-        <!-- TODO: Replace this placeholder with the verified Beehiiv embed code and publication URL. -->
-        <div class="embed-placeholder" data-newsletter-signup-area>
-          {publicationUrl ? (
-            <a class="signup-link" href={publicationUrl}>
-              Subscribe on Beehiiv
-            </a>
-          ) : (
-            <>
-              <p>
-                Newsletter signup is not connected yet. Please check back
-                after the Beehiiv publication URL and embed are configured.
-              </p>
-              <a href="/contact/">Contact AutomatorLabs</a>
-            </>
-          )}
+        <div class="signup-panel" data-newsletter-signup-area>
+          <p>
+            Get practical calculator launches and planning guides without
+            hype or a fixed email schedule.
+          </p>
+          <a class="signup-link" href={publicationUrl}>
+            Subscribe to AutomatorLabs
+          </a>
+          <small>You will continue to newsletter.automatorlabs.co.</small>
         </div>
       </section>
 
@@ -262,18 +256,24 @@ const publicationUrl = newsletterConfig.publicationUrl;
     line-height: 1.65;
   }
 
-  .embed-placeholder {
-    border: 1px dashed var(--input-border);
+  .signup-panel {
+    border: 1px solid var(--input-border);
     border-radius: 12px;
     background: var(--subtle-background);
     padding: 1.25rem;
   }
 
-  .embed-placeholder p {
+  .signup-panel p {
     margin-top: 0;
   }
 
-  .embed-placeholder a,
+  .signup-panel small {
+    display: block;
+    margin-top: 0.75rem;
+    color: var(--muted-text-color);
+  }
+
+  .signup-panel a,
   .signup-link {
     font-weight: 750;
   }

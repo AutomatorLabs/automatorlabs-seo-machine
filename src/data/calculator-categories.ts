@@ -21,6 +21,12 @@ export const calculatorCategories: CalculatorCategory[] = [
       'Use free FIRE and retirement calculators to estimate financial independence targets, retirement timelines, withdrawals, and income needs.',
     ids: [
       'fire-calculator',
+      'roth-ira-calculator',
+      'roth-ira-growth-calculator',
+      'roth-ira-contribution-calculator',
+      'roth-ira-max-contribution-calculator',
+      'roth-ira-vs-taxable-account-calculator',
+      'roth-ira-early-withdrawal-calculator',
       'coast-fire-calculator',
       'four-percent-rule-calculator',
       'retirement-withdrawal-calculator',

@@ -12,19 +12,14 @@ AutomatorLabs uses Beehiiv for subscriber capture.
 
 ## Beehiiv integration status
 
-The repository does not currently contain a verified Beehiiv publication URL,
-publication ID, or embed code. The newsletter page therefore contains an
-accessible placeholder instead of an invented URL or broken third-party
-script.
+The newsletter page uses the verified hosted Beehiiv publication URL:
+`https://newsletter.automatorlabs.co/`.
 
-Future task:
-
-1. Add the verified Beehiiv publication URL to
-   `src/data/newsletter.ts`.
-2. Replace the TODO placeholder in
-   `src/pages/newsletter/index.astro` with the official Beehiiv embed.
-3. Verify form submission, consent language, keyboard behavior, loading, and
-   dark/light rendering.
+No publication ID or official embed code is stored in the repository, so the
+page uses a clear hosted-signup CTA without adding an unverified script. If an
+official embed is added later, verify form submission, consent language,
+keyboard behavior, loading, and dark/light rendering before replacing the
+hosted-link fallback.
 
 ## Future segmentation
 
