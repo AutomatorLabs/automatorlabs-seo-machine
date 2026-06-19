@@ -1,7 +1,7 @@
 ---
 import type { TopicalGuide } from '../data/topical-guides';
 import Layout from '../layouts/Layout.astro';
-import NewsletterCta from './NewsletterCta.astro';
+import NewsletterSignup from './NewsletterSignup.astro';
 
 interface Props {
   guide: TopicalGuide;
@@ -85,7 +85,7 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
         </div>
       </section>
 
-      <NewsletterCta />
+      <NewsletterSignup />
 
       <a class="back-link" href="/guides/">Browse all guides</a>
     </article>

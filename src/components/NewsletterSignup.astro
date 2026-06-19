@@ -1,0 +1,311 @@
+---
+import { newsletterConfig } from '../data/newsletter';
+
+interface Props {
+  headline?: string;
+  description?: string;
+  compact?: boolean;
+}
+
+const {
+  headline = 'Get practical financial tools in your inbox',
+  description = 'Follow new calculator launches, investing tools, retirement planning resources, mortgage calculators, and useful personal finance guides.',
+  compact = false,
+} = Astro.props;
+---
+
+<aside
+  class:list={['newsletter-signup', { compact }]}
+  aria-label="AutomatorLabs newsletter signup"
+  data-newsletter-signup
+>
+  <div class="newsletter-copy">
+    <p class="newsletter-label">AutomatorLabs newsletter</p>
+    <h2>{headline}</h2>
+    <p>{description}</p>
+  </div>
+
+  <div class="signup-panel" data-newsletter-signup-area>
+    <form
+      action={newsletterConfig.subscribeEndpoint}
+      method="post"
+      target="newsletter-signup-response"
+      data-newsletter-form
+    >
+      <label>
+        <span>Email address</span>
+        <input
+          type="email"
+          name="email"
+          autocomplete="email"
+          inputmode="email"
+          placeholder="you@example.com"
+          required
+        />
+      </label>
+      <input type="hidden" name="sent_from_orchid" value="true" />
+      <input type="hidden" name="signup_flow_id" value="" />
+      <input type="hidden" name="automation_ids" value="" />
+      <input type="hidden" name="double_opt" value="false" />
+      <input type="hidden" name="auto_login_enabled" value="false" />
+      <input type="hidden" name="is_js_enabled" value="true" />
+      <button type="submit">Subscribe</button>
+    </form>
+
+    <p class="signup-note">
+      Free updates. Unsubscribe whenever you like.
+    </p>
+    <p class="signup-status" role="status" aria-live="polite" hidden></p>
+    <p class="signup-fallback" hidden>
+      The inline form could not finish.
+      <a href={newsletterConfig.publicationUrl}>Subscribe on Beehiiv</a>.
+    </p>
+    <iframe
+      title="Newsletter signup response"
+      name="newsletter-signup-response"
+      class="response-frame"
+      data-newsletter-response
+      aria-hidden="true"
+      tabindex="-1"
+    ></iframe>
+
+    <noscript>
+      <p class="signup-fallback-noscript">
+        JavaScript is required for inline confirmation.
+        <a href={newsletterConfig.publicationUrl}>Subscribe on Beehiiv</a>.
+      </p>
+    </noscript>
+  </div>
+</aside>
+
+<script>
+  const setupNewsletterSignup = (
+    signup: HTMLElement,
+  ): void => {
+    if (signup.dataset.newsletterReady === 'true') return;
+
+    const form =
+      signup.querySelector<HTMLFormElement>('[data-newsletter-form]');
+    const responseFrame =
+      signup.querySelector<HTMLIFrameElement>('[data-newsletter-response]');
+    const status =
+      signup.querySelector<HTMLElement>('.signup-status');
+    const fallback =
+      signup.querySelector<HTMLElement>('.signup-fallback');
+    const button = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+
+    if (!form || !responseFrame || !status || !fallback || !button) return;
+
+    signup.dataset.newsletterReady = 'true';
+
+    let submitted = false;
+    let timeoutId: number | undefined;
+
+    const showFailure = (): void => {
+      submitted = false;
+      button.disabled = false;
+      button.textContent = 'Try again';
+      status.hidden = false;
+      status.textContent = 'We could not confirm the signup inline.';
+      fallback.hidden = false;
+    };
+
+    form.addEventListener('submit', () => {
+      submitted = true;
+      button.disabled = true;
+      button.textContent = 'Subscribing…';
+      status.hidden = false;
+      status.textContent = 'Submitting your email securely to Beehiiv…';
+      fallback.hidden = true;
+
+      window.clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(showFailure, 12000);
+    });
+
+    responseFrame.addEventListener('load', () => {
+      if (!submitted) return;
+
+      submitted = false;
+      window.clearTimeout(timeoutId);
+      form.hidden = true;
+      const note = signup.querySelector<HTMLElement>('.signup-note');
+      if (note) note.hidden = true;
+      fallback.hidden = true;
+      status.hidden = false;
+      status.classList.add('success');
+      status.textContent =
+        'Thanks for subscribing! Please check your inbox to confirm your email address.';
+    });
+  };
+
+  const setupAllNewsletterSignups = (): void => {
+    document
+      .querySelectorAll<HTMLElement>('[data-newsletter-signup]')
+      .forEach(setupNewsletterSignup);
+  };
+
+  setupAllNewsletterSignups();
+  document.addEventListener('astro:page-load', setupAllNewsletterSignups);
+</script>
+
+<style>
+  .newsletter-signup {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(290px, 0.85fr);
+    gap: clamp(1.25rem, 4vw, 2.5rem);
+    align-items: center;
+    margin-top: 3rem;
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    background: var(--card-background);
+    box-shadow: 0 12px 35px var(--shadow-color);
+    padding: clamp(1.4rem, 5vw, 2.25rem);
+  }
+
+  .newsletter-signup.compact {
+    margin-top: 2.5rem;
+    padding: 1.25rem;
+  }
+
+  .newsletter-label {
+    margin: 0 0 0.45rem;
+    color: var(--link-color);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .newsletter-signup h2 {
+    margin: 0;
+    color: var(--heading-color);
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+  }
+
+  .newsletter-signup.compact h2 {
+    font-size: 1.35rem;
+  }
+
+  .newsletter-copy > p:last-child {
+    max-width: 700px;
+    margin: 0.7rem 0 0;
+    color: var(--muted-text-color);
+    line-height: 1.6;
+  }
+
+  .signup-panel {
+    min-width: 0;
+  }
+
+  form {
+    display: flex;
+    gap: 0.65rem;
+    align-items: end;
+  }
+
+  label {
+    display: grid;
+    flex: 1 1 auto;
+    gap: 0.4rem;
+    min-width: 0;
+    color: var(--heading-color);
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    background: var(--input-background);
+    color: var(--text-color);
+    font: inherit;
+    padding: 0.72rem 0.8rem;
+  }
+
+  input::placeholder {
+    color: var(--muted-text-color);
+  }
+
+  input:focus-visible,
+  button:focus-visible,
+  a:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  button {
+    flex: 0 0 auto;
+    min-height: 44px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--button-background);
+    color: var(--button-text);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 750;
+    padding: 0.72rem 1rem;
+  }
+
+  button:hover {
+    background: var(--button-hover-background);
+  }
+
+  button:disabled {
+    cursor: wait;
+    opacity: 0.72;
+  }
+
+  .signup-note,
+  .signup-status,
+  .signup-fallback,
+  .signup-fallback-noscript {
+    margin: 0.65rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .signup-status.success {
+    color: var(--heading-color);
+    font-size: 0.96rem;
+    font-weight: 700;
+  }
+
+  .signup-fallback a,
+  .signup-fallback-noscript a {
+    font-weight: 700;
+  }
+
+  .response-frame {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 780px) {
+    .newsletter-signup {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 480px) {
+    form {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    button {
+      width: 100%;
+    }
+  }
+</style>

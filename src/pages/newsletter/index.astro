@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { newsletterConfig } from '../../data/newsletter';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
 import {
   createFaqSchema,
   serializeJsonLd,
@@ -34,7 +34,6 @@ const faq = [
   },
 ];
 const faqSchema = serializeJsonLd(createFaqSchema(faq));
-const publicationUrl = newsletterConfig.publicationUrl;
 ---
 
 <Layout
@@ -76,31 +75,12 @@ const publicationUrl = newsletterConfig.publicationUrl;
         </ul>
       </section>
 
-      <section
-        id="newsletter-signup"
-        class="signup-area"
-        aria-labelledby="signup-heading"
-      >
-        <div>
-          <p class="section-label">Subscribe</p>
-          <h2 id="signup-heading">Join the AutomatorLabs newsletter</h2>
-          <p>
-            Continue to the secure Beehiiv subscription page to enter your
-            email, review the signup details, and subscribe.
-          </p>
-        </div>
-
-        <div class="signup-panel" data-newsletter-signup-area>
-          <p>
-            Get practical calculator launches and planning guides without
-            hype or a fixed email schedule.
-          </p>
-          <a class="signup-link" href={publicationUrl}>
-            Subscribe to AutomatorLabs
-          </a>
-          <small>You will continue to newsletter.automatorlabs.co.</small>
-        </div>
-      </section>
+      <div id="newsletter-signup">
+        <NewsletterSignup
+          headline="Join the AutomatorLabs newsletter"
+          description="Get practical calculator launches and planning guides without hype or a fixed email schedule."
+        />
+      </div>
 
       <section class="tools-section" aria-labelledby="tools-heading">
         <p class="section-label">Explore now</p>
@@ -206,7 +186,6 @@ const publicationUrl = newsletterConfig.publicationUrl;
   }
 
   .benefits,
-  .signup-area,
   .tools-section,
   .faq-section {
     margin-top: 1.5rem;
@@ -224,7 +203,6 @@ const publicationUrl = newsletterConfig.publicationUrl;
   }
 
   .benefits h2,
-  .signup-area h2,
   .tools-section h2,
   .faq-section h2 {
     margin: 0;
@@ -242,49 +220,6 @@ const publicationUrl = newsletterConfig.publicationUrl;
 
   .benefits li::marker {
     color: var(--link-color);
-  }
-
-  .signup-area {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
-    gap: 1.5rem;
-    align-items: center;
-  }
-
-  .signup-area p {
-    color: var(--muted-text-color);
-    line-height: 1.65;
-  }
-
-  .signup-panel {
-    border: 1px solid var(--input-border);
-    border-radius: 12px;
-    background: var(--subtle-background);
-    padding: 1.25rem;
-  }
-
-  .signup-panel p {
-    margin-top: 0;
-  }
-
-  .signup-panel small {
-    display: block;
-    margin-top: 0.75rem;
-    color: var(--muted-text-color);
-  }
-
-  .signup-panel a,
-  .signup-link {
-    font-weight: 750;
-  }
-
-  .signup-link {
-    display: inline-block;
-    border-radius: 10px;
-    background: var(--button-background);
-    color: var(--button-text);
-    padding: 0.8rem 1rem;
-    text-decoration: none;
   }
 
   .tool-grid {
@@ -342,7 +277,6 @@ const publicationUrl = newsletterConfig.publicationUrl;
     }
 
     .benefits,
-    .signup-area,
     .tool-grid {
       grid-template-columns: 1fr;
     }

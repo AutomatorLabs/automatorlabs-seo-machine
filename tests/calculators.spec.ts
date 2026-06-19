@@ -46,7 +46,7 @@ const calculators = Object.values(calculatorConfigs).sort((a, b) =>
 );
 
 test.describe('newsletter acquisition', () => {
-  test('newsletter landing page loads with canonical, signup area, and key tools', async ({
+  test('newsletter landing page loads with inline signup, canonical, and key tools', async ({
     page,
   }) => {
     const pageErrors: string[] = [];
@@ -72,8 +72,14 @@ test.describe('newsletter acquisition', () => {
     );
     await expect(page.locator('[data-newsletter-signup-area]')).toBeVisible();
     await expect(
-      page.getByRole('link', { name: 'Subscribe to AutomatorLabs' }),
-    ).toHaveAttribute('href', 'https://newsletter.automatorlabs.co/');
+      page.locator('[data-newsletter-form]'),
+    ).toHaveAttribute(
+      'action',
+      'https://newsletter.automatorlabs.co/create',
+    );
+    await expect(
+      page.getByRole('textbox', { name: 'Email address' }),
+    ).toBeVisible();
     await expect(
       page.locator('a[href="/calculators/compound-interest/"]'),
     ).toContainText('Compound Interest Calculator');
@@ -95,8 +101,36 @@ test.describe('newsletter acquisition', () => {
     expect(pageErrors).toEqual([]);
   });
 
+  test('inline signup stays on the page and shows the confirmation state', async ({
+    page,
+  }) => {
+    await page.route(
+      'https://newsletter.automatorlabs.co/create',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'text/html',
+          body: '<!doctype html><title>Subscribed</title>',
+        });
+      },
+    );
+    await page.goto('/newsletter/', { waitUntil: 'domcontentloaded' });
+
+    await page
+      .getByRole('textbox', { name: 'Email address' })
+      .fill('reader@example.com');
+    await page.getByRole('button', { name: 'Subscribe' }).click();
+
+    await expect(page).toHaveURL(/\/newsletter\/$/);
+    await expect(page.getByRole('status')).toHaveText(
+      'Thanks for subscribing! Please check your inbox to confirm your email address.',
+    );
+  });
+
   for (const route of ['/', '/examples/']) {
-    test(`${route} links to the newsletter landing page`, async ({ page }) => {
+    test(`${route} includes the shared inline newsletter signup`, async ({
+      page,
+    }) => {
       const pageErrors: string[] = [];
       page.on('pageerror', (error) => pageErrors.push(error.message));
 
@@ -105,7 +139,13 @@ test.describe('newsletter acquisition', () => {
       });
 
       expect(response?.ok()).toBe(true);
-      await expect(page.locator('a[href="/newsletter/"]').first()).toBeVisible();
+      await expect(page.locator('[data-newsletter-signup]')).toBeVisible();
+      await expect(
+        page.locator('[data-newsletter-form]'),
+      ).toHaveAttribute(
+        'action',
+        'https://newsletter.automatorlabs.co/create',
+      );
       expect(pageErrors).toEqual([]);
     });
   }
@@ -803,7 +843,7 @@ test.describe('calculator QA', () => {
       '/calculators/401k-catch-up-contribution-calculator/',
     ]) {
       await page.goto(route, { waitUntil: 'domcontentloaded' });
-      await expect(page.locator('a[href="/newsletter/"]').last()).toBeVisible();
+      await expect(page.locator('[data-newsletter-signup]')).toBeVisible();
     }
   });
 
@@ -851,7 +891,7 @@ test.describe('calculator QA', () => {
       '/calculators/roth-ira-early-withdrawal-calculator/',
     ]) {
       await page.goto(route, { waitUntil: 'domcontentloaded' });
-      await expect(page.locator('a[href="/newsletter/"]').last()).toBeVisible();
+      await expect(page.locator('[data-newsletter-signup]')).toBeVisible();
     }
   });
 

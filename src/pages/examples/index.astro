@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import NewsletterCta from '../../components/NewsletterCta.astro';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
 import { programmaticSeoClusters } from '../../data/programmatic-seo/clusters';
 import {
   createBreadcrumbSchema,
@@ -78,7 +78,7 @@ const totalExamples = programmaticSeoClusters.reduce(
       ))}
     </div>
 
-    <NewsletterCta
+    <NewsletterSignup
       compact
       headline="Get new worked examples and calculators"
       description="Follow new financial scenarios, planning tools, and practical guides as they are published."
