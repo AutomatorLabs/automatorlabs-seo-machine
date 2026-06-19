@@ -322,6 +322,27 @@ function buildGuide(config: CalculatorConfig): CalculatorGuide {
                 'Compare mortgage costs with rent, equity, maintenance, and flexibility.',
             },
           ]
+      : config.id === 'savings-goal'
+        ? [
+            {
+              title: 'Savings Goal Examples',
+              url: '/calculators/savings-goal/examples/',
+              description:
+                'Browse 100 worked savings plans by target, timeline, and goal type.',
+            },
+            {
+              title: 'Budgeting and Saving for Real Life',
+              url: '/guides/budgeting/',
+              description:
+                'Turn savings priorities into practical monthly allocations.',
+            },
+            {
+              title: 'APR vs APY',
+              url: '/guides/apr-vs-apy/',
+              description:
+                'Understand how a stated rate differs from effective annual yield.',
+            },
+          ]
       : undefined;
 
   return {

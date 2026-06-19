@@ -2351,9 +2351,12 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       },
     ],
     relatedIds: [
-      'emergency-fund-calculator',
-      'savings-rate-calculator',
       'compound-interest-calculator',
+      'investment-growth-calculator',
+      'savings-growth-calculator',
+      'apy-calculator',
+      'fire-calculator',
+      'emergency-fund-calculator',
     ],
   },
   'real-rate-of-return': {

@@ -623,9 +623,12 @@ export const contentItems: ContentItem[] = [
     publishedAt: '2026-06-12',
     updatedAt: '2026-06-12',
     relatedIds: [
-      'emergency-fund-calculator',
-      'savings-rate-calculator',
       'compound-interest-calculator',
+      'investment-growth-calculator',
+      'savings-growth-calculator',
+      'apy-calculator',
+      'fire-calculator',
+      'emergency-fund-calculator',
     ],
   },
   {

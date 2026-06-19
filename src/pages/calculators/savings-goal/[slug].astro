@@ -1,0 +1,33 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT,
+  savingsGoalSeoRecords,
+  type SavingsGoalSeoRecord,
+} from '../../../data/programmatic-seo/savings-goal';
+import {
+  auditSavingsGoalSeoRecords,
+  createSavingsGoalSeoPage,
+} from '../../../lib/programmatic-seo/savings-goal';
+
+auditSavingsGoalSeoRecords(
+  savingsGoalSeoRecords,
+  EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return savingsGoalSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: { record },
+  }));
+}
+
+interface Props {
+  record: SavingsGoalSeoRecord;
+}
+
+const { record } = Astro.props;
+const page = createSavingsGoalSeoPage(record, savingsGoalSeoRecords);
+---
+
+<ProgrammaticSeoPage page={page} />

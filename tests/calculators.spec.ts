@@ -21,6 +21,14 @@ import {
 } from '../src/data/programmatic-seo/mortgage';
 import { auditMortgageSeoRecords } from '../src/lib/programmatic-seo/mortgage';
 import {
+  EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT,
+  savingsGoalSeoRecords,
+} from '../src/data/programmatic-seo/savings-goal';
+import {
+  auditSavingsGoalSeoRecords,
+  calculateRequiredMonthlySavings,
+} from '../src/lib/programmatic-seo/savings-goal';
+import {
   createCalculatorFaqs,
   createCalculatorHowItWorks,
 } from '../src/lib/calculator-education';
@@ -542,6 +550,141 @@ test.describe('mortgage programmatic SEO', () => {
     await expect(page.locator('tbody tr')).toHaveCount(3);
     expect(pageErrors).toEqual([]);
   });
+});
+
+test.describe('savings goal programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditSavingsGoalSeoRecords(
+      savingsGoalSeoRecords,
+      EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: 100,
+      actualCount: 100,
+      uniqueSlugCount: 100,
+      uniqueTitleCount: 100,
+      uniqueDescriptionCount: 100,
+      uniqueCanonicalPathCount: 100,
+    });
+  });
+
+  test('required monthly savings reuses the shared future-value behavior', () => {
+    const record = savingsGoalSeoRecords.find(
+      (candidate) => candidate.slug === 'save-100000-in-5-years',
+    );
+    if (!record) throw new Error('Missing representative savings goal record');
+
+    const monthlySavings = calculateRequiredMonthlySavings(record);
+    expect(monthlySavings).toBeGreaterThan(1400);
+    expect(monthlySavings).toBeLessThan(1600);
+  });
+
+  test('examples index exposes, groups, and searches every savings page', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/savings-goal/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Savings Goal Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(
+      page.locator('[data-savings-goal-example-group]'),
+    ).toHaveCount(5);
+    await expect(
+      page.locator('[data-savings-goal-example-card]'),
+    ).toHaveCount(100);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/savings-goal/examples/',
+    );
+
+    const hrefs = await page
+      .locator('[data-savings-goal-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(100);
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search savings goal examples',
+    });
+    await searchBox.fill('down payment');
+    await expect(
+      page.locator('[data-savings-goal-example-card]:visible'),
+    ).toHaveCount(15);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-savings-goal-example-card]:visible'),
+    ).toHaveCount(100);
+    await expect(
+      page.getByRole('link', { name: 'Build your savings plan' }),
+    ).toHaveAttribute('href', '/calculators/savings-goal-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  for (const slug of [
+    'save-100000-in-5-years',
+    'save-50000-for-down-payment-in-5-years',
+    'save-1000000-by-age-65-starting-at-35',
+  ]) {
+    test(`renders generated savings goal page ${slug}`, async ({ page }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error.message));
+      const record = savingsGoalSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) throw new Error(`Missing savings goal record: ${slug}`);
+
+      const url = `/calculators/savings-goal/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      expect(
+        await page.evaluate(() => document.querySelectorAll('h1').length),
+      ).toBe(1);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://automatorlabs.co${url}`,
+      );
+
+      const schemas = await page
+        .locator('script[type="application/ld+json"]')
+        .evaluateAll((scripts) =>
+          scripts.map((script) => script.textContent ?? '').join('\n'),
+        );
+      expect(schemas).toContain('"@type":"FAQPage"');
+      expect(schemas).toContain('"@type":"BreadcrumbList"');
+      await expect(
+        page.getByRole('link', { name: 'Open the Savings Goal Calculator' }),
+      ).toHaveAttribute('href', '/calculators/savings-goal-calculator/');
+      await expect(
+        page.locator('a[href="/calculators/compound-interest/"]').first(),
+      ).toBeVisible();
+      await expect(
+        page.locator(
+          'a[href="/calculators/investment-growth-calculator/"]',
+        ),
+      ).toBeVisible();
+      await expect(page.locator('tbody tr')).toHaveCount(record.years);
+      expect(pageErrors).toEqual([]);
+    });
+  }
 });
 
 test.describe('global programmatic examples hub', () => {

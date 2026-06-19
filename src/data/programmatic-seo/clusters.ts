@@ -1,6 +1,7 @@
 import { compoundInterestSeoRecords } from './compound-interest';
 import { fireSeoRecords } from './fire';
 import { mortgageSeoRecords } from './mortgage';
+import { savingsGoalSeoRecords } from './savings-goal';
 
 export interface ProgrammaticSeoClusterSummary {
   id: string;
@@ -49,6 +50,16 @@ const mortgageRepresentatives = [
   mortgageSeoRecords.find(
     (record) =>
       record.slug === '750000-mortgage-at-5-5-percent-for-15-years',
+  ),
+].filter((record) => record !== undefined);
+
+const savingsGoalRepresentatives = [
+  savingsGoalSeoRecords.find(
+    (record) => record.slug === 'save-100000-in-5-years',
+  ),
+  savingsGoalSeoRecords.find(
+    (record) =>
+      record.slug === 'save-1000000-by-age-65-starting-at-35',
   ),
 ].filter((record) => record !== undefined);
 
@@ -111,6 +122,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: mortgageRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/mortgage/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'savings-goal',
+    title: 'Savings Goal Examples',
+    description:
+      'Compare monthly savings targets for general goals, down payments, emergency funds, vacations, vehicles, and retirement milestones.',
+    examplesUrl: '/calculators/savings-goal/examples/',
+    calculator: {
+      title: 'Savings Goal Calculator',
+      url: '/calculators/savings-goal-calculator/',
+    },
+    guide: {
+      title: 'Budgeting and Saving for Real Life',
+      url: '/guides/budgeting/',
+    },
+    pageCount: savingsGoalSeoRecords.length,
+    representativePages: savingsGoalRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/savings-goal/${record.slug}/`,
     })),
   },
 ];

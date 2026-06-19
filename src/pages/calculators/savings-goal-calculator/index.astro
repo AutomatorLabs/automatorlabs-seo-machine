@@ -7,6 +7,28 @@ const relatedItems = savingsGoalCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const guideItems = [
+  { title: 'Budgeting and Saving for Real Life', url: '/guides/budgeting/' },
+  {
+    title: 'What Is Compound Interest?',
+    url: '/guides/what-is-compound-interest/',
+  },
+  { title: 'APR vs APY', url: '/guides/apr-vs-apy/' },
+];
+const exampleItems = [
+  {
+    title: 'Browse 100 Savings Goal Examples',
+    url: '/calculators/savings-goal/examples/',
+  },
+  {
+    title: 'Save $100,000 in 5 Years',
+    url: '/calculators/savings-goal/save-100000-in-5-years/',
+  },
+  {
+    title: 'Save $1 Million by Age 65',
+    url: '/calculators/savings-goal/save-1000000-by-age-65-starting-at-35/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +39,9 @@ const relatedItems = savingsGoalCalculator.relatedIds.flatMap((id) => {
   outputs={savingsGoalCalculator.outputs}
   faq={savingsGoalCalculator.faq}
   relatedItems={relatedItems}
+  guideItems={guideItems}
+  exampleItems={exampleItems}
+  exampleHeading="Savings Goal Examples"
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';
