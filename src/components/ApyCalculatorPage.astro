@@ -1,0 +1,112 @@
+---
+import CalculatorPage from './CalculatorPage.astro';
+import { apyCalculator } from '../data/calculators';
+import { contentItems } from '../data/content';
+
+const relatedItems = apyCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((candidate) => candidate.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+const guideItems = [
+  { title: 'APR vs APY', url: '/guides/apr-vs-apy/' },
+  {
+    title: 'Effective Annual Rate Explained',
+    url: '/guides/effective-annual-rate/',
+  },
+  {
+    title: 'Daily vs Monthly Compounding',
+    url: '/guides/daily-vs-monthly-compounding/',
+  },
+];
+---
+
+<CalculatorPage
+  title={apyCalculator.title}
+  eyebrow={apyCalculator.eyebrow}
+  description={apyCalculator.description}
+  inputs={apyCalculator.inputs}
+  outputs={apyCalculator.outputs}
+  faq={apyCalculator.faq}
+  relatedItems={relatedItems}
+  guideItems={guideItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../lib/analytics';
+    import { parseCalculatorNumber } from '../lib/input';
+    import { calculateApy } from '../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const apyResult = document.querySelector<HTMLElement>('#apy-result');
+    const effectiveBalanceResult = document.querySelector<HTMLElement>(
+      '#effective-balance-result',
+    );
+    const annualInterestResult = document.querySelector<HTMLElement>(
+      '#annual-interest-result',
+    );
+    const percentage = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 4,
+    });
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !apyResult ||
+        !effectiveBalanceResult ||
+        !annualInterestResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const nominalRate = parseCalculatorNumber(data.get('nominalRate'));
+      const frequency = parseCalculatorNumber(data.get('frequency'));
+      const startingBalance = parseCalculatorNumber(
+        data.get('startingBalance'),
+      );
+
+      if (
+        !Number.isFinite(nominalRate) ||
+        !Number.isFinite(frequency) ||
+        !Number.isFinite(startingBalance) ||
+        nominalRate < 0 ||
+        frequency <= 0 ||
+        startingBalance < 0
+      ) {
+        error.textContent =
+          'Rate and starting balance cannot be negative, and compounding frequency must be greater than 0.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+      const result = calculateApy(
+        nominalRate,
+        frequency,
+        startingBalance,
+      );
+      apyResult.textContent = `${percentage.format(result.apyPercent)}%`;
+      effectiveBalanceResult.textContent = currency.format(
+        result.endingBalance,
+      );
+      annualInterestResult.textContent = currency.format(
+        result.annualInterest,
+      );
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('apy', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

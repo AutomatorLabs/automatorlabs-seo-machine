@@ -42,6 +42,24 @@ const coreCalculatorLinks: TopicalGuideLink[] = [
     description: 'Browse 100 worked compound-interest scenarios by starting amount, rate, and time.',
   },
   {
+    title: 'APY Calculator',
+    url: '/calculators/apy-calculator/',
+    description:
+      'Convert a nominal annual rate and compounding schedule into an effective annual yield.',
+  },
+  {
+    title: 'Daily Compound Interest Calculator',
+    url: '/calculators/daily-compound-interest-calculator/',
+    description:
+      'Project a balance using daily compounding and regular contributions.',
+  },
+  {
+    title: 'Monthly Compound Interest Calculator',
+    url: '/calculators/monthly-compound-interest-calculator/',
+    description:
+      'Project a balance using monthly compounding and regular contributions.',
+  },
+  {
     title: 'Inflation Calculator',
     url: '/calculators/inflation-calculator/',
     description: 'Estimate how inflation changes future purchasing power.',

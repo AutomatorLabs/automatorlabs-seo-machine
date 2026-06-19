@@ -19,6 +19,12 @@ export interface CompoundInterestResult {
   totalInterest: number;
 }
 
+export interface ApyResult {
+  apyPercent: number;
+  endingBalance: number;
+  annualInterest: number;
+}
+
 export interface SavingsRateInput {
   monthlyIncome: number;
   monthlyExpenses: number;
@@ -692,6 +698,23 @@ export function calculateCompoundInterest({
     finalBalance,
     totalContributions,
     totalInterest: finalBalance - totalContributions,
+  };
+}
+
+export function calculateApy(
+  nominalAnnualRatePercent: number,
+  periodsPerYear: number,
+  startingBalance: number,
+): ApyResult {
+  const nominalRate = nominalAnnualRatePercent / 100;
+  const apy =
+    Math.pow(1 + nominalRate / periodsPerYear, periodsPerYear) - 1;
+  const annualInterest = startingBalance * apy;
+
+  return {
+    apyPercent: apy * 100,
+    endingBalance: startingBalance + annualInterest,
+    annualInterest,
   };
 }
 

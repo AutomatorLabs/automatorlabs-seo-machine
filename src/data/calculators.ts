@@ -51,7 +51,278 @@ export interface CalculatorConfig {
   commonMistakes?: string[];
 }
 
+function compoundGrowthVariant({
+  id,
+  url,
+  title,
+  description,
+  principalLabel,
+  contributionLabel,
+}: {
+  id: string;
+  url: string;
+  title: string;
+  description: string;
+  principalLabel: string;
+  contributionLabel: string;
+}): CalculatorConfig {
+  return {
+    id,
+    url,
+    title,
+    eyebrow: 'Compound Interest Calculator',
+    description,
+    inputs: [
+      {
+        id: 'principal',
+        name: 'principal',
+        label: principalLabel,
+        type: 'number',
+        value: '10000',
+        min: '0',
+        step: '100',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'monthly-contribution',
+        name: 'monthlyContribution',
+        label: contributionLabel,
+        type: 'number',
+        value: '250',
+        min: '0',
+        step: '10',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'interest-rate',
+        name: 'interestRate',
+        label: 'Annual interest or return rate (%)',
+        type: 'number',
+        value: '6',
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: 'years',
+        name: 'years',
+        label: 'Number of years',
+        type: 'number',
+        value: '10',
+        min: '0.25',
+        step: '0.25',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'final-balance',
+        label: 'Estimated ending balance',
+        initialValue: '$0.00',
+        primary: true,
+      },
+      {
+        id: 'total-contributions',
+        label: 'Total contributions',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'total-interest',
+        label: 'Estimated interest or growth',
+        initialValue: '$0.00',
+      },
+    ],
+    faq: [
+      {
+        question: `What does this ${title.toLowerCase()} estimate?`,
+        answer:
+          'It projects an ending balance from the starting amount, monthly additions, annual rate, time period, and the compounding frequency fixed for this calculator.',
+      },
+      {
+        question: `When does the ${title} assume contributions are added?`,
+        answer:
+          'Monthly contributions are converted into an equivalent amount for each compounding period and are treated as end-of-period additions.',
+      },
+      {
+        question: `Is the annual rate used by the ${title} guaranteed?`,
+        answer:
+          'No. It is a constant scenario assumption. Investment returns and variable savings rates can change, and actual results may be higher or lower.',
+      },
+      {
+        question: `Does the ${title} include taxes, inflation, or fees?`,
+        answer:
+          'No. The projection is nominal and excludes taxes, inflation, account fees, transaction costs, and withdrawals.',
+      },
+      {
+        question: `How does compounding frequency affect the ${title}?`,
+        answer:
+          'More frequent compounding adds interest to the balance sooner, allowing that interest to participate in later growth when the nominal annual rate is positive.',
+      },
+    ],
+    relatedIds: [
+      'compound-interest-calculator',
+      'rule-of-72-calculator',
+      'cagr-calculator',
+      'savings-goal-calculator',
+      'apy-calculator',
+    ],
+  };
+}
+
 export const calculatorConfigs: Record<string, CalculatorConfig> = {
+  'daily-compound-interest': compoundGrowthVariant({
+    id: 'daily-compound-interest',
+    url: '/calculators/daily-compound-interest-calculator/',
+    title: 'Daily Compound Interest Calculator',
+    description:
+      'Estimate how a starting balance and monthly contributions could grow when a nominal annual rate compounds daily.',
+    principalLabel: 'Starting balance',
+    contributionLabel: 'Monthly contribution',
+  }),
+  'monthly-compound-interest': compoundGrowthVariant({
+    id: 'monthly-compound-interest',
+    url: '/calculators/monthly-compound-interest-calculator/',
+    title: 'Monthly Compound Interest Calculator',
+    description:
+      'Project compound growth with monthly compounding, a starting balance, regular additions, an annual rate, and time.',
+    principalLabel: 'Starting balance',
+    contributionLabel: 'Monthly contribution',
+  }),
+  'quarterly-compound-interest': compoundGrowthVariant({
+    id: 'quarterly-compound-interest',
+    url: '/calculators/quarterly-compound-interest-calculator/',
+    title: 'Quarterly Compound Interest Calculator',
+    description:
+      'Estimate future value when interest compounds four times per year and regular monthly contributions are included.',
+    principalLabel: 'Starting balance',
+    contributionLabel: 'Monthly contribution',
+  }),
+  'annual-compound-interest': compoundGrowthVariant({
+    id: 'annual-compound-interest',
+    url: '/calculators/annual-compound-interest-calculator/',
+    title: 'Annual Compound Interest Calculator',
+    description:
+      'Estimate future value when interest compounds once per year using a starting balance, contributions, rate, and time.',
+    principalLabel: 'Starting balance',
+    contributionLabel: 'Monthly contribution',
+  }),
+  'investment-growth': compoundGrowthVariant({
+    id: 'investment-growth',
+    url: '/calculators/investment-growth-calculator/',
+    title: 'Investment Growth Calculator',
+    description:
+      'Project how an investment could grow from an initial amount, monthly investments, an assumed annual return, and time.',
+    principalLabel: 'Initial investment',
+    contributionLabel: 'Monthly investment',
+  }),
+  'savings-growth': compoundGrowthVariant({
+    id: 'savings-growth',
+    url: '/calculators/savings-growth-calculator/',
+    title: 'Savings Growth Calculator',
+    description:
+      'Estimate how savings could grow from a current balance, monthly deposits, an annual interest rate, and time.',
+    principalLabel: 'Current savings',
+    contributionLabel: 'Monthly deposit',
+  }),
+  apy: {
+    id: 'apy',
+    url: '/calculators/apy-calculator/',
+    title: 'APY Calculator',
+    eyebrow: 'Interest Rate Calculator',
+    description:
+      'Convert a nominal annual interest rate and compounding frequency into annual percentage yield and estimated one-year interest.',
+    inputs: [
+      {
+        id: 'nominal-rate',
+        name: 'nominalRate',
+        label: 'Nominal annual rate (%)',
+        type: 'number',
+        value: '5',
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: 'compounding-frequency',
+        name: 'frequency',
+        label: 'Compounding frequency',
+        type: 'select',
+        value: '12',
+        required: true,
+        options: [
+          { label: 'Daily (365 times per year)', value: '365' },
+          { label: 'Monthly (12 times per year)', value: '12' },
+          { label: 'Quarterly (4 times per year)', value: '4' },
+          { label: 'Annually (1 time per year)', value: '1' },
+        ],
+      },
+      {
+        id: 'starting-balance',
+        name: 'startingBalance',
+        label: 'Starting balance',
+        type: 'number',
+        value: '10000',
+        min: '0',
+        step: '100',
+        prefix: '$',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'apy-result',
+        label: 'Annual percentage yield',
+        initialValue: '0.00%',
+        primary: true,
+      },
+      {
+        id: 'effective-balance-result',
+        label: 'Balance after one year',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'annual-interest-result',
+        label: 'Interest earned in one year',
+        initialValue: '$0.00',
+      },
+    ],
+    faq: [
+      {
+        question: 'What is APY?',
+        answer:
+          'Annual percentage yield is the effective one-year rate after accounting for compounding within the year.',
+      },
+      {
+        question: 'How is APY different from APR?',
+        answer:
+          'APY includes the effect of compounding. A nominal APR or stated annual rate generally does not fully express that within-year compounding effect.',
+      },
+      {
+        question: 'Why is APY higher with more frequent compounding?',
+        answer:
+          'Interest is added to the balance sooner, so earlier interest can earn additional interest during later periods.',
+      },
+      {
+        question: 'Is APY the same as an investment return?',
+        answer:
+          'No. APY commonly describes deposit interest under stated terms. Market investment returns vary and can include losses.',
+      },
+      {
+        question: 'Does APY include account fees or taxes?',
+        answer:
+          'Not in this calculator. Fees, taxes, balance tiers, changing rates, and withdrawal restrictions can change the amount retained.',
+      },
+    ],
+    relatedIds: [
+      'compound-interest-calculator',
+      'rule-of-72-calculator',
+      'cagr-calculator',
+      'daily-compound-interest-calculator',
+      'monthly-compound-interest-calculator',
+    ],
+  },
   'compound-interest': {
     id: 'compound-interest',
     url: '/calculators/compound-interest/',
@@ -163,9 +434,12 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       },
     ],
     relatedIds: [
-      'fire-calculator',
-      'coast-fire-calculator',
-      'inflation-calculator',
+      'daily-compound-interest-calculator',
+      'monthly-compound-interest-calculator',
+      'apy-calculator',
+      'rule-of-72-calculator',
+      'cagr-calculator',
+      'savings-goal-calculator',
     ],
   },
   'savings-rate': {
@@ -751,8 +1025,9 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
     ],
     relatedIds: [
       'compound-interest-calculator',
-      'fire-calculator',
-      'coast-fire-calculator',
+      'investment-growth-calculator',
+      'apy-calculator',
+      'cagr-calculator',
     ],
   },
   inflation: {
@@ -6268,6 +6543,19 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
 };
 
 export const compoundInterestCalculator = calculatorConfigs['compound-interest'];
+export const dailyCompoundInterestCalculator =
+  calculatorConfigs['daily-compound-interest'];
+export const monthlyCompoundInterestCalculator =
+  calculatorConfigs['monthly-compound-interest'];
+export const quarterlyCompoundInterestCalculator =
+  calculatorConfigs['quarterly-compound-interest'];
+export const annualCompoundInterestCalculator =
+  calculatorConfigs['annual-compound-interest'];
+export const apyCalculator = calculatorConfigs.apy;
+export const investmentGrowthCalculator =
+  calculatorConfigs['investment-growth'];
+export const savingsGrowthCalculator =
+  calculatorConfigs['savings-growth'];
 export const savingsRateCalculator = calculatorConfigs['savings-rate'];
 export const fireCalculator = calculatorConfigs.fire;
 export const coastFireCalculator = calculatorConfigs['coast-fire'];

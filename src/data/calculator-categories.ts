@@ -47,6 +47,13 @@ export const calculatorCategories: CalculatorCategory[] = [
       'Explore free investing calculators for compound growth, returns, inflation, dividends, investment fees, and portfolio strategies.',
     ids: [
       'compound-interest-calculator',
+      'daily-compound-interest-calculator',
+      'monthly-compound-interest-calculator',
+      'quarterly-compound-interest-calculator',
+      'annual-compound-interest-calculator',
+      'apy-calculator',
+      'investment-growth-calculator',
+      'savings-growth-calculator',
       'rule-of-72-calculator',
       'inflation-calculator',
       'investment-fee-calculator',

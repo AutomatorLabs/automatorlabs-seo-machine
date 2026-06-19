@@ -18,6 +18,12 @@ export interface CalculatorTableData {
 
 export const calculatorTableHeadings: Record<string, string> = {
   'compound-interest': 'Year-by-Year Projection',
+  'daily-compound-interest': 'Year-by-Year Projection',
+  'monthly-compound-interest': 'Year-by-Year Projection',
+  'quarterly-compound-interest': 'Year-by-Year Projection',
+  'annual-compound-interest': 'Year-by-Year Projection',
+  'investment-growth': 'Year-by-Year Projection',
+  'savings-growth': 'Year-by-Year Projection',
   fire: 'Year-by-Year Projection',
   'coast-fire': 'Year-by-Year Projection',
   'lean-fire': 'Year-by-Year Projection',
@@ -406,6 +412,30 @@ export function buildCalculatorTable(
         ratePerPeriod: annualRatePercent / 100 / periodsPerYear,
         periodsPerYear,
         years,
+      });
+    }
+    case 'daily-compound-interest':
+    case 'monthly-compound-interest':
+    case 'quarterly-compound-interest':
+    case 'annual-compound-interest':
+    case 'investment-growth':
+    case 'savings-growth': {
+      const periodsPerYear =
+        calculatorId === 'daily-compound-interest'
+          ? 365
+          : calculatorId === 'quarterly-compound-interest'
+            ? 4
+            : calculatorId === 'annual-compound-interest'
+              ? 1
+              : 12;
+      return growthTable({
+        initialBalance: value(data, 'principal'),
+        contributionPerPeriod:
+          (value(data, 'monthlyContribution') * 12) / periodsPerYear,
+        ratePerPeriod:
+          value(data, 'interestRate') / 100 / periodsPerYear,
+        periodsPerYear,
+        years: value(data, 'years'),
       });
     }
     case 'fire': {

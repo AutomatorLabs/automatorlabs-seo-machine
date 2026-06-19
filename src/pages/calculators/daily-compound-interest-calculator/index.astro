@@ -1,0 +1,9 @@
+---
+import CompoundGrowthCalculatorPage from '../../../components/CompoundGrowthCalculatorPage.astro';
+import { dailyCompoundInterestCalculator } from '../../../data/calculators';
+---
+
+<CompoundGrowthCalculatorPage
+  calculator={dailyCompoundInterestCalculator}
+  periodsPerYear={365}
+/>

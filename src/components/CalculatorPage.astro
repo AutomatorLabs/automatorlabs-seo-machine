@@ -46,6 +46,7 @@ interface Props {
   howToSteps?: string[];
   resultExplanation?: CalculatorResultExplanation[];
   commonMistakes?: string[];
+  calculatorData?: Record<string, string | number>;
 }
 
 const {
@@ -63,7 +64,14 @@ const {
   howToSteps: configuredHowToSteps,
   resultExplanation: configuredResultExplanation,
   commonMistakes: configuredCommonMistakes,
+  calculatorData = {},
 } = Astro.props;
+const calculatorDataAttributes = Object.fromEntries(
+  Object.entries(calculatorData).map(([key, value]) => [
+    `data-${key}`,
+    String(value),
+  ]),
+);
 
 const calculatorConfig = Object.values(calculatorConfigs).find(
   (config) => config.url === Astro.url.pathname,
@@ -165,7 +173,7 @@ const breadcrumbStructuredDataJson = serializeJsonLd(
       <div class="panel">
         <h2 id="calculator-heading">Use the {title}</h2>
 
-        <form id="calculator-form">
+        <form id="calculator-form" {...calculatorDataAttributes}>
           <div class="form-grid">
             {inputs.map((input) => (
               <div class:list={['field', { 'field-wide': input.wide }]}>

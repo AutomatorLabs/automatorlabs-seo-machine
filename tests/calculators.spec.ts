@@ -25,6 +25,10 @@ import {
   createCalculatorHowItWorks,
 } from '../src/lib/calculator-education';
 import { createRelatedCalculatorLinks } from '../src/lib/related-calculators';
+import {
+  calculateApy,
+  calculateCompoundInterest,
+} from '../src/lib/math';
 
 const calculators = Object.values(calculatorConfigs).sort((a, b) =>
   a.title.localeCompare(b.title),
@@ -601,6 +605,72 @@ test.describe('global programmatic examples hub', () => {
 });
 
 test.describe('calculator QA', () => {
+  test('compound-interest cluster calculations reuse the shared math correctly', () => {
+    const annual = calculateCompoundInterest({
+      principal: 10000,
+      monthlyContribution: 0,
+      annualRatePercent: 6,
+      years: 1,
+      periodsPerYear: 1,
+    });
+    const quarterly = calculateCompoundInterest({
+      principal: 10000,
+      monthlyContribution: 0,
+      annualRatePercent: 6,
+      years: 1,
+      periodsPerYear: 4,
+    });
+    const monthly = calculateCompoundInterest({
+      principal: 10000,
+      monthlyContribution: 0,
+      annualRatePercent: 6,
+      years: 1,
+      periodsPerYear: 12,
+    });
+    const daily = calculateCompoundInterest({
+      principal: 10000,
+      monthlyContribution: 0,
+      annualRatePercent: 6,
+      years: 1,
+      periodsPerYear: 365,
+    });
+    const apy = calculateApy(6, 12, 10000);
+
+    expect(annual.finalBalance).toBeLessThan(quarterly.finalBalance);
+    expect(quarterly.finalBalance).toBeLessThan(monthly.finalBalance);
+    expect(monthly.finalBalance).toBeLessThan(daily.finalBalance);
+    expect(apy.apyPercent).toBeCloseTo(6.1678, 3);
+    expect(apy.endingBalance).toBeCloseTo(monthly.finalBalance, 8);
+  });
+
+  test('compound-interest cluster routes and internal-link targets are registered', () => {
+    const expectedRoutes = [
+      '/calculators/daily-compound-interest-calculator/',
+      '/calculators/monthly-compound-interest-calculator/',
+      '/calculators/quarterly-compound-interest-calculator/',
+      '/calculators/annual-compound-interest-calculator/',
+      '/calculators/apy-calculator/',
+      '/calculators/investment-growth-calculator/',
+      '/calculators/savings-growth-calculator/',
+    ];
+    const calculatorUrls = new Set(
+      Object.values(calculatorConfigs).map((calculator) => calculator.url),
+    );
+
+    expect(expectedRoutes.every((route) => calculatorUrls.has(route))).toBe(
+      true,
+    );
+
+    for (const route of expectedRoutes) {
+      const related = createRelatedCalculatorLinks(route);
+      const relatedUrls = new Set(related.map((item) => item.url));
+
+      expect(relatedUrls.has('/calculators/compound-interest/')).toBe(true);
+      expect(relatedUrls.has('/calculators/rule-of-72-calculator/')).toBe(true);
+      expect(relatedUrls.has('/calculators/cagr-calculator/')).toBe(true);
+    }
+  });
+
   test('centralized calculator page content is complete and unique', () => {
     const allFaqQuestions: string[] = [];
     const calculatorUrls = new Set(calculators.map((calculator) => calculator.url));
