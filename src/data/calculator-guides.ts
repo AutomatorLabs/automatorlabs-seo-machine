@@ -343,6 +343,27 @@ function buildGuide(config: CalculatorConfig): CalculatorGuide {
                 'Understand how a stated rate differs from effective annual yield.',
             },
           ]
+      : config.id.includes('401k') || config.id === 'employer-match'
+        ? [
+            {
+              title: 'Roth IRA vs Traditional IRA',
+              url: '/guides/roth-vs-traditional-ira/',
+              description:
+                'Compare paying taxes before contributions with deferring taxes until retirement.',
+            },
+            {
+              title: 'Planning Retirement Withdrawals',
+              url: '/guides/retirement-withdrawals/',
+              description:
+                'Connect retirement account accumulation with future income planning.',
+            },
+            {
+              title: 'A Beginner’s Guide to FIRE',
+              url: '/guides/fire/',
+              description:
+                'Connect workplace retirement saving with financial independence planning.',
+            },
+          ]
       : undefined;
 
   return {

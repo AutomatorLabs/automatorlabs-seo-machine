@@ -6,6 +6,7 @@ import {
   calculateRealRateOfReturn,
   calculateRequiredPeriodicSavings,
   calculateRothIraProjection,
+  calculateRothVsTraditionalIra,
   calculateRothVsTaxable,
   calculateYearsToTarget,
   futureValue,
@@ -33,6 +34,8 @@ export const calculatorTableHeadings: Record<string, string> = {
   'fat-fire': 'Year-by-Year Projection',
   'barista-fire': 'Year-by-Year Projection',
   '401k-growth': 'Year-by-Year Projection',
+  '401k': 'Year-by-Year Projection',
+  'traditional-vs-roth-401k': 'Traditional and Roth 401(k) Comparison',
   'ira-growth': 'Year-by-Year Projection',
   'roth-ira': 'Year-by-Year Projection',
   'roth-ira-growth': 'Year-by-Year Projection',
@@ -557,6 +560,7 @@ export function buildCalculatorTable(
         ),
       });
     }
+    case '401k':
     case '401k-growth':
       return growthTable({
         initialBalance: value(data, 'currentBalance'),
@@ -567,6 +571,42 @@ export function buildCalculatorTable(
         periodsPerYear: 12,
         years: value(data, 'years'),
       });
+    case 'traditional-vs-roth-401k': {
+      const years = value(data, 'years');
+      const rows = Array.from(
+        { length: cappedCount(years, 60) },
+        (_, index) => {
+          const year = index + 1;
+          const result = calculateRothVsTraditionalIra({
+            annualContribution: value(data, 'annualContribution'),
+            currentTaxRatePercent: value(data, 'currentTaxRate'),
+            retirementTaxRatePercent: value(data, 'retirementTaxRate'),
+            expectedAnnualReturnPercent: value(
+              data,
+              'expectedAnnualReturn',
+            ),
+            years: year,
+          });
+          return [
+            String(year),
+            currency.format(result.rothEndingValue),
+            currency.format(result.traditionalAfterTaxEndingValue),
+            currency.format(result.difference),
+          ];
+        },
+      );
+      return {
+        heading: 'Traditional and Roth 401(k) Comparison',
+        columns: [
+          'Year',
+          'Roth 401(k)',
+          'Traditional 401(k) After Tax',
+          'Difference',
+        ],
+        rows,
+        warning: capWarning('years', years, 60),
+      };
+    }
     case 'ira-growth':
     case 'hsa-growth':
       return growthTable({

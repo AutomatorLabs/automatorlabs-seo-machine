@@ -650,6 +650,48 @@ export interface FourOhOneKGrowthResult {
   investmentGrowth: number;
 }
 
+export interface FourOhOneKContributionPlanInput {
+  annualSalary: number;
+  employeeContributionPercent: number;
+  employerContributionPercent: number;
+  payPeriodsPerYear: number;
+}
+
+export interface FourOhOneKContributionPlanResult {
+  employeeAnnualContribution: number;
+  employeeContributionPerPaycheck: number;
+  employerAnnualContribution: number;
+  combinedAnnualContribution: number;
+}
+
+export interface FourOhOneKEmployerMatchInput {
+  annualSalary: number;
+  employeeContributionPercent: number;
+  employerMatchRatePercent: number;
+  employerMatchCapPercentOfSalary: number;
+}
+
+export interface FourOhOneKEmployerMatchResult {
+  employeeAnnualContribution: number;
+  eligibleEmployeeContribution: number;
+  estimatedEmployerMatch: number;
+  combinedAnnualContribution: number;
+}
+
+export interface FourOhOneKMaxContributionInput {
+  assumedRegularLimit: number;
+  assumedCatchUpAmount: number;
+  contributedSoFar: number;
+  monthsRemaining: number;
+}
+
+export interface FourOhOneKMaxContributionResult {
+  assumedTotalLimit: number;
+  remainingAvailable: number;
+  monthlyAmountToReachAssumedLimit: number;
+  semimonthlyAmountToReachAssumedLimit: number;
+}
+
 export interface IraGrowthInput {
   currentBalance: number;
   annualContribution: number;
@@ -2295,6 +2337,80 @@ export function calculate401kGrowth({
       currentBalance -
       totalEmployeeContributions -
       totalEmployerMatch,
+  };
+}
+
+export function calculate401kContributionPlan({
+  annualSalary,
+  employeeContributionPercent,
+  employerContributionPercent,
+  payPeriodsPerYear,
+}: FourOhOneKContributionPlanInput): FourOhOneKContributionPlanResult {
+  const employeeAnnualContribution =
+    annualSalary * (employeeContributionPercent / 100);
+  const employerAnnualContribution =
+    annualSalary * (employerContributionPercent / 100);
+
+  return {
+    employeeAnnualContribution,
+    employeeContributionPerPaycheck:
+      payPeriodsPerYear > 0
+        ? employeeAnnualContribution / payPeriodsPerYear
+        : 0,
+    employerAnnualContribution,
+    combinedAnnualContribution:
+      employeeAnnualContribution + employerAnnualContribution,
+  };
+}
+
+export function calculate401kEmployerMatch({
+  annualSalary,
+  employeeContributionPercent,
+  employerMatchRatePercent,
+  employerMatchCapPercentOfSalary,
+}: FourOhOneKEmployerMatchInput): FourOhOneKEmployerMatchResult {
+  const employeeAnnualContribution =
+    annualSalary * (employeeContributionPercent / 100);
+  const eligibleEmployeeContribution =
+    annualSalary *
+    (Math.min(
+      employeeContributionPercent,
+      employerMatchCapPercentOfSalary,
+    ) /
+      100);
+  const estimatedEmployerMatch =
+    eligibleEmployeeContribution * (employerMatchRatePercent / 100);
+
+  return {
+    employeeAnnualContribution,
+    eligibleEmployeeContribution,
+    estimatedEmployerMatch,
+    combinedAnnualContribution:
+      employeeAnnualContribution + estimatedEmployerMatch,
+  };
+}
+
+export function calculate401kMaxContribution({
+  assumedRegularLimit,
+  assumedCatchUpAmount,
+  contributedSoFar,
+  monthsRemaining,
+}: FourOhOneKMaxContributionInput): FourOhOneKMaxContributionResult {
+  const assumedTotalLimit = assumedRegularLimit + assumedCatchUpAmount;
+  const remainingAvailable = Math.max(
+    assumedTotalLimit - contributedSoFar,
+    0,
+  );
+
+  return {
+    assumedTotalLimit,
+    remainingAvailable,
+    monthlyAmountToReachAssumedLimit:
+      monthsRemaining > 0 ? remainingAvailable / monthsRemaining : 0,
+    semimonthlyAmountToReachAssumedLimit:
+      monthsRemaining > 0
+        ? remainingAvailable / (monthsRemaining * 2)
+        : 0,
   };
 }
 

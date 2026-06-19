@@ -39,6 +39,7 @@ import {
   calculateRequiredPeriodicSavings,
 } from '../src/lib/math';
 import { rothIraPlanningDefaults } from '../src/config/roth-ira';
+import { fourOhOneKPlanningDefaults } from '../src/config/401k';
 
 const calculators = Object.values(calculatorConfigs).sort((a, b) =>
   a.title.localeCompare(b.title),
@@ -753,6 +754,59 @@ test.describe('global programmatic examples hub', () => {
 });
 
 test.describe('calculator QA', () => {
+  test('401(k) cluster routes, editable defaults, and related tools are registered', () => {
+    const expectedRoutes = [
+      '/calculators/401k-calculator/',
+      '/calculators/401k-growth-calculator/',
+      '/calculators/401k-contribution-calculator/',
+      '/calculators/employer-match-calculator/',
+      '/calculators/traditional-vs-roth-401k-calculator/',
+      '/calculators/401k-catch-up-contribution-calculator/',
+    ];
+    const calculatorUrls = new Set(calculators.map((item) => item.url));
+
+    expect(expectedRoutes.every((route) => calculatorUrls.has(route))).toBe(
+      true,
+    );
+    expect(
+      fourOhOneKPlanningDefaults.assumedAnnualEmployeeContributionLimit,
+    ).toBeGreaterThan(0);
+    expect(
+      fourOhOneKPlanningDefaults.assumedCatchUpContributionAmount,
+    ).toBeGreaterThan(0);
+
+    for (const route of expectedRoutes) {
+      const relatedUrls = new Set(
+        createRelatedCalculatorLinks(route).map((item) => item.url),
+      );
+      expect(relatedUrls.has('/calculators/roth-ira-calculator/')).toBe(true);
+      expect(
+        relatedUrls.has('/calculators/roth-ira-growth-calculator/'),
+      ).toBe(true);
+      expect(
+        relatedUrls.has(
+          '/calculators/roth-ira-vs-taxable-account-calculator/',
+        ),
+      ).toBe(true);
+    }
+  });
+
+  test('401(k) calculator pages include the newsletter acquisition CTA', async ({
+    page,
+  }) => {
+    for (const route of [
+      '/calculators/401k-calculator/',
+      '/calculators/401k-growth-calculator/',
+      '/calculators/401k-contribution-calculator/',
+      '/calculators/employer-match-calculator/',
+      '/calculators/traditional-vs-roth-401k-calculator/',
+      '/calculators/401k-catch-up-contribution-calculator/',
+    ]) {
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('a[href="/newsletter/"]').last()).toBeVisible();
+    }
+  });
+
   test('Roth IRA cluster routes, editable defaults, and related tools are registered', () => {
     const expectedRoutes = [
       '/calculators/roth-ira-calculator/',

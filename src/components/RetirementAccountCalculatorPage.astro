@@ -9,6 +9,7 @@ interface Props {
 }
 
 const { calculator, periodsPerYear = 1 } = Astro.props;
+const isFourOhOneK = calculator.id.includes('401k') || calculator.id === 'employer-match';
 const relatedItems = calculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((candidate) => candidate.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
@@ -27,16 +28,39 @@ const guideItems = [
     url: '/guides/fire/',
   },
 ];
-const retirementToolItems = [
-  {
-    title: 'FIRE Calculator',
-    url: '/calculators/fire-calculator/',
-  },
-  {
-    title: 'Retirement Withdrawal Calculator',
-    url: '/calculators/retirement-withdrawal-calculator/',
-  },
-];
+const retirementToolItems = isFourOhOneK
+  ? [
+      {
+        title: 'Compound Interest Calculator',
+        url: '/calculators/compound-interest/',
+      },
+      {
+        title: 'Investment Growth Calculator',
+        url: '/calculators/investment-growth-calculator/',
+      },
+      {
+        title: 'FIRE Calculator',
+        url: '/calculators/fire-calculator/',
+      },
+      {
+        title: 'Retirement Withdrawal Calculator',
+        url: '/calculators/retirement-withdrawal-calculator/',
+      },
+      {
+        title: 'Savings Goal Calculator',
+        url: '/calculators/savings-goal-calculator/',
+      },
+    ]
+  : [
+      {
+        title: 'FIRE Calculator',
+        url: '/calculators/fire-calculator/',
+      },
+      {
+        title: 'Retirement Withdrawal Calculator',
+        url: '/calculators/retirement-withdrawal-calculator/',
+      },
+    ];
 ---
 
 <CalculatorPage
@@ -59,11 +83,16 @@ const retirementToolItems = [
     import { trackSuccessfulCalculation } from '../lib/analytics';
     import { parseCalculatorNumber } from '../lib/input';
     import {
+      calculate401kContributionPlan,
+      calculate401kEmployerMatch,
+      calculate401kGrowth,
+      calculate401kMaxContribution,
       calculateRothContributionPlan,
       calculateRothEarlyWithdrawal,
       calculateRothIraProjection,
       calculateRothMaxContribution,
       calculateRothVsTaxable,
+      calculateRothVsTraditionalIra,
     } from '../lib/math';
 
     const form = document.querySelector<HTMLFormElement>('#calculator-form');
@@ -263,6 +292,167 @@ const retirementToolItems = [
         setText(
           'withdrawal-net-result',
           currency.format(result.estimatedNetWithdrawal),
+        );
+      } else if (
+        calculatorId === '401k' ||
+        calculatorId === '401k-growth'
+      ) {
+        const years = number(data, 'years');
+        if (years <= 0 || !Number.isInteger(years)) {
+          error.textContent = 'Years invested must be a whole number above 0.';
+          error.hidden = false;
+          return false;
+        }
+        const result = calculate401kGrowth({
+          currentBalance: number(data, 'currentBalance'),
+          employeeMonthlyContribution: number(
+            data,
+            'employeeMonthlyContribution',
+          ),
+          employerMonthlyMatch: number(data, 'employerMonthlyMatch'),
+          expectedAnnualReturnPercent: number(
+            data,
+            'expectedAnnualReturn',
+          ),
+          years,
+        });
+        setText('ending-balance-result', currency.format(result.endingBalance));
+        setText(
+          'employee-contributions-result',
+          currency.format(result.totalEmployeeContributions),
+        );
+        setText(
+          'employer-match-result',
+          currency.format(result.totalEmployerMatch),
+        );
+        setText(
+          'investment-growth-result',
+          currency.format(result.investmentGrowth),
+        );
+      } else if (calculatorId === '401k-contribution') {
+        const result = calculate401kContributionPlan({
+          annualSalary: number(data, 'annualSalary'),
+          employeeContributionPercent: number(
+            data,
+            'employeeContributionPercent',
+          ),
+          employerContributionPercent: number(
+            data,
+            'employerContributionPercent',
+          ),
+          payPeriodsPerYear: number(data, 'payPeriodsPerYear'),
+        });
+        setText(
+          'employee-annual-contribution-result',
+          currency.format(result.employeeAnnualContribution),
+        );
+        setText(
+          'employee-per-paycheck-result',
+          currency.format(result.employeeContributionPerPaycheck),
+        );
+        setText(
+          'employer-annual-contribution-result',
+          currency.format(result.employerAnnualContribution),
+        );
+        setText(
+          'combined-annual-contribution-result',
+          currency.format(result.combinedAnnualContribution),
+        );
+      } else if (calculatorId === 'employer-match') {
+        const result = calculate401kEmployerMatch({
+          annualSalary: number(data, 'annualSalary'),
+          employeeContributionPercent: number(
+            data,
+            'employeeContributionPercent',
+          ),
+          employerMatchRatePercent: number(data, 'employerMatchRatePercent'),
+          employerMatchCapPercentOfSalary: number(
+            data,
+            'employerMatchCapPercentOfSalary',
+          ),
+        });
+        setText(
+          'employee-annual-deferral-result',
+          currency.format(result.employeeAnnualContribution),
+        );
+        setText(
+          'eligible-contribution-result',
+          currency.format(result.eligibleEmployeeContribution),
+        );
+        setText(
+          'estimated-employer-match-result',
+          currency.format(result.estimatedEmployerMatch),
+        );
+        setText(
+          'combined-contribution-result',
+          currency.format(result.combinedAnnualContribution),
+        );
+      } else if (calculatorId === 'traditional-vs-roth-401k') {
+        const years = number(data, 'years');
+        if (years <= 0 || !Number.isInteger(years)) {
+          error.textContent = 'Years invested must be a whole number above 0.';
+          error.hidden = false;
+          return false;
+        }
+        const result = calculateRothVsTraditionalIra({
+          annualContribution: number(data, 'annualContribution'),
+          currentTaxRatePercent: number(data, 'currentTaxRate'),
+          retirementTaxRatePercent: number(data, 'retirementTaxRate'),
+          expectedAnnualReturnPercent: number(
+            data,
+            'expectedAnnualReturn',
+          ),
+          years,
+        });
+        setText(
+          'roth-401k-ending-result',
+          currency.format(result.rothEndingValue),
+        );
+        setText(
+          'traditional-401k-after-tax-result',
+          currency.format(result.traditionalAfterTaxEndingValue),
+        );
+        setText(
+          'comparison-401k-difference-result',
+          currency.format(result.difference),
+        );
+        setText(
+          'comparison-401k-result',
+          result.betterOption === 'roth'
+            ? 'Roth 401(k)'
+            : result.betterOption === 'traditional'
+              ? 'Traditional 401(k)'
+              : 'Equivalent under these assumptions',
+        );
+      } else if (calculatorId === '401k-catch-up-contribution') {
+        const monthsRemaining = number(data, 'monthsRemaining');
+        if (monthsRemaining > 12 || !Number.isInteger(monthsRemaining)) {
+          error.textContent =
+            'Months remaining must be a whole number from 0 through 12.';
+          error.hidden = false;
+          return false;
+        }
+        const result = calculate401kMaxContribution({
+          assumedRegularLimit: number(data, 'assumedRegularLimit'),
+          assumedCatchUpAmount: number(data, 'assumedCatchUpAmount'),
+          contributedSoFar: number(data, 'contributedSoFar'),
+          monthsRemaining,
+        });
+        setText(
+          'assumed-total-limit-result',
+          currency.format(result.assumedTotalLimit),
+        );
+        setText(
+          'catch-up-remaining-result',
+          currency.format(result.remainingAvailable),
+        );
+        setText(
+          'catch-up-monthly-result',
+          currency.format(result.monthlyAmountToReachAssumedLimit),
+        );
+        setText(
+          'catch-up-per-paycheck-result',
+          currency.format(result.semimonthlyAmountToReachAssumedLimit),
         );
       }
 

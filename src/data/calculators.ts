@@ -1,4 +1,5 @@
 import { rothIraPlanningDefaults } from '../config/roth-ira';
+import { fourOhOneKPlanningDefaults } from '../config/401k';
 
 export interface CalculatorOption {
   label: string;
@@ -316,6 +317,146 @@ const rothClusterRelatedIds = [
   'retirement-withdrawal-calculator',
 ];
 
+const fourOhOneKClusterRelatedIds = [
+  'roth-ira-calculator',
+  'roth-ira-growth-calculator',
+  'roth-ira-vs-taxable-account-calculator',
+  'ira-growth-calculator',
+  'roth-vs-traditional-ira-calculator',
+  'taxable-vs-tax-advantaged-calculator',
+  'compound-interest-calculator',
+  'investment-growth-calculator',
+  'fire-calculator',
+  'retirement-withdrawal-calculator',
+  'savings-goal-calculator',
+];
+
+function fourOhOneKGrowthVariant({
+  id,
+  url,
+  title,
+  description,
+}: {
+  id: string;
+  url: string;
+  title: string;
+  description: string;
+}): CalculatorConfig {
+  return {
+    id,
+    url,
+    title,
+    eyebrow: '401(k) Calculator',
+    description,
+    inputs: [
+      {
+        id: `${id}-current-balance`,
+        name: 'currentBalance',
+        label: 'Current 401(k) balance',
+        type: 'number',
+        value: '50000',
+        min: '0',
+        step: '1000',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: `${id}-employee-contribution`,
+        name: 'employeeMonthlyContribution',
+        label: 'Employee monthly contribution',
+        type: 'number',
+        value: '600',
+        min: '0',
+        step: '10',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: `${id}-employer-match`,
+        name: 'employerMonthlyMatch',
+        label: 'Employer monthly contribution or match',
+        type: 'number',
+        value: '300',
+        min: '0',
+        step: '10',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: `${id}-return`,
+        name: 'expectedAnnualReturn',
+        label: 'Expected annual return (%)',
+        type: 'number',
+        value: '7',
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: `${id}-years`,
+        name: 'years',
+        label: 'Years invested',
+        type: 'number',
+        value: '25',
+        min: '1',
+        step: '1',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'ending-balance-result',
+        label: 'Projected 401(k) balance',
+        initialValue: '$0.00',
+        primary: true,
+      },
+      {
+        id: 'employee-contributions-result',
+        label: 'Total employee contributions',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'employer-match-result',
+        label: 'Total employer contributions',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'investment-growth-result',
+        label: 'Estimated investment growth',
+        initialValue: '$0.00',
+      },
+    ],
+    faq: [
+      {
+        question: `How does the ${title} project the account balance?`,
+        answer:
+          'It compounds the current balance monthly and adds the entered employee and employer amounts at the end of each month.',
+      },
+      {
+        question: `How should employer contributions be entered in the ${title}?`,
+        answer:
+          'Enter the estimated monthly dollar amount that will actually reach the account. Plan formulas, caps, vesting, and timing vary.',
+      },
+      {
+        question: `Does the ${title} enforce contribution limits?`,
+        answer:
+          'No. Limits, catch-up eligibility, plan rules, and laws can change. Compare contributions with current plan and authoritative guidance.',
+      },
+      {
+        question: `Does the ${title} include fees, taxes, or penalties?`,
+        answer:
+          'No. It is a nominal accumulation projection and excludes plan fees, taxes, penalties, withdrawals, loans, and changing investment returns.',
+      },
+      {
+        question: `Is the expected return in the ${title} guaranteed?`,
+        answer:
+          'No. Investment returns fluctuate and can be negative. Test a range of assumptions instead of relying on one forecast.',
+      },
+    ],
+    relatedIds: fourOhOneKClusterRelatedIds,
+  };
+}
+
 function rothGrowthVariant({
   id,
   url,
@@ -438,6 +579,126 @@ function rothGrowthVariant({
 }
 
 export const calculatorConfigs: Record<string, CalculatorConfig> = {
+  '401k': fourOhOneKGrowthVariant({
+    id: '401k',
+    url: '/calculators/401k-calculator/',
+    title: '401(k) Calculator',
+    description:
+      'Project a 401(k) balance using current savings, monthly employee contributions, employer contributions, expected return, and time.',
+  }),
+  '401k-contribution': {
+    id: '401k-contribution',
+    url: '/calculators/401k-contribution-calculator/',
+    title: '401(k) Contribution Calculator',
+    eyebrow: '401(k) Calculator',
+    description:
+      'Estimate employee and employer 401(k) contributions from salary, editable contribution percentages, and pay frequency.',
+    inputs: [
+      { id: '401k-contribution-salary', name: 'annualSalary', label: 'Annual salary', type: 'number', value: '80000', min: '0.01', step: '1000', prefix: '$', required: true },
+      { id: '401k-employee-percent', name: 'employeeContributionPercent', label: 'Employee contribution rate (%)', type: 'number', value: '8', min: '0', step: '0.01', required: true },
+      { id: '401k-employer-percent', name: 'employerContributionPercent', label: 'Estimated employer contribution rate (%)', type: 'number', value: '3', min: '0', step: '0.01', required: true },
+      { id: '401k-pay-periods', name: 'payPeriodsPerYear', label: 'Paychecks per year', type: 'number', value: '26', min: '1', step: '1', required: true },
+    ],
+    outputs: [
+      { id: 'employee-annual-contribution-result', label: 'Employee annual contribution', initialValue: '$0.00', primary: true },
+      { id: 'employee-per-paycheck-result', label: 'Employee contribution per paycheck', initialValue: '$0.00' },
+      { id: 'employer-annual-contribution-result', label: 'Estimated employer annual contribution', initialValue: '$0.00' },
+      { id: 'combined-annual-contribution-result', label: 'Combined annual contribution', initialValue: '$0.00' },
+    ],
+    faq: [
+      { question: 'How does the 401(k) Contribution Calculator estimate employee contributions?', answer: 'It multiplies annual salary by the entered employee contribution rate and divides by paychecks for the per-paycheck estimate.' },
+      { question: 'Does the 401(k) Contribution Calculator enforce current contribution limits?', answer: 'No. The result is a payroll planning estimate. Check current limits, plan rules, and eligibility separately.' },
+      { question: 'Is the employer contribution percentage a guaranteed match?', answer: 'No. It is an editable assumption. Employer formulas, caps, timing, true-ups, and vesting schedules vary by plan.' },
+      { question: 'Does this contribution estimate include bonuses or variable compensation?', answer: 'Only if those amounts are included in the annual salary input and the plan applies the entered percentage to them.' },
+      { question: 'Are payroll taxes or take-home-pay effects included?', answer: 'No. The tool does not estimate payroll withholding, income taxes, after-tax contributions, or paycheck deductions beyond the entered contribution.' },
+    ],
+    relatedIds: fourOhOneKClusterRelatedIds,
+  },
+  'employer-match': {
+    id: 'employer-match',
+    url: '/calculators/employer-match-calculator/',
+    title: 'Employer Match Calculator',
+    eyebrow: '401(k) Calculator',
+    description:
+      'Estimate a 401(k) employer match from salary, employee deferral rate, match percentage, and an editable salary cap.',
+    inputs: [
+      { id: 'match-salary', name: 'annualSalary', label: 'Annual salary', type: 'number', value: '80000', min: '0.01', step: '1000', prefix: '$', required: true },
+      { id: 'match-employee-percent', name: 'employeeContributionPercent', label: 'Employee contribution rate (%)', type: 'number', value: '8', min: '0', step: '0.01', required: true },
+      { id: 'match-rate', name: 'employerMatchRatePercent', label: 'Employer match rate on eligible contributions (%)', type: 'number', value: '50', min: '0', step: '0.01', required: true },
+      { id: 'match-cap', name: 'employerMatchCapPercentOfSalary', label: 'Employee contribution eligible for match (% of salary)', type: 'number', value: '6', min: '0', step: '0.01', required: true },
+    ],
+    outputs: [
+      { id: 'employee-annual-deferral-result', label: 'Employee annual contribution', initialValue: '$0.00' },
+      { id: 'eligible-contribution-result', label: 'Employee contribution eligible for match', initialValue: '$0.00' },
+      { id: 'estimated-employer-match-result', label: 'Estimated employer match', initialValue: '$0.00', primary: true },
+      { id: 'combined-contribution-result', label: 'Combined annual contribution', initialValue: '$0.00' },
+    ],
+    faq: [
+      { question: 'How does the Employer Match Calculator interpret a 50% match up to 6%?', answer: 'It applies the 50% match rate to employee contributions up to 6% of salary, using the editable assumptions entered.' },
+      { question: 'Does this employer match estimate include a plan cap?', answer: 'Yes, but only the salary-percentage cap you enter. Dollar caps, compensation limits, tiers, and plan-specific exclusions are not modeled.' },
+      { question: 'Does the Employer Match Calculator include vesting?', answer: 'No. The estimate shows contributions that may be credited, not the amount currently vested or retained after leaving employment.' },
+      { question: 'Does this tool model match true-ups or payroll timing?', answer: 'No. Per-paycheck matching, annual true-ups, waiting periods, and deposit timing can change actual employer contributions.' },
+      { question: 'Can the estimated employer match exceed my employee contribution?', answer: 'It can under unusual entered assumptions. Confirm that the match rate and cap accurately reflect the plan document.' },
+    ],
+    relatedIds: fourOhOneKClusterRelatedIds,
+  },
+  'traditional-vs-roth-401k': {
+    id: 'traditional-vs-roth-401k',
+    url: '/calculators/traditional-vs-roth-401k-calculator/',
+    title: 'Traditional vs Roth 401(k) Calculator',
+    eyebrow: '401(k) Tax Comparison',
+    description:
+      'Compare projected Traditional and Roth 401(k) after-tax values using editable contribution, return, and tax-rate assumptions.',
+    inputs: [
+      { id: '401k-comparison-contribution', name: 'annualContribution', label: 'Annual pre-tax contribution budget', type: 'number', value: '12000', min: '0', step: '100', prefix: '$', required: true },
+      { id: '401k-current-tax-rate', name: 'currentTaxRate', label: 'Current assumed tax rate (%)', type: 'number', value: String(fourOhOneKPlanningDefaults.assumedCurrentTaxRatePercent), min: '0', step: '0.01', required: true },
+      { id: '401k-retirement-tax-rate', name: 'retirementTaxRate', label: 'Retirement assumed tax rate (%)', type: 'number', value: String(fourOhOneKPlanningDefaults.assumedRetirementTaxRatePercent), min: '0', step: '0.01', required: true },
+      { id: '401k-comparison-return', name: 'expectedAnnualReturn', label: 'Expected annual return (%)', type: 'number', value: '7', min: '0', step: '0.01', required: true },
+      { id: '401k-comparison-years', name: 'years', label: 'Years invested', type: 'number', value: '25', min: '1', step: '1', required: true },
+    ],
+    outputs: [
+      { id: 'roth-401k-ending-result', label: 'Projected Roth 401(k) value', initialValue: '$0.00' },
+      { id: 'traditional-401k-after-tax-result', label: 'Projected Traditional 401(k) after-tax value', initialValue: '$0.00' },
+      { id: 'comparison-401k-difference-result', label: 'Difference', initialValue: '$0.00' },
+      { id: 'comparison-401k-result', label: 'Higher value under assumptions', initialValue: 'Not calculated', primary: true },
+    ],
+    faq: [
+      { question: 'How does the Traditional vs Roth 401(k) Calculator compare equal budgets?', answer: 'It reduces the Roth contribution for the entered current tax rate while applying the retirement tax rate to the projected Traditional balance.' },
+      { question: 'Does this 401(k) comparison determine which account type I should choose?', answer: 'No. It is an educational scenario, not tax, legal, investment, or plan advice.' },
+      { question: 'Are employer matches included in the Traditional versus Roth 401(k) comparison?', answer: 'No. The comparison isolates employee contributions and tax-rate assumptions. Employer contribution treatment depends on plan rules and law.' },
+      { question: 'Does the comparison include contribution limits, fees, or required distributions?', answer: 'No. It excludes limits, income effects, plan fees, penalties, required distributions, and changing tax laws.' },
+      { question: 'Why do current and retirement tax rates matter?', answer: 'The model pays tax before Roth contributions and after Traditional accumulation, so the relative entered rates influence the comparison.' },
+    ],
+    relatedIds: fourOhOneKClusterRelatedIds,
+  },
+  '401k-catch-up-contribution': {
+    id: '401k-catch-up-contribution',
+    url: '/calculators/401k-catch-up-contribution-calculator/',
+    title: '401(k) Catch-Up Contribution Calculator',
+    eyebrow: '401(k) Contribution Planner',
+    description:
+      'Plan contributions toward editable assumed regular and catch-up 401(k) amounts using contributions made and months remaining.',
+    inputs: [
+      { id: '401k-assumed-regular-limit', name: 'assumedRegularLimit', label: 'Assumed regular annual contribution limit', type: 'number', value: String(fourOhOneKPlanningDefaults.assumedAnnualEmployeeContributionLimit), min: '0', step: '100', prefix: '$', required: true },
+      { id: '401k-assumed-catch-up', name: 'assumedCatchUpAmount', label: 'Assumed catch-up contribution amount', type: 'number', value: String(fourOhOneKPlanningDefaults.assumedCatchUpContributionAmount), min: '0', step: '100', prefix: '$', required: true },
+      { id: '401k-contributed-so-far', name: 'contributedSoFar', label: 'Employee contributions made so far', type: 'number', value: '10000', min: '0', step: '100', prefix: '$', required: true },
+      { id: '401k-months-remaining', name: 'monthsRemaining', label: 'Months remaining in contribution plan', type: 'number', value: '6', min: '0', step: '1', required: true },
+    ],
+    outputs: [
+      { id: 'assumed-total-limit-result', label: 'Combined assumed contribution amount', initialValue: '$0.00' },
+      { id: 'catch-up-remaining-result', label: 'Remaining under assumed amounts', initialValue: '$0.00', primary: true },
+      { id: 'catch-up-monthly-result', label: 'Monthly amount to assumed total', initialValue: '$0.00' },
+      { id: 'catch-up-per-paycheck-result', label: 'Semimonthly amount to assumed total', initialValue: '$0.00' },
+    ],
+    faq: [
+      { question: 'Does the 401(k) Catch-Up Contribution Calculator determine eligibility?', answer: 'No. Eligibility can depend on age, plan terms, law, and other facts. Enter only assumptions you have independently verified.' },
+      { question: 'Are the regular and catch-up amounts current legal limits?', answer: 'They are centralized editable planning defaults, not a promise of current limits or personal eligibility. Review them annually.' },
+      { question: 'How is the remaining catch-up planning amount calculated?', answer: 'The calculator adds the assumed regular and catch-up amounts, then subtracts employee contributions made so far.' },
+      { question: 'Does this catch-up calculator include employer contributions?', answer: 'No. It models employee contribution assumptions only. Employer contributions follow separate plan rules and limits.' },
+      { question: 'What if contributions already exceed the assumed combined amount?', answer: 'The remaining amount is shown as zero. The calculator does not determine excess contributions, corrections, taxes, or penalties.' },
+    ],
+    relatedIds: fourOhOneKClusterRelatedIds,
+  },
   'roth-ira': rothGrowthVariant({
     id: 'roth-ira',
     url: '/calculators/roth-ira-calculator/',
@@ -4193,125 +4454,13 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       'fire-calculator',
     ],
   },
-  '401k-growth': {
+  '401k-growth': fourOhOneKGrowthVariant({
     id: '401k-growth',
     url: '/calculators/401k-growth-calculator/',
     title: '401(k) Growth Calculator',
-    eyebrow: 'Retirement Calculator',
     description:
       'Estimate how your current 401(k), employee contributions, employer match, and investment returns could grow over time.',
-    inputs: [
-      {
-        id: 'current-401k-balance',
-        name: 'currentBalance',
-        label: 'Current 401(k) balance',
-        type: 'number',
-        value: '50000',
-        min: '0',
-        step: '1000',
-        prefix: '$',
-        required: true,
-      },
-      {
-        id: 'employee-monthly-contribution',
-        name: 'employeeMonthlyContribution',
-        label: 'Employee monthly contribution',
-        type: 'number',
-        value: '600',
-        min: '0',
-        step: '10',
-        prefix: '$',
-        required: true,
-      },
-      {
-        id: 'employer-monthly-match',
-        name: 'employerMonthlyMatch',
-        label: 'Employer monthly match',
-        type: 'number',
-        value: '300',
-        min: '0',
-        step: '10',
-        prefix: '$',
-        required: true,
-      },
-      {
-        id: 'expected-annual-return',
-        name: 'expectedAnnualReturn',
-        label: 'Expected annual return (%)',
-        type: 'number',
-        value: '7',
-        min: '0',
-        step: '0.01',
-        required: true,
-      },
-      {
-        id: 'years',
-        name: 'years',
-        label: 'Number of years',
-        type: 'number',
-        value: '25',
-        min: '1',
-        step: '1',
-        required: true,
-      },
-    ],
-    outputs: [
-      {
-        id: 'ending-balance-result',
-        label: 'Ending 401(k) balance',
-        initialValue: '$0.00',
-        primary: true,
-      },
-      {
-        id: 'employee-contributions-result',
-        label: 'Total employee contributions',
-        initialValue: '$0.00',
-      },
-      {
-        id: 'employer-match-result',
-        label: 'Total employer match',
-        initialValue: '$0.00',
-      },
-      {
-        id: 'investment-growth-result',
-        label: 'Investment growth',
-        initialValue: '$0.00',
-      },
-    ],
-    faq: [
-      {
-        question: 'How does this 401(k) growth calculator work?',
-        answer:
-          'It compounds the current balance monthly and adds the employee contribution and employer match at the end of each month.',
-      },
-      {
-        question: 'How should I enter my employer match?',
-        answer:
-          'Enter the estimated dollar amount your employer contributes each month. Check your plan rules because matching formulas and vesting schedules vary.',
-      },
-      {
-        question: 'Does the ending balance include my current 401(k) balance?',
-        answer:
-          'Yes. The current balance grows alongside all future employee contributions and employer matching contributions.',
-      },
-      {
-        question: 'Are taxes, fees, and contribution limits included?',
-        answer:
-          'No. The calculator does not model taxes, plan fees, IRS contribution limits, catch-up contributions, or changes in contribution amounts.',
-      },
-      {
-        question: 'Is the expected annual return guaranteed?',
-        answer:
-          'No. Investment returns fluctuate and may be negative in some years. Use a conservative long-term assumption and compare multiple scenarios.',
-      },
-    ],
-    relatedIds: [
-      'roth-ira-calculator',
-      'roth-vs-traditional-ira-calculator',
-      'compound-interest-calculator',
-      'fire-calculator',
-    ],
-  },
+  }),
   'ira-growth': {
     id: 'ira-growth',
     url: '/calculators/ira-growth-calculator/',
@@ -7077,6 +7226,14 @@ export const retirementTaxDragCalculator =
 export const rothVsTraditionalIraCalculator =
   calculatorConfigs['roth-vs-traditional-ira'];
 export const fourOhOneKGrowthCalculator = calculatorConfigs['401k-growth'];
+export const fourOhOneKCalculator = calculatorConfigs['401k'];
+export const fourOhOneKContributionCalculator =
+  calculatorConfigs['401k-contribution'];
+export const employerMatchCalculator = calculatorConfigs['employer-match'];
+export const traditionalVsRoth401kCalculator =
+  calculatorConfigs['traditional-vs-roth-401k'];
+export const fourOhOneKCatchUpContributionCalculator =
+  calculatorConfigs['401k-catch-up-contribution'];
 export const iraGrowthCalculator = calculatorConfigs['ira-growth'];
 export const taxableVsTaxAdvantagedCalculator =
   calculatorConfigs['taxable-vs-tax-advantaged'];
