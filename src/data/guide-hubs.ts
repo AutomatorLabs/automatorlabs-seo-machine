@@ -550,6 +550,11 @@ export const guideHubs: GuideHub[] = [
       'savings-rate-calculator',
       'emergency-fund-calculator',
       'savings-goal-calculator',
+      'monthly-savings-calculator',
+      'weekly-savings-calculator',
+      'daily-savings-calculator',
+      'vacation-savings-calculator',
+      'car-savings-calculator',
     ],
     sections: [
       {

@@ -1,0 +1,10 @@
+---
+import SavingsTargetCalculatorPage from '../../../components/SavingsTargetCalculatorPage.astro';
+import { weeklySavingsCalculator } from '../../../data/calculators';
+---
+
+<SavingsTargetCalculatorPage
+  calculator={weeklySavingsCalculator}
+  periodsPerYear={52}
+  periodLabel="week"
+/>

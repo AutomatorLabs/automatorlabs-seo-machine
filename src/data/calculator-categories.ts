@@ -120,6 +120,11 @@ export const calculatorCategories: CalculatorCategory[] = [
     metaDescription:
       'Use free budgeting and savings calculators for cash flow, savings rates, emergency funds, net worth, and financial goals.',
     ids: [
+      'monthly-savings-calculator',
+      'weekly-savings-calculator',
+      'daily-savings-calculator',
+      'vacation-savings-calculator',
+      'car-savings-calculator',
       'savings-rate-calculator',
       'net-worth-calculator',
       'emergency-fund-calculator',

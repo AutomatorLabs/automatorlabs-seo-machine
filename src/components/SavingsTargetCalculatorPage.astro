@@ -1,0 +1,157 @@
+---
+import type { CalculatorConfig } from '../data/calculators';
+import { contentItems } from '../data/content';
+import CalculatorPage from './CalculatorPage.astro';
+
+interface Props {
+  calculator: CalculatorConfig;
+  periodsPerYear: number;
+  periodLabel: string;
+}
+
+const { calculator, periodsPerYear, periodLabel } = Astro.props;
+const relatedItems = calculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((candidate) => candidate.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+const guideItems = [
+  {
+    title: 'Budgeting and Saving for Real Life',
+    url: '/guides/budgeting/',
+  },
+  {
+    title: 'What Is Compound Interest?',
+    url: '/guides/what-is-compound-interest/',
+  },
+  {
+    title: 'APR vs APY',
+    url: '/guides/apr-vs-apy/',
+  },
+];
+const exampleItems = [
+  {
+    title: 'Browse Savings Goal Examples',
+    url: '/calculators/savings-goal/examples/',
+  },
+  {
+    title: 'Save $100,000 in 5 Years',
+    url: '/calculators/savings-goal/save-100000-in-5-years/',
+  },
+];
+---
+
+<CalculatorPage
+  title={calculator.title}
+  eyebrow={calculator.eyebrow}
+  description={calculator.description}
+  inputs={calculator.inputs}
+  outputs={calculator.outputs}
+  faq={calculator.faq}
+  relatedItems={relatedItems}
+  guideItems={guideItems}
+  exampleItems={exampleItems}
+  exampleHeading="Savings Goal Examples"
+  calculatorData={{
+    'periods-per-year': periodsPerYear,
+    'period-label': periodLabel,
+    'tracking-id': calculator.id,
+  }}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../lib/analytics';
+    import { parseCalculatorNumber } from '../lib/input';
+    import { calculateRequiredPeriodicSavings } from '../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const requiredContributionResult = document.querySelector<HTMLElement>(
+      '#required-contribution-result',
+    );
+    const totalContributionsResult = document.querySelector<HTMLElement>(
+      '#total-contributions-result',
+    );
+    const estimatedGrowthResult = document.querySelector<HTMLElement>(
+      '#estimated-growth-result',
+    );
+    const endingBalanceResult = document.querySelector<HTMLElement>(
+      '#ending-balance-result',
+    );
+    const periodsPerYear = Number(form?.dataset.periodsPerYear ?? 12);
+    const periodLabel = form?.dataset.periodLabel ?? 'period';
+    const trackingId = form?.dataset.trackingId ?? 'savings_target';
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !requiredContributionResult ||
+        !totalContributionsResult ||
+        !estimatedGrowthResult ||
+        !endingBalanceResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const goalAmount = parseCalculatorNumber(data.get('goalAmount'));
+      const currentSavings = parseCalculatorNumber(
+        data.get('currentSavings'),
+      );
+      const years = parseCalculatorNumber(data.get('years'));
+      const annualReturnPercent = parseCalculatorNumber(
+        data.get('expectedReturn'),
+      );
+
+      if (
+        !Number.isFinite(goalAmount) ||
+        !Number.isFinite(currentSavings) ||
+        !Number.isFinite(years) ||
+        !Number.isFinite(annualReturnPercent) ||
+        goalAmount <= 0 ||
+        currentSavings < 0 ||
+        years <= 0 ||
+        annualReturnPercent < 0
+      ) {
+        error.textContent =
+          'Goal amount and years must be greater than 0. Current savings and expected return cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      error.hidden = true;
+      const result = calculateRequiredPeriodicSavings({
+        goalAmount,
+        currentSavings,
+        annualReturnPercent,
+        years,
+        periodsPerYear,
+      });
+
+      requiredContributionResult.textContent = currency.format(
+        result.requiredContribution,
+      );
+      requiredContributionResult.setAttribute(
+        'aria-label',
+        `${currency.format(result.requiredContribution)} per ${periodLabel}`,
+      );
+      totalContributionsResult.textContent = currency.format(
+        result.totalContributions,
+      );
+      estimatedGrowthResult.textContent = currency.format(result.totalGrowth);
+      endingBalanceResult.textContent = currency.format(result.endingBalance);
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation(trackingId, calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

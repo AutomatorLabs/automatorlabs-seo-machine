@@ -171,7 +171,187 @@ function compoundGrowthVariant({
   };
 }
 
+function savingsTargetVariant({
+  id,
+  url,
+  title,
+  description,
+  contributionPeriod,
+  goalLabel = 'Savings goal amount',
+  defaultGoal = '25000',
+  defaultYears = '3',
+  defaultReturn = '3',
+}: {
+  id: string;
+  url: string;
+  title: string;
+  description: string;
+  contributionPeriod: 'monthly' | 'weekly' | 'daily';
+  goalLabel?: string;
+  defaultGoal?: string;
+  defaultYears?: string;
+  defaultReturn?: string;
+}): CalculatorConfig {
+  const periodLabel =
+    contributionPeriod[0].toUpperCase() + contributionPeriod.slice(1);
+
+  return {
+    id,
+    url,
+    title,
+    eyebrow: 'Savings Goal Calculator',
+    description,
+    inputs: [
+      {
+        id: 'target-amount',
+        name: 'goalAmount',
+        label: goalLabel,
+        type: 'number',
+        value: defaultGoal,
+        min: '0.01',
+        step: '100',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'current-savings',
+        name: 'currentSavings',
+        label: 'Current savings',
+        type: 'number',
+        value: '2500',
+        min: '0',
+        step: '100',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'years-to-goal',
+        name: 'years',
+        label: 'Years to reach the goal',
+        type: 'number',
+        value: defaultYears,
+        min: '0.25',
+        step: '0.25',
+        required: true,
+      },
+      {
+        id: 'expected-return',
+        name: 'expectedReturn',
+        label: 'Expected annual return (%)',
+        type: 'number',
+        value: defaultReturn,
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'required-contribution-result',
+        label: `Required ${contributionPeriod} savings`,
+        initialValue: '$0.00',
+        primary: true,
+      },
+      {
+        id: 'total-contributions-result',
+        label: 'Total contributions',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'estimated-growth-result',
+        label: 'Estimated growth',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'ending-balance-result',
+        label: 'Estimated ending balance',
+        initialValue: '$0.00',
+      },
+    ],
+    faq: [
+      {
+        question: `How does the ${title} calculate the required amount?`,
+        answer: `It finds the equal ${contributionPeriod} deposit that could grow from current savings to the selected target over the entered timeline and return assumption.`,
+      },
+      {
+        question: `When does the ${title} assume each ${contributionPeriod} deposit is made?`,
+        answer: `Deposits are treated as end-of-period contributions, with ${periodLabel.toLowerCase()} compounding used for a consistent planning estimate.`,
+      },
+      {
+        question: `What happens in the ${title} when the expected return is zero?`,
+        answer:
+          'The remaining goal is divided evenly across the available contribution periods, so the estimate depends only on current savings, the target, and time.',
+      },
+      {
+        question: `Is the expected annual return in the ${title} guaranteed?`,
+        answer:
+          'No. Savings yields and investment returns can change, and market investments can lose value. Use a rate appropriate for the goal timeline and risk level.',
+      },
+      {
+        question: `Can I contribute more than the ${title} estimates each ${contributionPeriod}?`,
+        answer:
+          'Yes. Larger or extra deposits can help reach the goal sooner or create a buffer for lower returns, fees, or a changing target.',
+      },
+    ],
+    relatedIds: [
+      'savings-goal-calculator',
+      'compound-interest-calculator',
+      'savings-growth-calculator',
+      'investment-growth-calculator',
+      'fire-calculator',
+    ],
+  };
+}
+
 export const calculatorConfigs: Record<string, CalculatorConfig> = {
+  'monthly-savings': savingsTargetVariant({
+    id: 'monthly-savings',
+    url: '/calculators/monthly-savings-calculator/',
+    title: 'Monthly Savings Calculator',
+    description:
+      'Calculate the monthly amount needed to reach a savings target from your current balance, timeline, and expected return.',
+    contributionPeriod: 'monthly',
+  }),
+  'weekly-savings': savingsTargetVariant({
+    id: 'weekly-savings',
+    url: '/calculators/weekly-savings-calculator/',
+    title: 'Weekly Savings Calculator',
+    description:
+      'Estimate how much to save each week to reach a financial goal by a selected deadline.',
+    contributionPeriod: 'weekly',
+  }),
+  'daily-savings': savingsTargetVariant({
+    id: 'daily-savings',
+    url: '/calculators/daily-savings-calculator/',
+    title: 'Daily Savings Calculator',
+    description:
+      'Estimate the daily savings amount required to build a target balance over a chosen number of years.',
+    contributionPeriod: 'daily',
+  }),
+  'vacation-savings': savingsTargetVariant({
+    id: 'vacation-savings',
+    url: '/calculators/vacation-savings-calculator/',
+    title: 'Vacation Savings Calculator',
+    description:
+      'Calculate a monthly savings target for a future vacation using the trip budget, current fund, timeline, and expected yield.',
+    contributionPeriod: 'monthly',
+    goalLabel: 'Vacation budget',
+    defaultGoal: '5000',
+    defaultYears: '2',
+    defaultReturn: '2',
+  }),
+  'car-savings': savingsTargetVariant({
+    id: 'car-savings',
+    url: '/calculators/car-savings-calculator/',
+    title: 'Car Savings Calculator',
+    description:
+      'Calculate how much to save monthly toward a vehicle purchase or down payment by a chosen deadline.',
+    contributionPeriod: 'monthly',
+    goalLabel: 'Vehicle savings target',
+    defaultGoal: '25000',
+    defaultYears: '3',
+    defaultReturn: '3',
+  }),
   'daily-compound-interest': compoundGrowthVariant({
     id: 'daily-compound-interest',
     url: '/calculators/daily-compound-interest-calculator/',
@@ -2243,9 +2423,11 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       },
     ],
     relatedIds: [
-      'savings-rate-calculator',
-      'net-worth-calculator',
       'savings-goal-calculator',
+      'compound-interest-calculator',
+      'savings-growth-calculator',
+      'investment-growth-calculator',
+      'fire-calculator',
     ],
   },
   'savings-goal': {
@@ -6310,7 +6492,7 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
   'down-payment': {
     id: 'down-payment',
     url: '/calculators/down-payment-calculator/',
-    title: 'Down Payment Calculator',
+    title: 'House Down Payment Calculator',
     eyebrow: 'Home Savings Calculator',
     description:
       'Calculate a target home down payment and estimate how long it may take to reach it using current savings, monthly contributions, and an expected savings return.',
@@ -6420,9 +6602,11 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       },
     ],
     relatedIds: [
-      'home-affordability-calculator',
-      'mortgage-payoff-calculator',
       'savings-goal-calculator',
+      'compound-interest-calculator',
+      'savings-growth-calculator',
+      'investment-growth-calculator',
+      'fire-calculator',
     ],
   },
   'mortgage-recast': {
@@ -6559,6 +6743,12 @@ export const investmentGrowthCalculator =
   calculatorConfigs['investment-growth'];
 export const savingsGrowthCalculator =
   calculatorConfigs['savings-growth'];
+export const monthlySavingsCalculator = calculatorConfigs['monthly-savings'];
+export const weeklySavingsCalculator = calculatorConfigs['weekly-savings'];
+export const dailySavingsCalculator = calculatorConfigs['daily-savings'];
+export const vacationSavingsCalculator =
+  calculatorConfigs['vacation-savings'];
+export const carSavingsCalculator = calculatorConfigs['car-savings'];
 export const savingsRateCalculator = calculatorConfigs['savings-rate'];
 export const fireCalculator = calculatorConfigs.fire;
 export const coastFireCalculator = calculatorConfigs['coast-fire'];

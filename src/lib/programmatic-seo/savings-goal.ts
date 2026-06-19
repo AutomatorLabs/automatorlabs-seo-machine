@@ -1,5 +1,5 @@
 import type { SavingsGoalSeoRecord } from '../../data/programmatic-seo/savings-goal';
-import { futureValue } from '../math';
+import { calculateRequiredPeriodicSavings, futureValue } from '../math';
 import {
   auditProgrammaticSeoRecords,
   type ProgrammaticSeoAuditResult,
@@ -40,51 +40,10 @@ export function calculateRequiredMonthlySavings(
     'goalAmount' | 'years' | 'currentSavings' | 'annualReturnPercent'
   >,
 ): number {
-  const months = record.years * 12;
-  const monthlyRate = record.annualReturnPercent / 100 / 12;
-  const balanceWithoutContributions = futureValue({
-    principal: record.currentSavings,
-    contributionPerPeriod: 0,
-    ratePerPeriod: monthlyRate,
-    numberOfPeriods: months,
-  });
-
-  if (balanceWithoutContributions >= record.goalAmount) return 0;
-
-  let low = 0;
-  let high = Math.max(
-    (record.goalAmount - record.currentSavings) / months,
-    1,
-  );
-
-  while (
-    futureValue({
-      principal: record.currentSavings,
-      contributionPerPeriod: high,
-      ratePerPeriod: monthlyRate,
-      numberOfPeriods: months,
-    }) < record.goalAmount
-  ) {
-    high *= 2;
-  }
-
-  for (let iteration = 0; iteration < 80; iteration += 1) {
-    const midpoint = (low + high) / 2;
-    const endingBalance = futureValue({
-      principal: record.currentSavings,
-      contributionPerPeriod: midpoint,
-      ratePerPeriod: monthlyRate,
-      numberOfPeriods: months,
-    });
-
-    if (endingBalance >= record.goalAmount) {
-      high = midpoint;
-    } else {
-      low = midpoint;
-    }
-  }
-
-  return high;
+  return calculateRequiredPeriodicSavings({
+    ...record,
+    periodsPerYear: 12,
+  }).requiredContribution;
 }
 
 export function createSavingsGoalProjection(

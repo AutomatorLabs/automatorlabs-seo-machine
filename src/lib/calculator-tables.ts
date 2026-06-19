@@ -4,6 +4,7 @@ import {
   calculateFireNumber,
   calculateMonthlyLoanPayment,
   calculateRealRateOfReturn,
+  calculateRequiredPeriodicSavings,
   calculateYearsToTarget,
   futureValue,
 } from './math';
@@ -35,6 +36,11 @@ export const calculatorTableHeadings: Record<string, string> = {
   '529-college-savings': 'Year-by-Year Projection',
   drip: 'Year-by-Year Projection',
   'savings-goal': 'Savings Timeline',
+  'monthly-savings': 'Savings Progress',
+  'weekly-savings': 'Savings Progress',
+  'daily-savings': 'Savings Progress',
+  'vacation-savings': 'Savings Progress',
+  'car-savings': 'Savings Progress',
   'emergency-fund': 'Savings Timeline',
   'mortgage-payoff': 'Payoff Schedule',
   'debt-payoff': 'Payoff Schedule',
@@ -208,6 +214,56 @@ function savingsTable({
       estimatedYears == null
         ? 'The goal is unreachable with the current contribution and return assumptions.'
         : capWarning('months', requestedMonths, 600),
+  };
+}
+
+function targetSavingsTable({
+  goalAmount,
+  currentSavings,
+  annualReturnPercent,
+  years,
+  periodsPerYear,
+}: {
+  goalAmount: number;
+  currentSavings: number;
+  annualReturnPercent: number;
+  years: number;
+  periodsPerYear: number;
+}): CalculatorTableData {
+  const result = calculateRequiredPeriodicSavings({
+    goalAmount,
+    currentSavings,
+    annualReturnPercent,
+    years,
+    periodsPerYear,
+  });
+  const displayedYears = cappedCount(years, 60);
+  const ratePerPeriod = annualReturnPercent / 100 / periodsPerYear;
+  const rows = Array.from({ length: displayedYears }, (_, index) => {
+    const year = index + 1;
+    const periods = year * periodsPerYear;
+    const endingBalance = futureValue({
+      principal: currentSavings,
+      contributionPerPeriod: result.requiredContribution,
+      ratePerPeriod,
+      numberOfPeriods: periods,
+    });
+    const contributions =
+      currentSavings + result.requiredContribution * periods;
+
+    return [
+      String(year),
+      currency.format(contributions),
+      currency.format(endingBalance - contributions),
+      currency.format(endingBalance),
+    ];
+  });
+
+  return {
+    heading: 'Savings Progress',
+    columns: ['Year', 'Contributions', 'Estimated Growth', 'Balance'],
+    rows,
+    warning: capWarning('years', years, 60),
   };
 }
 
@@ -564,6 +620,32 @@ export function buildCalculatorTable(
         monthlyContribution: value(data, 'monthlyContribution'),
         annualReturnPercent: value(data, 'expectedReturn'),
         goal: value(data, 'goalAmount'),
+      });
+    case 'monthly-savings':
+    case 'vacation-savings':
+    case 'car-savings':
+      return targetSavingsTable({
+        goalAmount: value(data, 'goalAmount'),
+        currentSavings: value(data, 'currentSavings'),
+        annualReturnPercent: value(data, 'expectedReturn'),
+        years: value(data, 'years'),
+        periodsPerYear: 12,
+      });
+    case 'weekly-savings':
+      return targetSavingsTable({
+        goalAmount: value(data, 'goalAmount'),
+        currentSavings: value(data, 'currentSavings'),
+        annualReturnPercent: value(data, 'expectedReturn'),
+        years: value(data, 'years'),
+        periodsPerYear: 52,
+      });
+    case 'daily-savings':
+      return targetSavingsTable({
+        goalAmount: value(data, 'goalAmount'),
+        currentSavings: value(data, 'currentSavings'),
+        annualReturnPercent: value(data, 'expectedReturn'),
+        years: value(data, 'years'),
+        periodsPerYear: 365,
       });
     case 'emergency-fund':
       return savingsTable({

@@ -36,6 +36,7 @@ import { createRelatedCalculatorLinks } from '../src/lib/related-calculators';
 import {
   calculateApy,
   calculateCompoundInterest,
+  calculateRequiredPeriodicSavings,
 } from '../src/lib/math';
 
 const calculators = Object.values(calculatorConfigs).sort((a, b) =>
@@ -748,6 +749,65 @@ test.describe('global programmatic examples hub', () => {
 });
 
 test.describe('calculator QA', () => {
+  test('savings goal calculator cluster routes and relationships are registered', () => {
+    const expectedRoutes = [
+      '/calculators/monthly-savings-calculator/',
+      '/calculators/weekly-savings-calculator/',
+      '/calculators/daily-savings-calculator/',
+      '/calculators/down-payment-calculator/',
+      '/calculators/emergency-fund-calculator/',
+      '/calculators/vacation-savings-calculator/',
+      '/calculators/car-savings-calculator/',
+    ];
+    const configs = expectedRoutes.map((route) =>
+      calculators.find((calculator) => calculator.url === route),
+    );
+
+    expect(configs.every((config) => config !== undefined)).toBe(true);
+    for (const config of configs) {
+      expect(config?.relatedIds).toEqual(
+        expect.arrayContaining([
+          'savings-goal-calculator',
+          'compound-interest-calculator',
+          'savings-growth-calculator',
+          'investment-growth-calculator',
+          'fire-calculator',
+        ]),
+      );
+    }
+  });
+
+  test('periodic savings variants reuse the shared target math', () => {
+    const input = {
+      goalAmount: 25000,
+      currentSavings: 2500,
+      annualReturnPercent: 3,
+      years: 3,
+    };
+    const monthly = calculateRequiredPeriodicSavings({
+      ...input,
+      periodsPerYear: 12,
+    });
+    const weekly = calculateRequiredPeriodicSavings({
+      ...input,
+      periodsPerYear: 52,
+    });
+    const daily = calculateRequiredPeriodicSavings({
+      ...input,
+      periodsPerYear: 365,
+    });
+
+    expect(monthly.requiredContribution).toBeGreaterThan(
+      weekly.requiredContribution,
+    );
+    expect(weekly.requiredContribution).toBeGreaterThan(
+      daily.requiredContribution,
+    );
+    expect(monthly.endingBalance).toBeCloseTo(input.goalAmount, 6);
+    expect(weekly.endingBalance).toBeCloseTo(input.goalAmount, 6);
+    expect(daily.endingBalance).toBeCloseTo(input.goalAmount, 6);
+  });
+
   test('compound-interest cluster calculations reuse the shared math correctly', () => {
     const annual = calculateCompoundInterest({
       principal: 10000,

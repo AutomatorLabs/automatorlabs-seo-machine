@@ -444,6 +444,21 @@ export interface SavingsGoalResult {
   status: 'funded' | 'in-progress' | 'unreachable';
 }
 
+export interface RequiredPeriodicSavingsInput {
+  goalAmount: number;
+  currentSavings: number;
+  annualReturnPercent: number;
+  years: number;
+  periodsPerYear: number;
+}
+
+export interface RequiredPeriodicSavingsResult {
+  requiredContribution: number;
+  endingBalance: number;
+  totalContributions: number;
+  totalGrowth: number;
+}
+
 export interface FinancialIndependenceDateInput {
   currentInvestedAssets: number;
   annualExpenses: number;
@@ -1652,6 +1667,75 @@ export function calculateSavingsGoal({
     estimatedMonthsToGoal,
     totalContributionsNeeded: monthlyContribution * estimatedMonthsToGoal,
     status: 'in-progress',
+  };
+}
+
+export function calculateRequiredPeriodicSavings({
+  goalAmount,
+  currentSavings,
+  annualReturnPercent,
+  years,
+  periodsPerYear,
+}: RequiredPeriodicSavingsInput): RequiredPeriodicSavingsResult {
+  const numberOfPeriods = years * periodsPerYear;
+  const ratePerPeriod = annualReturnPercent / 100 / periodsPerYear;
+  const balanceWithoutContributions = futureValue({
+    principal: currentSavings,
+    contributionPerPeriod: 0,
+    ratePerPeriod,
+    numberOfPeriods,
+  });
+
+  let requiredContribution = 0;
+
+  if (balanceWithoutContributions < goalAmount) {
+    let low = 0;
+    let high = Math.max(
+      (goalAmount - currentSavings) / numberOfPeriods,
+      1,
+    );
+
+    while (
+      futureValue({
+        principal: currentSavings,
+        contributionPerPeriod: high,
+        ratePerPeriod,
+        numberOfPeriods,
+      }) < goalAmount
+    ) {
+      high *= 2;
+    }
+
+    for (let iteration = 0; iteration < 80; iteration += 1) {
+      const midpoint = (low + high) / 2;
+      const endingBalance = futureValue({
+        principal: currentSavings,
+        contributionPerPeriod: midpoint,
+        ratePerPeriod,
+        numberOfPeriods,
+      });
+
+      if (endingBalance >= goalAmount) high = midpoint;
+      else low = midpoint;
+    }
+
+    requiredContribution = high;
+  }
+
+  const endingBalance = futureValue({
+    principal: currentSavings,
+    contributionPerPeriod: requiredContribution,
+    ratePerPeriod,
+    numberOfPeriods,
+  });
+  const totalContributions =
+    currentSavings + requiredContribution * numberOfPeriods;
+
+  return {
+    requiredContribution,
+    endingBalance,
+    totalContributions,
+    totalGrowth: endingBalance - totalContributions,
   };
 }
 
