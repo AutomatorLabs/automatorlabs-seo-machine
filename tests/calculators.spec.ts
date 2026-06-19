@@ -20,6 +20,11 @@ import {
   mortgageSeoRecords,
 } from '../src/data/programmatic-seo/mortgage';
 import { auditMortgageSeoRecords } from '../src/lib/programmatic-seo/mortgage';
+import {
+  createCalculatorFaqs,
+  createCalculatorHowItWorks,
+} from '../src/lib/calculator-education';
+import { createRelatedCalculatorLinks } from '../src/lib/related-calculators';
 
 const calculators = Object.values(calculatorConfigs).sort((a, b) =>
   a.title.localeCompare(b.title),
@@ -596,6 +601,45 @@ test.describe('global programmatic examples hub', () => {
 });
 
 test.describe('calculator QA', () => {
+  test('centralized calculator page content is complete and unique', () => {
+    const allFaqQuestions: string[] = [];
+    const calculatorUrls = new Set(calculators.map((calculator) => calculator.url));
+
+    for (const calculator of calculators) {
+      const faq = createCalculatorFaqs(
+        calculator.title,
+        calculator.description,
+        calculator.inputs,
+        calculator.outputs,
+        calculator.faq,
+      );
+      const related = createRelatedCalculatorLinks(calculator.url);
+      const howItWorks = createCalculatorHowItWorks(
+        calculator.title,
+        calculator.description,
+        calculator.inputs,
+        calculator.outputs,
+      );
+
+      expect(faq.length).toBeGreaterThanOrEqual(6);
+      expect(faq.length).toBeLessThanOrEqual(8);
+      expect(new Set(faq.map((item) => item.question)).size).toBe(faq.length);
+      allFaqQuestions.push(...faq.map((item) => item.question));
+
+      expect(related.length).toBeGreaterThanOrEqual(4);
+      expect(related.length).toBeLessThanOrEqual(6);
+      expect(new Set(related.map((item) => item.url)).size).toBe(related.length);
+      expect(related.every((item) => calculatorUrls.has(item.url))).toBe(true);
+      expect(related.some((item) => item.url === calculator.url)).toBe(false);
+
+      expect(Object.values(howItWorks).every((value) => value.length > 0)).toBe(
+        true,
+      );
+    }
+
+    expect(new Set(allFaqQuestions).size).toBe(allFaqQuestions.length);
+  });
+
   for (const calculator of calculators) {
     test(`${calculator.title} (${calculator.url})`, async ({ page }) => {
       const consoleErrors: string[] = [];
@@ -638,6 +682,69 @@ test.describe('calculator QA', () => {
       expect(documentHeadingCount, 'The document should contain exactly one h1').toBe(
         1,
       );
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://automatorlabs.co${calculator.url}`,
+      );
+      await expect(
+        page.getByRole('navigation', { name: 'Breadcrumb' }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('link', {
+          name: 'Home',
+          exact: true,
+        }),
+      ).toHaveAttribute('href', '/');
+      await expect(
+        page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('link', {
+          name: 'Calculators',
+          exact: true,
+        }),
+      ).toHaveAttribute('href', '/calculators/');
+      await expect(
+        page.getByRole('heading', {
+          level: 2,
+          name: 'How this calculator works',
+        }),
+      ).toBeVisible();
+
+      const faqItems = page.locator('.faq-list details');
+      expect(await faqItems.count()).toBeGreaterThanOrEqual(6);
+      expect(await faqItems.count()).toBeLessThanOrEqual(8);
+
+      const relatedCalculatorLinks = page.locator(
+        '.related-calculators .related-calculator-grid a',
+      );
+      expect(await relatedCalculatorLinks.count()).toBeGreaterThanOrEqual(4);
+      expect(await relatedCalculatorLinks.count()).toBeLessThanOrEqual(6);
+      const relatedHrefs = await relatedCalculatorLinks.evaluateAll((links) =>
+        links.map((link) => link.getAttribute('href') ?? ''),
+      );
+      expect(
+        relatedHrefs.every((href) =>
+          calculators.some((candidate) => candidate.url === href),
+        ),
+      ).toBe(true);
+
+      const schemas = await page
+        .locator('script[type="application/ld+json"]')
+        .evaluateAll((scripts) =>
+          scripts.map((script) => script.textContent ?? '').join('\n'),
+        );
+      expect(schemas).toContain('"@type":"FAQPage"');
+      expect(schemas).toContain('"@type":"BreadcrumbList"');
+
+      const headingLevels = await page
+        .locator('main h1, main h2, main h3, main h4, main h5, main h6')
+        .evaluateAll((headings) =>
+          headings.map((heading) => Number(heading.tagName.slice(1))),
+        );
+      expect(headingLevels[0]).toBe(1);
+      for (let index = 1; index < headingLevels.length; index += 1) {
+        expect(headingLevels[index] - headingLevels[index - 1]).toBeLessThanOrEqual(
+          1,
+        );
+      }
 
       const calculateButton = page.getByRole('button', {
         name: 'Calculate',

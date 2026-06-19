@@ -1,0 +1,67 @@
+---
+import type { CalculatorHowItWorks } from '../lib/calculator-education';
+
+interface Props {
+  content: CalculatorHowItWorks;
+}
+
+const { content } = Astro.props;
+---
+
+<section
+  class="content-section how-it-works"
+  aria-labelledby="how-it-works-heading"
+>
+  <h2 id="how-it-works-heading">How this calculator works</h2>
+  <dl>
+    <div>
+      <dt>What it does</dt>
+      <dd>{content.purpose}</dd>
+    </div>
+    <div>
+      <dt>Inputs used</dt>
+      <dd>{content.inputs}</dd>
+    </div>
+    <div>
+      <dt>Calculation approach</dt>
+      <dd>{content.method}</dd>
+    </div>
+    <div>
+      <dt>How to read the result</dt>
+      <dd>{content.interpretation}</dd>
+    </div>
+  </dl>
+</section>
+
+<style>
+  .how-it-works dl {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 0;
+  }
+
+  .how-it-works dl div {
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    background: var(--subtle-background);
+    padding: 1rem;
+  }
+
+  .how-it-works dt {
+    color: var(--heading-color);
+    font-weight: 750;
+  }
+
+  .how-it-works dd {
+    margin: 0.4rem 0 0;
+    color: var(--muted-text-color);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 680px) {
+    .how-it-works dl {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

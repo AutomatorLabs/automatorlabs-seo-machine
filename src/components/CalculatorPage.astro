@@ -1,6 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import CalculatorHowItWorks from './CalculatorHowItWorks.astro';
 import NewsletterCta from './NewsletterCta.astro';
+import RelatedCalculators from './RelatedCalculators.astro';
 import {
   calculatorConfigs,
   type CalculatorFaq,
@@ -9,12 +11,20 @@ import {
   type CalculatorResultExplanation,
 } from '../data/calculators';
 import {
+  createCalculatorFaqs,
+  createCalculatorHowItWorks,
   createCommonMistakes,
   createHowToSteps,
   createResultExplanations,
 } from '../lib/calculator-education';
 import { calculatorWorkedExamples } from '../data/calculator-examples';
 import { calculatorTableHeadings } from '../lib/calculator-tables';
+import { createRelatedCalculatorLinks } from '../lib/related-calculators';
+import {
+  createBreadcrumbSchema,
+  createFaqSchema,
+  serializeJsonLd,
+} from '../lib/programmatic-seo/schema';
 
 interface RelatedItem {
   title: string;
@@ -72,6 +82,29 @@ const resultExplanation =
   createResultExplanations(title, inputs, outputs);
 const commonMistakes =
   configuredCommonMistakes ?? createCommonMistakes(title);
+const howItWorks = createCalculatorHowItWorks(
+  title,
+  description,
+  inputs,
+  outputs,
+);
+const calculatorFaq = createCalculatorFaqs(
+  title,
+  description,
+  inputs,
+  outputs,
+  faq,
+);
+const relatedCalculators = createRelatedCalculatorLinks(
+  Astro.url.pathname,
+  relatedItems,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Calculators', url: '/calculators/' },
+  { name: title, url: Astro.url.pathname },
+];
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -91,21 +124,11 @@ const structuredDataJson = JSON.stringify(structuredData).replace(
   /</g,
   '\\u003c',
 );
-const faqStructuredData = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: faq.map((item) => ({
-    '@type': 'Question',
-    name: item.question,
-    acceptedAnswer: {
-      '@type': 'Answer',
-      text: item.answer,
-    },
-  })),
-};
-const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
-  /</g,
-  '\\u003c',
+const faqStructuredDataJson = serializeJsonLd(
+  createFaqSchema(calculatorFaq),
+);
+const breadcrumbStructuredDataJson = serializeJsonLd(
+  createBreadcrumbSchema(breadcrumbs, site),
 );
 ---
 
@@ -117,6 +140,10 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
   <script
     type="application/ld+json"
     set:html={faqStructuredDataJson}
+  />
+  <script
+    type="application/ld+json"
+    set:html={breadcrumbStructuredDataJson}
   />
 
   <main>
@@ -136,7 +163,7 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
 
     <section class="calculator" aria-labelledby="calculator-heading">
       <div class="panel">
-        <h2 id="calculator-heading">Calculate your investment growth</h2>
+        <h2 id="calculator-heading">Use the {title}</h2>
 
         <form id="calculator-form">
           <div class="form-grid">
@@ -296,6 +323,8 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
       </section>
     )}
 
+    <CalculatorHowItWorks content={howItWorks} />
+
     <section class="education-grid" aria-label="Calculator guidance">
       <section class="content-section education-section" aria-labelledby="how-to-heading">
         <h2 id="how-to-heading">How to Use This Calculator</h2>
@@ -372,7 +401,7 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
       <h2 id="faq-heading">Frequently asked questions</h2>
 
       <div class="faq-list">
-        {faq.map((item) => (
+        {calculatorFaq.map((item) => (
           <details>
             <summary>{item.question}</summary>
             <p>{item.answer}</p>
@@ -381,16 +410,7 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
       </div>
     </section>
 
-    {relatedItems.length > 0 && (
-      <section class="content-section" aria-labelledby="related-heading">
-        <h2 id="related-heading">Related Calculators</h2>
-        <nav class="related-links" aria-label="Related calculators">
-          {relatedItems.map((item) => (
-            <a href={item.url}>{item.title}</a>
-          ))}
-        </nav>
-      </section>
-    )}
+    <RelatedCalculators calculators={relatedCalculators} />
 
     {exampleItems.length > 0 && (
       <section class="content-section" aria-labelledby="examples-heading">

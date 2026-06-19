@@ -1,0 +1,60 @@
+---
+import type { RelatedCalculatorLink } from '../lib/related-calculators';
+
+interface Props {
+  calculators: RelatedCalculatorLink[];
+}
+
+const { calculators } = Astro.props;
+---
+
+<section
+  class="content-section related-calculators"
+  aria-labelledby="related-calculators-heading"
+>
+  <h2 id="related-calculators-heading">Related Calculators</h2>
+  <div class="related-calculator-grid">
+    {calculators.map((calculator) => (
+      <a href={calculator.url}>
+        <strong>{calculator.title}</strong>
+        <span>{calculator.description}</span>
+      </a>
+    ))}
+  </div>
+</section>
+
+<style>
+  .related-calculator-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+  }
+
+  .related-calculator-grid a {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--subtle-background);
+    padding: 1rem;
+    text-decoration: none;
+  }
+
+  .related-calculator-grid a:hover {
+    border-color: var(--link-color);
+  }
+
+  .related-calculator-grid span {
+    margin-top: 0.4rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 680px) {
+    .related-calculator-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

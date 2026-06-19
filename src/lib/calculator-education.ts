@@ -1,4 +1,5 @@
 import type {
+  CalculatorFaq,
   CalculatorInput,
   CalculatorOutput,
   CalculatorResultExplanation,
@@ -8,6 +9,74 @@ function joinLabels(labels: string[]): string {
   if (labels.length === 1) return labels[0];
   if (labels.length === 2) return `${labels[0]} and ${labels[1]}`;
   return `${labels.slice(0, -1).join(', ')}, and ${labels.at(-1)}`;
+}
+
+export interface CalculatorHowItWorks {
+  purpose: string;
+  inputs: string;
+  method: string;
+  interpretation: string;
+}
+
+const repeatedFaqQuestions = new Set([
+  'What is the 4% rule?',
+  'What is a safe withdrawal rate?',
+]);
+
+export function createCalculatorHowItWorks(
+  title: string,
+  description: string,
+  inputs: CalculatorInput[],
+  outputs: CalculatorOutput[],
+): CalculatorHowItWorks {
+  const inputLabels = inputs.map((input) => input.label.toLowerCase());
+  const outputLabels = outputs.map((output) => output.label.toLowerCase());
+
+  return {
+    purpose: description,
+    inputs: `The estimate uses ${joinLabels(inputLabels)}.`,
+    method: `The calculator applies the relationships defined for the ${title.toLowerCase()} to those inputs and updates ${joinLabels(outputLabels)}.`,
+    interpretation: `Treat the result as a scenario based on the values entered. Compare a few reasonable inputs and consider costs, taxes, timing, or risks that the calculator does not include.`,
+  };
+}
+
+export function createCalculatorFaqs(
+  title: string,
+  description: string,
+  inputs: CalculatorInput[],
+  outputs: CalculatorOutput[],
+  faq: CalculatorFaq[],
+): CalculatorFaq[] {
+  const normalizedFaq = faq.map((item) => ({
+    ...item,
+    question: repeatedFaqQuestions.has(item.question)
+      ? `${item.question.replace(/\?$/, '')} in the ${title}?`
+      : item.question,
+  }));
+  const primaryOutput = outputs.find((output) => output.primary) ?? outputs[0];
+  const keyInputs = joinLabels(
+    inputs.slice(0, 3).map((input) => input.label.toLowerCase()),
+  );
+  const additions: CalculatorFaq[] = [
+    {
+      question: `What does the ${title} calculate?`,
+      answer: `${description} The result is based only on the inputs and assumptions shown on the page.`,
+    },
+    {
+      question: `How should I interpret the ${primaryOutput?.label.toLowerCase() ?? 'result'} from the ${title}?`,
+      answer: `Use it as an estimate for the scenario entered, not as a guarantee or personal recommendation. Test changes to ${keyInputs} to see which assumptions have the greatest effect.`,
+    },
+  ];
+  const seen = new Set<string>();
+
+  return [...normalizedFaq, ...additions]
+    .filter((item) => {
+      const key = item.question.trim().toLocaleLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 8);
 }
 
 export function createHowToSteps(
