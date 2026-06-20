@@ -1,0 +1,144 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { creditCardPayoffCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = creditCardPayoffCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={creditCardPayoffCalculator.title}
+  eyebrow={creditCardPayoffCalculator.eyebrow}
+  description={creditCardPayoffCalculator.description}
+  inputs={creditCardPayoffCalculator.inputs}
+  outputs={creditCardPayoffCalculator.outputs}
+  faq={creditCardPayoffCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateCreditCardInterest } from '../../../lib/math';
+    import { getDebtPaymentExplanation } from '../../../lib/result-messages';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const payoffTimeResult =
+      document.querySelector<HTMLElement>('#payoff-time-result');
+    const totalInterestPaidResult = document.querySelector<HTMLElement>(
+      '#total-interest-paid-result',
+    );
+    const totalAmountPaidResult = document.querySelector<HTMLElement>(
+      '#total-amount-paid-result',
+    );
+    const monthlyInterestResult = document.querySelector<HTMLElement>(
+      '#monthly-interest-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function formatMonths(totalMonths: number): string {
+      const years = Math.floor(totalMonths / 12);
+      const months = totalMonths % 12;
+      const parts: string[] = [];
+
+      if (years > 0) {
+        parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+      }
+
+      if (months > 0) {
+        parts.push(`${months} ${months === 1 ? 'month' : 'months'}`);
+      }
+
+      return parts.length > 0 ? parts.join(', ') : '0 months';
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !payoffTimeResult ||
+        !totalInterestPaidResult ||
+        !totalAmountPaidResult ||
+        !monthlyInterestResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const creditCardBalance = parseCalculatorNumber(
+        data.get('creditCardBalance'),
+      );
+      const apr = parseCalculatorNumber(data.get('apr'));
+      const monthlyPayment = parseCalculatorNumber(
+        data.get('monthlyPayment'),
+      );
+
+      if (
+        !Number.isFinite(creditCardBalance) ||
+        !Number.isFinite(apr) ||
+        !Number.isFinite(monthlyPayment) ||
+        creditCardBalance <= 0 ||
+        apr < 0 ||
+        monthlyPayment <= 0
+      ) {
+        error.textContent =
+          'Credit card balance and monthly payment must be greater than $0. APR cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      const result = calculateCreditCardInterest({
+        balance: creditCardBalance,
+        aprPercent: apr,
+        monthlyPayment,
+        extraMonthlyPayment: 0,
+      });
+
+      monthlyInterestResult.textContent = currency.format(result.monthlyInterest);
+
+      if (!result.accelerated.reachable) {
+        error.textContent = getDebtPaymentExplanation({
+          balance: creditCardBalance,
+          annualInterestRatePercent: apr,
+          monthlyPayment,
+        });
+        error.hidden = false;
+        payoffTimeResult.textContent = 'No payoff under current payment';
+        totalInterestPaidResult.textContent =
+          'Continues growing while payment is too low';
+        totalAmountPaidResult.textContent = 'No finite payoff total';
+        return true;
+      }
+
+      error.hidden = true;
+      payoffTimeResult.textContent = formatMonths(
+        result.accelerated.payoffTimeMonths ?? 0,
+      );
+      totalInterestPaidResult.textContent = currency.format(
+        result.accelerated.totalInterestPaid ?? 0,
+      );
+      totalAmountPaidResult.textContent = currency.format(
+        result.accelerated.totalAmountPaid ?? 0,
+      );
+
+      return true;
+    }
+
+    if (form) {
+      form.onsubmit = (event) => {
+        event.preventDefault();
+        trackSuccessfulCalculation('credit_card_payoff', calculate);
+      };
+    }
+
+    calculate();
+  </script>
+</CalculatorPage>

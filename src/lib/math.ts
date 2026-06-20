@@ -298,6 +298,41 @@ export interface CreditCardInterestResult extends DebtPayoffResult {
   monthlyInterest: number;
 }
 
+export interface CreditCardMinimumPaymentInput {
+  balance: number;
+  aprPercent: number;
+  minimumPaymentPercent: number;
+  minimumPaymentFloor: number;
+}
+
+export interface CreditCardMinimumPaymentResult {
+  firstMinimumPayment: number;
+  firstMonthInterest: number;
+  firstMonthPrincipal: number;
+  reachable: boolean;
+  payoffTimeMonths: number | null;
+  totalInterestPaid: number | null;
+  totalAmountPaid: number | null;
+}
+
+export interface BalanceTransferInput {
+  balance: number;
+  currentAprPercent: number;
+  currentMonthlyPayment: number;
+  transferAprPercent: number;
+  promotionalMonths: number;
+  transferFeePercent: number;
+  postPromotionAprPercent: number;
+}
+
+export interface BalanceTransferResult {
+  transferredBalance: number;
+  transferFee: number;
+  currentPlan: DebtPayoffSchedule;
+  transferPlan: DebtPayoffSchedule;
+  estimatedSavings: number | null;
+}
+
 export interface DebtSnowballDebt {
   name: string;
   balance: number;
@@ -1007,6 +1042,175 @@ export function calculateCreditCardInterest({
       monthlyPayment,
       extraMonthlyPayment,
     }),
+  };
+}
+
+export function calculateCreditCardMinimumPayment({
+  balance,
+  aprPercent,
+  minimumPaymentPercent,
+  minimumPaymentFloor,
+}: CreditCardMinimumPaymentInput): CreditCardMinimumPaymentResult {
+  const monthlyInterestRate = aprPercent / 100 / 12;
+  let remainingBalance = balance;
+  let months = 0;
+  let totalInterestPaid = 0;
+  let totalAmountPaid = 0;
+  const maximumMonths = 120000;
+  const firstMonthInterest = calculateMonthlyInterest(balance, aprPercent);
+  const firstMinimumPayment = Math.min(
+    Math.max(balance * (minimumPaymentPercent / 100), minimumPaymentFloor),
+    balance + firstMonthInterest,
+  );
+
+  if (firstMinimumPayment <= firstMonthInterest && balance > 0.005) {
+    return {
+      firstMinimumPayment,
+      firstMonthInterest,
+      firstMonthPrincipal: Math.max(firstMinimumPayment - firstMonthInterest, 0),
+      reachable: false,
+      payoffTimeMonths: null,
+      totalInterestPaid: null,
+      totalAmountPaid: null,
+    };
+  }
+
+  while (remainingBalance > 0.005 && months < maximumMonths) {
+    const interest = remainingBalance * monthlyInterestRate;
+    const scheduledPayment = Math.max(
+      remainingBalance * (minimumPaymentPercent / 100),
+      minimumPaymentFloor,
+    );
+    const payment = Math.min(scheduledPayment, remainingBalance + interest);
+
+    if (payment <= interest && remainingBalance > 0.005) {
+      return {
+        firstMinimumPayment,
+        firstMonthInterest,
+        firstMonthPrincipal: Math.max(
+          firstMinimumPayment - firstMonthInterest,
+          0,
+        ),
+        reachable: false,
+        payoffTimeMonths: null,
+        totalInterestPaid: null,
+        totalAmountPaid: null,
+      };
+    }
+
+    remainingBalance = Math.max(remainingBalance + interest - payment, 0);
+    totalInterestPaid += interest;
+    totalAmountPaid += payment;
+    months += 1;
+  }
+
+  return {
+    firstMinimumPayment,
+    firstMonthInterest,
+    firstMonthPrincipal: Math.max(firstMinimumPayment - firstMonthInterest, 0),
+    reachable: remainingBalance <= 0.005,
+    payoffTimeMonths: remainingBalance <= 0.005 ? months : null,
+    totalInterestPaid: remainingBalance <= 0.005 ? totalInterestPaid : null,
+    totalAmountPaid: remainingBalance <= 0.005 ? totalAmountPaid : null,
+  };
+}
+
+function simulateBalanceTransferPayoff({
+  balance,
+  payment,
+  promotionalAprPercent,
+  promotionalMonths,
+  postPromotionAprPercent,
+}: {
+  balance: number;
+  payment: number;
+  promotionalAprPercent: number;
+  promotionalMonths: number;
+  postPromotionAprPercent: number;
+}): DebtPayoffSchedule {
+  let remainingBalance = balance;
+  let months = 0;
+  let totalInterestPaid = 0;
+  let totalAmountPaid = 0;
+  const maximumMonths = 120000;
+
+  while (remainingBalance > 0.005 && months < maximumMonths) {
+    const apr =
+      months < promotionalMonths
+        ? promotionalAprPercent
+        : postPromotionAprPercent;
+    const interest = remainingBalance * (apr / 100 / 12);
+    const actualPayment = Math.min(payment, remainingBalance + interest);
+
+    if (actualPayment <= interest && remainingBalance > 0.005) {
+      return {
+        reachable: false,
+        payoffTimeMonths: null,
+        totalInterestPaid: null,
+        totalAmountPaid: null,
+      };
+    }
+
+    remainingBalance = Math.max(
+      remainingBalance + interest - actualPayment,
+      0,
+    );
+    totalInterestPaid += interest;
+    totalAmountPaid += actualPayment;
+    months += 1;
+  }
+
+  if (remainingBalance > 0.005) {
+    return {
+      reachable: false,
+      payoffTimeMonths: null,
+      totalInterestPaid: null,
+      totalAmountPaid: null,
+    };
+  }
+
+  return {
+    reachable: true,
+    payoffTimeMonths: months,
+    totalInterestPaid,
+    totalAmountPaid,
+  };
+}
+
+export function calculateBalanceTransfer({
+  balance,
+  currentAprPercent,
+  currentMonthlyPayment,
+  transferAprPercent,
+  promotionalMonths,
+  transferFeePercent,
+  postPromotionAprPercent,
+}: BalanceTransferInput): BalanceTransferResult {
+  const transferFee = balance * (transferFeePercent / 100);
+  const transferredBalance = balance + transferFee;
+  const currentPlan = simulateDebtPayoff(
+    balance,
+    currentAprPercent,
+    currentMonthlyPayment,
+  );
+  const transferPlan = simulateBalanceTransferPayoff({
+    balance: transferredBalance,
+    payment: currentMonthlyPayment,
+    promotionalAprPercent: transferAprPercent,
+    promotionalMonths,
+    postPromotionAprPercent,
+  });
+
+  return {
+    transferredBalance,
+    transferFee,
+    currentPlan,
+    transferPlan,
+    estimatedSavings:
+      currentPlan.totalAmountPaid == null ||
+      transferPlan.totalAmountPaid == null
+        ? null
+        : currentPlan.totalAmountPaid - transferPlan.totalAmountPaid,
   };
 }
 

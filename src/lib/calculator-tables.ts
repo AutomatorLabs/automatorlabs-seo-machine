@@ -54,6 +54,10 @@ export const calculatorTableHeadings: Record<string, string> = {
   'debt-payoff': 'Payoff Schedule',
   'debt-snowball': 'Payoff Schedule',
   'debt-avalanche': 'Payoff Schedule',
+  'credit-card-payoff': 'Payoff Schedule',
+  'credit-card-minimum-payment': 'Minimum Payment Schedule',
+  'credit-card-extra-payment': 'Payoff Schedule',
+  'balance-transfer': 'Balance Transfer Schedule',
   'student-loan-payoff': 'Payoff Schedule',
   'portfolio-withdrawal-sustainability': 'Withdrawal Timeline',
 };
@@ -318,6 +322,136 @@ function payoffTable({
   return {
     heading: 'Payoff Schedule',
     columns: ['Month', 'Payment', 'Principal', 'Interest', 'Remaining Balance'],
+    rows,
+    warning:
+      balance > 0.005
+        ? 'The payoff takes longer than 600 months. The table shows the first 600 months.'
+        : undefined,
+  };
+}
+
+function minimumPaymentTable({
+  balance: startingBalance,
+  annualInterestRatePercent,
+  minimumPaymentPercent,
+  minimumPaymentFloor,
+}: {
+  balance: number;
+  annualInterestRatePercent: number;
+  minimumPaymentPercent: number;
+  minimumPaymentFloor: number;
+}): CalculatorTableData {
+  const monthlyRate = annualInterestRatePercent / 100 / 12;
+  const firstInterest = startingBalance * monthlyRate;
+  const firstPayment = Math.min(
+    Math.max(startingBalance * (minimumPaymentPercent / 100), minimumPaymentFloor),
+    startingBalance + firstInterest,
+  );
+
+  if (firstPayment <= firstInterest && startingBalance > 0) {
+    return {
+      heading: 'Minimum Payment Schedule',
+      columns: ['Month', 'Payment', 'Principal', 'Interest', 'Remaining Balance'],
+      rows: [],
+      warning: `The first estimated minimum payment must exceed the first month's interest of ${currency.format(firstInterest)} to reduce principal.`,
+    };
+  }
+
+  const rows: string[][] = [];
+  let balance = startingBalance;
+  let month = 0;
+
+  while (balance > 0.005 && month < 600) {
+    month += 1;
+    const interest = balance * monthlyRate;
+    const scheduledPayment = Math.max(
+      balance * (minimumPaymentPercent / 100),
+      minimumPaymentFloor,
+    );
+    const payment = Math.min(scheduledPayment, balance + interest);
+    const principal = payment - interest;
+    balance = Math.max(balance - principal, 0);
+    rows.push([
+      String(month),
+      currency.format(payment),
+      currency.format(principal),
+      currency.format(interest),
+      currency.format(balance),
+    ]);
+
+    if (payment <= interest && balance > 0.005) {
+      return {
+        heading: 'Minimum Payment Schedule',
+        columns: ['Month', 'Payment', 'Principal', 'Interest', 'Remaining Balance'],
+        rows,
+        warning:
+          'The estimated minimum payment stops reducing principal under the current assumptions.',
+      };
+    }
+  }
+
+  return {
+    heading: 'Minimum Payment Schedule',
+    columns: ['Month', 'Payment', 'Principal', 'Interest', 'Remaining Balance'],
+    rows,
+    warning:
+      balance > 0.005
+        ? 'The payoff takes longer than 600 months. The table shows the first 600 months.'
+        : undefined,
+  };
+}
+
+function balanceTransferTable({
+  balance: startingBalance,
+  currentMonthlyPayment,
+  transferAprPercent,
+  promotionalMonths,
+  transferFeePercent,
+  postPromotionAprPercent,
+}: {
+  balance: number;
+  currentMonthlyPayment: number;
+  transferAprPercent: number;
+  promotionalMonths: number;
+  transferFeePercent: number;
+  postPromotionAprPercent: number;
+}): CalculatorTableData {
+  const transferFee = startingBalance * (transferFeePercent / 100);
+  let balance = startingBalance + transferFee;
+  const rows: string[][] = [];
+  let month = 0;
+
+  while (balance > 0.005 && month < 600) {
+    const apr =
+      month < promotionalMonths ? transferAprPercent : postPromotionAprPercent;
+    const interest = balance * (apr / 100 / 12);
+    const payment = Math.min(currentMonthlyPayment, balance + interest);
+    const principal = payment - interest;
+
+    month += 1;
+    balance = Math.max(balance - principal, 0);
+    rows.push([
+      String(month),
+      `${apr.toFixed(2)}%`,
+      currency.format(payment),
+      currency.format(interest),
+      currency.format(balance),
+    ]);
+
+    if (payment <= interest && balance > 0.005) {
+      return {
+        heading: 'Balance Transfer Schedule',
+        columns: ['Month', 'APR', 'Payment', 'Interest', 'Remaining Balance'],
+        rows,
+        warning:
+          'The monthly payment does not reduce the transferred balance under the current assumptions.',
+      };
+    }
+  }
+
+  return {
+    heading: 'Balance Transfer Schedule',
+    columns: ['Month', 'APR', 'Payment', 'Interest', 'Remaining Balance'],
     rows,
     warning:
       balance > 0.005
@@ -791,6 +925,35 @@ export function buildCalculatorTable(
         annualInterestRatePercent: value(data, 'annualInterestRate'),
         monthlyPayment:
           value(data, 'monthlyPayment') + value(data, 'extraMonthlyPayment'),
+      });
+    case 'credit-card-payoff':
+      return payoffTable({
+        balance: value(data, 'creditCardBalance'),
+        annualInterestRatePercent: value(data, 'apr'),
+        monthlyPayment: value(data, 'monthlyPayment'),
+      });
+    case 'credit-card-minimum-payment':
+      return minimumPaymentTable({
+        balance: value(data, 'creditCardBalance'),
+        annualInterestRatePercent: value(data, 'apr'),
+        minimumPaymentPercent: value(data, 'minimumPaymentPercent'),
+        minimumPaymentFloor: value(data, 'minimumPaymentFloor'),
+      });
+    case 'credit-card-extra-payment':
+      return payoffTable({
+        balance: value(data, 'creditCardBalance'),
+        annualInterestRatePercent: value(data, 'apr'),
+        monthlyPayment:
+          value(data, 'monthlyPayment') + value(data, 'extraMonthlyPayment'),
+      });
+    case 'balance-transfer':
+      return balanceTransferTable({
+        balance: value(data, 'creditCardBalance'),
+        currentMonthlyPayment: value(data, 'monthlyPayment'),
+        transferAprPercent: value(data, 'transferApr'),
+        promotionalMonths: value(data, 'promotionalMonths'),
+        transferFeePercent: value(data, 'transferFeePercent'),
+        postPromotionAprPercent: value(data, 'postPromotionApr'),
       });
     case 'student-loan-payoff':
       return payoffTable({

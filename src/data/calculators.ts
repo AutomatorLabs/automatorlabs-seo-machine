@@ -5519,9 +5519,12 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       },
     ],
     relatedIds: [
-      'loan-payment-calculator',
+      'credit-card-payoff-calculator',
+      'debt-snowball-calculator',
+      'debt-avalanche-calculator',
+      'credit-card-interest-calculator',
       'budget-calculator',
-      'net-worth-calculator',
+      'loan-payment-calculator',
     ],
   },
   'debt-snowball': {
@@ -5662,8 +5665,11 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
     ],
     relatedIds: [
       'debt-payoff-calculator',
+      'debt-avalanche-calculator',
+      'credit-card-payoff-calculator',
+      'credit-card-minimum-payment-calculator',
       'budget-calculator',
-      'net-worth-calculator',
+      'emergency-fund-calculator',
     ],
   },
   'debt-avalanche': {
@@ -5840,6 +5846,480 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
     relatedIds: [
       'debt-snowball-calculator',
       'debt-payoff-calculator',
+      'credit-card-payoff-calculator',
+      'balance-transfer-calculator',
+      'credit-card-interest-calculator',
+      'budget-calculator',
+    ],
+  },
+  'credit-card-payoff': {
+    id: 'credit-card-payoff',
+    url: '/calculators/credit-card-payoff-calculator/',
+    title: 'Credit Card Payoff Calculator',
+    eyebrow: 'Credit Card Calculator',
+    description:
+      'Estimate how long it could take to pay off a credit card balance and how much interest you may pay.',
+    inputs: [
+      {
+        id: 'credit-card-balance',
+        name: 'creditCardBalance',
+        label: 'Credit card balance',
+        type: 'number',
+        value: '6000',
+        min: '0.01',
+        step: '50',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'apr',
+        name: 'apr',
+        label: 'APR (%)',
+        type: 'number',
+        value: '24',
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: 'monthly-payment',
+        name: 'monthlyPayment',
+        label: 'Monthly payment',
+        type: 'number',
+        value: '250',
+        min: '0.01',
+        step: '10',
+        prefix: '$',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'payoff-time-result',
+        label: 'Payoff time',
+        initialValue: '0 months',
+        primary: true,
+      },
+      {
+        id: 'total-interest-paid-result',
+        label: 'Total interest paid',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'total-amount-paid-result',
+        label: 'Total amount paid',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'monthly-interest-result',
+        label: 'First month interest',
+        initialValue: '$0.00',
+      },
+    ],
+    faq: [
+      {
+        question: 'How does the Credit Card Payoff Calculator estimate payoff time?',
+        answer:
+          'It applies monthly interest from the APR, subtracts your monthly payment, and repeats the process until the balance reaches zero.',
+      },
+      {
+        question: 'Why can a credit card payoff take longer than expected?',
+        answer:
+          'High APRs and low payments can cause a large share of each payment to go toward interest instead of principal, stretching the payoff timeline.',
+      },
+      {
+        question: 'Does this calculator include new purchases?',
+        answer:
+          'No. It assumes you stop adding charges to the card. New purchases, fees, missed payments, and rate changes can all change the real payoff path.',
+      },
+      {
+        question: 'Can I use this for a store card or personal line of credit?',
+        answer:
+          'You can use it for any revolving balance where an APR and monthly payment are reasonable approximations, but issuer-specific rules may differ.',
+      },
+      {
+        question: 'What payment should I test first?',
+        answer:
+          'Start with the payment you can reliably make every month, then compare a slightly higher amount to see how much time and interest changes.',
+      },
+    ],
+    relatedIds: [
+      'credit-card-interest-calculator',
+      'credit-card-extra-payment-calculator',
+      'credit-card-minimum-payment-calculator',
+      'balance-transfer-calculator',
+      'debt-payoff-calculator',
+      'budget-calculator',
+    ],
+  },
+  'credit-card-minimum-payment': {
+    id: 'credit-card-minimum-payment',
+    url: '/calculators/credit-card-minimum-payment-calculator/',
+    title: 'Credit Card Minimum Payment Calculator',
+    eyebrow: 'Credit Card Calculator',
+    description:
+      'Estimate a credit card minimum payment, first-month interest, and the long payoff path created by minimum-only payments.',
+    inputs: [
+      {
+        id: 'credit-card-balance',
+        name: 'creditCardBalance',
+        label: 'Credit card balance',
+        type: 'number',
+        value: '5000',
+        min: '0.01',
+        step: '50',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'apr',
+        name: 'apr',
+        label: 'APR (%)',
+        type: 'number',
+        value: '24',
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: 'minimum-payment-percent',
+        name: 'minimumPaymentPercent',
+        label: 'Minimum payment percent (%)',
+        type: 'number',
+        value: '3',
+        min: '0.01',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: 'minimum-payment-floor',
+        name: 'minimumPaymentFloor',
+        label: 'Minimum payment floor',
+        type: 'number',
+        value: '35',
+        min: '0.01',
+        step: '5',
+        prefix: '$',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'minimum-payment-result',
+        label: 'Estimated first minimum payment',
+        initialValue: '$0.00',
+        primary: true,
+      },
+      {
+        id: 'first-month-interest-result',
+        label: 'First month interest',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'first-month-principal-result',
+        label: 'First month principal reduction',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'payoff-time-result',
+        label: 'Minimum-only payoff time',
+        initialValue: '0 months',
+      },
+      {
+        id: 'total-interest-paid-result',
+        label: 'Total interest paid',
+        initialValue: '$0.00',
+      },
+    ],
+    faq: [
+      {
+        question: 'How does the Credit Card Minimum Payment Calculator work?',
+        answer:
+          'It estimates the required payment as the larger of a balance percentage or a payment floor, then models the balance month by month.',
+      },
+      {
+        question: 'Why is minimum-only payoff often slow?',
+        answer:
+          'As the balance declines, percentage-based minimum payments can also decline. That can keep the payment low and allow interest to accumulate for a long time.',
+      },
+      {
+        question: 'Does this match my issuer’s exact minimum formula?',
+        answer:
+          'No. Issuers may add fees, past-due amounts, interest charges, or special rules. Use your statement for the exact required payment.',
+      },
+      {
+        question: 'What does first month principal reduction mean?',
+        answer:
+          'It is the portion of the first estimated payment left after interest. That amount reduces the balance before the next month begins.',
+      },
+      {
+        question: 'What if the minimum payment does not cover interest?',
+        answer:
+          'The calculator flags the payoff as unreachable because the balance cannot shrink when the payment is not enough to overcome monthly interest.',
+      },
+    ],
+    relatedIds: [
+      'credit-card-payoff-calculator',
+      'credit-card-interest-calculator',
+      'credit-card-extra-payment-calculator',
+      'balance-transfer-calculator',
+      'debt-payoff-calculator',
+      'budget-calculator',
+    ],
+  },
+  'credit-card-extra-payment': {
+    id: 'credit-card-extra-payment',
+    url: '/calculators/credit-card-extra-payment-calculator/',
+    title: 'Credit Card Extra Payment Calculator',
+    eyebrow: 'Credit Card Calculator',
+    description:
+      'Compare a current credit card payment with an added extra monthly payment to estimate interest savings and faster payoff.',
+    inputs: [
+      {
+        id: 'credit-card-balance',
+        name: 'creditCardBalance',
+        label: 'Credit card balance',
+        type: 'number',
+        value: '7000',
+        min: '0.01',
+        step: '50',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'apr',
+        name: 'apr',
+        label: 'APR (%)',
+        type: 'number',
+        value: '22',
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: 'monthly-payment',
+        name: 'monthlyPayment',
+        label: 'Current monthly payment',
+        type: 'number',
+        value: '250',
+        min: '0.01',
+        step: '10',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'extra-monthly-payment',
+        name: 'extraMonthlyPayment',
+        label: 'Extra monthly payment',
+        type: 'number',
+        value: '100',
+        min: '0',
+        step: '10',
+        prefix: '$',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'payoff-time-result',
+        label: 'Payoff time with extra payment',
+        initialValue: '0 months',
+        primary: true,
+      },
+      {
+        id: 'time-saved-result',
+        label: 'Time saved',
+        initialValue: '0 months',
+      },
+      {
+        id: 'interest-saved-result',
+        label: 'Interest saved',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'total-interest-paid-result',
+        label: 'Total interest with extra payment',
+        initialValue: '$0.00',
+      },
+    ],
+    faq: [
+      {
+        question: 'How does the Credit Card Extra Payment Calculator compare payments?',
+        answer:
+          'It builds one payoff schedule using your current payment and another using the current payment plus the extra amount.',
+      },
+      {
+        question: 'Why can a small extra payment save interest?',
+        answer:
+          'Extra principal lowers the balance sooner, so less money is exposed to future interest charges.',
+      },
+      {
+        question: 'Should the extra payment be automatic?',
+        answer:
+          'Automation can help if the amount fits your budget, but it should not crowd out required bills or emergency savings.',
+      },
+      {
+        question: 'Does this assume the card is no longer being used?',
+        answer:
+          'Yes. The comparison assumes no new purchases, fees, or balance increases after the payoff plan starts.',
+      },
+      {
+        question: 'What if my current payment alone cannot pay off the card?',
+        answer:
+          'The calculator can still show whether the extra payment creates a payoff path, but the baseline comparison may not have finite savings.',
+      },
+    ],
+    relatedIds: [
+      'credit-card-payoff-calculator',
+      'credit-card-interest-calculator',
+      'credit-card-minimum-payment-calculator',
+      'balance-transfer-calculator',
+      'debt-payoff-calculator',
+      'emergency-fund-calculator',
+    ],
+  },
+  'balance-transfer': {
+    id: 'balance-transfer',
+    url: '/calculators/balance-transfer-calculator/',
+    title: 'Balance Transfer Calculator',
+    eyebrow: 'Credit Card Calculator',
+    description:
+      'Compare a current credit card payoff plan with a balance transfer that includes a transfer fee, promotional APR, and post-promo APR.',
+    inputs: [
+      {
+        id: 'credit-card-balance',
+        name: 'creditCardBalance',
+        label: 'Current card balance',
+        type: 'number',
+        value: '8000',
+        min: '0.01',
+        step: '50',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'current-apr',
+        name: 'currentApr',
+        label: 'Current APR (%)',
+        type: 'number',
+        value: '24',
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: 'monthly-payment',
+        name: 'monthlyPayment',
+        label: 'Monthly payment',
+        type: 'number',
+        value: '300',
+        min: '0.01',
+        step: '10',
+        prefix: '$',
+        required: true,
+      },
+      {
+        id: 'transfer-apr',
+        name: 'transferApr',
+        label: 'Promotional APR (%)',
+        type: 'number',
+        value: '0',
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: 'promotional-months',
+        name: 'promotionalMonths',
+        label: 'Promotional months',
+        type: 'number',
+        value: '18',
+        min: '0',
+        step: '1',
+        required: true,
+      },
+      {
+        id: 'transfer-fee-percent',
+        name: 'transferFeePercent',
+        label: 'Transfer fee (%)',
+        type: 'number',
+        value: '3',
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+      {
+        id: 'post-promo-apr',
+        name: 'postPromotionApr',
+        label: 'Post-promo APR (%)',
+        type: 'number',
+        value: '24',
+        min: '0',
+        step: '0.01',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'estimated-savings-result',
+        label: 'Estimated savings',
+        initialValue: '$0.00',
+        primary: true,
+      },
+      {
+        id: 'transfer-fee-result',
+        label: 'Balance transfer fee',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'current-plan-cost-result',
+        label: 'Current payoff cost',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'transfer-plan-cost-result',
+        label: 'Balance transfer payoff cost',
+        initialValue: '$0.00',
+      },
+      {
+        id: 'transfer-payoff-time-result',
+        label: 'Transfer payoff time',
+        initialValue: '0 months',
+      },
+    ],
+    faq: [
+      {
+        question: 'How does the Balance Transfer Calculator compare offers?',
+        answer:
+          'It compares the current payoff schedule with a transferred balance that includes the transfer fee and promotional APR period.',
+      },
+      {
+        question: 'Why can a balance transfer fee still be worth paying?',
+        answer:
+          'A fee can be outweighed by lower interest during the promotional period if the payment plan reduces the balance quickly enough.',
+      },
+      {
+        question: 'What happens after the promotional APR ends?',
+        answer:
+          'Any remaining balance begins accruing interest at the post-promo APR entered in the calculator.',
+      },
+      {
+        question: 'Does this include new purchases on the transfer card?',
+        answer:
+          'No. New purchases, late payments, penalty APRs, annual fees, and issuer allocation rules are not included.',
+      },
+      {
+        question: 'What if the transfer plan does not pay off the balance?',
+        answer:
+          'If the payment cannot overcome interest after the promo period, the calculator reports that the transfer payoff is not finite under the current assumptions.',
+      },
+    ],
+    relatedIds: [
+      'credit-card-payoff-calculator',
+      'credit-card-interest-calculator',
+      'credit-card-extra-payment-calculator',
+      'credit-card-minimum-payment-calculator',
+      'debt-avalanche-calculator',
       'budget-calculator',
     ],
   },
@@ -5946,9 +6426,12 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       },
     ],
     relatedIds: [
+      'credit-card-payoff-calculator',
+      'credit-card-extra-payment-calculator',
+      'credit-card-minimum-payment-calculator',
+      'balance-transfer-calculator',
       'debt-payoff-calculator',
       'debt-avalanche-calculator',
-      'budget-calculator',
     ],
   },
   'auto-loan': {
@@ -7249,6 +7732,14 @@ export const loanPaymentCalculator = calculatorConfigs['loan-payment'];
 export const debtPayoffCalculator = calculatorConfigs['debt-payoff'];
 export const debtSnowballCalculator = calculatorConfigs['debt-snowball'];
 export const debtAvalancheCalculator = calculatorConfigs['debt-avalanche'];
+export const creditCardPayoffCalculator =
+  calculatorConfigs['credit-card-payoff'];
+export const creditCardMinimumPaymentCalculator =
+  calculatorConfigs['credit-card-minimum-payment'];
+export const creditCardExtraPaymentCalculator =
+  calculatorConfigs['credit-card-extra-payment'];
+export const balanceTransferCalculator =
+  calculatorConfigs['balance-transfer'];
 export const creditCardInterestCalculator =
   calculatorConfigs['credit-card-interest'];
 export const autoLoanCalculator = calculatorConfigs['auto-loan'];

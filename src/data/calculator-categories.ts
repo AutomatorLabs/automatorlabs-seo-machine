@@ -92,6 +92,10 @@ export const calculatorCategories: CalculatorCategory[] = [
       'Use free debt and loan calculators to estimate payments, payoff timelines, interest costs, and repayment strategies.',
     ids: [
       'loan-payment-calculator',
+      'credit-card-payoff-calculator',
+      'credit-card-minimum-payment-calculator',
+      'credit-card-extra-payment-calculator',
+      'balance-transfer-calculator',
       'debt-payoff-calculator',
       'debt-snowball-calculator',
       'debt-avalanche-calculator',

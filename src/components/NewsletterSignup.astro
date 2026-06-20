@@ -12,12 +12,14 @@ const {
   description = 'Follow new calculator launches, investing tools, retirement planning resources, mortgage calculators, and useful personal finance guides.',
   compact = false,
 } = Astro.props;
+
+const newsletterUrl =
+  newsletterConfig.publicationUrl ?? 'https://newsletter.automatorlabs.co/';
 ---
 
 <aside
   class:list={['newsletter-signup', { compact }]}
   aria-label="AutomatorLabs newsletter signup"
-  data-newsletter-signup
 >
   <div class="newsletter-copy">
     <p class="newsletter-label">AutomatorLabs newsletter</p>
@@ -25,133 +27,21 @@ const {
     <p>{description}</p>
   </div>
 
-  <div class="signup-panel" data-newsletter-signup-area>
-    <form
-      action={newsletterConfig.subscribeEndpoint}
-      method="post"
-      target="newsletter-signup-response"
-      data-newsletter-form
-    >
-      <label>
-        <span>Email address</span>
-        <input
-          type="email"
-          name="email"
-          autocomplete="email"
-          inputmode="email"
-          placeholder="you@example.com"
-          required
-        />
-      </label>
-      <input type="hidden" name="sent_from_orchid" value="true" />
-      <input type="hidden" name="signup_flow_id" value="" />
-      <input type="hidden" name="automation_ids" value="" />
-      <input type="hidden" name="double_opt" value="false" />
-      <input type="hidden" name="auto_login_enabled" value="false" />
-      <input type="hidden" name="is_js_enabled" value="true" />
-      <button type="submit">Subscribe</button>
-    </form>
+  <div class="signup-panel">
+    <a class="newsletter-button" href={newsletterUrl}>
+      Subscribe to the newsletter
+    </a>
 
     <p class="signup-note">
-      Free updates. Unsubscribe whenever you like.
+      Opens the AutomatorLabs newsletter signup page. Free updates. Unsubscribe whenever you like.
     </p>
-    <p class="signup-status" role="status" aria-live="polite" hidden></p>
-    <p class="signup-fallback" hidden>
-      The inline form could not finish.
-      <a href={newsletterConfig.publicationUrl}>Subscribe on Beehiiv</a>.
-    </p>
-    <iframe
-      title="Newsletter signup response"
-      name="newsletter-signup-response"
-      class="response-frame"
-      data-newsletter-response
-      aria-hidden="true"
-      tabindex="-1"
-    ></iframe>
-
-    <noscript>
-      <p class="signup-fallback-noscript">
-        JavaScript is required for inline confirmation.
-        <a href={newsletterConfig.publicationUrl}>Subscribe on Beehiiv</a>.
-      </p>
-    </noscript>
   </div>
 </aside>
-
-<script>
-  const setupNewsletterSignup = (
-    signup: HTMLElement,
-  ): void => {
-    if (signup.dataset.newsletterReady === 'true') return;
-
-    const form =
-      signup.querySelector<HTMLFormElement>('[data-newsletter-form]');
-    const responseFrame =
-      signup.querySelector<HTMLIFrameElement>('[data-newsletter-response]');
-    const status =
-      signup.querySelector<HTMLElement>('.signup-status');
-    const fallback =
-      signup.querySelector<HTMLElement>('.signup-fallback');
-    const button = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
-
-    if (!form || !responseFrame || !status || !fallback || !button) return;
-
-    signup.dataset.newsletterReady = 'true';
-
-    let submitted = false;
-    let timeoutId: number | undefined;
-
-    const showFailure = (): void => {
-      submitted = false;
-      button.disabled = false;
-      button.textContent = 'Try again';
-      status.hidden = false;
-      status.textContent = 'We could not confirm the signup inline.';
-      fallback.hidden = false;
-    };
-
-    form.addEventListener('submit', () => {
-      submitted = true;
-      button.disabled = true;
-      button.textContent = 'Subscribing…';
-      status.hidden = false;
-      status.textContent = 'Submitting your email securely to Beehiiv…';
-      fallback.hidden = true;
-
-      window.clearTimeout(timeoutId);
-      timeoutId = window.setTimeout(showFailure, 12000);
-    });
-
-    responseFrame.addEventListener('load', () => {
-      if (!submitted) return;
-
-      submitted = false;
-      window.clearTimeout(timeoutId);
-      form.hidden = true;
-      const note = signup.querySelector<HTMLElement>('.signup-note');
-      if (note) note.hidden = true;
-      fallback.hidden = true;
-      status.hidden = false;
-      status.classList.add('success');
-      status.textContent =
-        'Thanks for subscribing! Please check your inbox to confirm your email address.';
-    });
-  };
-
-  const setupAllNewsletterSignups = (): void => {
-    document
-      .querySelectorAll<HTMLElement>('[data-newsletter-signup]')
-      .forEach(setupNewsletterSignup);
-  };
-
-  setupAllNewsletterSignups();
-  document.addEventListener('astro:page-load', setupAllNewsletterSignups);
-</script>
 
 <style>
   .newsletter-signup {
     display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(290px, 0.85fr);
+    grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.6fr);
     gap: clamp(1.25rem, 4vw, 2.5rem);
     align-items: center;
     margin-top: 3rem;
@@ -199,97 +89,34 @@ const {
     min-width: 0;
   }
 
-  form {
-    display: flex;
-    gap: 0.65rem;
-    align-items: end;
-  }
-
-  label {
-    display: grid;
-    flex: 1 1 auto;
-    gap: 0.4rem;
-    min-width: 0;
-    color: var(--heading-color);
-    font-size: 0.82rem;
-    font-weight: 700;
-  }
-
-  input {
-    box-sizing: border-box;
-    width: 100%;
+  .newsletter-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     min-height: 44px;
-    border: 1px solid var(--input-border);
     border-radius: 10px;
-    background: var(--input-background);
-    color: var(--text-color);
-    font: inherit;
-    padding: 0.72rem 0.8rem;
+    background: var(--button-background);
+    color: var(--button-text);
+    font-weight: 750;
+    padding: 0.72rem 1rem;
+    text-decoration: none;
   }
 
-  input::placeholder {
-    color: var(--muted-text-color);
+  .newsletter-button:hover {
+    background: var(--button-hover-background);
+    color: var(--button-text);
   }
 
-  input:focus-visible,
-  button:focus-visible,
-  a:focus-visible {
+  .newsletter-button:focus-visible {
     outline: 3px solid var(--focus-ring);
     outline-offset: 2px;
   }
 
-  button {
-    flex: 0 0 auto;
-    min-height: 44px;
-    border: 0;
-    border-radius: 10px;
-    background: var(--button-background);
-    color: var(--button-text);
-    cursor: pointer;
-    font: inherit;
-    font-weight: 750;
-    padding: 0.72rem 1rem;
-  }
-
-  button:hover {
-    background: var(--button-hover-background);
-  }
-
-  button:disabled {
-    cursor: wait;
-    opacity: 0.72;
-  }
-
-  .signup-note,
-  .signup-status,
-  .signup-fallback,
-  .signup-fallback-noscript {
+  .signup-note {
     margin: 0.65rem 0 0;
     color: var(--muted-text-color);
     font-size: 0.82rem;
     line-height: 1.5;
-  }
-
-  .signup-status.success {
-    color: var(--heading-color);
-    font-size: 0.96rem;
-    font-weight: 700;
-  }
-
-  .signup-fallback a,
-  .signup-fallback-noscript a {
-    font-weight: 700;
-  }
-
-  .response-frame {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    border: 0;
-    clip: rect(0 0 0 0);
-    clip-path: inset(50%);
-    overflow: hidden;
-    white-space: nowrap;
   }
 
   @media (max-width: 780px) {
@@ -299,12 +126,7 @@ const {
   }
 
   @media (max-width: 480px) {
-    form {
-      align-items: stretch;
-      flex-direction: column;
-    }
-
-    button {
+    .newsletter-button {
       width: 100%;
     }
   }

@@ -369,6 +369,10 @@ export const guideHubs: GuideHub[] = [
     categoryUrl: '/calculators/debt-loans/',
     calculatorIds: [
       'debt-payoff-calculator',
+      'credit-card-payoff-calculator',
+      'credit-card-minimum-payment-calculator',
+      'credit-card-extra-payment-calculator',
+      'balance-transfer-calculator',
       'debt-avalanche-calculator',
       'debt-snowball-calculator',
       'credit-card-interest-calculator',

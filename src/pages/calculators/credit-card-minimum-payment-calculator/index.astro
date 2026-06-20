@@ -1,0 +1,152 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { creditCardMinimumPaymentCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = creditCardMinimumPaymentCalculator.relatedIds.flatMap(
+  (id) => {
+    const item = contentItems.find((contentItem) => contentItem.id === id);
+    return item ? [{ title: item.title, url: item.url }] : [];
+  },
+);
+---
+
+<CalculatorPage
+  title={creditCardMinimumPaymentCalculator.title}
+  eyebrow={creditCardMinimumPaymentCalculator.eyebrow}
+  description={creditCardMinimumPaymentCalculator.description}
+  inputs={creditCardMinimumPaymentCalculator.inputs}
+  outputs={creditCardMinimumPaymentCalculator.outputs}
+  faq={creditCardMinimumPaymentCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateCreditCardMinimumPayment } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const minimumPaymentResult = document.querySelector<HTMLElement>(
+      '#minimum-payment-result',
+    );
+    const firstMonthInterestResult = document.querySelector<HTMLElement>(
+      '#first-month-interest-result',
+    );
+    const firstMonthPrincipalResult = document.querySelector<HTMLElement>(
+      '#first-month-principal-result',
+    );
+    const payoffTimeResult =
+      document.querySelector<HTMLElement>('#payoff-time-result');
+    const totalInterestPaidResult = document.querySelector<HTMLElement>(
+      '#total-interest-paid-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function formatMonths(totalMonths: number): string {
+      const years = Math.floor(totalMonths / 12);
+      const months = totalMonths % 12;
+      const parts: string[] = [];
+
+      if (years > 0) {
+        parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+      }
+
+      if (months > 0) {
+        parts.push(`${months} ${months === 1 ? 'month' : 'months'}`);
+      }
+
+      return parts.length > 0 ? parts.join(', ') : '0 months';
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !minimumPaymentResult ||
+        !firstMonthInterestResult ||
+        !firstMonthPrincipalResult ||
+        !payoffTimeResult ||
+        !totalInterestPaidResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const creditCardBalance = parseCalculatorNumber(
+        data.get('creditCardBalance'),
+      );
+      const apr = parseCalculatorNumber(data.get('apr'));
+      const minimumPaymentPercent = parseCalculatorNumber(
+        data.get('minimumPaymentPercent'),
+      );
+      const minimumPaymentFloor = parseCalculatorNumber(
+        data.get('minimumPaymentFloor'),
+      );
+
+      if (
+        !Number.isFinite(creditCardBalance) ||
+        !Number.isFinite(apr) ||
+        !Number.isFinite(minimumPaymentPercent) ||
+        !Number.isFinite(minimumPaymentFloor) ||
+        creditCardBalance <= 0 ||
+        apr < 0 ||
+        minimumPaymentPercent <= 0 ||
+        minimumPaymentFloor <= 0
+      ) {
+        error.textContent =
+          'Balance, minimum payment percent, and minimum payment floor must be greater than $0. APR cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      const result = calculateCreditCardMinimumPayment({
+        balance: creditCardBalance,
+        aprPercent: apr,
+        minimumPaymentPercent,
+        minimumPaymentFloor,
+      });
+
+      minimumPaymentResult.textContent = currency.format(
+        result.firstMinimumPayment,
+      );
+      firstMonthInterestResult.textContent = currency.format(
+        result.firstMonthInterest,
+      );
+      firstMonthPrincipalResult.textContent = currency.format(
+        result.firstMonthPrincipal,
+      );
+
+      if (!result.reachable) {
+        error.textContent =
+          'The estimated minimum payment does not reduce the balance under these assumptions. Increase the payment floor or payment percentage.';
+        error.hidden = false;
+        payoffTimeResult.textContent = 'No payoff under current minimum';
+        totalInterestPaidResult.textContent = 'No finite interest total';
+        return true;
+      }
+
+      error.hidden = true;
+      payoffTimeResult.textContent = formatMonths(result.payoffTimeMonths ?? 0);
+      totalInterestPaidResult.textContent = currency.format(
+        result.totalInterestPaid ?? 0,
+      );
+
+      return true;
+    }
+
+    if (form) {
+      form.onsubmit = (event) => {
+        event.preventDefault();
+        trackSuccessfulCalculation('credit_card_minimum_payment', calculate);
+      };
+    }
+
+    calculate();
+  </script>
+</CalculatorPage>

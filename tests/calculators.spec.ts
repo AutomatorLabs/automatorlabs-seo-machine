@@ -38,15 +38,20 @@ import {
   calculateCompoundInterest,
   calculateRequiredPeriodicSavings,
 } from '../src/lib/math';
+import { newsletterConfig } from '../src/data/newsletter';
 import { rothIraPlanningDefaults } from '../src/config/roth-ira';
 import { fourOhOneKPlanningDefaults } from '../src/config/401k';
 
 const calculators = Object.values(calculatorConfigs).sort((a, b) =>
   a.title.localeCompare(b.title),
 );
+const newsletterLink = (page: Page) =>
+  page.getByRole('link', { name: 'Subscribe to the newsletter' });
+const newsletterCta = (page: Page) =>
+  page.locator('aside[aria-label="AutomatorLabs newsletter signup"]');
 
 test.describe('newsletter acquisition', () => {
-  test('newsletter landing page loads with inline signup, canonical, and key tools', async ({
+  test('newsletter landing page loads with hosted signup CTA, canonical, and key tools', async ({
     page,
   }) => {
     const pageErrors: string[] = [];
@@ -70,16 +75,12 @@ test.describe('newsletter acquisition', () => {
       'href',
       'https://automatorlabs.co/newsletter/',
     );
-    await expect(page.locator('[data-newsletter-signup-area]')).toBeVisible();
-    await expect(
-      page.locator('[data-newsletter-form]'),
-    ).toHaveAttribute(
-      'action',
-      'https://newsletter.automatorlabs.co/create',
+    await expect(newsletterCta(page)).toBeVisible();
+    await expect(newsletterLink(page)).toBeVisible();
+    await expect(newsletterLink(page)).toHaveAttribute(
+      'href',
+      newsletterConfig.publicationUrl,
     );
-    await expect(
-      page.getByRole('textbox', { name: 'Email address' }),
-    ).toBeVisible();
     await expect(
       page.locator('a[href="/calculators/compound-interest/"]'),
     ).toContainText('Compound Interest Calculator');
@@ -101,34 +102,8 @@ test.describe('newsletter acquisition', () => {
     expect(pageErrors).toEqual([]);
   });
 
-  test('inline signup stays on the page and shows the confirmation state', async ({
-    page,
-  }) => {
-    await page.route(
-      'https://newsletter.automatorlabs.co/create',
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'text/html',
-          body: '<!doctype html><title>Subscribed</title>',
-        });
-      },
-    );
-    await page.goto('/newsletter/', { waitUntil: 'domcontentloaded' });
-
-    await page
-      .getByRole('textbox', { name: 'Email address' })
-      .fill('reader@example.com');
-    await page.getByRole('button', { name: 'Subscribe' }).click();
-
-    await expect(page).toHaveURL(/\/newsletter\/$/);
-    await expect(page.getByRole('status')).toHaveText(
-      'Thanks for subscribing! Please check your inbox to confirm your email address.',
-    );
-  });
-
   for (const route of ['/', '/examples/']) {
-    test(`${route} includes the shared inline newsletter signup`, async ({
+    test(`${route} includes the shared hosted newsletter CTA`, async ({
       page,
     }) => {
       const pageErrors: string[] = [];
@@ -139,12 +114,11 @@ test.describe('newsletter acquisition', () => {
       });
 
       expect(response?.ok()).toBe(true);
-      await expect(page.locator('[data-newsletter-signup]')).toBeVisible();
-      await expect(
-        page.locator('[data-newsletter-form]'),
-      ).toHaveAttribute(
-        'action',
-        'https://newsletter.automatorlabs.co/create',
+      await expect(newsletterCta(page)).toBeVisible();
+      await expect(newsletterLink(page)).toBeVisible();
+      await expect(newsletterLink(page)).toHaveAttribute(
+        'href',
+        newsletterConfig.publicationUrl,
       );
       expect(pageErrors).toEqual([]);
     });
@@ -794,6 +768,77 @@ test.describe('global programmatic examples hub', () => {
 });
 
 test.describe('calculator QA', () => {
+  test('debt and credit-card payoff cluster routes and related tools are registered', () => {
+    const expectedRoutes = [
+      '/calculators/credit-card-payoff-calculator/',
+      '/calculators/credit-card-minimum-payment-calculator/',
+      '/calculators/credit-card-extra-payment-calculator/',
+      '/calculators/balance-transfer-calculator/',
+      '/calculators/debt-payoff-calculator/',
+      '/calculators/debt-snowball-calculator/',
+      '/calculators/debt-avalanche-calculator/',
+    ];
+    const calculatorUrls = new Set(calculators.map((item) => item.url));
+    const debtCategory = calculatorCategories.find(
+      (category) => category.slug === 'debt-loans',
+    );
+
+    expect(expectedRoutes.every((route) => calculatorUrls.has(route))).toBe(
+      true,
+    );
+    expect(debtCategory?.ids).toEqual(
+      expect.arrayContaining([
+        'credit-card-payoff-calculator',
+        'credit-card-minimum-payment-calculator',
+        'credit-card-extra-payment-calculator',
+        'balance-transfer-calculator',
+        'debt-payoff-calculator',
+        'debt-snowball-calculator',
+        'debt-avalanche-calculator',
+        'credit-card-interest-calculator',
+      ]),
+    );
+
+    for (const route of expectedRoutes.slice(0, 4)) {
+      const relatedUrls = new Set(
+        createRelatedCalculatorLinks(route).map((item) => item.url),
+      );
+
+      expect(
+        relatedUrls.has('/calculators/debt-payoff-calculator/') ||
+          relatedUrls.has('/calculators/debt-avalanche-calculator/'),
+      ).toBe(true);
+      expect(
+        relatedUrls.has('/calculators/credit-card-interest-calculator/'),
+      ).toBe(true);
+      expect(
+        relatedUrls.has('/calculators/budget-calculator/') ||
+          relatedUrls.has('/calculators/emergency-fund-calculator/'),
+      ).toBe(true);
+    }
+  });
+
+  test('debt and credit-card payoff pages include the hosted newsletter CTA', async ({
+    page,
+  }) => {
+    for (const route of [
+      '/calculators/credit-card-payoff-calculator/',
+      '/calculators/credit-card-minimum-payment-calculator/',
+      '/calculators/credit-card-extra-payment-calculator/',
+      '/calculators/balance-transfer-calculator/',
+      '/calculators/debt-payoff-calculator/',
+      '/calculators/debt-snowball-calculator/',
+      '/calculators/debt-avalanche-calculator/',
+    ]) {
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      await expect(newsletterCta(page)).toBeVisible();
+      await expect(newsletterLink(page)).toHaveAttribute(
+        'href',
+        newsletterConfig.publicationUrl,
+      );
+    }
+  });
+
   test('401(k) cluster routes, editable defaults, and related tools are registered', () => {
     const expectedRoutes = [
       '/calculators/401k-calculator/',
@@ -843,7 +888,11 @@ test.describe('calculator QA', () => {
       '/calculators/401k-catch-up-contribution-calculator/',
     ]) {
       await page.goto(route, { waitUntil: 'domcontentloaded' });
-      await expect(page.locator('[data-newsletter-signup]')).toBeVisible();
+      await expect(newsletterCta(page)).toBeVisible();
+      await expect(newsletterLink(page)).toHaveAttribute(
+        'href',
+        newsletterConfig.publicationUrl,
+      );
     }
   });
 
@@ -891,7 +940,11 @@ test.describe('calculator QA', () => {
       '/calculators/roth-ira-early-withdrawal-calculator/',
     ]) {
       await page.goto(route, { waitUntil: 'domcontentloaded' });
-      await expect(page.locator('[data-newsletter-signup]')).toBeVisible();
+      await expect(newsletterCta(page)).toBeVisible();
+      await expect(newsletterLink(page)).toHaveAttribute(
+        'href',
+        newsletterConfig.publicationUrl,
+      );
     }
   });
 
@@ -1288,6 +1341,26 @@ test.describe('calculator result tables', () => {
     {
       title: 'Debt Payoff',
       url: '/calculators/debt-payoff-calculator/',
+      firstCell: '1',
+    },
+    {
+      title: 'Credit Card Payoff',
+      url: '/calculators/credit-card-payoff-calculator/',
+      firstCell: '1',
+    },
+    {
+      title: 'Credit Card Minimum Payment',
+      url: '/calculators/credit-card-minimum-payment-calculator/',
+      firstCell: '1',
+    },
+    {
+      title: 'Credit Card Extra Payment',
+      url: '/calculators/credit-card-extra-payment-calculator/',
+      firstCell: '1',
+    },
+    {
+      title: 'Balance Transfer',
+      url: '/calculators/balance-transfer-calculator/',
       firstCell: '1',
     },
     {

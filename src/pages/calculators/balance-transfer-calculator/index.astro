@@ -1,0 +1,167 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { balanceTransferCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = balanceTransferCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={balanceTransferCalculator.title}
+  eyebrow={balanceTransferCalculator.eyebrow}
+  description={balanceTransferCalculator.description}
+  inputs={balanceTransferCalculator.inputs}
+  outputs={balanceTransferCalculator.outputs}
+  faq={balanceTransferCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateBalanceTransfer } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const estimatedSavingsResult = document.querySelector<HTMLElement>(
+      '#estimated-savings-result',
+    );
+    const transferFeeResult =
+      document.querySelector<HTMLElement>('#transfer-fee-result');
+    const currentPlanCostResult = document.querySelector<HTMLElement>(
+      '#current-plan-cost-result',
+    );
+    const transferPlanCostResult = document.querySelector<HTMLElement>(
+      '#transfer-plan-cost-result',
+    );
+    const transferPayoffTimeResult = document.querySelector<HTMLElement>(
+      '#transfer-payoff-time-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function formatMonths(totalMonths: number): string {
+      const years = Math.floor(totalMonths / 12);
+      const months = totalMonths % 12;
+      const parts: string[] = [];
+
+      if (years > 0) {
+        parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+      }
+
+      if (months > 0) {
+        parts.push(`${months} ${months === 1 ? 'month' : 'months'}`);
+      }
+
+      return parts.length > 0 ? parts.join(', ') : '0 months';
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !estimatedSavingsResult ||
+        !transferFeeResult ||
+        !currentPlanCostResult ||
+        !transferPlanCostResult ||
+        !transferPayoffTimeResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const creditCardBalance = parseCalculatorNumber(
+        data.get('creditCardBalance'),
+      );
+      const currentApr = parseCalculatorNumber(data.get('currentApr'));
+      const monthlyPayment = parseCalculatorNumber(
+        data.get('monthlyPayment'),
+      );
+      const transferApr = parseCalculatorNumber(data.get('transferApr'));
+      const promotionalMonths = parseCalculatorNumber(
+        data.get('promotionalMonths'),
+      );
+      const transferFeePercent = parseCalculatorNumber(
+        data.get('transferFeePercent'),
+      );
+      const postPromotionApr = parseCalculatorNumber(
+        data.get('postPromotionApr'),
+      );
+
+      if (
+        !Number.isFinite(creditCardBalance) ||
+        !Number.isFinite(currentApr) ||
+        !Number.isFinite(monthlyPayment) ||
+        !Number.isFinite(transferApr) ||
+        !Number.isFinite(promotionalMonths) ||
+        !Number.isFinite(transferFeePercent) ||
+        !Number.isFinite(postPromotionApr) ||
+        creditCardBalance <= 0 ||
+        currentApr < 0 ||
+        monthlyPayment <= 0 ||
+        transferApr < 0 ||
+        promotionalMonths < 0 ||
+        transferFeePercent < 0 ||
+        postPromotionApr < 0
+      ) {
+        error.textContent =
+          'Balance and monthly payment must be greater than $0. APRs, months, and fees cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      const result = calculateBalanceTransfer({
+        balance: creditCardBalance,
+        currentAprPercent: currentApr,
+        currentMonthlyPayment: monthlyPayment,
+        transferAprPercent: transferApr,
+        promotionalMonths,
+        transferFeePercent,
+        postPromotionAprPercent: postPromotionApr,
+      });
+
+      transferFeeResult.textContent = currency.format(result.transferFee);
+      currentPlanCostResult.textContent =
+        result.currentPlan.totalAmountPaid == null
+          ? 'No finite payoff total'
+          : currency.format(result.currentPlan.totalAmountPaid);
+      transferPlanCostResult.textContent =
+        result.transferPlan.totalAmountPaid == null
+          ? 'No finite payoff total'
+          : currency.format(result.transferPlan.totalAmountPaid);
+      transferPayoffTimeResult.textContent =
+        result.transferPlan.payoffTimeMonths == null
+          ? 'No payoff under current payment'
+          : formatMonths(result.transferPlan.payoffTimeMonths);
+      estimatedSavingsResult.textContent =
+        result.estimatedSavings == null
+          ? 'No finite comparison'
+          : currency.format(result.estimatedSavings);
+
+      error.hidden = true;
+
+      if (!result.currentPlan.reachable || !result.transferPlan.reachable) {
+        error.textContent =
+          'One of the payoff paths does not fully pay off under the current payment. Increase the monthly payment for a finite comparison.';
+        error.hidden = false;
+      }
+
+      return true;
+    }
+
+    if (form) {
+      form.onsubmit = (event) => {
+        event.preventDefault();
+        trackSuccessfulCalculation('balance_transfer', calculate);
+      };
+    }
+
+    calculate();
+  </script>
+</CalculatorPage>

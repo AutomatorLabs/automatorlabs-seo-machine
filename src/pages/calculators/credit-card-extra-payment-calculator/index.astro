@@ -1,0 +1,162 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { creditCardExtraPaymentCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = creditCardExtraPaymentCalculator.relatedIds.flatMap(
+  (id) => {
+    const item = contentItems.find((contentItem) => contentItem.id === id);
+    return item ? [{ title: item.title, url: item.url }] : [];
+  },
+);
+---
+
+<CalculatorPage
+  title={creditCardExtraPaymentCalculator.title}
+  eyebrow={creditCardExtraPaymentCalculator.eyebrow}
+  description={creditCardExtraPaymentCalculator.description}
+  inputs={creditCardExtraPaymentCalculator.inputs}
+  outputs={creditCardExtraPaymentCalculator.outputs}
+  faq={creditCardExtraPaymentCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateCreditCardInterest } from '../../../lib/math';
+    import { getDebtPaymentExplanation } from '../../../lib/result-messages';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const payoffTimeResult =
+      document.querySelector<HTMLElement>('#payoff-time-result');
+    const timeSavedResult =
+      document.querySelector<HTMLElement>('#time-saved-result');
+    const interestSavedResult = document.querySelector<HTMLElement>(
+      '#interest-saved-result',
+    );
+    const totalInterestPaidResult = document.querySelector<HTMLElement>(
+      '#total-interest-paid-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function formatMonths(totalMonths: number): string {
+      const years = Math.floor(totalMonths / 12);
+      const months = totalMonths % 12;
+      const parts: string[] = [];
+
+      if (years > 0) {
+        parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+      }
+
+      if (months > 0) {
+        parts.push(`${months} ${months === 1 ? 'month' : 'months'}`);
+      }
+
+      return parts.length > 0 ? parts.join(', ') : '0 months';
+    }
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !payoffTimeResult ||
+        !timeSavedResult ||
+        !interestSavedResult ||
+        !totalInterestPaidResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const creditCardBalance = parseCalculatorNumber(
+        data.get('creditCardBalance'),
+      );
+      const apr = parseCalculatorNumber(data.get('apr'));
+      const monthlyPayment = parseCalculatorNumber(
+        data.get('monthlyPayment'),
+      );
+      const extraMonthlyPayment = parseCalculatorNumber(
+        data.get('extraMonthlyPayment'),
+      );
+
+      if (
+        !Number.isFinite(creditCardBalance) ||
+        !Number.isFinite(apr) ||
+        !Number.isFinite(monthlyPayment) ||
+        !Number.isFinite(extraMonthlyPayment) ||
+        creditCardBalance <= 0 ||
+        apr < 0 ||
+        monthlyPayment <= 0 ||
+        extraMonthlyPayment < 0
+      ) {
+        error.textContent =
+          'Credit card balance and monthly payment must be greater than $0. APR and extra payment cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      const result = calculateCreditCardInterest({
+        balance: creditCardBalance,
+        aprPercent: apr,
+        monthlyPayment,
+        extraMonthlyPayment,
+      });
+
+      if (!result.accelerated.reachable) {
+        error.textContent = getDebtPaymentExplanation({
+          balance: creditCardBalance,
+          annualInterestRatePercent: apr,
+          monthlyPayment: monthlyPayment + extraMonthlyPayment,
+        });
+        error.hidden = false;
+        payoffTimeResult.textContent = 'No payoff under current payment';
+        timeSavedResult.textContent = 'Increase payment above monthly interest';
+        interestSavedResult.textContent = 'No finite savings estimate';
+        totalInterestPaidResult.textContent = 'No finite interest total';
+        return true;
+      }
+
+      error.hidden = true;
+      payoffTimeResult.textContent = formatMonths(
+        result.accelerated.payoffTimeMonths ?? 0,
+      );
+      timeSavedResult.textContent =
+        result.timeSavedMonths == null
+          ? 'Standard payment has no finite payoff'
+          : formatMonths(result.timeSavedMonths);
+      interestSavedResult.textContent =
+        result.interestSaved == null
+          ? 'Extra payment creates a payoff path'
+          : currency.format(result.interestSaved);
+      totalInterestPaidResult.textContent = currency.format(
+        result.accelerated.totalInterestPaid ?? 0,
+      );
+
+      if (!result.baseline.reachable) {
+        error.textContent = `${getDebtPaymentExplanation({
+          balance: creditCardBalance,
+          annualInterestRatePercent: apr,
+          monthlyPayment,
+        })} The extra payment creates the payoff path shown here.`;
+        error.hidden = false;
+      }
+
+      return true;
+    }
+
+    if (form) {
+      form.onsubmit = (event) => {
+        event.preventDefault();
+        trackSuccessfulCalculation('credit_card_extra_payment', calculate);
+      };
+    }
+
+    calculate();
+  </script>
+</CalculatorPage>
