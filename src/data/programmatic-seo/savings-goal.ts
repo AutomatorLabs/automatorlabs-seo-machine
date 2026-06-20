@@ -20,9 +20,11 @@ export interface SavingsGoalSeoRecord {
   featured?: boolean;
 }
 
-export const EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT = 115;
+export const EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT = 200;
 
 const money = (amount: number) => `$${amount.toLocaleString('en-US')}`;
+const slugify = (value: string) =>
+  value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 function generalRecord(
   goalAmount: number,
@@ -85,6 +87,28 @@ function retirementRecord(
     currentAge,
     targetAge,
     featured,
+  };
+}
+
+function startingBalanceRecord(
+  intent: SavingsGoalSeoIntent,
+  purpose: string,
+  goalAmount: number,
+  years: number,
+  currentSavings: number,
+  annualReturnPercent: number,
+): SavingsGoalSeoRecord {
+  const duration = `${years}-${years === 1 ? 'year' : 'years'}`;
+
+  return {
+    slug: `save-${goalAmount}-for-${slugify(purpose)}-in-${duration}-starting-with-${currentSavings}-at-${annualReturnPercent}-percent`,
+    question: `How Much to Save Monthly for a ${money(goalAmount)} ${purpose} in ${years} ${years === 1 ? 'Year' : 'Years'} Starting With ${money(currentSavings)} at ${annualReturnPercent}%?`,
+    intent,
+    goalAmount,
+    years,
+    currentSavings,
+    annualReturnPercent,
+    purpose,
   };
 }
 
@@ -155,6 +179,94 @@ const longTailSavingsGoalSeoRecords: SavingsGoalSeoRecord[] = [
   retirementRecord(750000, 30, 65),
 ];
 
+const startingBalanceSavingsGoalSeoRecords: SavingsGoalSeoRecord[] = [
+  startingBalanceRecord('emergency-fund', 'emergency fund', 25000, 1, 2500, 2),
+  startingBalanceRecord('emergency-fund', 'emergency fund', 25000, 2, 5000, 3),
+  startingBalanceRecord('emergency-fund', 'emergency fund', 25000, 3, 10000, 3),
+  startingBalanceRecord('emergency-fund', 'emergency fund', 50000, 2, 5000, 2),
+  startingBalanceRecord('emergency-fund', 'emergency fund', 50000, 3, 10000, 3),
+  startingBalanceRecord('emergency-fund', 'emergency fund', 50000, 4, 15000, 3),
+  startingBalanceRecord('emergency-fund', 'emergency fund', 75000, 3, 10000, 2),
+  startingBalanceRecord('emergency-fund', 'emergency fund', 75000, 4, 15000, 3),
+  startingBalanceRecord('emergency-fund', 'emergency fund', 75000, 5, 25000, 3),
+  startingBalanceRecord('emergency-fund', 'emergency fund', 100000, 3, 15000, 2),
+  startingBalanceRecord('emergency-fund', 'emergency fund', 100000, 5, 25000, 3),
+  startingBalanceRecord('emergency-fund', 'emergency fund', 100000, 7, 40000, 4),
+  startingBalanceRecord('general', 'home purchase fund', 50000, 3, 5000, 3),
+  startingBalanceRecord('general', 'home purchase fund', 50000, 5, 10000, 4),
+  startingBalanceRecord('general', 'home purchase fund', 75000, 3, 7500, 3),
+  startingBalanceRecord('general', 'home purchase fund', 75000, 5, 15000, 4),
+  startingBalanceRecord('general', 'home purchase fund', 75000, 7, 25000, 4),
+  startingBalanceRecord('general', 'home purchase fund', 100000, 3, 10000, 3),
+  startingBalanceRecord('general', 'home purchase fund', 100000, 5, 20000, 4),
+  startingBalanceRecord('general', 'home purchase fund', 100000, 7, 30000, 4),
+  startingBalanceRecord('general', 'home purchase fund', 250000, 5, 25000, 4),
+  startingBalanceRecord('general', 'home purchase fund', 250000, 7, 50000, 5),
+  startingBalanceRecord('general', 'home purchase fund', 250000, 10, 75000, 5),
+  startingBalanceRecord('general', 'home purchase fund', 500000, 7, 50000, 4),
+  startingBalanceRecord('general', 'home purchase fund', 500000, 10, 100000, 5),
+  startingBalanceRecord('general', 'home purchase fund', 500000, 12, 150000, 5),
+  startingBalanceRecord('general', 'home purchase fund', 1000000, 10, 200000, 5),
+  startingBalanceRecord('vacation', 'vacation fund', 10000, 1, 1000, 2),
+  startingBalanceRecord('vacation', 'vacation fund', 10000, 2, 2500, 2),
+  startingBalanceRecord('vacation', 'vacation fund', 25000, 2, 2500, 2),
+  startingBalanceRecord('vacation', 'vacation fund', 25000, 3, 5000, 3),
+  startingBalanceRecord('vacation', 'vacation fund', 50000, 3, 5000, 3),
+  startingBalanceRecord('vacation', 'vacation fund', 50000, 4, 10000, 3),
+  startingBalanceRecord('vacation', 'vacation fund', 75000, 4, 10000, 3),
+  startingBalanceRecord('vacation', 'vacation fund', 75000, 5, 15000, 4),
+  startingBalanceRecord('vacation', 'vacation fund', 100000, 5, 15000, 4),
+  startingBalanceRecord('vacation', 'vacation fund', 100000, 7, 25000, 4),
+  startingBalanceRecord('vacation', 'vacation fund', 250000, 7, 50000, 4),
+  startingBalanceRecord('vacation', 'vacation fund', 250000, 10, 75000, 5),
+  startingBalanceRecord('vehicle', 'car purchase', 25000, 2, 2500, 3),
+  startingBalanceRecord('vehicle', 'car purchase', 25000, 3, 5000, 3),
+  startingBalanceRecord('vehicle', 'car purchase', 50000, 3, 5000, 3),
+  startingBalanceRecord('vehicle', 'car purchase', 50000, 4, 10000, 4),
+  startingBalanceRecord('vehicle', 'car purchase', 75000, 4, 10000, 4),
+  startingBalanceRecord('vehicle', 'car purchase', 75000, 5, 15000, 4),
+  startingBalanceRecord('vehicle', 'car purchase', 100000, 4, 15000, 4),
+  startingBalanceRecord('vehicle', 'car purchase', 100000, 6, 25000, 5),
+  startingBalanceRecord('vehicle', 'car purchase', 250000, 7, 50000, 5),
+  startingBalanceRecord('vehicle', 'car purchase', 250000, 10, 75000, 5),
+  startingBalanceRecord('vehicle', 'car purchase', 500000, 10, 100000, 5),
+  startingBalanceRecord('vehicle', 'car purchase', 500000, 12, 150000, 5),
+  startingBalanceRecord('general', 'wedding savings', 25000, 1, 2500, 2),
+  startingBalanceRecord('general', 'wedding savings', 25000, 2, 5000, 3),
+  startingBalanceRecord('general', 'wedding savings', 50000, 2, 5000, 3),
+  startingBalanceRecord('general', 'wedding savings', 50000, 3, 10000, 3),
+  startingBalanceRecord('general', 'wedding savings', 75000, 3, 10000, 3),
+  startingBalanceRecord('general', 'wedding savings', 75000, 4, 15000, 4),
+  startingBalanceRecord('general', 'wedding savings', 100000, 3, 15000, 4),
+  startingBalanceRecord('general', 'wedding savings', 100000, 5, 25000, 4),
+  startingBalanceRecord('general', 'wedding savings', 250000, 5, 50000, 4),
+  startingBalanceRecord('general', 'wedding savings', 250000, 7, 75000, 5),
+  startingBalanceRecord('general', 'education savings', 25000, 3, 2500, 4),
+  startingBalanceRecord('general', 'education savings', 25000, 5, 5000, 5),
+  startingBalanceRecord('general', 'education savings', 50000, 5, 5000, 5),
+  startingBalanceRecord('general', 'education savings', 50000, 7, 10000, 5),
+  startingBalanceRecord('general', 'education savings', 100000, 5, 10000, 5),
+  startingBalanceRecord('general', 'education savings', 100000, 10, 25000, 6),
+  startingBalanceRecord('general', 'education savings', 250000, 10, 25000, 6),
+  startingBalanceRecord('general', 'education savings', 250000, 15, 50000, 6),
+  startingBalanceRecord('general', 'education savings', 500000, 10, 75000, 6),
+  startingBalanceRecord('general', 'education savings', 500000, 15, 100000, 6),
+  startingBalanceRecord('general', 'education savings', 1000000, 15, 150000, 6),
+  startingBalanceRecord('general', 'education savings', 1000000, 20, 250000, 7),
+  startingBalanceRecord('retirement-age', 'retirement savings', 250000, 10, 25000, 5),
+  startingBalanceRecord('retirement-age', 'retirement savings', 250000, 15, 50000, 6),
+  startingBalanceRecord('retirement-age', 'retirement savings', 500000, 10, 50000, 5),
+  startingBalanceRecord('retirement-age', 'retirement savings', 500000, 20, 100000, 6),
+  startingBalanceRecord('retirement-age', 'retirement savings', 1000000, 15, 100000, 6),
+  startingBalanceRecord('retirement-age', 'retirement savings', 1000000, 20, 250000, 7),
+  startingBalanceRecord('retirement-age', 'retirement savings', 1000000, 30, 100000, 7),
+  startingBalanceRecord('retirement-age', 'retirement savings', 250000, 20, 25000, 6),
+  startingBalanceRecord('retirement-age', 'retirement savings', 500000, 15, 25000, 6),
+  startingBalanceRecord('retirement-age', 'retirement savings', 500000, 30, 50000, 7),
+  startingBalanceRecord('retirement-age', 'retirement savings', 1000000, 25, 50000, 7),
+  startingBalanceRecord('retirement-age', 'retirement savings', 1000000, 35, 250000, 7),
+];
+
 export const savingsGoalSeoRecords: SavingsGoalSeoRecord[] = [
   ...generalScenarios.map(([amount, years]) =>
     generalRecord(
@@ -214,6 +326,7 @@ export const savingsGoalSeoRecords: SavingsGoalSeoRecord[] = [
     ),
   ),
   ...longTailSavingsGoalSeoRecords,
+  ...startingBalanceSavingsGoalSeoRecords,
 ];
 
 export const featuredSavingsGoalSeoRecords = savingsGoalSeoRecords.filter(
