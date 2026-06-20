@@ -1485,11 +1485,27 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
         answer:
           'No. Actual returns vary, and inflation, taxes, fees, spending changes, and market conditions can materially affect the result.',
       },
+      {
+        question: 'Does Coast FIRE mean I can stop working immediately?',
+        answer:
+          'No. Coast FIRE means current investments may be enough to grow toward a future retirement target without new contributions. You still need income to cover current expenses until retirement.',
+      },
+      {
+        question: 'Should I include Roth IRA and 401(k) balances in Coast FIRE?',
+        answer:
+          'Include invested retirement assets that are intended for long-term retirement funding, but consider account access rules, taxes, penalties, and liquidity separately.',
+      },
     ],
     relatedIds: [
       'fire-calculator',
+      'retirement-withdrawal-calculator',
+      'safe-withdrawal-rate-calculator',
+      'four-percent-rule-calculator',
+      'roth-ira-calculator',
+      '401k-calculator',
       'compound-interest-calculator',
-      'savings-rate-calculator',
+      'investment-growth-calculator',
+      'retirement-tax-drag-calculator',
     ],
   },
   'four-percent-rule': {
@@ -1591,11 +1607,27 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
         answer:
           'It compares portfolio income with planned spending and estimates the portfolio size associated with your chosen withdrawal rate.',
       },
+      {
+        question: 'Does the 4% Rule Calculator include taxes or account type?',
+        answer:
+          'No. It does not model Roth IRA rules, 401(k) taxes, required distributions, fees, or penalties. Treat the result as a gross planning estimate.',
+      },
+      {
+        question: 'How should I compare the 4% rule with another withdrawal rate?',
+        answer:
+          'Use 4% as a baseline, then test lower and higher withdrawal rates to see how the required portfolio changes under more cautious or flexible assumptions.',
+      },
     ],
     relatedIds: [
       'fire-calculator',
+      'retirement-withdrawal-calculator',
+      'safe-withdrawal-rate-calculator',
       'coast-fire-calculator',
+      'roth-ira-calculator',
+      '401k-calculator',
       'compound-interest-calculator',
+      'investment-growth-calculator',
+      'retirement-tax-drag-calculator',
     ],
   },
   'retirement-withdrawal': {
@@ -1672,11 +1704,27 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
         answer:
           'Use it as a starting point alongside taxes, fees, Social Security, pensions, spending flexibility, asset allocation, and professional guidance.',
       },
+      {
+        question: 'Does this calculator model Roth IRA or 401(k) taxes?',
+        answer:
+          'No. The withdrawal amount is a gross estimate. Account type, tax rates, penalties, required distributions, and withdrawal ordering can change spendable income.',
+      },
+      {
+        question: 'Can I use this calculator for monthly retirement income?',
+        answer:
+          'Yes. The monthly result converts the annual withdrawal into a simple monthly planning number, but actual withdrawals may be quarterly, annual, or adjusted over time.',
+      },
     ],
     relatedIds: [
       'fire-calculator',
       'coast-fire-calculator',
       'four-percent-rule-calculator',
+      'safe-withdrawal-rate-calculator',
+      'roth-ira-calculator',
+      '401k-calculator',
+      'compound-interest-calculator',
+      'investment-growth-calculator',
+      'retirement-tax-drag-calculator',
     ],
   },
   'rule-of-72': {
@@ -3837,11 +3885,27 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
         answer:
           'A shortfall means the portfolio is below the amount implied by a 4% withdrawal rate. Possible adjustments include saving more, spending less, working longer, or testing another rate.',
       },
+      {
+        question: 'Does the safe withdrawal rate include investment growth?',
+        answer:
+          'This calculator compares spending with the current portfolio and a 4% benchmark. It does not simulate year-by-year returns, inflation, or portfolio depletion.',
+      },
+      {
+        question: 'How do taxes affect a safe withdrawal rate?',
+        answer:
+          'Taxes can reduce spendable income and may vary by account type. Roth IRA, Traditional 401(k), taxable, and tax-advantaged withdrawals can produce different after-tax results.',
+      },
     ],
     relatedIds: [
       'four-percent-rule-calculator',
       'retirement-withdrawal-calculator',
       'fire-calculator',
+      'coast-fire-calculator',
+      'roth-ira-calculator',
+      '401k-calculator',
+      'compound-interest-calculator',
+      'investment-growth-calculator',
+      'retirement-tax-drag-calculator',
     ],
   },
   'years-to-retirement': {

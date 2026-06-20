@@ -7,6 +7,11 @@ const relatedItems = retirementWithdrawalCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const guideItems = [
+  { title: 'Planning Retirement Withdrawals', url: '/guides/retirement-withdrawals/' },
+  { title: 'A Beginner’s Guide to FIRE', url: '/guides/fire/' },
+  { title: 'Roth IRA vs Traditional IRA', url: '/guides/roth-vs-traditional-ira/' },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +22,7 @@ const relatedItems = retirementWithdrawalCalculator.relatedIds.flatMap((id) => {
   outputs={retirementWithdrawalCalculator.outputs}
   faq={retirementWithdrawalCalculator.faq}
   relatedItems={relatedItems}
+  guideItems={guideItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

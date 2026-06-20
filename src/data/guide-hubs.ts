@@ -279,6 +279,7 @@ export const guideHubs: GuideHub[] = [
       'employer-match-calculator',
       'traditional-vs-roth-401k-calculator',
       '401k-catch-up-contribution-calculator',
+      'coast-fire-calculator',
       'safe-withdrawal-rate-calculator',
       'four-percent-rule-calculator',
       'portfolio-withdrawal-sustainability-calculator',

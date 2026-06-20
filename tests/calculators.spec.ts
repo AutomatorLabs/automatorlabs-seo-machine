@@ -768,6 +768,77 @@ test.describe('global programmatic examples hub', () => {
 });
 
 test.describe('calculator QA', () => {
+  test('retirement withdrawal calculator cluster is registered and linked', () => {
+    const expectedRoutes = [
+      '/calculators/retirement-withdrawal-calculator/',
+      '/calculators/safe-withdrawal-rate-calculator/',
+      '/calculators/4-percent-rule-calculator/',
+      '/calculators/coast-fire-calculator/',
+    ];
+    const requiredRelatedIds = [
+      'fire-calculator',
+      'roth-ira-calculator',
+      '401k-calculator',
+      'compound-interest-calculator',
+      'investment-growth-calculator',
+      'retirement-tax-drag-calculator',
+    ];
+    const calculatorUrls = new Set(calculators.map((item) => item.url));
+    const fireRetirementCategory = calculatorCategories.find(
+      (category) => category.slug === 'fire-retirement',
+    );
+
+    expect(expectedRoutes.every((route) => calculatorUrls.has(route))).toBe(
+      true,
+    );
+    expect(fireRetirementCategory?.ids).toEqual(
+      expect.arrayContaining([
+        'retirement-withdrawal-calculator',
+        'safe-withdrawal-rate-calculator',
+        'four-percent-rule-calculator',
+        'coast-fire-calculator',
+      ]),
+    );
+
+    for (const route of expectedRoutes) {
+      const config = calculators.find((calculator) => calculator.url === route);
+      const relatedUrls = new Set(
+        createRelatedCalculatorLinks(route).map((item) => item.url),
+      );
+
+      expect(config?.faq.length).toBeGreaterThanOrEqual(7);
+      expect(config?.relatedIds).toEqual(
+        expect.arrayContaining(requiredRelatedIds),
+      );
+      expect(relatedUrls.has('/calculators/fire-calculator/')).toBe(true);
+      expect(
+        relatedUrls.has('/calculators/retirement-withdrawal-calculator/') ||
+          relatedUrls.has('/calculators/safe-withdrawal-rate-calculator/') ||
+          relatedUrls.has('/calculators/4-percent-rule-calculator/') ||
+          relatedUrls.has('/calculators/coast-fire-calculator/'),
+      ).toBe(true);
+    }
+  });
+
+  test('retirement withdrawal calculator cluster pages include related guides', async ({
+    page,
+  }) => {
+    for (const route of [
+      '/calculators/retirement-withdrawal-calculator/',
+      '/calculators/safe-withdrawal-rate-calculator/',
+      '/calculators/4-percent-rule-calculator/',
+      '/calculators/coast-fire-calculator/',
+    ]) {
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      await expect(
+        page.getByRole('heading', { name: 'Related Guides' }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: 'Planning Retirement Withdrawals' }),
+      ).toHaveAttribute('href', '/guides/retirement-withdrawals/');
+    }
+  });
+
   test('rent vs buy and housing cluster routes and related tools are registered', () => {
     const expectedRoutes = [
       '/calculators/rent-vs-buy-calculator/',

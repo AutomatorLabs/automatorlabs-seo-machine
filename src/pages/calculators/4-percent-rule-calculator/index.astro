@@ -7,6 +7,11 @@ const relatedItems = fourPercentRuleCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const guideItems = [
+  { title: 'Planning Retirement Withdrawals', url: '/guides/retirement-withdrawals/' },
+  { title: 'A Beginner’s Guide to FIRE', url: '/guides/fire/' },
+  { title: 'FIRE vs Coast FIRE', url: '/guides/fire-vs-coast-fire/' },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +22,7 @@ const relatedItems = fourPercentRuleCalculator.relatedIds.flatMap((id) => {
   outputs={fourPercentRuleCalculator.outputs}
   faq={fourPercentRuleCalculator.faq}
   relatedItems={relatedItems}
+  guideItems={guideItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';
