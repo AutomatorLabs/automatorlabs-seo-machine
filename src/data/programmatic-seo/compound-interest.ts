@@ -9,7 +9,7 @@ export interface CompoundInterestSeoRecord {
   featured?: boolean;
 }
 
-export const EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT = 115;
+export const EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT = 200;
 
 function record(
   principal: number,
@@ -112,10 +112,85 @@ export const longTailCompoundInterestSeoRecords: CompoundInterestSeoRecord[] = [
   record(1000000, 5, 20),
 ];
 
+const milestonePrincipals = [
+  45000,
+  90000,
+  175000,
+  225000,
+  275000,
+  350000,
+  400000,
+  750000,
+];
+
+const milestoneScenarios = [
+  { annualRatePercent: 11, years: 10 },
+  { annualRatePercent: 12, years: 15 },
+  { annualRatePercent: 13, years: 20 },
+  { annualRatePercent: 14, years: 25 },
+  { annualRatePercent: 15, years: 30 },
+];
+
+export const milestoneCompoundInterestSeoRecords =
+  milestonePrincipals.flatMap((principal) =>
+    milestoneScenarios.map(({ annualRatePercent, years }) =>
+      record(principal, annualRatePercent, years),
+    ),
+  );
+
+const longHorizonPrincipals = [
+  50000,
+  100000,
+  250000,
+  500000,
+  1000000,
+];
+
+const longHorizonScenarios = [
+  { annualRatePercent: 10, years: 35 },
+  { annualRatePercent: 11, years: 40 },
+  { annualRatePercent: 12, years: 45 },
+  { annualRatePercent: 13, years: 50 },
+  { annualRatePercent: 14, years: 35 },
+];
+
+export const longHorizonCompoundInterestSeoRecords =
+  longHorizonPrincipals.flatMap((principal) =>
+    longHorizonScenarios.map(({ annualRatePercent, years }) =>
+      record(principal, annualRatePercent, years),
+    ),
+  );
+
+export const additionalCompoundInterestSeoRecords: CompoundInterestSeoRecord[] = [
+  record(1500, 11, 8),
+  record(4000, 12, 12),
+  record(8500, 13, 18),
+  record(16000, 11, 22),
+  record(22000, 12, 28),
+  record(32000, 13, 32),
+  record(45000, 16, 18),
+  record(90000, 17, 22),
+  record(175000, 16, 28),
+  record(225000, 17, 32),
+  record(275000, 16, 18),
+  record(350000, 17, 22),
+  record(400000, 16, 28),
+  record(750000, 17, 32),
+  record(1000000, 16, 25),
+  record(1500000, 11, 20),
+  record(2000000, 12, 30),
+  record(3000000, 11, 25),
+  record(5000000, 10, 20),
+  record(10000000, 10, 15),
+];
+
 export const compoundInterestSeoRecords: CompoundInterestSeoRecord[] = [
   ...originalCompoundInterestSeoRecords,
   ...expandedCompoundInterestSeoRecords,
   ...longTailCompoundInterestSeoRecords,
+  ...milestoneCompoundInterestSeoRecords,
+  ...longHorizonCompoundInterestSeoRecords,
+  ...additionalCompoundInterestSeoRecords,
 ];
 
 export const featuredCompoundInterestSeoRecords =
