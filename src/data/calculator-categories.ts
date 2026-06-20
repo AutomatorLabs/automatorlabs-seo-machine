@@ -116,12 +116,16 @@ export const calculatorCategories: CalculatorCategory[] = [
     metaDescription:
       'Explore free home and mortgage calculators for affordability, payments, refinancing, equity, down payments, and rent-versus-buy decisions.',
     ids: [
+      'mortgage-payment-calculator',
       'mortgage-payoff-calculator',
       'refinance-calculator',
       'heloc-calculator',
       'rent-vs-buy-calculator',
       'home-affordability-calculator',
       'down-payment-calculator',
+      'property-tax-calculator',
+      'home-maintenance-cost-calculator',
+      'closing-cost-calculator',
       'mortgage-recast-calculator',
     ],
   },

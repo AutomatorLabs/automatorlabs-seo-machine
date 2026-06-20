@@ -1,10 +1,16 @@
 import {
   calculateCoastFireNumber,
+  calculateClosingCost,
   calculateDrip,
   calculateFireNumber,
+  calculateHomeAffordability,
+  calculateHomeMaintenanceCost,
+  calculateMortgagePayment,
   calculateMonthlyLoanPayment,
+  calculatePropertyTax,
   calculateRealRateOfReturn,
   calculateRequiredPeriodicSavings,
+  calculateRentVsBuy,
   calculateRothIraProjection,
   calculateRothVsTraditionalIra,
   calculateRothVsTaxable,
@@ -51,6 +57,14 @@ export const calculatorTableHeadings: Record<string, string> = {
   'car-savings': 'Savings Progress',
   'emergency-fund': 'Savings Timeline',
   'mortgage-payoff': 'Payoff Schedule',
+  'mortgage-payment': 'Monthly Payment Breakdown',
+  'property-tax': 'Property Tax Projection',
+  'home-maintenance-cost': 'Maintenance Cost Projection',
+  'closing-cost': 'Cash to Close Breakdown',
+  'rent-vs-buy': 'Rent vs Buy Projection',
+  'home-affordability': 'Monthly Housing Cost Breakdown',
+  'down-payment': 'Savings Timeline',
+  'mortgage-recast': 'Recast Comparison',
   'debt-payoff': 'Payoff Schedule',
   'debt-snowball': 'Payoff Schedule',
   'debt-avalanche': 'Payoff Schedule',
@@ -556,6 +570,290 @@ function multiDebtTable(
   };
 }
 
+function mortgagePaymentBreakdownTable(data: FormData): CalculatorTableData {
+  const result = calculateMortgagePayment({
+    homePrice: value(data, 'homePrice'),
+    downPayment: value(data, 'downPayment'),
+    annualInterestRatePercent: value(data, 'annualInterestRate'),
+    loanTermYears: value(data, 'loanTermYears'),
+    propertyTaxRatePercent: value(data, 'propertyTaxRate'),
+    homeInsurancePerYear: value(data, 'homeInsurancePerYear'),
+    hoaPerMonth: value(data, 'hoaPerMonth'),
+    mortgageInsurancePerMonth: value(data, 'mortgageInsurancePerMonth'),
+  });
+
+  return {
+    heading: 'Monthly Payment Breakdown',
+    columns: ['Cost', 'Monthly Amount', 'Annual Amount'],
+    rows: [
+      [
+        'Principal and interest',
+        currency.format(result.principalAndInterest),
+        currency.format(result.principalAndInterest * 12),
+      ],
+      [
+        'Property tax',
+        currency.format(result.monthlyPropertyTax),
+        currency.format(result.monthlyPropertyTax * 12),
+      ],
+      [
+        'Home insurance',
+        currency.format(result.monthlyInsurance),
+        currency.format(result.monthlyInsurance * 12),
+      ],
+      ['HOA dues', currency.format(result.monthlyHoa), currency.format(result.monthlyHoa * 12)],
+      [
+        'Mortgage insurance',
+        currency.format(result.monthlyMortgageInsurance),
+        currency.format(result.monthlyMortgageInsurance * 12),
+      ],
+      [
+        'Total monthly payment',
+        currency.format(result.totalMonthlyPayment),
+        currency.format(result.totalMonthlyPayment * 12),
+      ],
+    ],
+  };
+}
+
+function propertyTaxProjectionTable(data: FormData): CalculatorTableData {
+  const years = value(data, 'years');
+  const displayedYears = cappedCount(years, 60);
+  const homeValue = value(data, 'homeValue');
+  const assessedValuePercent = value(data, 'assessedValuePercent');
+  const propertyTaxRatePercent = value(data, 'propertyTaxRate');
+  const annualAssessmentGrowthPercent = value(data, 'annualAssessmentGrowth');
+  const result = calculatePropertyTax({
+    homeValue,
+    propertyTaxRatePercent,
+    assessedValuePercent,
+    annualAssessmentGrowthPercent,
+    years,
+  });
+  const firstAssessedValue = result.taxableAssessedValue;
+  const rows = Array.from({ length: displayedYears }, (_, index) => {
+    const year = index + 1;
+    const assessedValue =
+      firstAssessedValue *
+      Math.pow(1 + annualAssessmentGrowthPercent / 100, index);
+    const annualTax = assessedValue * (propertyTaxRatePercent / 100);
+
+    return [
+      String(year),
+      currency.format(assessedValue),
+      currency.format(annualTax),
+      currency.format(annualTax / 12),
+    ];
+  });
+
+  return {
+    heading: 'Property Tax Projection',
+    columns: ['Year', 'Assessed Value', 'Annual Tax', 'Monthly Escrow'],
+    rows,
+    warning: capWarning('years', years, 60),
+  };
+}
+
+function homeMaintenanceProjectionTable(data: FormData): CalculatorTableData {
+  const years = value(data, 'years');
+  const displayedYears = cappedCount(years, 60);
+  const homeValue = value(data, 'homeValue');
+  const maintenanceRatePercent = value(data, 'maintenanceRate');
+  const monthlyMaintenanceReserve = value(data, 'monthlyMaintenanceReserve');
+  const annualInflationPercent = value(data, 'annualInflation');
+  const result = calculateHomeMaintenanceCost({
+    homeValue,
+    maintenanceRatePercent,
+    monthlyMaintenanceReserve,
+    annualInflationPercent,
+    years,
+  });
+  const firstYearCost = result.firstYearMaintenanceCost;
+  const rows = Array.from({ length: displayedYears }, (_, index) => {
+    const year = index + 1;
+    const estimatedCost =
+      firstYearCost * Math.pow(1 + annualInflationPercent / 100, index);
+    const plannedReserve = monthlyMaintenanceReserve * 12;
+
+    return [
+      String(year),
+      currency.format(estimatedCost),
+      currency.format(plannedReserve),
+      currency.format(plannedReserve - estimatedCost),
+    ];
+  });
+
+  return {
+    heading: 'Maintenance Cost Projection',
+    columns: ['Year', 'Estimated Maintenance', 'Planned Reserve', 'Surplus / Shortfall'],
+    rows,
+    warning: capWarning('years', years, 60),
+  };
+}
+
+function closingCostBreakdownTable(data: FormData): CalculatorTableData {
+  const homePurchasePrice = value(data, 'homePurchasePrice');
+  const downPayment = value(data, 'downPayment');
+  const variableClosingCosts =
+    homePurchasePrice * (value(data, 'closingCostPercent') / 100);
+  const fixedClosingCosts = value(data, 'fixedClosingCosts');
+  const prepaidEscrowAndTaxes = value(data, 'prepaidEscrowAndTaxes');
+  const lenderCredits = value(data, 'lenderCredits');
+  const result = calculateClosingCost({
+    homePurchasePrice,
+    downPayment,
+    closingCostPercent: value(data, 'closingCostPercent'),
+    fixedClosingCosts,
+    prepaidEscrowAndTaxes,
+    lenderCredits,
+  });
+
+  return {
+    heading: 'Cash to Close Breakdown',
+    columns: ['Item', 'Amount', 'Notes'],
+    rows: [
+      ['Down payment', currency.format(downPayment), 'Cash applied to purchase price'],
+      [
+        'Percentage-based closing costs',
+        currency.format(variableClosingCosts),
+        'Based on purchase price',
+      ],
+      ['Fixed closing costs', currency.format(fixedClosingCosts), 'Editable estimate'],
+      [
+        'Prepaids and escrow',
+        currency.format(prepaidEscrowAndTaxes),
+        'Taxes, insurance, and prepaid items',
+      ],
+      ['Lender credits', `-${currency.format(lenderCredits)}`, 'Reduces cash needed'],
+      ['Estimated cash to close', currency.format(result.cashToClose), 'Down payment plus closing costs'],
+    ],
+  };
+}
+
+function rentVsBuyProjectionTable(data: FormData): CalculatorTableData {
+  const years = value(data, 'comparisonYears');
+  const displayedYears = cappedCount(years, 60);
+  const rows = Array.from({ length: displayedYears }, (_, index) => {
+    const year = index + 1;
+    const result = calculateRentVsBuy({
+      monthlyRent: value(data, 'monthlyRent'),
+      homePurchasePrice: value(data, 'homePurchasePrice'),
+      downPayment: value(data, 'downPayment'),
+      mortgageInterestRatePercent: value(data, 'mortgageInterestRate'),
+      loanTermYears: value(data, 'loanTermYears'),
+      propertyTaxRatePercent: value(data, 'propertyTaxRate'),
+      homeInsurancePerYear: value(data, 'homeInsurancePerYear'),
+      hoaPerMonth: value(data, 'hoaPerMonth'),
+      maintenanceRatePercent: value(data, 'maintenanceRate'),
+      homeAppreciationPercent: value(data, 'homeAppreciation'),
+      investmentReturnPercent: value(data, 'investmentReturn'),
+      comparisonYears: year,
+    });
+
+    return [
+      String(year),
+      currency.format(result.totalCostOfRenting),
+      currency.format(result.totalCostOfBuying),
+      result.betterOption === 'equal'
+        ? 'Approximately equal'
+        : result.betterOption === 'buy'
+          ? 'Buying'
+          : 'Renting',
+    ];
+  });
+
+  return {
+    heading: 'Rent vs Buy Projection',
+    columns: ['Year', 'Renting Cost', 'Buying Cost', 'Lower Cost'],
+    rows,
+    warning: capWarning('years', years, 60),
+  };
+}
+
+function homeAffordabilityBreakdownTable(data: FormData): CalculatorTableData {
+  const result = calculateHomeAffordability({
+    annualGrossIncome: value(data, 'annualGrossIncome'),
+    monthlyDebtPayments: value(data, 'monthlyDebtPayments'),
+    downPayment: value(data, 'downPayment'),
+    mortgageInterestRatePercent: value(data, 'mortgageInterestRate'),
+    loanTermYears: value(data, 'loanTermYears'),
+    propertyTaxRatePercent: value(data, 'propertyTaxRate'),
+    homeInsurancePerYear: value(data, 'homeInsurancePerYear'),
+    hoaPerMonth: value(data, 'hoaPerMonth'),
+    maximumDtiPercent: value(data, 'maximumDti'),
+  });
+  const monthlyPropertyTax =
+    result.affordableHomePrice * (value(data, 'propertyTaxRate') / 100 / 12);
+  const monthlyInsurance = value(data, 'homeInsurancePerYear') / 12;
+  const hoaPerMonth = value(data, 'hoaPerMonth');
+
+  return {
+    heading: 'Monthly Housing Cost Breakdown',
+    columns: ['Cost', 'Monthly Amount', 'Share of Housing Cost'],
+    rows: [
+      [
+        'Principal and interest',
+        currency.format(result.monthlyMortgagePayment),
+        result.totalMonthlyHousingCost > 0
+          ? `${((result.monthlyMortgagePayment / result.totalMonthlyHousingCost) * 100).toFixed(1)}%`
+          : '0.0%',
+      ],
+      [
+        'Property tax',
+        currency.format(monthlyPropertyTax),
+        result.totalMonthlyHousingCost > 0
+          ? `${((monthlyPropertyTax / result.totalMonthlyHousingCost) * 100).toFixed(1)}%`
+          : '0.0%',
+      ],
+      [
+        'Home insurance',
+        currency.format(monthlyInsurance),
+        result.totalMonthlyHousingCost > 0
+          ? `${((monthlyInsurance / result.totalMonthlyHousingCost) * 100).toFixed(1)}%`
+          : '0.0%',
+      ],
+      [
+        'HOA dues',
+        currency.format(hoaPerMonth),
+        result.totalMonthlyHousingCost > 0
+          ? `${((hoaPerMonth / result.totalMonthlyHousingCost) * 100).toFixed(1)}%`
+          : '0.0%',
+      ],
+    ],
+  };
+}
+
+function mortgageRecastComparisonTable(data: FormData): CalculatorTableData {
+  const currentMortgageBalance = value(data, 'currentMortgageBalance');
+  const annualInterestRatePercent = value(data, 'annualInterestRate');
+  const remainingLoanTermYears = value(data, 'remainingLoanTerm');
+  const lumpSumRecastPayment = value(data, 'lumpSumRecastPayment');
+  const currentMonthlyPayment = calculateMonthlyLoanPayment(
+    currentMortgageBalance,
+    annualInterestRatePercent,
+    remainingLoanTermYears,
+  );
+  const newBalance = Math.max(currentMortgageBalance - lumpSumRecastPayment, 0);
+  const newMonthlyPayment = calculateMonthlyLoanPayment(
+    newBalance,
+    annualInterestRatePercent,
+    remainingLoanTermYears,
+  );
+
+  return {
+    heading: 'Recast Comparison',
+    columns: ['Scenario', 'Balance', 'Monthly Payment'],
+    rows: [
+      [
+        'Before recast',
+        currency.format(currentMortgageBalance),
+        currency.format(currentMonthlyPayment),
+      ],
+      ['After recast', currency.format(newBalance), currency.format(newMonthlyPayment)],
+    ],
+  };
+}
+
 function withdrawalTable(data: FormData): CalculatorTableData {
   const portfolioValue = value(data, 'portfolioValue');
   const annualWithdrawal = value(data, 'annualWithdrawalAmount');
@@ -905,6 +1203,15 @@ export function buildCalculatorTable(
         goal:
           value(data, 'monthlyEssentialExpenses') * value(data, 'targetMonths'),
       });
+    case 'down-payment':
+      return savingsTable({
+        currentSavings: value(data, 'currentSavings'),
+        monthlyContribution: value(data, 'monthlySavingsContribution'),
+        annualReturnPercent: value(data, 'expectedSavingsReturn'),
+        goal:
+          value(data, 'homePurchasePrice') *
+          (value(data, 'downPaymentPercentage') / 100),
+      });
     case 'mortgage-payoff': {
       const balance = value(data, 'loanAmount');
       const annualInterestRatePercent = value(data, 'annualInterestRate');
@@ -919,6 +1226,20 @@ export function buildCalculatorTable(
         monthlyPayment: requiredPayment + value(data, 'extraMonthlyPayment'),
       });
     }
+    case 'mortgage-payment':
+      return mortgagePaymentBreakdownTable(data);
+    case 'property-tax':
+      return propertyTaxProjectionTable(data);
+    case 'home-maintenance-cost':
+      return homeMaintenanceProjectionTable(data);
+    case 'closing-cost':
+      return closingCostBreakdownTable(data);
+    case 'rent-vs-buy':
+      return rentVsBuyProjectionTable(data);
+    case 'home-affordability':
+      return homeAffordabilityBreakdownTable(data);
+    case 'mortgage-recast':
+      return mortgageRecastComparisonTable(data);
     case 'debt-payoff':
       return payoffTable({
         balance: value(data, 'debtBalance'),

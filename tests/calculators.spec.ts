@@ -768,6 +768,89 @@ test.describe('global programmatic examples hub', () => {
 });
 
 test.describe('calculator QA', () => {
+  test('rent vs buy and housing cluster routes and related tools are registered', () => {
+    const expectedRoutes = [
+      '/calculators/rent-vs-buy-calculator/',
+      '/calculators/home-affordability-calculator/',
+      '/calculators/down-payment-calculator/',
+      '/calculators/mortgage-payment-calculator/',
+      '/calculators/property-tax-calculator/',
+      '/calculators/home-maintenance-cost-calculator/',
+      '/calculators/closing-cost-calculator/',
+    ];
+    const calculatorUrls = new Set(calculators.map((item) => item.url));
+    const homeMortgageCategory = calculatorCategories.find(
+      (category) => category.slug === 'home-mortgage',
+    );
+
+    expect(expectedRoutes.every((route) => calculatorUrls.has(route))).toBe(
+      true,
+    );
+    expect(homeMortgageCategory?.ids).toEqual(
+      expect.arrayContaining([
+        'rent-vs-buy-calculator',
+        'home-affordability-calculator',
+        'down-payment-calculator',
+        'mortgage-payment-calculator',
+        'property-tax-calculator',
+        'home-maintenance-cost-calculator',
+        'closing-cost-calculator',
+        'mortgage-payoff-calculator',
+        'mortgage-recast-calculator',
+        'refinance-calculator',
+      ]),
+    );
+
+    const clusterRelatedUrls = new Set<string>();
+
+    for (const route of expectedRoutes) {
+      const relatedUrls = new Set(
+        createRelatedCalculatorLinks(route).map((item) => item.url),
+      );
+
+      for (const relatedUrl of relatedUrls) {
+        clusterRelatedUrls.add(relatedUrl);
+      }
+
+      expect(
+        relatedUrls.has('/calculators/rent-vs-buy-calculator/') ||
+          relatedUrls.has('/calculators/home-affordability-calculator/') ||
+          relatedUrls.has('/calculators/down-payment-calculator/') ||
+          relatedUrls.has('/calculators/mortgage-payment-calculator/'),
+      ).toBe(true);
+    }
+
+    expect(Array.from(clusterRelatedUrls)).toEqual(
+      expect.arrayContaining([
+        '/calculators/mortgage-payoff-calculator/',
+        '/calculators/mortgage-recast-calculator/',
+        '/calculators/refinance-calculator/',
+        '/calculators/savings-goal-calculator/',
+      ]),
+    );
+  });
+
+  test('rent vs buy and housing calculator pages include the hosted newsletter CTA', async ({
+    page,
+  }) => {
+    for (const route of [
+      '/calculators/rent-vs-buy-calculator/',
+      '/calculators/home-affordability-calculator/',
+      '/calculators/down-payment-calculator/',
+      '/calculators/mortgage-payment-calculator/',
+      '/calculators/property-tax-calculator/',
+      '/calculators/home-maintenance-cost-calculator/',
+      '/calculators/closing-cost-calculator/',
+    ]) {
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      await expect(newsletterCta(page)).toBeVisible();
+      await expect(newsletterLink(page)).toHaveAttribute(
+        'href',
+        newsletterConfig.publicationUrl,
+      );
+    }
+  });
+
   test('debt and credit-card payoff cluster routes and related tools are registered', () => {
     const expectedRoutes = [
       '/calculators/credit-card-payoff-calculator/',
@@ -964,15 +1047,28 @@ test.describe('calculator QA', () => {
 
     expect(configs.every((config) => config !== undefined)).toBe(true);
     for (const config of configs) {
-      expect(config?.relatedIds).toEqual(
-        expect.arrayContaining([
-          'savings-goal-calculator',
-          'compound-interest-calculator',
-          'savings-growth-calculator',
-          'investment-growth-calculator',
-          'fire-calculator',
-        ]),
-      );
+      if (config?.url === '/calculators/down-payment-calculator/') {
+        expect(config.relatedIds).toEqual(
+          expect.arrayContaining([
+            'savings-goal-calculator',
+            'home-affordability-calculator',
+            'mortgage-payment-calculator',
+            'closing-cost-calculator',
+            'rent-vs-buy-calculator',
+            'savings-growth-calculator',
+          ]),
+        );
+      } else {
+        expect(config?.relatedIds).toEqual(
+          expect.arrayContaining([
+            'savings-goal-calculator',
+            'compound-interest-calculator',
+            'savings-growth-calculator',
+            'investment-growth-calculator',
+            'fire-calculator',
+          ]),
+        );
+      }
     }
   });
 
@@ -1337,6 +1433,46 @@ test.describe('calculator result tables', () => {
       title: 'Mortgage Payoff',
       url: '/calculators/mortgage-payoff-calculator/',
       firstCell: '1',
+    },
+    {
+      title: 'Mortgage Payment',
+      url: '/calculators/mortgage-payment-calculator/',
+      firstCell: 'Principal and interest',
+    },
+    {
+      title: 'Property Tax',
+      url: '/calculators/property-tax-calculator/',
+      firstCell: '1',
+    },
+    {
+      title: 'Home Maintenance Cost',
+      url: '/calculators/home-maintenance-cost-calculator/',
+      firstCell: '1',
+    },
+    {
+      title: 'Closing Cost',
+      url: '/calculators/closing-cost-calculator/',
+      firstCell: 'Down payment',
+    },
+    {
+      title: 'Rent vs Buy',
+      url: '/calculators/rent-vs-buy-calculator/',
+      firstCell: '1',
+    },
+    {
+      title: 'Home Affordability',
+      url: '/calculators/home-affordability-calculator/',
+      firstCell: 'Principal and interest',
+    },
+    {
+      title: 'Down Payment',
+      url: '/calculators/down-payment-calculator/',
+      firstCell: '1',
+    },
+    {
+      title: 'Mortgage Recast',
+      url: '/calculators/mortgage-recast-calculator/',
+      firstCell: 'Before recast',
     },
     {
       title: 'Debt Payoff',

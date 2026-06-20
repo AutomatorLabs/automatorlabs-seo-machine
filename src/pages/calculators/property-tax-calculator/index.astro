@@ -1,0 +1,130 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { propertyTaxCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = propertyTaxCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={propertyTaxCalculator.title}
+  eyebrow={propertyTaxCalculator.eyebrow}
+  description={propertyTaxCalculator.description}
+  inputs={propertyTaxCalculator.inputs}
+  outputs={propertyTaxCalculator.outputs}
+  faq={propertyTaxCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculatePropertyTax } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const firstYearPropertyTaxResult = document.querySelector<HTMLElement>(
+      '#first-year-property-tax-result',
+    );
+    const monthlyEscrowResult =
+      document.querySelector<HTMLElement>('#monthly-escrow-result');
+    const taxableAssessedValueResult = document.querySelector<HTMLElement>(
+      '#taxable-assessed-value-result',
+    );
+    const projectedFinalYearTaxResult = document.querySelector<HTMLElement>(
+      '#projected-final-year-tax-result',
+    );
+    const totalPropertyTaxResult = document.querySelector<HTMLElement>(
+      '#total-property-tax-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !firstYearPropertyTaxResult ||
+        !monthlyEscrowResult ||
+        !taxableAssessedValueResult ||
+        !projectedFinalYearTaxResult ||
+        !totalPropertyTaxResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const homeValue = parseCalculatorNumber(data.get('homeValue'));
+      const propertyTaxRate = parseCalculatorNumber(data.get('propertyTaxRate'));
+      const assessedValuePercent = parseCalculatorNumber(
+        data.get('assessedValuePercent'),
+      );
+      const annualAssessmentGrowth = parseCalculatorNumber(
+        data.get('annualAssessmentGrowth'),
+      );
+      const years = parseCalculatorNumber(data.get('years'));
+      const values = [
+        homeValue,
+        propertyTaxRate,
+        assessedValuePercent,
+        annualAssessmentGrowth,
+        years,
+      ];
+
+      if (
+        values.some((value) => !Number.isFinite(value)) ||
+        homeValue <= 0 ||
+        propertyTaxRate < 0 ||
+        assessedValuePercent < 0 ||
+        annualAssessmentGrowth < 0 ||
+        years <= 0 ||
+        !Number.isInteger(years)
+      ) {
+        error.textContent =
+          'Enter valid property tax assumptions. Home value and years must be greater than 0, and rates cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      const result = calculatePropertyTax({
+        homeValue,
+        propertyTaxRatePercent: propertyTaxRate,
+        assessedValuePercent,
+        annualAssessmentGrowthPercent: annualAssessmentGrowth,
+        years,
+      });
+
+      error.hidden = true;
+      firstYearPropertyTaxResult.textContent = currency.format(
+        result.firstYearPropertyTax,
+      );
+      monthlyEscrowResult.textContent = currency.format(
+        result.monthlyEscrowEstimate,
+      );
+      taxableAssessedValueResult.textContent = currency.format(
+        result.taxableAssessedValue,
+      );
+      projectedFinalYearTaxResult.textContent = currency.format(
+        result.projectedFinalYearTax,
+      );
+      totalPropertyTaxResult.textContent = currency.format(
+        result.totalPropertyTax,
+      );
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('property_tax', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

@@ -1,0 +1,129 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { homeMaintenanceCostCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = homeMaintenanceCostCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={homeMaintenanceCostCalculator.title}
+  eyebrow={homeMaintenanceCostCalculator.eyebrow}
+  description={homeMaintenanceCostCalculator.description}
+  inputs={homeMaintenanceCostCalculator.inputs}
+  outputs={homeMaintenanceCostCalculator.outputs}
+  faq={homeMaintenanceCostCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateHomeMaintenanceCost } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const firstYearMaintenanceResult = document.querySelector<HTMLElement>(
+      '#first-year-maintenance-result',
+    );
+    const recommendedMonthlyReserveResult =
+      document.querySelector<HTMLElement>(
+        '#recommended-monthly-reserve-result',
+      );
+    const totalMaintenanceResult =
+      document.querySelector<HTMLElement>('#total-maintenance-result');
+    const totalPlannedReserveResult = document.querySelector<HTMLElement>(
+      '#total-planned-reserve-result',
+    );
+    const reserveSurplusShortfallResult = document.querySelector<HTMLElement>(
+      '#reserve-surplus-shortfall-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !firstYearMaintenanceResult ||
+        !recommendedMonthlyReserveResult ||
+        !totalMaintenanceResult ||
+        !totalPlannedReserveResult ||
+        !reserveSurplusShortfallResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const homeValue = parseCalculatorNumber(data.get('homeValue'));
+      const maintenanceRate = parseCalculatorNumber(data.get('maintenanceRate'));
+      const monthlyMaintenanceReserve = parseCalculatorNumber(
+        data.get('monthlyMaintenanceReserve'),
+      );
+      const annualInflation = parseCalculatorNumber(data.get('annualInflation'));
+      const years = parseCalculatorNumber(data.get('years'));
+      const values = [
+        homeValue,
+        maintenanceRate,
+        monthlyMaintenanceReserve,
+        annualInflation,
+        years,
+      ];
+
+      if (
+        values.some((value) => !Number.isFinite(value)) ||
+        homeValue <= 0 ||
+        maintenanceRate < 0 ||
+        monthlyMaintenanceReserve < 0 ||
+        annualInflation < 0 ||
+        years <= 0 ||
+        !Number.isInteger(years)
+      ) {
+        error.textContent =
+          'Enter valid maintenance assumptions. Home value and years must be greater than 0, and rates or reserves cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      const result = calculateHomeMaintenanceCost({
+        homeValue,
+        maintenanceRatePercent: maintenanceRate,
+        monthlyMaintenanceReserve,
+        annualInflationPercent: annualInflation,
+        years,
+      });
+
+      error.hidden = true;
+      firstYearMaintenanceResult.textContent = currency.format(
+        result.firstYearMaintenanceCost,
+      );
+      recommendedMonthlyReserveResult.textContent = currency.format(
+        result.recommendedMonthlyReserve,
+      );
+      totalMaintenanceResult.textContent = currency.format(
+        result.totalEstimatedMaintenance,
+      );
+      totalPlannedReserveResult.textContent = currency.format(
+        result.totalPlannedReserve,
+      );
+      reserveSurplusShortfallResult.textContent = currency.format(
+        result.reserveSurplusOrShortfall,
+      );
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('home_maintenance_cost', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

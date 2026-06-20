@@ -464,6 +464,10 @@ export const guideHubs: GuideHub[] = [
     calculatorIds: [
       'home-affordability-calculator',
       'down-payment-calculator',
+      'mortgage-payment-calculator',
+      'closing-cost-calculator',
+      'property-tax-calculator',
+      'home-maintenance-cost-calculator',
       'mortgage-payoff-calculator',
       'rent-vs-buy-calculator',
     ],

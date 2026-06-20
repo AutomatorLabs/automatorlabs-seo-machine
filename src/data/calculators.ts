@@ -5298,9 +5298,12 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       },
     ],
     relatedIds: [
-      'budget-calculator',
-      'net-worth-calculator',
-      'savings-goal-calculator',
+      'mortgage-payment-calculator',
+      'mortgage-recast-calculator',
+      'refinance-calculator',
+      'property-tax-calculator',
+      'home-maintenance-cost-calculator',
+      'closing-cost-calculator',
     ],
   },
   'loan-payment': {
@@ -6689,9 +6692,12 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       },
     ],
     relatedIds: [
+      'mortgage-payment-calculator',
       'mortgage-payoff-calculator',
-      'loan-payment-calculator',
-      'auto-loan-calculator',
+      'mortgage-recast-calculator',
+      'closing-cost-calculator',
+      'home-affordability-calculator',
+      'rent-vs-buy-calculator',
     ],
   },
   'student-loan': {
@@ -7039,6 +7045,8 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
     relatedIds: [
       'mortgage-payoff-calculator',
       'refinance-calculator',
+      'home-affordability-calculator',
+      'property-tax-calculator',
       'net-worth-calculator',
     ],
   },
@@ -7231,9 +7239,16 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       },
     ],
     relatedIds: [
+      'home-affordability-calculator',
+      'down-payment-calculator',
+      'mortgage-payment-calculator',
+      'closing-cost-calculator',
+      'refinance-calculator',
+      'savings-goal-calculator',
+      'property-tax-calculator',
+      'home-maintenance-cost-calculator',
       'mortgage-payoff-calculator',
-      'heloc-calculator',
-      'investment-fee-calculator',
+      'mortgage-recast-calculator',
     ],
   },
   'home-affordability': {
@@ -7391,9 +7406,14 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       },
     ],
     relatedIds: [
-      'mortgage-payoff-calculator',
       'rent-vs-buy-calculator',
+      'down-payment-calculator',
+      'mortgage-payment-calculator',
+      'property-tax-calculator',
+      'closing-cost-calculator',
+      'refinance-calculator',
       'budget-calculator',
+      'mortgage-payoff-calculator',
     ],
   },
   'down-payment': {
@@ -7510,10 +7530,165 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
     ],
     relatedIds: [
       'savings-goal-calculator',
-      'compound-interest-calculator',
+      'home-affordability-calculator',
+      'mortgage-payment-calculator',
+      'closing-cost-calculator',
+      'rent-vs-buy-calculator',
       'savings-growth-calculator',
-      'investment-growth-calculator',
-      'fire-calculator',
+    ],
+  },
+  'mortgage-payment': {
+    id: 'mortgage-payment',
+    url: '/calculators/mortgage-payment-calculator/',
+    title: 'Mortgage Payment Calculator',
+    eyebrow: 'Mortgage Calculator',
+    description:
+      'Estimate a monthly mortgage payment including principal, interest, property tax, homeowners insurance, HOA dues, and mortgage insurance.',
+    inputs: [
+      { id: 'home-price', name: 'homePrice', label: 'Home price', type: 'number', value: '500000', min: '0.01', step: '1000', prefix: '$', required: true },
+      { id: 'down-payment', name: 'downPayment', label: 'Down payment', type: 'number', value: '100000', min: '0', step: '1000', prefix: '$', required: true },
+      { id: 'annual-interest-rate', name: 'annualInterestRate', label: 'Annual interest rate (%)', type: 'number', value: '6.5', min: '0', step: '0.01', required: true },
+      { id: 'loan-term-years', name: 'loanTermYears', label: 'Loan term (years)', type: 'number', value: '30', min: '1', step: '1', required: true },
+      { id: 'property-tax-rate', name: 'propertyTaxRate', label: 'Property tax rate (%)', type: 'number', value: '1.2', min: '0', step: '0.01', required: true },
+      { id: 'home-insurance-per-year', name: 'homeInsurancePerYear', label: 'Homeowners insurance per year', type: 'number', value: '2000', min: '0', step: '100', prefix: '$', required: true },
+      { id: 'hoa-per-month', name: 'hoaPerMonth', label: 'HOA dues per month', type: 'number', value: '0', min: '0', step: '25', prefix: '$', required: true },
+      { id: 'mortgage-insurance-per-month', name: 'mortgageInsurancePerMonth', label: 'Mortgage insurance per month', type: 'number', value: '0', min: '0', step: '25', prefix: '$', required: true },
+    ],
+    outputs: [
+      { id: 'total-monthly-payment-result', label: 'Estimated total monthly payment', initialValue: '$0.00', primary: true },
+      { id: 'principal-interest-result', label: 'Principal and interest', initialValue: '$0.00' },
+      { id: 'monthly-property-tax-result', label: 'Monthly property tax', initialValue: '$0.00' },
+      { id: 'monthly-insurance-result', label: 'Monthly insurance', initialValue: '$0.00' },
+      { id: 'loan-amount-result', label: 'Estimated loan amount', initialValue: '$0.00' },
+      { id: 'total-interest-paid-result', label: 'Total interest paid', initialValue: '$0.00' },
+    ],
+    faq: [
+      { question: 'How does the Mortgage Payment Calculator estimate a payment?', answer: 'It calculates principal and interest from the loan amount, rate, and term, then adds estimated property tax, insurance, HOA dues, and mortgage insurance.' },
+      { question: 'Is the mortgage payment the same as my escrow payment?', answer: 'Not always. Escrow can include taxes and insurance, but actual escrow rules, shortages, and adjustments depend on the servicer and local bills.' },
+      { question: 'Does the calculator include closing costs?', answer: 'No. Closing costs are upfront purchase expenses, not monthly mortgage payments. Use the closing cost calculator to estimate cash needed at closing.' },
+      { question: 'Why does down payment change the monthly payment?', answer: 'A larger down payment reduces the loan amount, which lowers principal and interest and may reduce or eliminate mortgage insurance.' },
+      { question: 'Does this include utilities or maintenance?', answer: 'No. Utilities, repairs, maintenance, furnishings, moving costs, and major renovations should be budgeted separately from the mortgage payment.' },
+    ],
+    relatedIds: [
+      'home-affordability-calculator',
+      'down-payment-calculator',
+      'property-tax-calculator',
+      'closing-cost-calculator',
+      'mortgage-payoff-calculator',
+      'mortgage-recast-calculator',
+      'refinance-calculator',
+      'rent-vs-buy-calculator',
+    ],
+  },
+  'property-tax': {
+    id: 'property-tax',
+    url: '/calculators/property-tax-calculator/',
+    title: 'Property Tax Calculator',
+    eyebrow: 'Housing Calculator',
+    description:
+      'Estimate annual property tax, monthly escrow, and multi-year tax costs from home value, assessed value, tax rate, and assessment growth.',
+    inputs: [
+      { id: 'home-value', name: 'homeValue', label: 'Home value', type: 'number', value: '500000', min: '0.01', step: '1000', prefix: '$', required: true },
+      { id: 'property-tax-rate', name: 'propertyTaxRate', label: 'Property tax rate (%)', type: 'number', value: '1.2', min: '0', step: '0.01', required: true },
+      { id: 'assessed-value-percent', name: 'assessedValuePercent', label: 'Assessed value (% of home value)', type: 'number', value: '100', min: '0', step: '0.01', required: true },
+      { id: 'annual-assessment-growth', name: 'annualAssessmentGrowth', label: 'Annual assessment growth (%)', type: 'number', value: '2', min: '0', step: '0.01', required: true },
+      { id: 'years', name: 'years', label: 'Years to project', type: 'number', value: '10', min: '1', step: '1', required: true },
+    ],
+    outputs: [
+      { id: 'first-year-property-tax-result', label: 'First-year property tax', initialValue: '$0.00', primary: true },
+      { id: 'monthly-escrow-result', label: 'Monthly escrow estimate', initialValue: '$0.00' },
+      { id: 'taxable-assessed-value-result', label: 'Taxable assessed value', initialValue: '$0.00' },
+      { id: 'projected-final-year-tax-result', label: 'Projected final-year tax', initialValue: '$0.00' },
+      { id: 'total-property-tax-result', label: 'Total tax over period', initialValue: '$0.00' },
+    ],
+    faq: [
+      { question: 'How does the Property Tax Calculator estimate tax?', answer: 'It multiplies taxable assessed value by the property tax rate, then projects future years using the entered annual assessment growth rate.' },
+      { question: 'Is assessed value always the same as market value?', answer: 'No. Some areas assess below market value or apply exemptions, caps, or local formulas. Enter the assessed-value percentage that best matches the property.' },
+      { question: 'Why estimate monthly escrow?', answer: 'Many mortgage payments collect property tax monthly into escrow. Dividing annual tax by 12 gives a planning estimate, but actual escrow can vary.' },
+      { question: 'Does this include exemptions or special assessments?', answer: 'No. Homestead exemptions, supplemental bills, local levies, appeals, and special assessments are not directly modeled.' },
+      { question: 'Can property taxes rise faster than the growth assumption?', answer: 'Yes. Reassessments, local rates, voter-approved levies, and ownership changes can cause actual taxes to differ from a simple projection.' },
+    ],
+    relatedIds: [
+      'mortgage-payment-calculator',
+      'home-affordability-calculator',
+      'rent-vs-buy-calculator',
+      'closing-cost-calculator',
+      'home-maintenance-cost-calculator',
+      'mortgage-payoff-calculator',
+    ],
+  },
+  'home-maintenance-cost': {
+    id: 'home-maintenance-cost',
+    url: '/calculators/home-maintenance-cost-calculator/',
+    title: 'Home Maintenance Cost Calculator',
+    eyebrow: 'Housing Calculator',
+    description:
+      'Estimate annual and multi-year home maintenance costs, monthly reserve targets, and whether your planned reserve may run short.',
+    inputs: [
+      { id: 'home-value', name: 'homeValue', label: 'Home value', type: 'number', value: '500000', min: '0.01', step: '1000', prefix: '$', required: true },
+      { id: 'maintenance-rate', name: 'maintenanceRate', label: 'Maintenance rate (% of home value)', type: 'number', value: '1', min: '0', step: '0.01', required: true },
+      { id: 'monthly-maintenance-reserve', name: 'monthlyMaintenanceReserve', label: 'Monthly maintenance reserve', type: 'number', value: '400', min: '0', step: '25', prefix: '$', required: true },
+      { id: 'annual-inflation', name: 'annualInflation', label: 'Annual cost inflation (%)', type: 'number', value: '3', min: '0', step: '0.01', required: true },
+      { id: 'years', name: 'years', label: 'Years to project', type: 'number', value: '10', min: '1', step: '1', required: true },
+    ],
+    outputs: [
+      { id: 'first-year-maintenance-result', label: 'First-year maintenance estimate', initialValue: '$0.00', primary: true },
+      { id: 'recommended-monthly-reserve-result', label: 'Recommended monthly reserve', initialValue: '$0.00' },
+      { id: 'total-maintenance-result', label: 'Total estimated maintenance', initialValue: '$0.00' },
+      { id: 'total-planned-reserve-result', label: 'Total planned reserve', initialValue: '$0.00' },
+      { id: 'reserve-surplus-shortfall-result', label: 'Reserve surplus or shortfall', initialValue: '$0.00' },
+    ],
+    faq: [
+      { question: 'How does the Home Maintenance Cost Calculator estimate costs?', answer: 'It applies a maintenance rate to home value for the first year, then grows that estimate annually by the entered inflation assumption.' },
+      { question: 'Is one percent of home value a rule?', answer: 'It is only a common planning shortcut. Age, climate, materials, systems, labor costs, and deferred repairs can make real maintenance much higher or lower.' },
+      { question: 'Does this include renovations?', answer: 'No. The estimate is for maintenance and repairs. Optional remodels, additions, furnishing, landscaping upgrades, and emergencies should be planned separately.' },
+      { question: 'Why compare against a monthly reserve?', answer: 'A monthly reserve helps convert irregular home repairs into a budgetable habit. The comparison shows whether the planned reserve covers the projected estimate.' },
+      { question: 'Can maintenance costs be lumpy?', answer: 'Yes. Roofs, HVAC systems, appliances, plumbing, and exterior repairs can arrive in large uneven bills, even when the long-term average seems manageable.' },
+    ],
+    relatedIds: [
+      'rent-vs-buy-calculator',
+      'home-affordability-calculator',
+      'mortgage-payment-calculator',
+      'property-tax-calculator',
+      'closing-cost-calculator',
+      'emergency-fund-calculator',
+    ],
+  },
+  'closing-cost': {
+    id: 'closing-cost',
+    url: '/calculators/closing-cost-calculator/',
+    title: 'Closing Cost Calculator',
+    eyebrow: 'Home Buying Calculator',
+    description:
+      'Estimate buyer closing costs, credits, loan amount, and cash to close for a home purchase.',
+    inputs: [
+      { id: 'home-purchase-price', name: 'homePurchasePrice', label: 'Home purchase price', type: 'number', value: '500000', min: '0.01', step: '1000', prefix: '$', required: true },
+      { id: 'down-payment', name: 'downPayment', label: 'Down payment', type: 'number', value: '100000', min: '0', step: '1000', prefix: '$', required: true },
+      { id: 'closing-cost-percent', name: 'closingCostPercent', label: 'Closing cost estimate (% of price)', type: 'number', value: '3', min: '0', step: '0.01', required: true },
+      { id: 'fixed-closing-costs', name: 'fixedClosingCosts', label: 'Fixed closing costs', type: 'number', value: '2500', min: '0', step: '100', prefix: '$', required: true },
+      { id: 'prepaid-escrow-and-taxes', name: 'prepaidEscrowAndTaxes', label: 'Prepaids and escrow', type: 'number', value: '4000', min: '0', step: '100', prefix: '$', required: true },
+      { id: 'lender-credits', name: 'lenderCredits', label: 'Seller or lender credits', type: 'number', value: '0', min: '0', step: '100', prefix: '$', required: true },
+    ],
+    outputs: [
+      { id: 'cash-to-close-result', label: 'Estimated cash to close', initialValue: '$0.00', primary: true },
+      { id: 'estimated-closing-costs-result', label: 'Estimated closing costs', initialValue: '$0.00' },
+      { id: 'loan-amount-result', label: 'Estimated loan amount', initialValue: '$0.00' },
+      { id: 'closing-cost-percent-result', label: 'Closing costs as % of price', initialValue: '0.00%' },
+    ],
+    faq: [
+      { question: 'How does the Closing Cost Calculator estimate cash to close?', answer: 'It adds the down payment to estimated closing costs, fixed fees, and prepaid escrow items, then subtracts entered seller or lender credits.' },
+      { question: 'What closing costs should I include?', answer: 'Typical buyer costs can include lender fees, title services, appraisal, recording charges, transfer taxes, prepaid insurance, prepaid interest, and escrow deposits.' },
+      { question: 'Are seller credits guaranteed?', answer: 'No. Credits depend on negotiation, loan rules, appraisal, contract terms, and lender limits. Enter only credits you reasonably expect.' },
+      { question: 'Does cash to close include moving or repairs?', answer: 'No. Moving costs, furniture, immediate repairs, utility deposits, and emergency reserves should be budgeted separately.' },
+      { question: 'Why does the calculator separate fixed costs from percentage costs?', answer: 'Some closing costs scale with price while others are flat or quote-specific. Splitting them makes the estimate easier to adjust.' },
+    ],
+    relatedIds: [
+      'down-payment-calculator',
+      'mortgage-payment-calculator',
+      'home-affordability-calculator',
+      'property-tax-calculator',
+      'rent-vs-buy-calculator',
+      'savings-goal-calculator',
     ],
   },
   'mortgage-recast': {
@@ -7629,9 +7804,12 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       },
     ],
     relatedIds: [
+      'mortgage-payment-calculator',
       'mortgage-payoff-calculator',
       'refinance-calculator',
+      'closing-cost-calculator',
       'down-payment-calculator',
+      'property-tax-calculator',
     ],
   },
 };
@@ -7752,5 +7930,10 @@ export const rentVsBuyCalculator = calculatorConfigs['rent-vs-buy'];
 export const homeAffordabilityCalculator =
   calculatorConfigs['home-affordability'];
 export const downPaymentCalculator = calculatorConfigs['down-payment'];
+export const mortgagePaymentCalculator = calculatorConfigs['mortgage-payment'];
+export const propertyTaxCalculator = calculatorConfigs['property-tax'];
+export const homeMaintenanceCostCalculator =
+  calculatorConfigs['home-maintenance-cost'];
+export const closingCostCalculator = calculatorConfigs['closing-cost'];
 export const mortgageRecastCalculator =
   calculatorConfigs['mortgage-recast'];

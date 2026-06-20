@@ -267,6 +267,76 @@ export interface HomeAffordabilityResult {
   maxMonthlyHousingPayment: number;
 }
 
+export interface MortgagePaymentInput {
+  homePrice: number;
+  downPayment: number;
+  annualInterestRatePercent: number;
+  loanTermYears: number;
+  propertyTaxRatePercent: number;
+  homeInsurancePerYear: number;
+  hoaPerMonth: number;
+  mortgageInsurancePerMonth: number;
+}
+
+export interface MortgagePaymentResult {
+  loanAmount: number;
+  principalAndInterest: number;
+  monthlyPropertyTax: number;
+  monthlyInsurance: number;
+  monthlyHoa: number;
+  monthlyMortgageInsurance: number;
+  totalMonthlyPayment: number;
+  totalInterestPaid: number;
+}
+
+export interface PropertyTaxInput {
+  homeValue: number;
+  propertyTaxRatePercent: number;
+  assessedValuePercent: number;
+  annualAssessmentGrowthPercent: number;
+  years: number;
+}
+
+export interface PropertyTaxResult {
+  taxableAssessedValue: number;
+  firstYearPropertyTax: number;
+  monthlyEscrowEstimate: number;
+  projectedFinalYearTax: number;
+  totalPropertyTax: number;
+}
+
+export interface HomeMaintenanceCostInput {
+  homeValue: number;
+  maintenanceRatePercent: number;
+  monthlyMaintenanceReserve: number;
+  annualInflationPercent: number;
+  years: number;
+}
+
+export interface HomeMaintenanceCostResult {
+  firstYearMaintenanceCost: number;
+  recommendedMonthlyReserve: number;
+  totalEstimatedMaintenance: number;
+  totalPlannedReserve: number;
+  reserveSurplusOrShortfall: number;
+}
+
+export interface ClosingCostInput {
+  homePurchasePrice: number;
+  downPayment: number;
+  closingCostPercent: number;
+  fixedClosingCosts: number;
+  prepaidEscrowAndTaxes: number;
+  lenderCredits: number;
+}
+
+export interface ClosingCostResult {
+  loanAmount: number;
+  estimatedClosingCosts: number;
+  cashToClose: number;
+  closingCostAsPercentOfPrice: number;
+}
+
 export interface DebtPayoffInput {
   debtBalance: number;
   annualInterestRatePercent: number;
@@ -2953,5 +3023,129 @@ export function calculateHomeAffordability({
         monthlyGrossIncome) *
       100,
     maxMonthlyHousingPayment,
+  };
+}
+
+export function calculateMortgagePayment({
+  homePrice,
+  downPayment,
+  annualInterestRatePercent,
+  loanTermYears,
+  propertyTaxRatePercent,
+  homeInsurancePerYear,
+  hoaPerMonth,
+  mortgageInsurancePerMonth,
+}: MortgagePaymentInput): MortgagePaymentResult {
+  const loanAmount = Math.max(homePrice - downPayment, 0);
+  const principalAndInterest = calculateMonthlyLoanPayment(
+    loanAmount,
+    annualInterestRatePercent,
+    loanTermYears,
+  );
+  const monthlyPropertyTax = homePrice * (propertyTaxRatePercent / 100 / 12);
+  const monthlyInsurance = homeInsurancePerYear / 12;
+  const totalMonthlyPayment =
+    principalAndInterest +
+    monthlyPropertyTax +
+    monthlyInsurance +
+    hoaPerMonth +
+    mortgageInsurancePerMonth;
+  const totalInterestPaid =
+    principalAndInterest * loanTermYears * 12 - loanAmount;
+
+  return {
+    loanAmount,
+    principalAndInterest,
+    monthlyPropertyTax,
+    monthlyInsurance,
+    monthlyHoa: hoaPerMonth,
+    monthlyMortgageInsurance: mortgageInsurancePerMonth,
+    totalMonthlyPayment,
+    totalInterestPaid,
+  };
+}
+
+export function calculatePropertyTax({
+  homeValue,
+  propertyTaxRatePercent,
+  assessedValuePercent,
+  annualAssessmentGrowthPercent,
+  years,
+}: PropertyTaxInput): PropertyTaxResult {
+  const taxableAssessedValue = homeValue * (assessedValuePercent / 100);
+  const firstYearPropertyTax =
+    taxableAssessedValue * (propertyTaxRatePercent / 100);
+  const projectedFinalYearTax =
+    firstYearPropertyTax *
+    Math.pow(1 + annualAssessmentGrowthPercent / 100, Math.max(years - 1, 0));
+  let totalPropertyTax = 0;
+
+  for (let year = 0; year < years; year += 1) {
+    totalPropertyTax +=
+      firstYearPropertyTax *
+      Math.pow(1 + annualAssessmentGrowthPercent / 100, year);
+  }
+
+  return {
+    taxableAssessedValue,
+    firstYearPropertyTax,
+    monthlyEscrowEstimate: firstYearPropertyTax / 12,
+    projectedFinalYearTax,
+    totalPropertyTax,
+  };
+}
+
+export function calculateHomeMaintenanceCost({
+  homeValue,
+  maintenanceRatePercent,
+  monthlyMaintenanceReserve,
+  annualInflationPercent,
+  years,
+}: HomeMaintenanceCostInput): HomeMaintenanceCostResult {
+  const firstYearMaintenanceCost = homeValue * (maintenanceRatePercent / 100);
+  let totalEstimatedMaintenance = 0;
+
+  for (let year = 0; year < years; year += 1) {
+    totalEstimatedMaintenance +=
+      firstYearMaintenanceCost *
+      Math.pow(1 + annualInflationPercent / 100, year);
+  }
+
+  const totalPlannedReserve = monthlyMaintenanceReserve * 12 * years;
+
+  return {
+    firstYearMaintenanceCost,
+    recommendedMonthlyReserve: firstYearMaintenanceCost / 12,
+    totalEstimatedMaintenance,
+    totalPlannedReserve,
+    reserveSurplusOrShortfall:
+      totalPlannedReserve - totalEstimatedMaintenance,
+  };
+}
+
+export function calculateClosingCost({
+  homePurchasePrice,
+  downPayment,
+  closingCostPercent,
+  fixedClosingCosts,
+  prepaidEscrowAndTaxes,
+  lenderCredits,
+}: ClosingCostInput): ClosingCostResult {
+  const loanAmount = Math.max(homePurchasePrice - downPayment, 0);
+  const variableClosingCosts = homePurchasePrice * (closingCostPercent / 100);
+  const estimatedClosingCosts = Math.max(
+    variableClosingCosts + fixedClosingCosts + prepaidEscrowAndTaxes - lenderCredits,
+    0,
+  );
+  const cashToClose = downPayment + estimatedClosingCosts;
+
+  return {
+    loanAmount,
+    estimatedClosingCosts,
+    cashToClose,
+    closingCostAsPercentOfPrice:
+      homePurchasePrice > 0
+        ? (estimatedClosingCosts / homePurchasePrice) * 100
+        : 0,
   };
 }

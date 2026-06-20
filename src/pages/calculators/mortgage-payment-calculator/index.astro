@@ -1,0 +1,148 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { mortgagePaymentCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = mortgagePaymentCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={mortgagePaymentCalculator.title}
+  eyebrow={mortgagePaymentCalculator.eyebrow}
+  description={mortgagePaymentCalculator.description}
+  inputs={mortgagePaymentCalculator.inputs}
+  outputs={mortgagePaymentCalculator.outputs}
+  faq={mortgagePaymentCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateMortgagePayment } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const totalMonthlyPaymentResult = document.querySelector<HTMLElement>(
+      '#total-monthly-payment-result',
+    );
+    const principalInterestResult =
+      document.querySelector<HTMLElement>('#principal-interest-result');
+    const monthlyPropertyTaxResult = document.querySelector<HTMLElement>(
+      '#monthly-property-tax-result',
+    );
+    const monthlyInsuranceResult =
+      document.querySelector<HTMLElement>('#monthly-insurance-result');
+    const loanAmountResult =
+      document.querySelector<HTMLElement>('#loan-amount-result');
+    const totalInterestPaidResult = document.querySelector<HTMLElement>(
+      '#total-interest-paid-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !totalMonthlyPaymentResult ||
+        !principalInterestResult ||
+        !monthlyPropertyTaxResult ||
+        !monthlyInsuranceResult ||
+        !loanAmountResult ||
+        !totalInterestPaidResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const homePrice = parseCalculatorNumber(data.get('homePrice'));
+      const downPayment = parseCalculatorNumber(data.get('downPayment'));
+      const annualInterestRate = parseCalculatorNumber(
+        data.get('annualInterestRate'),
+      );
+      const loanTermYears = parseCalculatorNumber(data.get('loanTermYears'));
+      const propertyTaxRate = parseCalculatorNumber(data.get('propertyTaxRate'));
+      const homeInsurancePerYear = parseCalculatorNumber(
+        data.get('homeInsurancePerYear'),
+      );
+      const hoaPerMonth = parseCalculatorNumber(data.get('hoaPerMonth'));
+      const mortgageInsurancePerMonth = parseCalculatorNumber(
+        data.get('mortgageInsurancePerMonth'),
+      );
+      const values = [
+        homePrice,
+        downPayment,
+        annualInterestRate,
+        loanTermYears,
+        propertyTaxRate,
+        homeInsurancePerYear,
+        hoaPerMonth,
+        mortgageInsurancePerMonth,
+      ];
+
+      if (
+        values.some((value) => !Number.isFinite(value)) ||
+        homePrice <= 0 ||
+        downPayment < 0 ||
+        downPayment > homePrice ||
+        annualInterestRate < 0 ||
+        loanTermYears <= 0 ||
+        !Number.isInteger(loanTermYears) ||
+        propertyTaxRate < 0 ||
+        homeInsurancePerYear < 0 ||
+        hoaPerMonth < 0 ||
+        mortgageInsurancePerMonth < 0
+      ) {
+        error.textContent =
+          'Enter valid home and mortgage assumptions. Home price and term must be greater than 0, down payment cannot exceed the price, and costs cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      const result = calculateMortgagePayment({
+        homePrice,
+        downPayment,
+        annualInterestRatePercent: annualInterestRate,
+        loanTermYears,
+        propertyTaxRatePercent: propertyTaxRate,
+        homeInsurancePerYear,
+        hoaPerMonth,
+        mortgageInsurancePerMonth,
+      });
+
+      error.hidden = true;
+      totalMonthlyPaymentResult.textContent = currency.format(
+        result.totalMonthlyPayment,
+      );
+      principalInterestResult.textContent = currency.format(
+        result.principalAndInterest,
+      );
+      monthlyPropertyTaxResult.textContent = currency.format(
+        result.monthlyPropertyTax,
+      );
+      monthlyInsuranceResult.textContent = currency.format(
+        result.monthlyInsurance,
+      );
+      loanAmountResult.textContent = currency.format(result.loanAmount);
+      totalInterestPaidResult.textContent = currency.format(
+        result.totalInterestPaid,
+      );
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('mortgage_payment', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>

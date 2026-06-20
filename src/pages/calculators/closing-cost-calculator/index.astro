@@ -1,0 +1,126 @@
+---
+import CalculatorPage from '../../../components/CalculatorPage.astro';
+import { closingCostCalculator } from '../../../data/calculators';
+import { contentItems } from '../../../data/content';
+
+const relatedItems = closingCostCalculator.relatedIds.flatMap((id) => {
+  const item = contentItems.find((contentItem) => contentItem.id === id);
+  return item ? [{ title: item.title, url: item.url }] : [];
+});
+---
+
+<CalculatorPage
+  title={closingCostCalculator.title}
+  eyebrow={closingCostCalculator.eyebrow}
+  description={closingCostCalculator.description}
+  inputs={closingCostCalculator.inputs}
+  outputs={closingCostCalculator.outputs}
+  faq={closingCostCalculator.faq}
+  relatedItems={relatedItems}
+>
+  <script>
+    import { trackSuccessfulCalculation } from '../../../lib/analytics';
+    import { parseCalculatorNumber } from '../../../lib/input';
+    import { calculateClosingCost } from '../../../lib/math';
+
+    const form = document.querySelector<HTMLFormElement>('#calculator-form');
+    const error = document.querySelector<HTMLElement>('#form-error');
+    const cashToCloseResult =
+      document.querySelector<HTMLElement>('#cash-to-close-result');
+    const estimatedClosingCostsResult = document.querySelector<HTMLElement>(
+      '#estimated-closing-costs-result',
+    );
+    const loanAmountResult =
+      document.querySelector<HTMLElement>('#loan-amount-result');
+    const closingCostPercentResult = document.querySelector<HTMLElement>(
+      '#closing-cost-percent-result',
+    );
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      if (
+        !form ||
+        !error ||
+        !cashToCloseResult ||
+        !estimatedClosingCostsResult ||
+        !loanAmountResult ||
+        !closingCostPercentResult
+      ) {
+        return false;
+      }
+
+      const data = new FormData(form);
+      const homePurchasePrice = parseCalculatorNumber(
+        data.get('homePurchasePrice'),
+      );
+      const downPayment = parseCalculatorNumber(data.get('downPayment'));
+      const closingCostPercent = parseCalculatorNumber(
+        data.get('closingCostPercent'),
+      );
+      const fixedClosingCosts = parseCalculatorNumber(
+        data.get('fixedClosingCosts'),
+      );
+      const prepaidEscrowAndTaxes = parseCalculatorNumber(
+        data.get('prepaidEscrowAndTaxes'),
+      );
+      const lenderCredits = parseCalculatorNumber(data.get('lenderCredits'));
+      const values = [
+        homePurchasePrice,
+        downPayment,
+        closingCostPercent,
+        fixedClosingCosts,
+        prepaidEscrowAndTaxes,
+        lenderCredits,
+      ];
+
+      if (
+        values.some((value) => !Number.isFinite(value)) ||
+        homePurchasePrice <= 0 ||
+        downPayment < 0 ||
+        downPayment > homePurchasePrice ||
+        closingCostPercent < 0 ||
+        fixedClosingCosts < 0 ||
+        prepaidEscrowAndTaxes < 0 ||
+        lenderCredits < 0
+      ) {
+        error.textContent =
+          'Enter valid closing cost assumptions. Purchase price must be greater than 0, down payment cannot exceed price, and costs or credits cannot be negative.';
+        error.hidden = false;
+        return false;
+      }
+
+      const result = calculateClosingCost({
+        homePurchasePrice,
+        downPayment,
+        closingCostPercent,
+        fixedClosingCosts,
+        prepaidEscrowAndTaxes,
+        lenderCredits,
+      });
+
+      error.hidden = true;
+      cashToCloseResult.textContent = currency.format(result.cashToClose);
+      estimatedClosingCostsResult.textContent = currency.format(
+        result.estimatedClosingCosts,
+      );
+      loanAmountResult.textContent = currency.format(result.loanAmount);
+      closingCostPercentResult.textContent = `${result.closingCostAsPercentOfPrice.toFixed(
+        2,
+      )}%`;
+
+      return true;
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      trackSuccessfulCalculation('closing_cost', calculate);
+    });
+
+    calculate();
+  </script>
+</CalculatorPage>
