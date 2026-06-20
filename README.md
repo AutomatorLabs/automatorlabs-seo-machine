@@ -1,46 +1,40 @@
-# Astro Starter Kit: Basics
+# AutomatorLabs SEO Machine
+
+Astro static site for AutomatorLabs calculators, guides, examples, and
+programmatic SEO clusters.
+
+## Commands
+
+Run commands from the project root:
+
+| Command | Action |
+| :-- | :-- |
+| `npm install` | Install dependencies |
+| `npm run dev` | Start the local Astro dev server |
+| `npm run build` | Build the production site to `dist/` |
+| `npm run audit:seo` | Audit built output for common SEO issues |
+| `npm run test:calculators` | Run calculator Playwright coverage |
+| `npm run preview` | Preview the built site locally |
+
+## SEO audit
+
+Build before running the audit:
 
 ```sh
-npm create astro@latest -- --template basics
+npm run build
+npm run audit:seo
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+The local audit inspects `dist/` plus central calculator data. It checks for
+duplicate titles/descriptions/canonicals, canonical and H1 issues, calculator
+FAQ and breadcrumb schema, broken internal links, calculator category coverage,
+newsletter CTAs on calculator pages, and sitemap output.
 
-## 🚀 Project Structure
+The audit is intentionally static and dependency-free. It does not make network
+calls and does not replace the browser-based calculator test suite.
 
-Inside of your Astro project, you'll see the following folders and files:
+## Project notes
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
-
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- Calculator definitions live in `src/data/calculators.ts`.
+- Calculator category membership lives in `src/data/calculator-categories.ts`.
+- Programmatic SEO implementation notes live in `docs/programmatic-seo.md`.

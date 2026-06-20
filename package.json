@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "audit:seo": "node scripts/audit-seo.mjs",
     "preview": "astro preview",
     "test:calculators": "playwright test tests/calculators.spec.ts",
     "astro": "astro"
