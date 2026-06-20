@@ -7,7 +7,7 @@ export interface MortgageSeoRecord {
   featured?: boolean;
 }
 
-export const EXPECTED_MORTGAGE_SEO_PAGE_COUNT = 55;
+export const EXPECTED_MORTGAGE_SEO_PAGE_COUNT = 200;
 
 function rateSlug(rate: number): string {
   return String(rate).replace('.', '-');
@@ -92,9 +92,86 @@ export const jumboMortgageSeoRecords: MortgageSeoRecord[] = [
   record(900000, 6.75, 15),
 ];
 
+const affordableMarketMortgageAmounts = [
+  125000,
+  150000,
+  175000,
+  200000,
+  225000,
+  250000,
+  275000,
+  300000,
+  325000,
+  350000,
+  375000,
+  400000,
+];
+
+const affordableMarketMortgageRates = [5.25, 5.875, 6.375, 7.125];
+
+const conventionalMortgageAmounts = [
+  180000,
+  220000,
+  260000,
+  320000,
+  380000,
+  420000,
+  480000,
+  520000,
+  580000,
+  625000,
+];
+
+const conventionalMortgageRates = [5.99, 6.49, 6.99, 7.49];
+
+const twentyYearMortgageAmounts = [
+  275000,
+  325000,
+  375000,
+  425000,
+  475000,
+  525000,
+  575000,
+  625000,
+  675000,
+  725000,
+  825000,
+  925000,
+];
+
+const twentyYearMortgageRates = [5.25, 5.875, 6.125, 6.625];
+
+const fifteenYearMortgageAmounts = [
+  225000,
+  275000,
+  325000,
+  375000,
+  425000,
+  475000,
+  525000,
+  575000,
+  625000,
+];
+
+export const expandedMortgageSeoRecords: MortgageSeoRecord[] = [
+  ...affordableMarketMortgageAmounts.flatMap((amount) =>
+    affordableMarketMortgageRates.map((rate) => record(amount, rate, 30)),
+  ),
+  ...conventionalMortgageAmounts.flatMap((amount) =>
+    conventionalMortgageRates.map((rate) => record(amount, rate, 30)),
+  ),
+  ...twentyYearMortgageAmounts.flatMap((amount) =>
+    twentyYearMortgageRates.map((rate) => record(amount, rate, 20)),
+  ),
+  ...fifteenYearMortgageAmounts.map((amount) =>
+    record(amount, 5.875, 15),
+  ),
+];
+
 export const mortgageSeoRecords: MortgageSeoRecord[] = [
   ...coreMortgageSeoRecords,
   ...jumboMortgageSeoRecords,
+  ...expandedMortgageSeoRecords,
 ];
 
 export const featuredMortgageSeoRecords = mortgageSeoRecords.filter(
