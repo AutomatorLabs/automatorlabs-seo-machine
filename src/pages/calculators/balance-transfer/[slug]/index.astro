@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  balanceTransferSeoRecords,
+  EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/debt';
+import {
+  auditBalanceTransferSeoRecords,
+  createBalanceTransferSeoPage,
+} from '../../../../lib/programmatic-seo/debt';
+
+auditBalanceTransferSeoRecords(
+  balanceTransferSeoRecords,
+  EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return balanceTransferSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createBalanceTransferSeoPage(record, balanceTransferSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

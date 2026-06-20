@@ -10,6 +10,16 @@ import {
 } from '../src/data/programmatic-seo/compound-interest';
 import { auditCompoundInterestSeoRecords } from '../src/lib/programmatic-seo/compound-interest';
 import {
+  balanceTransferSeoRecords,
+  creditCardPayoffSeoRecords,
+  EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT,
+  EXPECTED_CREDIT_CARD_PAYOFF_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/debt';
+import {
+  auditBalanceTransferSeoRecords,
+  auditCreditCardPayoffSeoRecords,
+} from '../src/lib/programmatic-seo/debt';
+import {
   EXPECTED_FIRE_SEO_PAGE_COUNT,
   fireSeoRecords,
 } from '../src/data/programmatic-seo/fire';
@@ -243,12 +253,12 @@ test.describe('compound interest programmatic SEO', () => {
     );
 
     expect(audit).toEqual({
-      expectedCount: 100,
-      actualCount: 100,
-      uniqueSlugCount: 100,
-      uniqueTitleCount: 100,
-      uniqueDescriptionCount: 100,
-      uniqueCanonicalPathCount: 100,
+      expectedCount: EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
     });
   });
 
@@ -269,10 +279,14 @@ test.describe('compound interest programmatic SEO', () => {
       }),
     ).toBeVisible();
     await expect(page.locator('[data-example-group]')).toHaveCount(4);
-    await expect(page.locator('[data-example-card]')).toHaveCount(100);
-    await expect(page.locator('[data-example-card] a')).toHaveCount(100);
+    await expect(page.locator('[data-example-card]')).toHaveCount(
+      EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
+    );
+    await expect(page.locator('[data-example-card] a')).toHaveCount(
+      EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
+    );
     await expect(page.locator('#example-count')).toHaveText(
-      'Showing 100 examples',
+      `Showing ${EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT} examples`,
     );
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
@@ -282,7 +296,9 @@ test.describe('compound interest programmatic SEO', () => {
     const hrefs = await page
       .locator('[data-example-card] a')
       .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
-    expect(new Set(hrefs).size).toBe(100);
+    expect(new Set(hrefs).size).toBe(
+      EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
+    );
 
     const searchBox = page.getByRole('searchbox', {
       name: 'Search compound interest examples',
@@ -295,7 +311,9 @@ test.describe('compound interest programmatic SEO', () => {
 
     await page.getByRole('button', { name: 'Clear search' }).click();
     await expect(searchBox).toHaveValue('');
-    await expect(page.locator('[data-example-card]:visible')).toHaveCount(100);
+    await expect(page.locator('[data-example-card]:visible')).toHaveCount(
+      EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
+    );
     await expect(
       page.getByRole('link', { name: 'Browse all financial examples' }),
     ).toHaveAttribute('href', '/examples/');
@@ -356,12 +374,12 @@ test.describe('FIRE programmatic SEO', () => {
     );
 
     expect(audit).toEqual({
-      expectedCount: 30,
-      actualCount: 30,
-      uniqueSlugCount: 30,
-      uniqueTitleCount: 30,
-      uniqueDescriptionCount: 30,
-      uniqueCanonicalPathCount: 30,
+      expectedCount: EXPECTED_FIRE_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_FIRE_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_FIRE_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_FIRE_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_FIRE_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_FIRE_SEO_PAGE_COUNT,
     });
   });
 
@@ -386,8 +404,12 @@ test.describe('FIRE programmatic SEO', () => {
       await page.evaluate(() => document.querySelectorAll('h1').length),
     ).toBe(1);
     await expect(page.locator('[data-fire-example-group]')).toHaveCount(2);
-    await expect(page.locator('[data-fire-example-card]')).toHaveCount(30);
-    await expect(page.locator('[data-fire-example-card] a')).toHaveCount(30);
+    await expect(page.locator('[data-fire-example-card]')).toHaveCount(
+      EXPECTED_FIRE_SEO_PAGE_COUNT,
+    );
+    await expect(page.locator('[data-fire-example-card] a')).toHaveCount(
+      EXPECTED_FIRE_SEO_PAGE_COUNT,
+    );
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
       'https://automatorlabs.co/calculators/fire/examples/',
@@ -402,7 +424,7 @@ test.describe('FIRE programmatic SEO', () => {
     const hrefs = await page
       .locator('[data-fire-example-card] a')
       .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
-    expect(new Set(hrefs).size).toBe(30);
+    expect(new Set(hrefs).size).toBe(EXPECTED_FIRE_SEO_PAGE_COUNT);
 
     const searchBox = page.getByRole('searchbox', {
       name: 'Search FIRE examples',
@@ -413,7 +435,7 @@ test.describe('FIRE programmatic SEO', () => {
     );
     await page.getByRole('button', { name: 'Clear search' }).click();
     await expect(page.locator('[data-fire-example-card]:visible')).toHaveCount(
-      30,
+      EXPECTED_FIRE_SEO_PAGE_COUNT,
     );
     expect(pageErrors).toEqual([]);
   });
@@ -468,12 +490,12 @@ test.describe('mortgage programmatic SEO', () => {
     );
 
     expect(audit).toEqual({
-      expectedCount: 40,
-      actualCount: 40,
-      uniqueSlugCount: 40,
-      uniqueTitleCount: 40,
-      uniqueDescriptionCount: 40,
-      uniqueCanonicalPathCount: 40,
+      expectedCount: EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
     });
   });
 
@@ -501,7 +523,7 @@ test.describe('mortgage programmatic SEO', () => {
       3,
     );
     await expect(page.locator('[data-mortgage-example-card]')).toHaveCount(
-      40,
+      EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
     );
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
@@ -514,7 +536,7 @@ test.describe('mortgage programmatic SEO', () => {
     const hrefs = await page
       .locator('[data-mortgage-example-card] a')
       .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
-    expect(new Set(hrefs).size).toBe(40);
+    expect(new Set(hrefs).size).toBe(EXPECTED_MORTGAGE_SEO_PAGE_COUNT);
 
     const searchBox = page.getByRole('searchbox', {
       name: 'Search mortgage examples',
@@ -526,7 +548,7 @@ test.describe('mortgage programmatic SEO', () => {
     await page.getByRole('button', { name: 'Clear search' }).click();
     await expect(
       page.locator('[data-mortgage-example-card]:visible'),
-    ).toHaveCount(40);
+    ).toHaveCount(EXPECTED_MORTGAGE_SEO_PAGE_COUNT);
     expect(pageErrors).toEqual([]);
   });
 
@@ -580,12 +602,12 @@ test.describe('savings goal programmatic SEO', () => {
     );
 
     expect(audit).toEqual({
-      expectedCount: 100,
-      actualCount: 100,
-      uniqueSlugCount: 100,
-      uniqueTitleCount: 100,
-      uniqueDescriptionCount: 100,
-      uniqueCanonicalPathCount: 100,
+      expectedCount: EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT,
     });
   });
 
@@ -625,7 +647,7 @@ test.describe('savings goal programmatic SEO', () => {
     ).toHaveCount(5);
     await expect(
       page.locator('[data-savings-goal-example-card]'),
-    ).toHaveCount(100);
+    ).toHaveCount(EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
       'https://automatorlabs.co/calculators/savings-goal/examples/',
@@ -634,7 +656,7 @@ test.describe('savings goal programmatic SEO', () => {
     const hrefs = await page
       .locator('[data-savings-goal-example-card] a')
       .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
-    expect(new Set(hrefs).size).toBe(100);
+    expect(new Set(hrefs).size).toBe(EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT);
 
     const searchBox = page.getByRole('searchbox', {
       name: 'Search savings goal examples',
@@ -642,11 +664,11 @@ test.describe('savings goal programmatic SEO', () => {
     await searchBox.fill('down payment');
     await expect(
       page.locator('[data-savings-goal-example-card]:visible'),
-    ).toHaveCount(15);
+    ).toHaveCount(18);
     await page.getByRole('button', { name: 'Clear search' }).click();
     await expect(
       page.locator('[data-savings-goal-example-card]:visible'),
-    ).toHaveCount(100);
+    ).toHaveCount(EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT);
     await expect(
       page.getByRole('link', { name: 'Build your savings plan' }),
     ).toHaveAttribute('href', '/calculators/savings-goal-calculator/');
@@ -705,6 +727,244 @@ test.describe('savings goal programmatic SEO', () => {
       expect(pageErrors).toEqual([]);
     });
   }
+});
+
+test.describe('credit card payoff programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditCreditCardPayoffSeoRecords(
+      creditCardPayoffSeoRecords,
+      EXPECTED_CREDIT_CARD_PAYOFF_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_CREDIT_CARD_PAYOFF_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_CREDIT_CARD_PAYOFF_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_CREDIT_CARD_PAYOFF_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_CREDIT_CARD_PAYOFF_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_CREDIT_CARD_PAYOFF_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_CREDIT_CARD_PAYOFF_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('examples index exposes and searches all credit card payoff pages', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/credit-card-payoff/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Credit Card Payoff Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(
+      page.locator('[data-credit-card-payoff-example-group]'),
+    ).toHaveCount(2);
+    await expect(
+      page.locator('[data-credit-card-payoff-example-card]'),
+    ).toHaveCount(EXPECTED_CREDIT_CARD_PAYOFF_SEO_PAGE_COUNT);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/credit-card-payoff/examples/',
+    );
+
+    const hrefs = await page
+      .locator('[data-credit-card-payoff-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(
+      EXPECTED_CREDIT_CARD_PAYOFF_SEO_PAGE_COUNT,
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search credit card payoff examples',
+    });
+    await searchBox.fill('10,000');
+    await expect(
+      page.locator('[data-credit-card-payoff-example-card]:visible'),
+    ).toHaveCount(3);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-credit-card-payoff-example-card]:visible'),
+    ).toHaveCount(EXPECTED_CREDIT_CARD_PAYOFF_SEO_PAGE_COUNT);
+    await expect(
+      page.getByRole('link', { name: 'Calculate your credit card payoff' }),
+    ).toHaveAttribute('href', '/calculators/credit-card-payoff-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  test('renders a generated credit card payoff page with schemas and CTA', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+    const record = creditCardPayoffSeoRecords.find(
+      (candidate) =>
+        candidate.slug ===
+        'pay-off-10000-credit-card-at-24-99-apr-with-300-per-month',
+    );
+    if (!record) throw new Error('Missing representative credit card record');
+
+    const url = `/calculators/credit-card-payoff/${record.slug}/`;
+    const response = await page.goto(url, {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', { level: 1, name: record.question }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      `https://automatorlabs.co${url}`,
+    );
+
+    const schemas = await page
+      .locator('script[type="application/ld+json"]')
+      .evaluateAll((scripts) =>
+        scripts.map((script) => script.textContent ?? '').join('\n'),
+      );
+    expect(schemas).toContain('"@type":"FAQPage"');
+    expect(schemas).toContain('"@type":"BreadcrumbList"');
+    await expect(
+      page.getByRole('link', {
+        name: 'Open the Credit Card Payoff Calculator',
+      }),
+    ).toHaveAttribute('href', '/calculators/credit-card-payoff-calculator/');
+    await expect(newsletterCta(page)).toBeVisible();
+    await expect(page.locator('tbody tr')).toHaveCount(1);
+    expect(pageErrors).toEqual([]);
+  });
+});
+
+test.describe('balance transfer programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditBalanceTransferSeoRecords(
+      balanceTransferSeoRecords,
+      EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('examples index exposes and searches all balance transfer pages', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/balance-transfer/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Balance Transfer Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(
+      page.locator('[data-balance-transfer-example-group]'),
+    ).toHaveCount(2);
+    await expect(
+      page.locator('[data-balance-transfer-example-card]'),
+    ).toHaveCount(EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/balance-transfer/examples/',
+    );
+
+    const hrefs = await page
+      .locator('[data-balance-transfer-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(
+      EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT,
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search balance transfer examples',
+    });
+    await searchBox.fill('3% fee');
+    await expect(
+      page.locator('[data-balance-transfer-example-card]:visible'),
+    ).toHaveCount(14);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-balance-transfer-example-card]:visible'),
+    ).toHaveCount(EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT);
+    await expect(
+      page.getByRole('link', { name: 'Calculate your balance transfer' }),
+    ).toHaveAttribute('href', '/calculators/balance-transfer-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  test('renders a generated balance transfer page with schemas and CTA', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+    const record = balanceTransferSeoRecords.find(
+      (candidate) =>
+        candidate.slug ===
+        'balance-transfer-8000-from-24-99-apr-with-3-fee-18-months',
+    );
+    if (!record) throw new Error('Missing representative transfer record');
+
+    const url = `/calculators/balance-transfer/${record.slug}/`;
+    const response = await page.goto(url, {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', { level: 1, name: record.question }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      `https://automatorlabs.co${url}`,
+    );
+
+    const schemas = await page
+      .locator('script[type="application/ld+json"]')
+      .evaluateAll((scripts) =>
+        scripts.map((script) => script.textContent ?? '').join('\n'),
+      );
+    expect(schemas).toContain('"@type":"FAQPage"');
+    expect(schemas).toContain('"@type":"BreadcrumbList"');
+    await expect(
+      page.getByRole('link', {
+        name: 'Open the Balance Transfer Calculator',
+      }),
+    ).toHaveAttribute('href', '/calculators/balance-transfer-calculator/');
+    await expect(newsletterCta(page)).toBeVisible();
+    await expect(page.locator('tbody tr')).toHaveCount(2);
+    expect(pageErrors).toEqual([]);
+  });
 });
 
 test.describe('global programmatic examples hub', () => {

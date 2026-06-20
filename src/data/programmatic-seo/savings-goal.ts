@@ -20,7 +20,7 @@ export interface SavingsGoalSeoRecord {
   featured?: boolean;
 }
 
-export const EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT = 100;
+export const EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT = 115;
 
 const money = (amount: number) => `$${amount.toLocaleString('en-US')}`;
 
@@ -137,6 +137,24 @@ const retirementScenarios: [number, number, number][] = [
   [1000000, 45, 65],
 ];
 
+const longTailSavingsGoalSeoRecords: SavingsGoalSeoRecord[] = [
+  generalRecord(500000, 5),
+  generalRecord(500000, 7),
+  generalRecord(500000, 12),
+  generalRecord(750000, 7),
+  generalRecord(1000000, 5),
+  purposeRecord('down-payment', 'house down payment', 100000, 5, 3.5),
+  purposeRecord('down-payment', 'house down payment', 150000, 5, 3.5),
+  purposeRecord('down-payment', 'house down payment', 200000, 7, 3.5),
+  purposeRecord('emergency-fund', 'emergency fund', 25000, 2, 3),
+  purposeRecord('emergency-fund', 'emergency fund', 30000, 3, 3),
+  purposeRecord('vacation', 'vacation fund', 15000, 3, 2),
+  purposeRecord('vacation', 'vacation fund', 20000, 4, 2),
+  purposeRecord('vehicle', 'vehicle fund', 35000, 4, 3),
+  purposeRecord('vehicle', 'vehicle fund', 50000, 5, 3),
+  retirementRecord(750000, 30, 65),
+];
+
 export const savingsGoalSeoRecords: SavingsGoalSeoRecord[] = [
   ...generalScenarios.map(([amount, years]) =>
     generalRecord(
@@ -195,6 +213,7 @@ export const savingsGoalSeoRecords: SavingsGoalSeoRecord[] = [
       amount === 1000000 && currentAge === 35 && targetAge === 65,
     ),
   ),
+  ...longTailSavingsGoalSeoRecords,
 ];
 
 export const featuredSavingsGoalSeoRecords = savingsGoalSeoRecords.filter(

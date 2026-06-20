@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  creditCardPayoffSeoRecords,
+  EXPECTED_CREDIT_CARD_PAYOFF_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/debt';
+import {
+  auditCreditCardPayoffSeoRecords,
+  createCreditCardPayoffSeoPage,
+} from '../../../../lib/programmatic-seo/debt';
+
+auditCreditCardPayoffSeoRecords(
+  creditCardPayoffSeoRecords,
+  EXPECTED_CREDIT_CARD_PAYOFF_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return creditCardPayoffSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createCreditCardPayoffSeoPage(record, creditCardPayoffSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

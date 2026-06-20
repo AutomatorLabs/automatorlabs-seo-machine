@@ -52,7 +52,7 @@ const groups = createProgrammaticExampleGroups(
       id: 'home',
       title: 'House Down Payment Goals',
       description:
-        'Plan a home down payment across two-, three-, and five-year timelines.',
+        'Plan a home down payment across realistic mid-term timelines.',
       matches: (record) => record.intent === 'down-payment',
     },
     {
@@ -84,7 +84,7 @@ const groups = createProgrammaticExampleGroups(
 
 <Layout
   title="Savings Goal Examples and Monthly Targets | AutomatorLabs"
-  description="Browse and search 100 savings goal examples for general targets, house down payments, emergency funds, vacations, vehicles, and retirement milestones."
+  description={`Browse and search ${audit.actualCount} savings goal examples for general targets, house down payments, emergency funds, vacations, vehicles, and retirement milestones.`}
 >
   <script type="application/ld+json" set:html={breadcrumbSchema} />
 

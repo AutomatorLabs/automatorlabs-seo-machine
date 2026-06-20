@@ -10,7 +10,7 @@ export interface FireSeoRecord {
   featured?: boolean;
 }
 
-export const EXPECTED_FIRE_SEO_PAGE_COUNT = 30;
+export const EXPECTED_FIRE_SEO_PAGE_COUNT = 45;
 
 function spendingTargetRecord(
   annualSpending: number,
@@ -47,7 +47,7 @@ function portfolioCheckRecord(
   };
 }
 
-export const fireSeoRecords: FireSeoRecord[] = [
+export const coreFireSeoRecords: FireSeoRecord[] = [
   spendingTargetRecord(24000),
   spendingTargetRecord(30000),
   spendingTargetRecord(36000),
@@ -78,6 +78,29 @@ export const fireSeoRecords: FireSeoRecord[] = [
   portfolioCheckRecord(2000000, 80000),
   portfolioCheckRecord(2000000, 100000),
   portfolioCheckRecord(2500000, 120000),
+];
+
+export const longTailFireSeoRecords: FireSeoRecord[] = [
+  spendingTargetRecord(52000),
+  spendingTargetRecord(58000),
+  spendingTargetRecord(85000),
+  spendingTargetRecord(95000),
+  spendingTargetRecord(175000),
+  portfolioCheckRecord(900000, 36000),
+  portfolioCheckRecord(1100000, 45000),
+  portfolioCheckRecord(1200000, 60000),
+  portfolioCheckRecord(1400000, 55000),
+  portfolioCheckRecord(1600000, 64000),
+  portfolioCheckRecord(1750000, 70000),
+  portfolioCheckRecord(1800000, 90000),
+  portfolioCheckRecord(2200000, 88000),
+  portfolioCheckRecord(3000000, 120000),
+  portfolioCheckRecord(3500000, 140000),
+];
+
+export const fireSeoRecords: FireSeoRecord[] = [
+  ...coreFireSeoRecords,
+  ...longTailFireSeoRecords,
 ];
 
 export const featuredFireSeoRecords = fireSeoRecords.filter(

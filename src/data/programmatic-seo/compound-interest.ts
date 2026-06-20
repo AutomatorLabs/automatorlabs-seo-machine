@@ -9,7 +9,7 @@ export interface CompoundInterestSeoRecord {
   featured?: boolean;
 }
 
-export const EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT = 100;
+export const EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT = 115;
 
 function record(
   principal: number,
@@ -94,9 +94,28 @@ export const expandedCompoundInterestSeoRecords =
     ),
   );
 
+export const longTailCompoundInterestSeoRecords: CompoundInterestSeoRecord[] = [
+  record(25000, 6, 20),
+  record(25000, 7, 30),
+  record(30000, 8, 20),
+  record(40000, 6, 15),
+  record(50000, 6, 25),
+  record(75000, 7, 20),
+  record(100000, 7, 25),
+  record(175000, 6, 30),
+  record(150000, 8, 20),
+  record(200000, 5, 30),
+  record(200000, 7, 20),
+  record(250000, 6, 25),
+  record(300000, 5, 20),
+  record(500000, 4, 30),
+  record(1000000, 5, 20),
+];
+
 export const compoundInterestSeoRecords: CompoundInterestSeoRecord[] = [
   ...originalCompoundInterestSeoRecords,
   ...expandedCompoundInterestSeoRecords,
+  ...longTailCompoundInterestSeoRecords,
 ];
 
 export const featuredCompoundInterestSeoRecords =

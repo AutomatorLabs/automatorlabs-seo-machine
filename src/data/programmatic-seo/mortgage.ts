@@ -7,7 +7,7 @@ export interface MortgageSeoRecord {
   featured?: boolean;
 }
 
-export const EXPECTED_MORTGAGE_SEO_PAGE_COUNT = 40;
+export const EXPECTED_MORTGAGE_SEO_PAGE_COUNT = 55;
 
 function rateSlug(rate: number): string {
   return String(rate).replace('.', '-');
@@ -31,7 +31,7 @@ function record(
   };
 }
 
-export const mortgageSeoRecords: MortgageSeoRecord[] = [
+export const coreMortgageSeoRecords: MortgageSeoRecord[] = [
   record(150000, 4.5, 30),
   record(175000, 5, 30),
   record(200000, 5.5, 30),
@@ -72,6 +72,29 @@ export const mortgageSeoRecords: MortgageSeoRecord[] = [
   record(500000, 6, 15),
   record(600000, 6.5, 15),
   record(750000, 5.5, 15, true),
+];
+
+export const jumboMortgageSeoRecords: MortgageSeoRecord[] = [
+  record(450000, 6.5, 30),
+  record(900000, 6.5, 30),
+  record(900000, 7, 30),
+  record(950000, 6.75, 30),
+  record(1000000, 6.5, 30),
+  record(1100000, 7, 30),
+  record(1200000, 6.75, 30),
+  record(650000, 5.75, 20),
+  record(775000, 6.25, 20),
+  record(850000, 6.75, 20),
+  record(900000, 6, 20),
+  record(650000, 5.75, 15),
+  record(700000, 6, 15),
+  record(850000, 6.5, 15),
+  record(900000, 6.75, 15),
+];
+
+export const mortgageSeoRecords: MortgageSeoRecord[] = [
+  ...coreMortgageSeoRecords,
+  ...jumboMortgageSeoRecords,
 ];
 
 export const featuredMortgageSeoRecords = mortgageSeoRecords.filter(

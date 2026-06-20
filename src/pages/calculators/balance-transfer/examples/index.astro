@@ -1,19 +1,19 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import {
-  compoundInterestSeoRecords,
-  EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
-} from '../../../../data/programmatic-seo/compound-interest';
-import { auditCompoundInterestSeoRecords } from '../../../../lib/programmatic-seo/compound-interest';
+  balanceTransferSeoRecords,
+  EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/debt';
+import { auditBalanceTransferSeoRecords } from '../../../../lib/programmatic-seo/debt';
 import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
 import {
   createBreadcrumbSchema,
   serializeJsonLd,
 } from '../../../../lib/programmatic-seo/schema';
 
-const audit = auditCompoundInterestSeoRecords(
-  compoundInterestSeoRecords,
-  EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
+const audit = auditBalanceTransferSeoRecords(
+  balanceTransferSeoRecords,
+  EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT,
 );
 const site = Astro.site ?? new URL('https://automatorlabs.co');
 const breadcrumbSchema = serializeJsonLd(
@@ -22,12 +22,12 @@ const breadcrumbSchema = serializeJsonLd(
       { name: 'Home', url: '/' },
       { name: 'Calculators', url: '/calculators/' },
       {
-        name: 'Compound Interest Calculator',
-        url: '/calculators/compound-interest/',
+        name: 'Balance Transfer Calculator',
+        url: '/calculators/balance-transfer-calculator/',
       },
       {
-        name: 'Examples',
-        url: '/calculators/compound-interest/examples/',
+        name: 'Balance Transfer Examples',
+        url: '/calculators/balance-transfer/examples/',
       },
     ],
     site,
@@ -38,51 +38,34 @@ const currency = new Intl.NumberFormat('en-US', {
   currency: 'USD',
   maximumFractionDigits: 0,
 });
-
-const groupDefinitions = [
-  {
-    id: 'starter',
-    title: 'Starting amounts below $5,000',
-    description: 'Smaller starting balances and shorter-term reference scenarios.',
-    matches: (principal: number) => principal < 5000,
-  },
-  {
-    id: 'building',
-    title: '$5,000 to $24,999',
-    description: 'Examples for early portfolio and savings milestones.',
-    matches: (principal: number) => principal >= 5000 && principal < 25000,
-  },
-  {
-    id: 'established',
-    title: '$25,000 to $74,999',
-    description: 'Mid-sized balances across a range of rates and time horizons.',
-    matches: (principal: number) => principal >= 25000 && principal < 75000,
-  },
-  {
-    id: 'large',
-    title: '$75,000 and above',
-    description: 'Larger starting amounts for long-range growth comparisons.',
-    matches: (principal: number) => principal >= 75000,
-  },
-];
-
 const groups = createProgrammaticExampleGroups(
-  compoundInterestSeoRecords,
-  groupDefinitions.map((group) => ({
-    ...group,
-    matches: (record: (typeof compoundInterestSeoRecords)[number]) =>
-      group.matches(record.principal),
-  })),
+  balanceTransferSeoRecords,
+  [
+    {
+      id: 'three-percent-fee',
+      title: '3% Balance Transfer Fee Examples',
+      description:
+        'Compare common 3% transfer-fee scenarios across balances, APRs, and promotional periods.',
+      matches: (record) => record.transferFeePercent === 3,
+    },
+    {
+      id: 'higher-fee',
+      title: '4% and 5% Fee Examples',
+      description:
+        'See when a larger transfer fee can still be offset by a lower promotional APR.',
+      matches: (record) => record.transferFeePercent > 3,
+    },
+  ],
   (a, b) =>
-    a.principal - b.principal ||
-    a.annualRatePercent - b.annualRatePercent ||
-    a.years - b.years,
+    a.balance - b.balance ||
+    a.currentAprPercent - b.currentAprPercent ||
+    a.transferFeePercent - b.transferFeePercent,
 );
 ---
 
 <Layout
-  title="Compound Interest Examples | AutomatorLabs"
-  description={`Browse and search ${audit.actualCount} compound interest examples by starting amount, annual rate, and time period, with formulas, charts, and year-by-year projections.`}
+  title="Balance Transfer Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} balance transfer examples comparing current card payoff costs with promotional APR offers, transfer fees, and payoff timelines.`}
 >
   <script type="application/ld+json" set:html={breadcrumbSchema} />
 
@@ -91,56 +74,59 @@ const groups = createProgrammaticExampleGroups(
       <ol>
         <li><a href="/">Home</a></li>
         <li><a href="/calculators/">Calculators</a></li>
-        <li><a href="/calculators/compound-interest/">Compound Interest Calculator</a></li>
-        <li aria-current="page">Examples</li>
+        <li>
+          <a href="/calculators/balance-transfer-calculator/">
+            Balance Transfer Calculator
+          </a>
+        </li>
+        <li aria-current="page">Balance Transfer Examples</li>
       </ol>
     </nav>
 
     <header class="page-header">
-      <p class="eyebrow">Compound interest library</p>
-      <h1>Compound Interest Examples</h1>
+      <p class="eyebrow">Debt savings examples</p>
+      <h1>Balance Transfer Examples</h1>
       <p class="intro">
-        Browse {audit.actualCount} worked examples covering different starting
-        amounts, annual rates, and time periods. Every example includes the
-        calculated result, formula, chart, assumptions, and year-by-year table.
+        Browse {audit.actualCount} worked balance transfer examples comparing
+        current credit card payoff costs with promotional APR offers and
+        transfer fees.
       </p>
-      <a class="primary-link" href="/calculators/compound-interest/">
-        Try your own numbers
+      <a class="primary-link" href="/calculators/balance-transfer-calculator/">
+        Calculate your balance transfer
       </a>
       <a class="secondary-link" href="/examples/">
         Browse all financial examples
       </a>
     </header>
 
-    <section
-      class="example-search"
-      aria-label="Search compound interest examples"
-    >
-      <label for="example-search">Search compound interest examples</label>
+    <section class="example-search" aria-label="Search balance transfer examples">
+      <label for="balance-transfer-example-search">
+        Search balance transfer examples
+      </label>
       <div class="search-row">
         <input
-          id="example-search"
+          id="balance-transfer-example-search"
           type="search"
-          placeholder="Try 10000, 8%, or 30 years"
+          placeholder="Try 8000, 24.99, 3% fee, or 18 months"
           autocomplete="off"
-          aria-controls="example-groups"
-          aria-describedby="example-count"
+          aria-controls="balance-transfer-example-groups"
+          aria-describedby="balance-transfer-example-count"
         />
-        <button id="clear-example-search" type="button" hidden>
+        <button id="clear-balance-transfer-example-search" type="button" hidden>
           Clear search
         </button>
       </div>
-      <p id="example-count" class="example-count" aria-live="polite">
+      <p id="balance-transfer-example-count" aria-live="polite">
         Showing {audit.actualCount} examples
       </p>
     </section>
 
-    <div id="example-groups" class="example-groups">
+    <div id="balance-transfer-example-groups" class="example-groups">
       {groups.map((group) => (
         <section
           class="example-group"
           aria-labelledby={`${group.id}-heading`}
-          data-example-group
+          data-balance-transfer-example-group
         >
           <header>
             <div>
@@ -149,28 +135,27 @@ const groups = createProgrammaticExampleGroups(
             </div>
             <span>{group.records.length} examples</span>
           </header>
-
-          <ul class="example-list">
+          <ul>
             {group.records.map((record) => (
               <li
-                data-example-card
+                data-balance-transfer-example-card
                 data-search-text={[
                   record.question,
                   record.slug,
-                  record.principal,
-                  record.principal.toLocaleString('en-US'),
-                  record.annualRatePercent,
-                  `${record.annualRatePercent}%`,
-                  record.years,
-                  `${record.years} years`,
+                  record.balance,
+                  record.balance.toLocaleString('en-US'),
+                  record.currentAprPercent,
+                  record.transferFeePercent,
+                  record.promotionalMonths,
+                  'balance transfer fee promo promotional',
                 ]
                   .join(' ')
                   .toLocaleLowerCase()}
               >
-                <a href={`/calculators/compound-interest/${record.slug}/`}>
+                <a href={`/calculators/balance-transfer/${record.slug}/`}>
                   <strong>{record.question}</strong>
                   <span>
-                    {currency.format(record.principal)} · {record.annualRatePercent}% annual return · {record.years} years
+                    {currency.format(record.balance)} balance · {record.promotionalMonths}-month promo · {record.transferFeePercent}% fee
                   </span>
                 </a>
               </li>
@@ -180,32 +165,40 @@ const groups = createProgrammaticExampleGroups(
       ))}
     </div>
 
-    <p id="no-examples-found" class="no-results" role="status" hidden>
-      No examples found. Try a starting amount, rate, or number of years.
+    <p id="no-balance-transfer-examples" class="no-results" role="status" hidden>
+      No balance transfer examples found. Try a balance, APR, fee, or promo length.
     </p>
   </main>
 </Layout>
 
 <script>
-  const searchInput =
-    document.querySelector<HTMLInputElement>('#example-search');
-  const clearButton = document.querySelector<HTMLButtonElement>(
-    '#clear-example-search',
+  const input = document.querySelector<HTMLInputElement>(
+    '#balance-transfer-example-search',
   );
-  const count = document.querySelector<HTMLElement>('#example-count');
-  const noResults =
-    document.querySelector<HTMLElement>('#no-examples-found');
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-balance-transfer-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#balance-transfer-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-balance-transfer-examples',
+  );
   const cards = Array.from(
-    document.querySelectorAll<HTMLElement>('[data-example-card]'),
+    document.querySelectorAll<HTMLElement>(
+      '[data-balance-transfer-example-card]',
+    ),
   );
   const groups = Array.from(
-    document.querySelectorAll<HTMLElement>('[data-example-group]'),
+    document.querySelectorAll<HTMLElement>(
+      '[data-balance-transfer-example-group]',
+    ),
   );
 
   function updateExamples() {
-    if (!searchInput || !count || !noResults) return;
+    if (!input || !count || !noResults) return;
 
-    const query = searchInput.value.trim().toLocaleLowerCase();
+    const query = input.value.trim().toLocaleLowerCase();
     let visibleCount = 0;
 
     cards.forEach((card) => {
@@ -216,23 +209,22 @@ const groups = createProgrammaticExampleGroups(
     });
 
     groups.forEach((group) => {
-      group.hidden = !group.querySelector('[data-example-card]:not([hidden])');
+      group.hidden = !group.querySelector(
+        '[data-balance-transfer-example-card]:not([hidden])',
+      );
     });
 
     count.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'example' : 'examples'}`;
     noResults.hidden = visibleCount !== 0;
-
-    if (clearButton) {
-      clearButton.hidden = query === '';
-    }
+    if (clearButton) clearButton.hidden = query === '';
   }
 
-  searchInput?.addEventListener('input', updateExamples);
+  input?.addEventListener('input', updateExamples);
   clearButton?.addEventListener('click', () => {
-    if (!searchInput) return;
-    searchInput.value = '';
+    if (!input) return;
+    input.value = '';
     updateExamples();
-    searchInput.focus();
+    input.focus();
   });
 </script>
 
@@ -270,18 +262,9 @@ const groups = createProgrammaticExampleGroups(
     content: '›';
   }
 
-  .breadcrumbs a {
+  .breadcrumbs a,
+  .secondary-link {
     color: var(--link-color);
-    text-decoration: none;
-  }
-
-  .breadcrumbs a:hover {
-    text-decoration: underline;
-  }
-
-  .breadcrumbs [aria-current='page'] {
-    color: var(--text-color);
-    font-weight: 650;
   }
 
   .page-header {
@@ -321,14 +304,9 @@ const groups = createProgrammaticExampleGroups(
     text-decoration: none;
   }
 
-  .primary-link:hover {
-    background: var(--button-hover-background);
-  }
-
   .secondary-link {
     display: inline-block;
     margin-left: 0.75rem;
-    color: var(--link-color);
     font-weight: 750;
   }
 
@@ -362,12 +340,6 @@ const groups = createProgrammaticExampleGroups(
     padding: 0.8rem 0.9rem;
   }
 
-  .search-row input:focus {
-    border-color: var(--link-color);
-    box-shadow: 0 0 0 3px var(--focus-ring);
-    outline: none;
-  }
-
   .search-row button {
     border: 1px solid var(--input-border);
     border-radius: 10px;
@@ -380,7 +352,7 @@ const groups = createProgrammaticExampleGroups(
     white-space: nowrap;
   }
 
-  .example-count {
+  #balance-transfer-example-count {
     margin: 0.75rem 0 0;
     color: var(--muted-text-color);
     font-size: 0.92rem;
@@ -416,7 +388,7 @@ const groups = createProgrammaticExampleGroups(
     white-space: nowrap;
   }
 
-  .example-list {
+  .example-group ul {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.8rem;
@@ -425,7 +397,7 @@ const groups = createProgrammaticExampleGroups(
     list-style: none;
   }
 
-  .example-list a {
+  .example-group a {
     display: flex;
     min-height: 100%;
     flex-direction: column;
@@ -437,12 +409,7 @@ const groups = createProgrammaticExampleGroups(
     text-decoration: none;
   }
 
-  .example-list a:hover {
-    border-color: var(--link-color);
-    background: var(--subtle-background);
-  }
-
-  .example-list span {
+  .example-group a span {
     margin-top: 0.4rem;
     color: var(--muted-text-color);
     font-size: 0.88rem;
@@ -453,7 +420,6 @@ const groups = createProgrammaticExampleGroups(
     border: 1px solid var(--border-color);
     border-radius: 12px;
     background: var(--subtle-background);
-    color: var(--text-color);
     padding: 1rem;
   }
 
@@ -468,7 +434,7 @@ const groups = createProgrammaticExampleGroups(
       flex-direction: column;
     }
 
-    .example-list {
+    .example-group ul {
       grid-template-columns: 1fr;
     }
 

@@ -1,4 +1,8 @@
 import { compoundInterestSeoRecords } from './compound-interest';
+import {
+  balanceTransferSeoRecords,
+  creditCardPayoffSeoRecords,
+} from './debt';
 import { fireSeoRecords } from './fire';
 import { mortgageSeoRecords } from './mortgage';
 import { savingsGoalSeoRecords } from './savings-goal';
@@ -60,6 +64,32 @@ const savingsGoalRepresentatives = [
   savingsGoalSeoRecords.find(
     (record) =>
       record.slug === 'save-1000000-by-age-65-starting-at-35',
+  ),
+].filter((record) => record !== undefined);
+
+const creditCardPayoffRepresentatives = [
+  creditCardPayoffSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'pay-off-5000-credit-card-at-24-99-apr-with-200-per-month',
+  ),
+  creditCardPayoffSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'pay-off-10000-credit-card-at-24-99-apr-with-300-per-month-with-100-extra',
+  ),
+].filter((record) => record !== undefined);
+
+const balanceTransferRepresentatives = [
+  balanceTransferSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'balance-transfer-8000-from-24-99-apr-with-3-fee-18-months',
+  ),
+  balanceTransferSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'balance-transfer-10000-from-24-99-apr-with-3-fee-18-months',
   ),
 ].filter((record) => record !== undefined);
 
@@ -142,6 +172,46 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: savingsGoalRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/savings-goal/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'credit-card-payoff',
+    title: 'Credit Card Payoff Examples',
+    description:
+      'Compare payoff timelines, interest costs, and extra-payment scenarios for high-interest card balances.',
+    examplesUrl: '/calculators/credit-card-payoff/examples/',
+    calculator: {
+      title: 'Credit Card Payoff Calculator',
+      url: '/calculators/credit-card-payoff-calculator/',
+    },
+    guide: {
+      title: 'Debt Payoff Guide',
+      url: '/guides/debt-payoff/',
+    },
+    pageCount: creditCardPayoffSeoRecords.length,
+    representativePages: creditCardPayoffRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/credit-card-payoff/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'balance-transfer',
+    title: 'Balance Transfer Examples',
+    description:
+      'Compare current card costs with promotional balance transfer offers, fees, and payoff timelines.',
+    examplesUrl: '/calculators/balance-transfer/examples/',
+    calculator: {
+      title: 'Balance Transfer Calculator',
+      url: '/calculators/balance-transfer-calculator/',
+    },
+    guide: {
+      title: 'Debt Snowball vs Debt Avalanche',
+      url: '/guides/debt-snowball-vs-debt-avalanche/',
+    },
+    pageCount: balanceTransferSeoRecords.length,
+    representativePages: balanceTransferRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/balance-transfer/${record.slug}/`,
     })),
   },
 ];
