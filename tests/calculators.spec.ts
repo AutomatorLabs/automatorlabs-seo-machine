@@ -31,6 +31,11 @@ import {
 } from '../src/data/programmatic-seo/mortgage';
 import { auditMortgageSeoRecords } from '../src/lib/programmatic-seo/mortgage';
 import {
+  EXPECTED_RETIREMENT_WITHDRAWAL_SEO_PAGE_COUNT,
+  retirementWithdrawalSeoRecords,
+} from '../src/data/programmatic-seo/retirement-withdrawal';
+import { auditRetirementWithdrawalSeoRecords } from '../src/lib/programmatic-seo/retirement-withdrawal';
+import {
   EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT,
   savingsGoalSeoRecords,
 } from '../src/data/programmatic-seo/savings-goal';
@@ -963,6 +968,133 @@ test.describe('balance transfer programmatic SEO', () => {
     ).toHaveAttribute('href', '/calculators/balance-transfer-calculator/');
     await expect(newsletterCta(page)).toBeVisible();
     await expect(page.locator('tbody tr')).toHaveCount(2);
+    expect(pageErrors).toEqual([]);
+  });
+});
+
+test.describe('retirement withdrawal programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditRetirementWithdrawalSeoRecords(
+      retirementWithdrawalSeoRecords,
+      EXPECTED_RETIREMENT_WITHDRAWAL_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_RETIREMENT_WITHDRAWAL_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_RETIREMENT_WITHDRAWAL_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_RETIREMENT_WITHDRAWAL_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_RETIREMENT_WITHDRAWAL_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_RETIREMENT_WITHDRAWAL_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount:
+        EXPECTED_RETIREMENT_WITHDRAWAL_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('examples index exposes and searches retirement withdrawal pages', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto(
+      '/calculators/retirement-withdrawal/examples/',
+      {
+        waitUntil: 'domcontentloaded',
+      },
+    );
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Retirement Withdrawal Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(
+      page.locator('[data-retirement-withdrawal-example-group]'),
+    ).toHaveCount(2);
+    await expect(
+      page.locator('[data-retirement-withdrawal-example-card]'),
+    ).toHaveCount(EXPECTED_RETIREMENT_WITHDRAWAL_SEO_PAGE_COUNT);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/retirement-withdrawal/examples/',
+    );
+
+    const hrefs = await page
+      .locator('[data-retirement-withdrawal-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(
+      EXPECTED_RETIREMENT_WITHDRAWAL_SEO_PAGE_COUNT,
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search retirement withdrawal examples',
+    });
+    await searchBox.fill('1,000,000');
+    await expect(
+      page.locator('[data-retirement-withdrawal-example-card]:visible'),
+    ).not.toHaveCount(0);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-retirement-withdrawal-example-card]:visible'),
+    ).toHaveCount(EXPECTED_RETIREMENT_WITHDRAWAL_SEO_PAGE_COUNT);
+    await expect(
+      page.getByRole('link', {
+        name: 'Calculate your retirement withdrawal',
+      }),
+    ).toHaveAttribute('href', '/calculators/retirement-withdrawal-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  test('renders a generated retirement withdrawal page with schemas and CTA', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+    const record = retirementWithdrawalSeoRecords.find(
+      (candidate) =>
+        candidate.slug ===
+        'withdraw-40000-per-year-from-1000000-for-30-years-at-7-return-3-inflation',
+    );
+    if (!record) {
+      throw new Error('Missing representative retirement withdrawal record');
+    }
+
+    const url = `/calculators/retirement-withdrawal/${record.slug}/`;
+    const response = await page.goto(url, {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', { level: 1, name: record.question }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      `https://automatorlabs.co${url}`,
+    );
+
+    const schemas = await page
+      .locator('script[type="application/ld+json"]')
+      .evaluateAll((scripts) =>
+        scripts.map((script) => script.textContent ?? '').join('\n'),
+      );
+    expect(schemas).toContain('"@type":"FAQPage"');
+    expect(schemas).toContain('"@type":"BreadcrumbList"');
+    await expect(
+      page.getByRole('link', {
+        name: 'Open the Retirement Withdrawal Calculator',
+      }),
+    ).toHaveAttribute('href', '/calculators/retirement-withdrawal-calculator/');
+    await expect(newsletterCta(page)).toBeVisible();
+    await expect(page.locator('tbody tr')).toHaveCount(6);
     expect(pageErrors).toEqual([]);
   });
 });

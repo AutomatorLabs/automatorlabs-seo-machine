@@ -1,0 +1,31 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_RETIREMENT_WITHDRAWAL_SEO_PAGE_COUNT,
+  retirementWithdrawalSeoRecords,
+} from '../../../data/programmatic-seo/retirement-withdrawal';
+import {
+  auditRetirementWithdrawalSeoRecords,
+  createRetirementWithdrawalSeoPage,
+} from '../../../lib/programmatic-seo/retirement-withdrawal';
+
+auditRetirementWithdrawalSeoRecords(
+  retirementWithdrawalSeoRecords,
+  EXPECTED_RETIREMENT_WITHDRAWAL_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return retirementWithdrawalSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: { record },
+  }));
+}
+
+const { record } = Astro.props;
+const page = createRetirementWithdrawalSeoPage(
+  record,
+  retirementWithdrawalSeoRecords,
+);
+---
+
+<ProgrammaticSeoPage page={page} />

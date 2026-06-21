@@ -5,6 +5,7 @@ import {
 } from './debt';
 import { fireSeoRecords } from './fire';
 import { mortgageSeoRecords } from './mortgage';
+import { retirementWithdrawalSeoRecords } from './retirement-withdrawal';
 import { savingsGoalSeoRecords } from './savings-goal';
 
 export interface ProgrammaticSeoClusterSummary {
@@ -90,6 +91,19 @@ const balanceTransferRepresentatives = [
     (record) =>
       record.slug ===
       'balance-transfer-10000-from-24-99-apr-with-3-fee-18-months',
+  ),
+].filter((record) => record !== undefined);
+
+const retirementWithdrawalRepresentatives = [
+  retirementWithdrawalSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'withdraw-40000-per-year-from-1000000-for-30-years-at-7-return-3-inflation',
+  ),
+  retirementWithdrawalSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'withdraw-100000-per-year-from-2000000-for-30-years-at-7-return-3-inflation',
   ),
 ].filter((record) => record !== undefined);
 
@@ -212,6 +226,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: balanceTransferRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/balance-transfer/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'retirement-withdrawal',
+    title: 'Retirement Withdrawal Examples',
+    description:
+      'Compare annual withdrawals, portfolio sizes, returns, inflation assumptions, and retirement durations.',
+    examplesUrl: '/calculators/retirement-withdrawal/examples/',
+    calculator: {
+      title: 'Retirement Withdrawal Calculator',
+      url: '/calculators/retirement-withdrawal-calculator/',
+    },
+    guide: {
+      title: 'Planning Retirement Withdrawals',
+      url: '/guides/retirement-withdrawals/',
+    },
+    pageCount: retirementWithdrawalSeoRecords.length,
+    representativePages: retirementWithdrawalRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/retirement-withdrawal/${record.slug}/`,
     })),
   },
 ];
