@@ -64,6 +64,14 @@ const comparisonTopics: Record<string, GuideTopic> = {
   'rent-vs-buy': 'home-buying',
 };
 
+const topicalTopics: Record<string, GuideTopic> = {
+  'how-to-pay-off-credit-card-debt': 'debt',
+  'credit-card-payoff-vs-balance-transfer': 'debt',
+  'minimum-payment-vs-extra-payment': 'debt',
+  'what-is-balance-transfer-fee': 'debt',
+  'how-credit-card-interest-works': 'debt',
+};
+
 function createCard(
   title: string,
   description: string,
@@ -106,7 +114,7 @@ const topicalCards = topicalGuides.map((guide) =>
     guide.title,
     guide.metaDescription,
     `/guides/${guide.slug}/`,
-    'investing',
+    topicalTopics[guide.slug] ?? 'investing',
     [
       guide.intro,
       ...guide.sections.map((section) => section.heading),

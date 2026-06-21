@@ -717,6 +717,36 @@ export const guideHubs: GuideHub[] = [
           'Compare motivation-first and interest-first approaches to paying down debt.',
       },
       {
+        title: 'How to Pay Off Credit Card Debt',
+        url: '/guides/how-to-pay-off-credit-card-debt/',
+        description:
+          'Build a practical card payoff plan around balances, APRs, monthly payments, and cash flow.',
+      },
+      {
+        title: 'Credit Card Payoff vs Balance Transfer',
+        url: '/guides/credit-card-payoff-vs-balance-transfer/',
+        description:
+          'Compare direct payoff with a promotional transfer offer after fees and promo timing.',
+      },
+      {
+        title: 'Minimum Payment vs Extra Payment',
+        url: '/guides/minimum-payment-vs-extra-payment/',
+        description:
+          'See why minimum-only payments can be slow and how extra payments may reduce interest.',
+      },
+      {
+        title: 'What Is a Balance Transfer Fee?',
+        url: '/guides/what-is-balance-transfer-fee/',
+        description:
+          'Understand how transfer fees affect the true cost of a promotional APR offer.',
+      },
+      {
+        title: 'How Credit Card Interest Works',
+        url: '/guides/how-credit-card-interest-works/',
+        description:
+          'Learn how APR, balances, payments, and interest interact on credit cards.',
+      },
+      {
         title: 'Budgeting and Saving for Real Life',
         url: '/guides/budgeting/',
         description:

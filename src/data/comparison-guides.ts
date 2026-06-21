@@ -453,6 +453,21 @@ export const comparisonGuides: ComparisonGuide[] = [
         description: 'Build a broader debt plan around cash flow and interest.',
       },
       {
+        title: 'Debt Guide Hub',
+        url: '/guides/debt/',
+        description: 'Browse debt payoff calculators, credit card guides, and worked examples.',
+      },
+      {
+        title: 'How to Pay Off Credit Card Debt',
+        url: '/guides/how-to-pay-off-credit-card-debt/',
+        description: 'Create a credit card payoff plan using balance, APR, payments, and budget room.',
+      },
+      {
+        title: 'Minimum Payment vs Extra Payment',
+        url: '/guides/minimum-payment-vs-extra-payment/',
+        description: 'Understand how payment size changes payoff time and interest cost.',
+      },
+      {
         title: 'Debt Payoff Calculator',
         url: '/calculators/debt-payoff-calculator/',
         description: 'Model one balance and the effect of extra payments.',

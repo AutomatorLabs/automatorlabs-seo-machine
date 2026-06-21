@@ -1139,6 +1139,386 @@ export const topicalGuides: TopicalGuide[] = [
       },
     ],
   },
+  {
+    slug: 'how-to-pay-off-credit-card-debt',
+    title: 'How to Pay Off Credit Card Debt',
+    seoTitle: 'How to Pay Off Credit Card Debt | AutomatorLabs',
+    metaDescription:
+      'Learn how to build a credit card payoff plan, compare payments, understand APR, and use payoff calculators to reduce interest.',
+    intro:
+      'Paying off credit card debt starts with a clear balance, APR, minimum payment, and monthly payoff budget. The right plan shows how long the debt may last, how much interest may accrue, and how extra payments can change the timeline.',
+    sections: [
+      {
+        heading: 'Start with the real numbers',
+        paragraphs: [
+          'List each card balance, APR, minimum payment, due date, promotional rate, and whether new purchases are still being added. A payoff plan is only useful when the inputs match the account.',
+          'Keep required payments current on every card while deciding where extra money should go. Late fees and penalty APRs can erase progress quickly.',
+        ],
+      },
+      {
+        heading: 'When to use the Credit Card Payoff Calculator',
+        paragraphs: [
+          'Use the Credit Card Payoff Calculator when you know the balance, APR, and monthly payment you can make. It estimates payoff time, total interest, and total repayment.',
+          'Run the current payment first, then test a higher payment. The difference shows whether a modest extra amount is enough to justify budget changes.',
+        ],
+      },
+      {
+        heading: 'Build a plan that survives real life',
+        paragraphs: [
+          'A good payoff plan leaves room for essentials, minimum emergency savings, and irregular bills. If every dollar goes to debt, the next surprise expense may go back on the card.',
+          'Use a budget and emergency fund target alongside the payoff schedule. The goal is steady principal reduction without creating new revolving debt.',
+        ],
+      },
+    ],
+    links: [
+      {
+        title: 'Credit Card Payoff Calculator',
+        url: '/calculators/credit-card-payoff-calculator/',
+        description: 'Estimate payoff time, total interest, and total repayment from a fixed monthly payment.',
+      },
+      {
+        title: 'Credit Card Extra Payment Calculator',
+        url: '/calculators/credit-card-extra-payment-calculator/',
+        description: 'Compare your current payment with an added extra payment.',
+      },
+      {
+        title: 'Budget Calculator',
+        url: '/calculators/budget-calculator/',
+        description: 'Find realistic monthly cash flow for debt payments.',
+      },
+      {
+        title: 'Debt Guide Hub',
+        url: '/guides/debt/',
+        description: 'Browse debt calculators, payoff examples, and related education guides.',
+      },
+    ],
+    faq: [
+      {
+        question: 'What is the fastest way to pay off credit card debt?',
+        answer: 'The fastest path is usually to stop adding new charges, pay at least every minimum, and direct the largest sustainable extra payment to the target balance.',
+      },
+      {
+        question: 'Should I pay more than the minimum?',
+        answer: 'Yes, when cash flow allows. Minimum payments can keep the account current but may reduce principal slowly.',
+      },
+      {
+        question: 'Which credit card should I pay first?',
+        answer: 'The highest APR card usually saves the most interest, while the smallest balance may create faster motivation. Compare both approaches before choosing.',
+      },
+      {
+        question: 'Can a balance transfer help?',
+        answer: 'It can help if the promotional savings exceed the transfer fee and you have a payoff plan before the promo rate expires.',
+      },
+      {
+        question: 'Should I keep emergency savings while paying debt?',
+        answer: 'A starter cash buffer can prevent routine surprises from becoming new credit card debt. The right amount depends on household risk and expenses.',
+      },
+    ],
+  },
+  {
+    slug: 'credit-card-payoff-vs-balance-transfer',
+    title: 'Credit Card Payoff vs Balance Transfer',
+    seoTitle: 'Credit Card Payoff vs Balance Transfer | AutomatorLabs',
+    metaDescription:
+      'Compare paying off a credit card directly with using a balance transfer, including APR, fees, promo periods, and payoff timelines.',
+    intro:
+      'A direct credit card payoff plan keeps the balance on the current card and focuses on monthly payments. A balance transfer moves the debt to a promotional offer, usually with a transfer fee and temporary APR. The better option depends on the total cost and whether the balance can be paid before the promotion ends.',
+    sections: [
+      {
+        heading: 'How the two options differ',
+        paragraphs: [
+          'A payoff plan is simple: use the existing balance, APR, and payment to estimate time and interest. It avoids transfer fees and new account complexity, but high APR can make interest expensive.',
+          'A balance transfer may reduce interest during a promotional period. The tradeoff is the transfer fee, possible post-promo APR, and the risk of carrying a remaining balance after the offer expires.',
+        ],
+      },
+      {
+        heading: 'When to use the Balance Transfer Calculator',
+        paragraphs: [
+          'Use the Balance Transfer Calculator when you have a specific offer with a promo APR, promo length, transfer fee, and post-promo APR. Compare it against the current-card payoff plan with the same monthly payment.',
+          'The key question is not whether the promotional APR is low. It is whether total repayment cost is lower after the transfer fee and any post-promotion interest.',
+        ],
+      },
+      {
+        heading: 'When direct payoff may be better',
+        paragraphs: [
+          'Direct payoff may be cleaner when the fee is high, the balance can already be paid quickly, the promo period is too short, or the transfer creates temptation to reuse the old card.',
+          'A transfer is a tool, not a strategy by itself. The monthly payment plan matters more than the marketing headline.',
+        ],
+      },
+    ],
+    links: [
+      {
+        title: 'Balance Transfer Calculator',
+        url: '/calculators/balance-transfer-calculator/',
+        description: 'Compare current payoff costs with a promotional balance transfer offer.',
+      },
+      {
+        title: 'Credit Card Payoff Calculator',
+        url: '/calculators/credit-card-payoff-calculator/',
+        description: 'Estimate payoff time and interest on the current card.',
+      },
+      {
+        title: 'Credit Card Interest Calculator',
+        url: '/calculators/credit-card-interest-calculator/',
+        description: 'Estimate interest costs and extra-payment savings.',
+      },
+      {
+        title: 'Debt Guide Hub',
+        url: '/guides/debt/',
+        description: 'Compare payoff strategies and credit card planning tools.',
+      },
+    ],
+    faq: [
+      {
+        question: 'Is a balance transfer always better?',
+        answer: 'No. A transfer is only useful when the interest savings outweigh fees and the repayment plan is realistic.',
+      },
+      {
+        question: 'What fee should I compare?',
+        answer: 'Compare the transfer fee, total promotional interest, possible post-promo interest, and any account fees against the current-card payoff cost.',
+      },
+      {
+        question: 'What happens after the promo period?',
+        answer: 'Any remaining balance may accrue interest at the post-promo APR, which can reduce or eliminate the benefit.',
+      },
+      {
+        question: 'Should I close the old card?',
+        answer: 'That depends on credit history, fees, and behavior. Avoid using the old card for new debt while paying the transferred balance.',
+      },
+      {
+        question: 'Can I use both strategies?',
+        answer: 'Yes. A balance transfer can lower interest while a fixed monthly payoff plan provides the discipline to finish the debt.',
+      },
+    ],
+  },
+  {
+    slug: 'minimum-payment-vs-extra-payment',
+    title: 'Minimum Payment vs Extra Payment',
+    seoTitle: 'Minimum Payment vs Extra Payment on Credit Cards | AutomatorLabs',
+    metaDescription:
+      'Learn how minimum payments compare with extra payments, why small additions can reduce interest, and which calculators to use.',
+    intro:
+      'A credit card minimum payment keeps the account current, but it may not be designed to eliminate the balance quickly. An extra payment can reduce principal faster, lower future interest, and shorten the payoff timeline.',
+    sections: [
+      {
+        heading: 'Why minimum payments can feel slow',
+        paragraphs: [
+          'Minimum payments are often a percentage of the balance, a fixed floor, interest plus a small principal amount, or a combination of rules. The exact method depends on the card agreement.',
+          'When the payment is low relative to the APR and balance, much of the early payment may go to interest. That leaves principal declining slowly.',
+        ],
+      },
+      {
+        heading: 'When to use the minimum and extra payment calculators',
+        paragraphs: [
+          'Use the Credit Card Minimum Payment Calculator to estimate the long payoff path created by minimum-only payments. Then use the Extra Payment Calculator to compare a higher monthly payment.',
+          'This side-by-side view is useful because the savings from an extra payment are often larger over time than they look in the first month.',
+        ],
+      },
+      {
+        heading: 'Choosing a sustainable extra amount',
+        paragraphs: [
+          'The best extra payment is one you can repeat. Start with a budgeted amount that does not threaten rent, groceries, insurance, or a basic emergency buffer.',
+          'If income is irregular, consider a smaller fixed extra payment plus occasional lump-sum payments when cash is available.',
+        ],
+      },
+    ],
+    links: [
+      {
+        title: 'Credit Card Minimum Payment Calculator',
+        url: '/calculators/credit-card-minimum-payment-calculator/',
+        description: 'Estimate first-month interest and minimum-payment payoff behavior.',
+      },
+      {
+        title: 'Credit Card Extra Payment Calculator',
+        url: '/calculators/credit-card-extra-payment-calculator/',
+        description: 'Compare current and extra-payment scenarios.',
+      },
+      {
+        title: 'Emergency Fund Calculator',
+        url: '/calculators/emergency-fund-calculator/',
+        description: 'Estimate a practical cash buffer while paying down debt.',
+      },
+      {
+        title: 'Debt Guide Hub',
+        url: '/guides/debt/',
+        description: 'Browse credit card payoff and debt strategy resources.',
+      },
+    ],
+    faq: [
+      {
+        question: 'Is paying the minimum bad?',
+        answer: 'Paying the minimum is better than missing a payment, but it can be expensive if it keeps the balance outstanding for a long time.',
+      },
+      {
+        question: 'How much extra should I pay?',
+        answer: 'Use a budget-based amount that you can repeat consistently. Even a modest extra payment can reduce interest over time.',
+      },
+      {
+        question: 'Does an extra payment reduce interest immediately?',
+        answer: 'It usually reduces future interest by lowering principal sooner, though exact timing depends on the card issuer’s daily balance method.',
+      },
+      {
+        question: 'Should I pay extra before building savings?',
+        answer: 'Keep enough cash to avoid routine surprises becoming new card debt, then direct sustainable extra money to the card.',
+      },
+      {
+        question: 'Can I make multiple payments per month?',
+        answer: 'Often yes. Multiple payments can reduce the average daily balance, but check issuer rules and due dates.',
+      },
+    ],
+  },
+  {
+    slug: 'what-is-balance-transfer-fee',
+    title: 'What Is a Balance Transfer Fee?',
+    seoTitle: 'What Is a Balance Transfer Fee? | AutomatorLabs',
+    metaDescription:
+      'Learn how balance transfer fees work, how to compare them with interest savings, and when to use a balance transfer calculator.',
+    intro:
+      'A balance transfer fee is the cost charged to move debt from one account to another. It is commonly shown as a percentage of the transferred balance, sometimes with a minimum dollar amount. The fee matters because it can offset the savings from a low promotional APR.',
+    sections: [
+      {
+        heading: 'How a balance transfer fee works',
+        paragraphs: [
+          'If a card charges a 3% transfer fee on an $8,000 balance, the fee is $240. That fee is usually added to the new balance, so the transferred debt starts higher than the original amount.',
+          'A lower promotional APR can still save money, but the fee must be compared with avoided interest on the original card.',
+        ],
+      },
+      {
+        heading: 'When to use the Balance Transfer Calculator',
+        paragraphs: [
+          'Use the Balance Transfer Calculator when comparing a real offer. Enter the current APR, transfer balance, promo APR, promo period, transfer fee, post-promo APR, and monthly payment.',
+          'The calculator helps answer whether the fee is worth paying under the payment plan you can actually make.',
+        ],
+      },
+      {
+        heading: 'What the fee does not tell you',
+        paragraphs: [
+          'The fee does not show the full cost by itself. A long promo period, low payment, high post-promo APR, or continued spending can change the result.',
+          'Also check whether purchases receive the same promotional treatment and whether payments are allocated in a way that affects the transferred balance.',
+        ],
+      },
+    ],
+    links: [
+      {
+        title: 'Balance Transfer Calculator',
+        url: '/calculators/balance-transfer-calculator/',
+        description: 'Estimate whether a transfer fee is outweighed by interest savings.',
+      },
+      {
+        title: 'Credit Card Payoff Calculator',
+        url: '/calculators/credit-card-payoff-calculator/',
+        description: 'Compare the cost of leaving the balance on the current card.',
+      },
+      {
+        title: 'Credit Card Payoff vs Balance Transfer',
+        url: '/guides/credit-card-payoff-vs-balance-transfer/',
+        description: 'Compare the direct payoff and transfer paths side by side.',
+      },
+      {
+        title: 'Debt Guide Hub',
+        url: '/guides/debt/',
+        description: 'Browse credit card payoff and balance transfer planning resources.',
+      },
+    ],
+    faq: [
+      {
+        question: 'How is a balance transfer fee calculated?',
+        answer: 'It is usually a percentage of the amount transferred, sometimes subject to a minimum fee.',
+      },
+      {
+        question: 'Is a 3% balance transfer fee worth it?',
+        answer: 'It can be worth it if the interest avoided is greater than the fee and the payoff plan is realistic.',
+      },
+      {
+        question: 'Is the fee charged upfront?',
+        answer: 'It is commonly added to the transferred balance, but the exact treatment depends on the card terms.',
+      },
+      {
+        question: 'Does a 0% APR offer mean no cost?',
+        answer: 'Not necessarily. The transfer fee may still apply, and interest can apply after the promotional period.',
+      },
+      {
+        question: 'Can the transfer fee be negotiated?',
+        answer: 'Sometimes offers vary by issuer and applicant, but you should not assume the fee can be waived unless the terms say so.',
+      },
+    ],
+  },
+  {
+    slug: 'how-credit-card-interest-works',
+    title: 'How Credit Card Interest Works',
+    seoTitle: 'How Credit Card Interest Works | AutomatorLabs',
+    metaDescription:
+      'Learn how credit card APR, daily interest, balances, payments, and extra payments interact, plus when to use credit card calculators.',
+    intro:
+      'Credit card interest is usually tied to APR and the balance carried from day to day. The larger the balance and the longer it remains unpaid, the more interest can accrue. Understanding the mechanics makes payoff calculators easier to interpret.',
+    sections: [
+      {
+        heading: 'APR, daily rates, and balances',
+        paragraphs: [
+          'A credit card APR is an annualized rate. Issuers commonly convert it to a daily periodic rate and apply it to balances according to the card agreement. The exact method can vary, but average daily balance is common.',
+          'Payments reduce the balance, but interest may continue accruing until the balance is fully paid and any grace-period rules are restored.',
+        ],
+      },
+      {
+        heading: 'When to use the Credit Card Interest Calculator',
+        paragraphs: [
+          'Use the Credit Card Interest Calculator when you want to estimate payoff time, total interest, and savings from paying more than the current amount.',
+          'It is most useful for planning because it turns APR into a monthly payoff path. The result is an estimate, not a substitute for the issuer’s statement calculation.',
+        ],
+      },
+      {
+        heading: 'How extra payments reduce interest',
+        paragraphs: [
+          'Interest is generally based on the outstanding balance. When extra payments reduce principal earlier, future interest has a smaller balance to accrue on.',
+          'This is why an extra payment can save more than the first month suggests. The benefit compounds through the remaining payoff schedule.',
+        ],
+      },
+    ],
+    links: [
+      {
+        title: 'Credit Card Interest Calculator',
+        url: '/calculators/credit-card-interest-calculator/',
+        description: 'Estimate payoff time, total interest, and extra-payment savings.',
+      },
+      {
+        title: 'Credit Card Minimum Payment Calculator',
+        url: '/calculators/credit-card-minimum-payment-calculator/',
+        description: 'See how minimum payments can extend a payoff timeline.',
+      },
+      {
+        title: 'Credit Card Extra Payment Calculator',
+        url: '/calculators/credit-card-extra-payment-calculator/',
+        description: 'Compare current and accelerated payoff scenarios.',
+      },
+      {
+        title: 'Debt Guide Hub',
+        url: '/guides/debt/',
+        description: 'Browse debt payoff calculators and credit card education guides.',
+      },
+    ],
+    faq: [
+      {
+        question: 'How is credit card interest calculated?',
+        answer: 'Many cards use a daily periodic rate applied to a balance method defined in the card agreement, often involving average daily balance.',
+      },
+      {
+        question: 'What is a grace period?',
+        answer: 'A grace period can allow purchases to avoid interest when the statement balance is paid in full by the due date, subject to card terms.',
+      },
+      {
+        question: 'Why did I get interest after making a payment?',
+        answer: 'Interest may have accrued before the payment posted, and residual interest can appear when a balance has been carried.',
+      },
+      {
+        question: 'Does APR include fees?',
+        answer: 'Credit card APR describes interest rate terms, but account fees, penalty fees, and balance transfer fees may be separate costs.',
+      },
+      {
+        question: 'Why do extra payments help?',
+        answer: 'They reduce principal sooner, which can lower future interest and shorten the payoff timeline.',
+      },
+    ],
+  },
 ];
 
 export function getTopicalGuide(slug: string): TopicalGuide | undefined {
