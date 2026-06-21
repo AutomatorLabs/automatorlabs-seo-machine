@@ -6,6 +6,7 @@ import {
 import { fireSeoRecords } from './fire';
 import { mortgageSeoRecords } from './mortgage';
 import { retirementWithdrawalSeoRecords } from './retirement-withdrawal';
+import { safeWithdrawalRateSeoRecords } from './safe-withdrawal-rate';
 import { savingsGoalSeoRecords } from './savings-goal';
 
 export interface ProgrammaticSeoClusterSummary {
@@ -104,6 +105,19 @@ const retirementWithdrawalRepresentatives = [
     (record) =>
       record.slug ===
       'withdraw-100000-per-year-from-2000000-for-30-years-at-7-return-3-inflation',
+  ),
+].filter((record) => record !== undefined);
+
+const safeWithdrawalRateRepresentatives = [
+  safeWithdrawalRateSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'safe-withdrawal-rate-40000-spending-1000000-portfolio-4-percent-30-years',
+  ),
+  safeWithdrawalRateSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'safe-withdrawal-rate-100000-spending-2000000-portfolio-4-percent-30-years',
   ),
 ].filter((record) => record !== undefined);
 
@@ -246,6 +260,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: retirementWithdrawalRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/retirement-withdrawal/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'safe-withdrawal-rate',
+    title: 'Safe Withdrawal Rate Examples',
+    description:
+      'Compare portfolio values, annual spending targets, withdrawal rates, and retirement durations.',
+    examplesUrl: '/calculators/safe-withdrawal-rate/examples/',
+    calculator: {
+      title: 'Safe Withdrawal Rate Calculator',
+      url: '/calculators/safe-withdrawal-rate-calculator/',
+    },
+    guide: {
+      title: 'Planning Retirement Withdrawals',
+      url: '/guides/retirement-withdrawals/',
+    },
+    pageCount: safeWithdrawalRateSeoRecords.length,
+    representativePages: safeWithdrawalRateRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/safe-withdrawal-rate/${record.slug}/`,
     })),
   },
 ];

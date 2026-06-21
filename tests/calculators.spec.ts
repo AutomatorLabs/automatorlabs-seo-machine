@@ -36,6 +36,11 @@ import {
 } from '../src/data/programmatic-seo/retirement-withdrawal';
 import { auditRetirementWithdrawalSeoRecords } from '../src/lib/programmatic-seo/retirement-withdrawal';
 import {
+  EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT,
+  safeWithdrawalRateSeoRecords,
+} from '../src/data/programmatic-seo/safe-withdrawal-rate';
+import { auditSafeWithdrawalRateSeoRecords } from '../src/lib/programmatic-seo/safe-withdrawal-rate';
+import {
   EXPECTED_SAVINGS_GOAL_SEO_PAGE_COUNT,
   savingsGoalSeoRecords,
 } from '../src/data/programmatic-seo/savings-goal';
@@ -1099,6 +1104,133 @@ test.describe('retirement withdrawal programmatic SEO', () => {
   });
 });
 
+test.describe('safe withdrawal rate programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditSafeWithdrawalRateSeoRecords(
+      safeWithdrawalRateSeoRecords,
+      EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount:
+        EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('examples index exposes and searches safe withdrawal rate pages', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto(
+      '/calculators/safe-withdrawal-rate/examples/',
+      {
+        waitUntil: 'domcontentloaded',
+      },
+    );
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Safe Withdrawal Rate Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(
+      page.locator('[data-safe-withdrawal-rate-example-group]'),
+    ).toHaveCount(2);
+    await expect(
+      page.locator('[data-safe-withdrawal-rate-example-card]'),
+    ).toHaveCount(EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/safe-withdrawal-rate/examples/',
+    );
+
+    const hrefs = await page
+      .locator('[data-safe-withdrawal-rate-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(
+      EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT,
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search safe withdrawal rate examples',
+    });
+    await searchBox.fill('1,000,000');
+    await expect(
+      page.locator('[data-safe-withdrawal-rate-example-card]:visible'),
+    ).not.toHaveCount(0);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-safe-withdrawal-rate-example-card]:visible'),
+    ).toHaveCount(EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT);
+    await expect(
+      page.getByRole('link', {
+        name: 'Calculate your safe withdrawal rate',
+      }),
+    ).toHaveAttribute('href', '/calculators/safe-withdrawal-rate-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  test('renders a generated safe withdrawal rate page with schemas and CTA', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+    const record = safeWithdrawalRateSeoRecords.find(
+      (candidate) =>
+        candidate.slug ===
+        'safe-withdrawal-rate-40000-spending-1000000-portfolio-4-percent-30-years',
+    );
+    if (!record) {
+      throw new Error('Missing representative safe withdrawal rate record');
+    }
+
+    const url = `/calculators/safe-withdrawal-rate/${record.slug}/`;
+    const response = await page.goto(url, {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', { level: 1, name: record.question }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      `https://automatorlabs.co${url}`,
+    );
+
+    const schemas = await page
+      .locator('script[type="application/ld+json"]')
+      .evaluateAll((scripts) =>
+        scripts.map((script) => script.textContent ?? '').join('\n'),
+      );
+    expect(schemas).toContain('"@type":"FAQPage"');
+    expect(schemas).toContain('"@type":"BreadcrumbList"');
+    await expect(
+      page.getByRole('link', {
+        name: 'Open the Safe Withdrawal Rate Calculator',
+      }),
+    ).toHaveAttribute('href', '/calculators/safe-withdrawal-rate-calculator/');
+    await expect(newsletterCta(page)).toBeVisible();
+    await expect(page.locator('tbody tr')).toHaveCount(5);
+    expect(pageErrors).toEqual([]);
+  });
+});
+
 test.describe('global programmatic examples hub', () => {
   test('links to every cluster and representative generated pages', async ({
     page,
@@ -1126,20 +1258,30 @@ test.describe('global programmatic examples hub', () => {
     );
 
     for (const cluster of programmaticSeoClusters) {
+      const clusterCard = page
+        .locator('.cluster-card')
+        .filter({
+          has: page.getByRole('heading', {
+            level: 2,
+            name: cluster.title,
+            exact: true,
+          }),
+        });
+
       await expect(
-        page.getByRole('link', {
+        clusterCard.getByRole('link', {
           name: `Browse ${cluster.title}`,
           exact: true,
         }),
       ).toHaveAttribute('href', cluster.examplesUrl);
       await expect(
-        page.getByRole('link', {
+        clusterCard.getByRole('link', {
           name: cluster.calculator.title,
           exact: true,
         }),
       ).toHaveAttribute('href', cluster.calculator.url);
       await expect(
-        page.getByRole('link', {
+        clusterCard.getByRole('link', {
           name: cluster.guide.title,
           exact: true,
         }),
@@ -1147,7 +1289,7 @@ test.describe('global programmatic examples hub', () => {
 
       for (const representativePage of cluster.representativePages) {
         await expect(
-          page.getByRole('link', {
+          clusterCard.getByRole('link', {
             name: representativePage.title,
             exact: true,
           }),

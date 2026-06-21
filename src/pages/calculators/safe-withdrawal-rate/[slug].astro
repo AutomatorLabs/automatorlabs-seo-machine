@@ -1,0 +1,31 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT,
+  safeWithdrawalRateSeoRecords,
+} from '../../../data/programmatic-seo/safe-withdrawal-rate';
+import {
+  auditSafeWithdrawalRateSeoRecords,
+  createSafeWithdrawalRateSeoPage,
+} from '../../../lib/programmatic-seo/safe-withdrawal-rate';
+
+auditSafeWithdrawalRateSeoRecords(
+  safeWithdrawalRateSeoRecords,
+  EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return safeWithdrawalRateSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: { record },
+  }));
+}
+
+const { record } = Astro.props;
+const page = createSafeWithdrawalRateSeoPage(
+  record,
+  safeWithdrawalRateSeoRecords,
+);
+---
+
+<ProgrammaticSeoPage page={page} />
