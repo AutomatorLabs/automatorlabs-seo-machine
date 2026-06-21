@@ -1071,6 +1071,147 @@ export const guideHubs: GuideHub[] = [
     ],
   },
   {
+    slug: 'savings',
+    title: 'Savings Planning Guide Hub',
+    eyebrow: 'Savings planning',
+    description:
+      'Plan emergency cash, goal funding, down payments, vacations, cars, savings growth, budgeting, and savings-rate targets in one practical hub.',
+    seoTitle: 'Savings Planning Guide Hub | AutomatorLabs',
+    metaDescription:
+      'Explore savings calculators, savings goal examples, emergency fund tools, budgeting guides, savings rate resources, and practical planning tips.',
+    categoryTitle: 'Budgeting & Savings Calculators',
+    categoryUrl: '/calculators/budgeting-savings/',
+    calculatorIds: [
+      'savings-goal-calculator',
+      'monthly-savings-calculator',
+      'weekly-savings-calculator',
+      'daily-savings-calculator',
+      'savings-growth-calculator',
+      'emergency-fund-calculator',
+      'vacation-savings-calculator',
+      'car-savings-calculator',
+      'down-payment-calculator',
+      'budget-calculator',
+      'savings-rate-calculator',
+    ],
+    exampleCollectionLinks: [
+      {
+        title: 'Savings Goal Examples',
+        url: '/calculators/savings-goal/examples/',
+        description:
+          'Browse worked savings scenarios for emergency funds, down payments, vacations, cars, retirement, education, and other goals.',
+      },
+    ],
+    comparisonGuideLinks: [
+      {
+        title: 'Budgeting and Saving for Real Life',
+        url: '/guides/budgeting/',
+        description:
+          'Build a flexible budget that creates room for recurring savings without ignoring irregular expenses.',
+      },
+      {
+        title: 'How to Use the Emergency Fund Calculator',
+        url: '/guides/how-to-use-emergency-fund-calculator/',
+        description:
+          'Estimate a cash buffer from monthly expenses, risk level, and months of coverage.',
+      },
+      {
+        title: 'How to Calculate Savings Rate',
+        url: '/guides/how-to-calculate-savings-rate/',
+        description:
+          'Measure the share of income saved and use it to track progress over time.',
+      },
+      {
+        title: 'What Is Compound Interest?',
+        url: '/guides/what-is-compound-interest/',
+        description:
+          'Understand how returns and time can affect long-term savings growth.',
+      },
+      {
+        title: 'How to Use the Down Payment Calculator',
+        url: '/guides/how-to-use-down-payment-calculator/',
+        description:
+          'Plan how much cash may be needed for a home down payment and compare savings timelines.',
+      },
+      {
+        title: 'How to Use the Vacation Savings Calculator',
+        url: '/guides/how-to-use-vacation-savings-calculator/',
+        description:
+          'Turn a trip budget and deadline into a monthly or recurring savings target.',
+      },
+      {
+        title: 'How to Use the Car Savings Calculator',
+        url: '/guides/how-to-use-car-savings-calculator/',
+        description:
+          'Estimate how much to save for a vehicle purchase without relying only on debt.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Start with the purpose for each dollar',
+        paragraphs: [
+          'Savings planning is easier when each goal has a purpose, target amount, deadline, and account location. Emergency cash, a house down payment, a car fund, a vacation fund, and long-term savings may all need different timelines and risk levels.',
+          'Keep short-term money separate from money that can be invested for longer periods. A fund needed in a few months should usually be treated differently from money that can compound for years.',
+        ],
+      },
+      {
+        heading: 'Build the emergency fund before stretching for goals',
+        paragraphs: [
+          'An emergency fund reduces the chance that a surprise bill turns into credit card debt. The right size depends on job stability, household obligations, insurance deductibles, debt load, and access to other resources.',
+          'Use the emergency fund calculator to choose a coverage target, then decide how much monthly saving fits the budget. A starter buffer can be useful before aggressively funding less urgent goals.',
+        ],
+      },
+      {
+        heading: 'Turn large goals into recurring savings targets',
+        paragraphs: [
+          'A large savings target can feel vague until it is broken into monthly, weekly, or daily amounts. The savings goal calculators connect target amount, current savings, expected return, and timeline so the required contribution becomes visible.',
+          'Test several timelines before choosing one. A slightly longer deadline may make the plan sustainable, while a shorter deadline may require tradeoffs elsewhere in the budget.',
+        ],
+      },
+      {
+        heading: 'Use growth assumptions carefully',
+        paragraphs: [
+          'Savings growth projections can include interest or investment return assumptions, but the risk should match the timeline. Cash-like goals may earn less but offer more stability. Long-term goals may tolerate more volatility if the money is not needed soon.',
+          'Compare conservative and optimistic cases rather than treating one projected balance as guaranteed. Inflation, taxes, fees, and changing rates can all affect the actual result.',
+        ],
+      },
+      {
+        heading: 'Connect savings goals to the monthly budget',
+        paragraphs: [
+          'A savings plan only works if the monthly budget supports it. Track income, fixed bills, variable spending, debt payments, and irregular costs before committing to an aggressive savings target.',
+          'Savings rate is a useful progress metric, but it is not a moral score. Use it to see direction, adjust when income or expenses change, and keep savings connected to real life.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: 'Which savings calculator should I start with?',
+        answer:
+          'Start with the Savings Goal Calculator if you have a target amount and deadline. Use the Emergency Fund Calculator for cash reserves, and the Budget Calculator if you need to find room in monthly cash flow first.',
+      },
+      {
+        question: 'Should I save monthly, weekly, or daily?',
+        answer:
+          'Use the schedule that matches your income and habits. Monthly targets are simple for budgeting, weekly targets can match paychecks, and daily targets can make a large goal feel more concrete.',
+      },
+      {
+        question: 'How much should I keep in an emergency fund?',
+        answer:
+          'There is no universal amount. Consider monthly essential expenses, income stability, dependents, insurance deductibles, debt, and how quickly you could replace income after a disruption.',
+      },
+      {
+        question: 'Should short-term savings be invested?',
+        answer:
+          'Short-term goals usually need stability more than growth. Investing can be appropriate for longer timelines, but market declines can hurt if the money is needed soon.',
+      },
+      {
+        question: 'How often should I update a savings plan?',
+        answer:
+          'Review it when income, expenses, priorities, rates, or deadlines change. Even small updates can keep the plan realistic and prevent abandoned goals.',
+      },
+    ],
+  },
+  {
     slug: 'budgeting',
     title: 'Budgeting and Saving for Real Life',
     eyebrow: 'Money basics',
@@ -1091,6 +1232,14 @@ export const guideHubs: GuideHub[] = [
       'daily-savings-calculator',
       'vacation-savings-calculator',
       'car-savings-calculator',
+    ],
+    comparisonGuideLinks: [
+      {
+        title: 'Savings Planning Guide Hub',
+        url: '/guides/savings/',
+        description:
+          'Use the central savings hub to compare goal calculators, emergency fund planning, savings examples, and related guides.',
+      },
     ],
     sections: [
       {
