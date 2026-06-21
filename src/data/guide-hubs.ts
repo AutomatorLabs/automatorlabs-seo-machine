@@ -190,8 +190,40 @@ export const guideHubs: GuideHub[] = [
     calculatorIds: [
       'fire-calculator',
       'coast-fire-calculator',
+      'lean-fire-calculator',
+      'fat-fire-calculator',
+      'barista-fire-calculator',
+      'four-percent-rule-calculator',
+      'safe-withdrawal-rate-calculator',
+      'retirement-withdrawal-calculator',
       'financial-independence-date-calculator',
-      'savings-rate-calculator',
+      'years-to-retirement-calculator',
+    ],
+    exampleCollectionLinks: [
+      {
+        title: 'FIRE Examples',
+        url: '/calculators/fire/examples/',
+        description:
+          'Compare FIRE numbers and retirement-readiness checks across spending levels, portfolios, and withdrawal rates.',
+      },
+      {
+        title: '4 Percent Rule Examples',
+        url: '/calculators/4-percent-rule/examples/',
+        description:
+          'See portfolio and annual-spending scenarios using 4% rule assumptions.',
+      },
+      {
+        title: 'Safe Withdrawal Rate Examples',
+        url: '/calculators/safe-withdrawal-rate/examples/',
+        description:
+          'Compare portfolio values, spending targets, withdrawal rates, and retirement durations.',
+      },
+      {
+        title: 'Retirement Withdrawal Examples',
+        url: '/calculators/retirement-withdrawal/examples/',
+        description:
+          'Browse withdrawal scenarios by portfolio size, annual income need, return, inflation, and duration.',
+      },
     ],
     comparisonGuideLinks: [
       {
@@ -201,16 +233,34 @@ export const guideHubs: GuideHub[] = [
           'Use the central retirement hub to connect FIRE, withdrawal rates, retirement accounts, and worked examples.',
       },
       {
-        title: 'FIRE Number Examples',
-        url: '/calculators/fire/examples/',
+        title: 'Savings Planning Guide Hub',
+        url: '/guides/savings/',
         description:
-          'Browse 30 spending-target and portfolio-check examples with explicit withdrawal-rate assumptions.',
+          'Connect savings targets, emergency cash, savings rate, and goal funding to a FIRE plan.',
+      },
+      {
+        title: 'Investing Basics for Long-Term Growth',
+        url: '/guides/investing/',
+        description:
+          'Review compounding, returns, inflation, fees, and risk assumptions behind long-term projections.',
+      },
+      {
+        title: 'How to Use the 4 Percent Rule Calculator',
+        url: '/guides/how-to-use-4-percent-rule-calculator/',
+        description:
+          'Understand how annual spending and withdrawal-rate assumptions translate into a target portfolio.',
       },
       {
         title: 'FIRE vs Coast FIRE',
         url: '/guides/fire-vs-coast-fire/',
         description:
           'Compare the savings milestones, contribution paths, and flexibility of FIRE and Coast FIRE.',
+      },
+      {
+        title: 'Planning Retirement Withdrawals',
+        url: '/guides/retirement-withdrawals/',
+        description:
+          'Connect FIRE targets with withdrawal rates, inflation, taxes, sequence risk, and flexible income planning.',
       },
       {
         title: 'Lean FIRE vs Fat FIRE',
