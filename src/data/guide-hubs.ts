@@ -738,6 +738,152 @@ export const guideHubs: GuideHub[] = [
     ],
   },
   {
+    slug: 'mortgage',
+    title: 'Mortgage and Home Buying Guide Hub',
+    eyebrow: 'Mortgage planning',
+    description:
+      'Compare mortgage payments, affordability, payoff strategies, refinance decisions, closing costs, taxes, maintenance, and rent-versus-buy tradeoffs.',
+    seoTitle: 'Mortgage and Home Buying Guide Hub | AutomatorLabs',
+    metaDescription:
+      'Explore mortgage calculators, home buying tools, refinance guides, mortgage payoff resources, closing cost planning, and worked mortgage examples.',
+    categoryTitle: 'Home & Mortgage Calculators',
+    categoryUrl: '/calculators/home-mortgage/',
+    calculatorIds: [
+      'mortgage-payment-calculator',
+      'mortgage-payoff-calculator',
+      'mortgage-recast-calculator',
+      'refinance-calculator',
+      'home-affordability-calculator',
+      'down-payment-calculator',
+      'property-tax-calculator',
+      'closing-cost-calculator',
+      'home-maintenance-cost-calculator',
+      'rent-vs-buy-calculator',
+    ],
+    exampleCollectionLinks: [
+      {
+        title: 'Mortgage Payment Examples',
+        url: '/calculators/mortgage/examples/',
+        description:
+          'Browse fixed-rate mortgage examples by price, down payment, loan amount, interest rate, and term.',
+      },
+    ],
+    comparisonGuideLinks: [
+      {
+        title: 'A Practical Guide to Buying a Home',
+        url: '/guides/home-buying/',
+        description:
+          'Plan the full home purchase around affordability, cash reserves, financing, and ownership costs.',
+      },
+      {
+        title: 'Rent vs Buy',
+        url: '/guides/rent-vs-buy/',
+        description:
+          'Compare renting and buying over the timeline you expect to stay in a home.',
+      },
+      {
+        title: 'How to Use the Refinance Calculator',
+        url: '/guides/how-to-use-refinance-calculator/',
+        description:
+          'Compare closing costs, payment changes, interest savings, and break-even timing.',
+      },
+      {
+        title: 'How to Use the Mortgage Payoff Calculator',
+        url: '/guides/how-to-use-mortgage-payoff-calculator/',
+        description:
+          'Estimate how extra principal payments may affect payoff timing and total interest.',
+      },
+      {
+        title: 'How to Use the Mortgage Recast Calculator',
+        url: '/guides/how-to-use-mortgage-recast-calculator/',
+        description:
+          'Understand how a lump-sum principal payment and recast may change the required monthly payment.',
+      },
+      {
+        title: 'How to Use the Home Affordability Calculator',
+        url: '/guides/how-to-use-home-affordability-calculator/',
+        description:
+          'Estimate a home price range from income, debts, down payment, rates, taxes, insurance, and reserves.',
+      },
+      {
+        title: 'How to Use the Down Payment Calculator',
+        url: '/guides/how-to-use-down-payment-calculator/',
+        description:
+          'Plan the cash needed for a down payment and compare how different percentages affect the loan.',
+      },
+      {
+        title: 'How to Use the Closing Cost Calculator',
+        url: '/guides/how-to-use-closing-cost-calculator/',
+        description:
+          'Estimate buyer closing costs, prepaid items, and the extra cash needed beyond the down payment.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Start with affordability before the mortgage payment',
+        paragraphs: [
+          'A mortgage plan should start with the full household budget, not only the principal and interest payment. Income, existing debts, down payment cash, emergency reserves, taxes, insurance, HOA dues, utilities, and maintenance all affect whether a home is comfortable to own.',
+          'Use affordability and down payment tools before comparing loan options. This keeps the mortgage decision connected to cash flow and helps avoid treating a lender approval as the same thing as personal affordability.',
+        ],
+      },
+      {
+        heading: 'Compare the complete monthly housing cost',
+        paragraphs: [
+          'The monthly mortgage payment is only one part of homeownership. Property taxes, homeowners insurance, mortgage insurance, HOA dues, maintenance, repairs, and utilities can materially change the real cost of buying.',
+          'Run payment examples with conservative assumptions and then stress-test them. A fixed-rate mortgage can keep principal and interest steady, but taxes, insurance, and maintenance can still change over time.',
+        ],
+      },
+      {
+        heading: 'Use examples to understand rate, term, and down payment tradeoffs',
+        paragraphs: [
+          'Worked mortgage examples make the moving parts easier to compare. A higher down payment can reduce the loan amount and may affect mortgage insurance, while a shorter term can reduce total interest but increase the required monthly payment.',
+          'Browse representative examples, then return to the mortgage payment calculator with your own assumptions. Treat each example as an educational scenario rather than a quote or approval estimate.',
+        ],
+      },
+      {
+        heading: 'Plan for payoff, recast, and refinance decisions separately',
+        paragraphs: [
+          'Mortgage payoff, recast, and refinance decisions answer different questions. Extra principal payments may reduce interest and shorten the loan. A recast may lower the required payment after a large principal payment. A refinance may change the rate, term, or payment but usually adds closing costs.',
+          'Compare each option with the same time horizon. A lower monthly payment can be useful for cash flow, but total cost, break-even timing, flexibility, and risk matter too.',
+        ],
+      },
+      {
+        heading: 'Compare buying with renting over your real timeline',
+        paragraphs: [
+          'Buying can make sense when the full ownership cost, transaction costs, and expected timeline fit your situation. Renting can preserve flexibility and avoid repair risk. The better choice depends on local prices, rent, financing, taxes, maintenance, investment returns, and how long you expect to stay.',
+          'Use the rent vs buy calculator as a scenario tool. Pair the math with nonfinancial factors such as mobility, schools, commute, lifestyle preferences, and willingness to maintain a property.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: 'Which mortgage calculator should I start with?',
+        answer:
+          'Start with the Home Affordability Calculator if you are deciding what price range may fit. Use the Mortgage Payment Calculator once you want to compare a specific home price, down payment, rate, and loan term.',
+      },
+      {
+        question: 'What should I include in a mortgage payment estimate?',
+        answer:
+          'Include principal, interest, property taxes, homeowners insurance, mortgage insurance when applicable, HOA dues, and a maintenance allowance. Some costs may not be part of the lender payment but still affect affordability.',
+      },
+      {
+        question: 'How are mortgage payoff, recast, and refinance different?',
+        answer:
+          'A payoff strategy sends extra money toward principal, a recast recalculates the payment after a large principal reduction, and a refinance replaces the loan. Each has different costs, requirements, and tradeoffs.',
+      },
+      {
+        question: 'Are the mortgage examples personalized quotes?',
+        answer:
+          'No. The examples are educational scenarios based on stated assumptions. Actual loan offers, taxes, insurance, fees, and eligibility depend on lender rules, credit, income, property details, and location.',
+      },
+      {
+        question: 'When should I compare renting versus buying?',
+        answer:
+          'Compare renting versus buying before making an offer, especially if your timeline is uncertain. Transaction costs, maintenance, local rent, home price growth, and investment returns can change the break-even point.',
+      },
+    ],
+  },
+  {
     slug: 'home-buying',
     title: 'A Practical Guide to Buying a Home',
     eyebrow: 'Home buying',
@@ -749,27 +895,55 @@ export const guideHubs: GuideHub[] = [
     categoryTitle: 'Home & Mortgage Calculators',
     categoryUrl: '/calculators/home-mortgage/',
     calculatorIds: [
+      'mortgage-payment-calculator',
+      'mortgage-payoff-calculator',
+      'mortgage-recast-calculator',
+      'refinance-calculator',
+      'rent-vs-buy-calculator',
       'home-affordability-calculator',
       'down-payment-calculator',
-      'mortgage-payment-calculator',
-      'closing-cost-calculator',
       'property-tax-calculator',
+      'closing-cost-calculator',
       'home-maintenance-cost-calculator',
-      'mortgage-payoff-calculator',
-      'rent-vs-buy-calculator',
     ],
-    comparisonGuideLinks: [
+    exampleCollectionLinks: [
       {
         title: 'Mortgage Payment Examples',
         url: '/calculators/mortgage/examples/',
         description:
-          'Browse 40 fixed-rate mortgage scenarios by loan amount, rate, and term.',
+          'Browse fixed-rate mortgage scenarios by loan amount, down payment, interest rate, and term.',
+      },
+    ],
+    comparisonGuideLinks: [
+      {
+        title: 'Mortgage and Home Buying Guide Hub',
+        url: '/guides/mortgage/',
+        description:
+          'Use the central mortgage hub to compare calculators, worked examples, and related home-buying guides.',
       },
       {
         title: 'Rent vs Buy',
         url: '/guides/rent-vs-buy/',
         description:
           'Compare the financial tradeoffs of renting and owning over your expected timeline.',
+      },
+      {
+        title: 'How to Use the Mortgage Payment Calculator',
+        url: '/guides/how-to-use-mortgage-payment-calculator/',
+        description:
+          'Understand principal, interest, taxes, insurance, and loan-term assumptions before comparing payments.',
+      },
+      {
+        title: 'How to Use the Mortgage Payoff Calculator',
+        url: '/guides/how-to-use-mortgage-payoff-calculator/',
+        description:
+          'Estimate how extra principal payments may change payoff timing and total interest.',
+      },
+      {
+        title: 'How to Use the Refinance Calculator',
+        url: '/guides/how-to-use-refinance-calculator/',
+        description:
+          'Compare refinance savings, closing costs, and break-even timing under simplified assumptions.',
       },
     ],
     sections: [
