@@ -516,6 +516,128 @@ export const guideHubs: GuideHub[] = [
     ],
   },
   {
+    slug: 'debt',
+    title: 'Debt Payoff and Credit Card Planning Hub',
+    eyebrow: 'Debt payoff',
+    description:
+      'Organize debt balances, credit card payoff choices, balance transfers, budgeting, and emergency reserves in one practical planning hub.',
+    seoTitle: 'Debt Payoff and Credit Card Planning Hub | AutomatorLabs',
+    metaDescription:
+      'Explore debt payoff calculators, credit card payoff tools, balance transfer examples, budgeting guides, and practical debt repayment strategies.',
+    categoryTitle: 'Debt & Loan Calculators',
+    categoryUrl: '/calculators/debt-loans/',
+    calculatorIds: [
+      'debt-payoff-calculator',
+      'debt-snowball-calculator',
+      'debt-avalanche-calculator',
+      'credit-card-payoff-calculator',
+      'credit-card-minimum-payment-calculator',
+      'credit-card-extra-payment-calculator',
+      'credit-card-interest-calculator',
+      'balance-transfer-calculator',
+      'budget-calculator',
+      'emergency-fund-calculator',
+    ],
+    exampleCollectionLinks: [
+      {
+        title: 'Credit Card Payoff Examples',
+        url: '/calculators/credit-card-payoff/examples/',
+        description:
+          'Compare payoff timelines, interest costs, and extra-payment scenarios for credit card balances.',
+      },
+      {
+        title: 'Balance Transfer Examples',
+        url: '/calculators/balance-transfer/examples/',
+        description:
+          'Review promotional APRs, transfer fees, payoff timelines, and interest savings before moving a balance.',
+      },
+    ],
+    comparisonGuideLinks: [
+      {
+        title: 'Debt Payoff Guide',
+        url: '/guides/debt-payoff/',
+        description:
+          'Build a payoff plan from balances, rates, minimum payments, and extra-payment rules.',
+      },
+      {
+        title: 'Debt Snowball vs Debt Avalanche',
+        url: '/guides/debt-snowball-vs-debt-avalanche/',
+        description:
+          'Compare motivation-first and interest-first approaches to paying down debt.',
+      },
+      {
+        title: 'Budgeting and Saving for Real Life',
+        url: '/guides/budgeting/',
+        description:
+          'Create cash-flow room for debt payments while protecting basic reserves.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Start with a full debt inventory',
+        paragraphs: [
+          'Debt payoff planning works best when every balance is visible. List each account, balance, APR, minimum payment, due date, and whether the rate is fixed, variable, or promotional. Credit cards, personal loans, medical bills, student loans, auto loans, and other required payments can all affect the plan.',
+          'Keep minimum payments current while you compare strategies. A clean inventory helps you see which balances are expensive, which ones are psychologically motivating to clear, and how much extra cash can realistically go toward principal each month.',
+        ],
+      },
+      {
+        heading: 'Compare payoff strategies before choosing one',
+        paragraphs: [
+          'The debt avalanche method targets the highest interest rate first, which can reduce total interest when followed consistently. The debt snowball method targets the smallest balance first, which can create faster visible wins and reduce the number of open accounts.',
+          'Neither method matters if the monthly plan is too aggressive to sustain. Use the payoff calculators to test required payments, extra payments, and payoff dates. Then choose a rule simple enough to follow when real expenses show up.',
+        ],
+      },
+      {
+        heading: 'Understand credit card interest and minimum payments',
+        paragraphs: [
+          'Credit card balances can be especially costly because APRs are often high and minimum payments may barely reduce principal. A payoff schedule can show how much of each payment goes to interest, how long the balance may last, and how much faster an extra payment can change the timeline.',
+          'Minimum-payment tools are useful for seeing the cost of inaction, but they should not be treated as a recommendation. If the payment only covers a small portion of the balance, total interest can become much larger than expected.',
+        ],
+      },
+      {
+        heading: 'Evaluate balance transfers carefully',
+        paragraphs: [
+          'A balance transfer can help when a promotional APR meaningfully lowers interest and the transfer fee is smaller than the savings. The details matter: current APR, promotional APR, promo length, transfer fee, monthly payment, and whether the balance will be paid off before the promo ends.',
+          'Avoid moving debt without a payoff plan. A transfer can reduce interest, but it can also create new costs if the balance remains after the promotion or if new purchases rebuild the old card balance.',
+        ],
+      },
+      {
+        heading: 'Protect cash flow while paying debt down',
+        paragraphs: [
+          'Debt payoff should work alongside a basic budget and emergency reserve. Sending every spare dollar to debt can backfire if the next car repair, medical bill, or job disruption goes back onto a credit card.',
+          'Use the budget and emergency fund calculators to decide how much margin to keep. The goal is progress that survives ordinary surprises, not a perfect spreadsheet that collapses after one unexpected expense.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: 'Which debt should I pay off first?',
+        answer:
+          'A common approach is to pay minimums on every account, then send extra money to either the highest APR debt or the smallest balance. The highest APR route usually saves more interest, while the smallest balance route can build momentum.',
+      },
+      {
+        question: 'Is a balance transfer worth it?',
+        answer:
+          'It can be worth it when the interest savings during the promotional period exceed the transfer fee and you have a realistic payoff plan. Compare total cost, not just the promotional APR.',
+      },
+      {
+        question: 'Should I use debt snowball or debt avalanche?',
+        answer:
+          'Use avalanche if minimizing interest is the main goal and you can stay consistent. Use snowball if quick wins help you maintain the plan. A hybrid approach can also work for some households.',
+      },
+      {
+        question: 'How much emergency savings should I keep while paying debt?',
+        answer:
+          'There is no single amount for everyone. Many people keep a starter cash buffer before making aggressive extra payments, then adjust based on job stability, household needs, insurance deductibles, and access to other resources.',
+      },
+      {
+        question: 'Do extra payments always help?',
+        answer:
+          'Extra payments usually reduce interest when they are applied to principal on an interest-bearing balance. Check lender rules and confirm the payment is not simply advancing the next due date.',
+      },
+    ],
+  },
+  {
     slug: 'debt-payoff',
     title: 'How to Build a Debt Payoff Plan',
     eyebrow: 'Debt strategy',
@@ -537,6 +659,12 @@ export const guideHubs: GuideHub[] = [
       'credit-card-interest-calculator',
     ],
     comparisonGuideLinks: [
+      {
+        title: 'Debt Payoff and Credit Card Planning Hub',
+        url: '/guides/debt/',
+        description:
+          'Use the central debt hub to compare calculators, worked examples, and related payoff guides.',
+      },
       {
         title: 'Debt Snowball vs Debt Avalanche',
         url: '/guides/debt-snowball-vs-debt-avalanche/',
