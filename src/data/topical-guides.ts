@@ -607,6 +607,538 @@ export const topicalGuides: TopicalGuide[] = [
       },
     ],
   },
+  {
+    slug: 'what-is-cagr',
+    title: 'What Is CAGR?',
+    seoTitle: 'What Is CAGR? Compound Annual Growth Rate Explained | AutomatorLabs',
+    metaDescription:
+      'Learn what CAGR means, when compound annual growth rate is useful, what it leaves out, and when to use the CAGR Calculator.',
+    intro:
+      'CAGR, or compound annual growth rate, is the smoothed annual rate that connects a starting value to an ending value over a period of time. It is useful because it turns uneven multi-year growth into one annualized number, but it does not show volatility, cash flows, fees, taxes, or inflation by itself.',
+    sections: [
+      {
+        heading: 'CAGR in plain English',
+        paragraphs: [
+          'CAGR answers a simple question: what steady annual rate would produce the same start-to-end result? If an investment grew from $10,000 to $20,000 over ten years, CAGR translates that total growth into an annualized rate.',
+          'The important word is smoothed. Real investments rarely earn the same return every year. CAGR makes comparison easier, but it hides the path taken to reach the ending value.',
+        ],
+      },
+      {
+        heading: 'When to use the CAGR Calculator',
+        paragraphs: [
+          'Use the CAGR Calculator when you know the starting value, ending value, and number of years. It is especially useful for comparing completed investment periods, business metrics, revenue growth, portfolio growth without added deposits, or price changes over time.',
+          'If there were deposits or withdrawals during the period, basic CAGR may not represent your actual investor return. In that case, you may need a cash-flow-aware return measure.',
+        ],
+      },
+      {
+        heading: 'How CAGR relates to compound interest',
+        paragraphs: [
+          'CAGR solves for the rate implied by historical start and end values. A compound interest projection uses an assumed rate to estimate a future value. The math is related, but the direction is different.',
+          'A past CAGR can inform planning assumptions, but it should not be treated as a guaranteed future return. Compare it with conservative and optimistic assumptions before projecting future growth.',
+        ],
+      },
+    ],
+    links: [
+      {
+        title: 'CAGR Calculator',
+        url: '/calculators/cagr-calculator/',
+        description: 'Calculate compound annual growth rate from starting value, ending value, and time.',
+      },
+      {
+        title: 'CAGR vs Compound Interest',
+        url: '/guides/cagr-vs-compound-interest/',
+        description: 'Compare measuring historical growth with projecting future growth.',
+      },
+      {
+        title: 'Compound Interest Calculator',
+        url: '/calculators/compound-interest/',
+        description: 'Project growth using a starting balance, contributions, rate, and time.',
+      },
+      {
+        title: 'Investing Guide Hub',
+        url: '/guides/investing/',
+        description: 'Browse investing calculators, education guides, and worked examples.',
+      },
+    ],
+    faq: [
+      {
+        question: 'What does CAGR stand for?',
+        answer: 'CAGR stands for compound annual growth rate. It is the annualized rate that links a starting value to an ending value over a period.',
+      },
+      {
+        question: 'Is CAGR the same as average annual return?',
+        answer: 'No. CAGR is a geometric annualized rate. A simple average of yearly returns can differ because it does not compound the sequence of returns the same way.',
+      },
+      {
+        question: 'Does CAGR include contributions?',
+        answer: 'Basic CAGR does not handle contribution timing. If deposits or withdrawals occurred, use a return method that accounts for cash flows.',
+      },
+      {
+        question: 'Can CAGR be negative?',
+        answer: 'Yes. If the ending value is lower than the starting value, the CAGR is negative.',
+      },
+      {
+        question: 'Is CAGR a forecast?',
+        answer: 'No. CAGR summarizes a completed period. Future returns can be higher, lower, or negative.',
+      },
+    ],
+  },
+  {
+    slug: 'what-is-apy',
+    title: 'What Is APY?',
+    seoTitle: 'What Is APY? Annual Percentage Yield Explained | AutomatorLabs',
+    metaDescription:
+      'Learn what APY means, how compounding affects annual percentage yield, and when to use the APY Calculator.',
+    intro:
+      'APY, or annual percentage yield, shows the effective annual result after compounding. It helps compare savings rates and other interest-bearing products on a more consistent basis than a nominal stated rate.',
+    sections: [
+      {
+        heading: 'APY in plain English',
+        paragraphs: [
+          'APY tells you what a balance would earn over one year if interest compounds and remains in the account under the stated assumptions. When interest is added during the year, later interest can earn interest too.',
+          'That compounding effect means APY is usually higher than the nominal annual rate when compounding happens more than once per year.',
+        ],
+      },
+      {
+        heading: 'When to use the APY Calculator',
+        paragraphs: [
+          'Use the APY Calculator when you know a nominal annual rate and compounding frequency and want the effective annual yield. It can help compare daily, monthly, quarterly, and annual compounding.',
+          'APY is useful for savings accounts and interest comparisons, but it does not capture fees, balance caps, variable rates, taxes, or investment risk.',
+        ],
+      },
+      {
+        heading: 'APY versus investment return',
+        paragraphs: [
+          'APY is often used for stated interest products. Investment returns are different because values can rise or fall and returns are uncertain.',
+          'When planning investments, compare APY concepts with compound interest, CAGR, inflation-adjusted return, and real return so the assumptions are clear.',
+        ],
+      },
+    ],
+    links: [
+      {
+        title: 'APY Calculator',
+        url: '/calculators/apy-calculator/',
+        description: 'Convert a nominal annual rate and compounding frequency into APY.',
+      },
+      {
+        title: 'APR vs APY',
+        url: '/guides/apr-vs-apy/',
+        description: 'Compare nominal rate and effective yield language.',
+      },
+      {
+        title: 'Effective Annual Rate Explained',
+        url: '/guides/effective-annual-rate/',
+        description: 'Learn how effective annual rates normalize compounding.',
+      },
+      {
+        title: 'Investing Guide Hub',
+        url: '/guides/investing/',
+        description: 'Connect APY with compounding, CAGR, real return, and investing calculators.',
+      },
+    ],
+    faq: [
+      {
+        question: 'What does APY stand for?',
+        answer: 'APY stands for annual percentage yield. It describes an effective annual result after compounding.',
+      },
+      {
+        question: 'Is APY better than APR for savings?',
+        answer: 'APY is usually more useful for savings comparisons because it includes compounding, but fees and account rules still matter.',
+      },
+      {
+        question: 'Does APY include taxes?',
+        answer: 'No. APY generally does not include taxes owed on interest.',
+      },
+      {
+        question: 'Can APY change?',
+        answer: 'Yes. Many savings and deposit rates are variable, so the advertised APY may change over time.',
+      },
+      {
+        question: 'Is APY guaranteed for investments?',
+        answer: 'No. Investments do not usually provide a guaranteed APY because market values and returns can fluctuate.',
+      },
+    ],
+  },
+  {
+    slug: 'what-is-drip-investing',
+    title: 'What Is DRIP Investing?',
+    seoTitle: 'What Is DRIP Investing? Dividend Reinvestment Explained | AutomatorLabs',
+    metaDescription:
+      'Learn how DRIP investing works, how dividend reinvestment can compound, and when to use the DRIP Calculator.',
+    intro:
+      'DRIP investing means reinvesting dividends so they buy more shares instead of being taken as cash. Over time, reinvested dividends can increase the share count and may help future dividend income compound.',
+    sections: [
+      {
+        heading: 'How dividend reinvestment works',
+        paragraphs: [
+          'When a company or fund pays a dividend, investors may receive cash or reinvest the dividend into additional shares. A DRIP, or dividend reinvestment plan, automates that reinvestment.',
+          'The compounding effect comes from owning more shares after reinvestment. If future dividends continue, the larger share count can produce more dividend income, which can then be reinvested again.',
+        ],
+      },
+      {
+        heading: 'When to use the DRIP Calculator',
+        paragraphs: [
+          'Use the DRIP Calculator to estimate how reinvested dividends, dividend yield, dividend growth, price assumptions, and time may interact. It is best for educational scenarios, not precise forecasts.',
+          'Dividend yields, dividend growth, and share prices can change. Companies can reduce or suspend dividends, and taxes may apply even when dividends are reinvested.',
+        ],
+      },
+      {
+        heading: 'DRIP investing tradeoffs',
+        paragraphs: [
+          'Reinvestment can support long-term compounding, but taking dividends as cash may be useful for income needs, rebalancing, taxes, or spending. The better choice depends on the portfolio goal.',
+          'Dividend investing should still consider diversification, valuation, total return, fees, taxes, and risk. A high yield alone is not proof of a strong investment.',
+        ],
+      },
+    ],
+    links: [
+      {
+        title: 'DRIP Calculator',
+        url: '/calculators/drip-calculator/',
+        description: 'Estimate dividend reinvestment growth under simplified assumptions.',
+      },
+      {
+        title: 'Dividend Yield Calculator',
+        url: '/calculators/dividend-yield-calculator/',
+        description: 'Estimate dividend yield and income from dividend and share price inputs.',
+      },
+      {
+        title: 'Dividend Growth Calculator',
+        url: '/calculators/dividend-growth-calculator/',
+        description: 'Project dividend income growth under a steady growth assumption.',
+      },
+      {
+        title: 'Investing Guide Hub',
+        url: '/guides/investing/',
+        description: 'Browse investing calculators and long-term planning guides.',
+      },
+    ],
+    faq: [
+      {
+        question: 'What does DRIP stand for?',
+        answer: 'DRIP stands for dividend reinvestment plan.',
+      },
+      {
+        question: 'Does DRIP investing guarantee higher returns?',
+        answer: 'No. Reinvestment can increase share count, but total return still depends on investment performance, dividends, taxes, and fees.',
+      },
+      {
+        question: 'Are reinvested dividends taxable?',
+        answer: 'They may be taxable even if reinvested, depending on the account type and tax rules that apply to the investor.',
+      },
+      {
+        question: 'Can dividends be cut?',
+        answer: 'Yes. Companies and funds can reduce, suspend, or change dividends.',
+      },
+      {
+        question: 'Should every investor use DRIP?',
+        answer: 'Not always. Investors who need income, want to rebalance, or manage taxes differently may choose cash dividends instead.',
+      },
+    ],
+  },
+  {
+    slug: 'what-is-expense-ratio',
+    title: 'What Is an Expense Ratio?',
+    seoTitle: 'What Is an Expense Ratio? Fund Fees Explained | AutomatorLabs',
+    metaDescription:
+      'Learn what an expense ratio is, how fund fees affect compounding, and when to use the Expense Ratio Calculator.',
+    intro:
+      'An expense ratio is an annual fund cost expressed as a percentage of assets. It may look small, but recurring fees can reduce long-term compounding because money paid in costs no longer remains invested.',
+    sections: [
+      {
+        heading: 'Expense ratios in plain English',
+        paragraphs: [
+          'A fund with a 0.20% expense ratio charges about $20 per year for every $10,000 invested, before considering market changes. The cost is usually deducted inside the fund rather than billed as a separate invoice.',
+          'Lower fees do not guarantee better performance, but costs are one of the few investing inputs investors can compare directly before choosing a fund.',
+        ],
+      },
+      {
+        heading: 'When to use the Expense Ratio Calculator',
+        paragraphs: [
+          'Use the Expense Ratio Calculator to estimate the dollar cost of a fund fee and how that cost may compound over time. It can help compare similar funds with different expense ratios.',
+          'The result is an estimate because actual balances change with returns, contributions, withdrawals, and market performance.',
+        ],
+      },
+      {
+        heading: 'Fees and long-term investing',
+        paragraphs: [
+          'A fee difference that seems small in one year can become meaningful over decades. The cost is not just the fee paid, but also the future growth that fee no longer earns.',
+          'Compare expense ratios alongside diversification, tax efficiency, tracking difference, liquidity, account fees, and investment objective.',
+        ],
+      },
+    ],
+    links: [
+      {
+        title: 'Expense Ratio Calculator',
+        url: '/calculators/expense-ratio-calculator/',
+        description: 'Estimate annual fund fees and long-term fee drag.',
+      },
+      {
+        title: 'ETF Fee Drag Calculator',
+        url: '/calculators/etf-fee-drag-calculator/',
+        description: 'Compare two ETF expense ratios over time.',
+      },
+      {
+        title: 'Compound Interest Calculator',
+        url: '/calculators/compound-interest/',
+        description: 'Project growth and see how assumptions compound over time.',
+      },
+      {
+        title: 'Investing Guide Hub',
+        url: '/guides/investing/',
+        description: 'Connect fees with investing projections and related calculators.',
+      },
+    ],
+    faq: [
+      {
+        question: 'How is an expense ratio charged?',
+        answer: 'It is generally deducted from fund assets over time rather than charged as a separate bill.',
+      },
+      {
+        question: 'Is a lower expense ratio always better?',
+        answer: 'Lower costs help, but the fund objective, diversification, taxes, tracking, and risk also matter.',
+      },
+      {
+        question: 'Does the expense ratio include every cost?',
+        answer: 'No. It may not include trading costs, advisory fees, taxes, commissions, or account-level fees.',
+      },
+      {
+        question: 'Why do small fee differences matter?',
+        answer: 'Recurring fees reduce the money left to compound, so the long-term impact can be larger than the first-year cost.',
+      },
+      {
+        question: 'Can fees change?',
+        answer: 'Yes. Fund expenses can change, so review current documents rather than relying on old figures.',
+      },
+    ],
+  },
+  {
+    slug: 'what-is-etf-fee-drag',
+    title: 'What Is ETF Fee Drag?',
+    seoTitle: 'What Is ETF Fee Drag? How ETF Fees Affect Returns | AutomatorLabs',
+    metaDescription:
+      'Learn how ETF fee drag works, why expense ratio differences compound, and when to use the ETF Fee Drag Calculator.',
+    intro:
+      'ETF fee drag is the long-term reduction in investment growth caused by recurring fund expenses. Even small expense-ratio differences can matter when they apply every year to a growing balance.',
+    sections: [
+      {
+        heading: 'ETF fee drag in plain English',
+        paragraphs: [
+          'An ETF expense ratio reduces fund returns by covering operating costs. If two funds track similar exposures but one costs more, the higher fee can create a drag on long-term results.',
+          'The drag compounds because each dollar paid in costs is no longer invested. Over decades, that lost growth can become more noticeable.',
+        ],
+      },
+      {
+        heading: 'When to use the ETF Fee Drag Calculator',
+        paragraphs: [
+          'Use the ETF Fee Drag Calculator when comparing two funds with different expense ratios. Enter starting balance, contributions, assumed return, time horizon, and both fee levels to estimate the difference.',
+          'The calculator is most useful when funds are otherwise similar. If two ETFs have different exposures, tax behavior, liquidity, or risk, the fee comparison is only one part of the decision.',
+        ],
+      },
+      {
+        heading: 'What fee drag leaves out',
+        paragraphs: [
+          'Expense ratio comparisons do not capture tracking error, bid-ask spreads, taxes, securities lending, fund closure risk, or how well the ETF matches the investor’s desired asset allocation.',
+          'Use the fee result as a screening tool, then review the broader investment fit.',
+        ],
+      },
+    ],
+    links: [
+      {
+        title: 'ETF Fee Drag Calculator',
+        url: '/calculators/etf-fee-drag-calculator/',
+        description: 'Compare long-term results for two ETF expense ratios.',
+      },
+      {
+        title: 'Expense Ratio Calculator',
+        url: '/calculators/expense-ratio-calculator/',
+        description: 'Estimate the annual and long-term cost of a fund fee.',
+      },
+      {
+        title: 'Investment Growth Calculator',
+        url: '/calculators/investment-growth-calculator/',
+        description: 'Project growth with contributions and return assumptions.',
+      },
+      {
+        title: 'Investing Guide Hub',
+        url: '/guides/investing/',
+        description: 'Browse investing tools, fee guides, and related calculators.',
+      },
+    ],
+    faq: [
+      {
+        question: 'What causes ETF fee drag?',
+        answer: 'Fee drag comes from recurring expenses that reduce fund assets and leave less money invested for future growth.',
+      },
+      {
+        question: 'Is ETF fee drag the same as expense ratio?',
+        answer: 'The expense ratio is the stated annual cost. Fee drag is the long-term effect of that recurring cost on growth.',
+      },
+      {
+        question: 'Do ETF fees matter more over long periods?',
+        answer: 'Yes. The longer the horizon, the more time fee differences have to compound.',
+      },
+      {
+        question: 'Should I always choose the cheapest ETF?',
+        answer: 'Not always. Cost matters, but exposure, tax efficiency, liquidity, tracking, and risk also matter.',
+      },
+      {
+        question: 'Does fee drag include taxes?',
+        answer: 'No. Taxes are a separate source of drag and depend on account type and investor situation.',
+      },
+    ],
+  },
+  {
+    slug: 'rule-of-72',
+    title: 'What Is the Rule of 72?',
+    seoTitle: 'What Is the Rule of 72? Doubling Time Explained | AutomatorLabs',
+    metaDescription:
+      'Learn how the Rule of 72 estimates doubling time, when it works, what it leaves out, and when to use the Rule of 72 Calculator.',
+    intro:
+      'The Rule of 72 is a quick mental shortcut for estimating how long money may take to double at a fixed annual return. Divide 72 by the annual rate, and the result is the approximate number of years to double.',
+    sections: [
+      {
+        heading: 'How the Rule of 72 works',
+        paragraphs: [
+          'At an 8% annual return, 72 divided by 8 equals about 9 years. At 6%, the estimate is about 12 years. The shortcut works because exponential growth creates a predictable relationship between rate and doubling time.',
+          'The result is approximate, not exact. It is most useful for quick intuition before using a more detailed compound interest calculator.',
+        ],
+      },
+      {
+        heading: 'When to use the Rule of 72 Calculator',
+        paragraphs: [
+          'Use the Rule of 72 Calculator when you want a quick estimate of doubling time from a steady annual rate, or the rate needed to double over a target number of years.',
+          'It is useful for investments, inflation, and savings growth examples, but it assumes a constant rate and does not model contributions, fees, taxes, or volatility.',
+        ],
+      },
+      {
+        heading: 'Using it with other investing tools',
+        paragraphs: [
+          'The Rule of 72 can sanity-check a projection. If a compound interest model shows money doubling much faster than the rule suggests, check the contribution assumptions or compounding inputs.',
+          'For purchasing power, the same shortcut can estimate how quickly inflation cuts value in half. At 3% inflation, prices roughly double in about 24 years.',
+        ],
+      },
+    ],
+    links: [
+      {
+        title: 'Rule of 72 Calculator',
+        url: '/calculators/rule-of-72-calculator/',
+        description: 'Estimate doubling time or the rate needed to double.',
+      },
+      {
+        title: 'Compound Interest Calculator',
+        url: '/calculators/compound-interest/',
+        description: 'Project a detailed future value with contributions and compounding.',
+      },
+      {
+        title: 'Real Rate of Return Calculator',
+        url: '/calculators/real-rate-of-return-calculator/',
+        description: 'Compare nominal returns with inflation.',
+      },
+      {
+        title: 'Investing Guide Hub',
+        url: '/guides/investing/',
+        description: 'Browse investing education and calculator links.',
+      },
+    ],
+    faq: [
+      {
+        question: 'Is the Rule of 72 exact?',
+        answer: 'No. It is an approximation that is useful for quick estimates.',
+      },
+      {
+        question: 'What rate range works best?',
+        answer: 'The shortcut is generally most useful for moderate positive rates. Accuracy varies at very low or high rates.',
+      },
+      {
+        question: 'Does it include contributions?',
+        answer: 'No. It estimates doubling of a balance at a fixed rate without additional contributions.',
+      },
+      {
+        question: 'Can the Rule of 72 be used for inflation?',
+        answer: 'Yes. It can estimate how long prices may take to double at a steady inflation rate.',
+      },
+      {
+        question: 'Why use the calculator if the shortcut is simple?',
+        answer: 'The calculator reduces mental math mistakes and can solve either doubling time or required rate.',
+      },
+    ],
+  },
+  {
+    slug: 'investment-growth',
+    title: 'Investment Growth: How to Project a Portfolio',
+    seoTitle: 'Investment Growth: How to Project a Portfolio | AutomatorLabs',
+    metaDescription:
+      'Learn how investment growth projections work, which assumptions matter, and when to use the Investment Growth Calculator.',
+    intro:
+      'Investment growth projections estimate how a portfolio might change over time based on starting balance, contributions, return assumptions, time horizon, and compounding. They are useful planning scenarios, not guarantees.',
+    sections: [
+      {
+        heading: 'What drives investment growth',
+        paragraphs: [
+          'The main inputs are starting balance, contribution amount, contribution frequency, time horizon, and assumed annual return. Time and contributions often matter as much as the rate, especially early in a plan.',
+          'A projection is only as useful as its assumptions. Real returns vary, fees reduce growth, taxes can matter, and inflation changes purchasing power.',
+        ],
+      },
+      {
+        heading: 'When to use the Investment Growth Calculator',
+        paragraphs: [
+          'Use the Investment Growth Calculator when you want to compare long-term scenarios with different starting balances, monthly contributions, rates, and timelines.',
+          'It works well for retirement planning, taxable investing, goal planning, and testing how contribution increases may change future balances.',
+        ],
+      },
+      {
+        heading: 'How to interpret the result',
+        paragraphs: [
+          'Treat the output as a scenario, not a promise. Run conservative, middle, and optimistic cases to understand sensitivity to return assumptions and contribution changes.',
+          'Then compare nominal balances with inflation-adjusted and real-return tools so a future dollar amount is not confused with future purchasing power.',
+        ],
+      },
+    ],
+    links: [
+      {
+        title: 'Investment Growth Calculator',
+        url: '/calculators/investment-growth-calculator/',
+        description: 'Project portfolio growth with starting balance, contributions, return, and time.',
+      },
+      {
+        title: 'Compound Interest Calculator',
+        url: '/calculators/compound-interest/',
+        description: 'Explore compounding mechanics with contribution and frequency assumptions.',
+      },
+      {
+        title: 'Inflation-Adjusted Return Calculator',
+        url: '/calculators/inflation-adjusted-return-calculator/',
+        description: 'Compare nominal and inflation-adjusted ending balances.',
+      },
+      {
+        title: 'Investing Guide Hub',
+        url: '/guides/investing/',
+        description: 'Browse investing calculators, examples, and related education guides.',
+      },
+    ],
+    faq: [
+      {
+        question: 'What return should I use?',
+        answer: 'Use a range of assumptions rather than one confident number. Consider fees, taxes, inflation, and risk.',
+      },
+      {
+        question: 'Are investment growth projections guaranteed?',
+        answer: 'No. Markets are uncertain, and actual results can be higher or lower than a smooth projection.',
+      },
+      {
+        question: 'Should I include monthly contributions?',
+        answer: 'Yes, if you plan to invest regularly. Contributions can be a major driver of ending balance.',
+      },
+      {
+        question: 'How does inflation affect the projection?',
+        answer: 'Inflation reduces purchasing power. A nominal ending balance may buy less than it appears to in today’s dollars.',
+      },
+      {
+        question: 'How often should I update a projection?',
+        answer: 'Update it when income, contributions, goals, time horizon, fees, or investment assumptions change.',
+      },
+    ],
+  },
 ];
 
 export function getTopicalGuide(slug: string): TopicalGuide | undefined {

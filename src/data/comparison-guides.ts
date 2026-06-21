@@ -742,9 +742,24 @@ export const comparisonGuides: ComparisonGuide[] = [
         description: 'Explore how time and contributions affect growth.',
       },
       {
+        title: 'Investment Growth Calculator',
+        url: '/calculators/investment-growth-calculator/',
+        description: 'Project portfolio growth from a starting balance, contributions, return, and time.',
+      },
+      {
+        title: 'Investment Growth Guide',
+        url: '/guides/investment-growth/',
+        description: 'Learn how to interpret long-term portfolio projections.',
+      },
+      {
         title: 'Investing Basics Guide',
         url: '/guides/investing/',
         description: 'Review risk, diversification, fees, and long-term assumptions.',
+      },
+      {
+        title: 'What Is CAGR?',
+        url: '/guides/what-is-cagr/',
+        description: 'Understand annualized growth before comparing return assumptions.',
       },
       {
         title: 'CAGR Calculator Guide',

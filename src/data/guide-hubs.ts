@@ -394,6 +394,48 @@ export const guideHubs: GuideHub[] = [
           'Learn when each growth measure is useful and what each one leaves out.',
       },
       {
+        title: 'What Is CAGR?',
+        url: '/guides/what-is-cagr/',
+        description:
+          'Understand compound annual growth rate and when annualized growth is useful.',
+      },
+      {
+        title: 'What Is APY?',
+        url: '/guides/what-is-apy/',
+        description:
+          'Learn how annual percentage yield reflects compounding over a year.',
+      },
+      {
+        title: 'What Is DRIP Investing?',
+        url: '/guides/what-is-drip-investing/',
+        description:
+          'See how dividend reinvestment can increase share count and support compounding.',
+      },
+      {
+        title: 'What Is an Expense Ratio?',
+        url: '/guides/what-is-expense-ratio/',
+        description:
+          'Learn how recurring fund costs can reduce long-term investment growth.',
+      },
+      {
+        title: 'What Is ETF Fee Drag?',
+        url: '/guides/what-is-etf-fee-drag/',
+        description:
+          'Understand how ETF expense-ratio differences can compound over time.',
+      },
+      {
+        title: 'What Is the Rule of 72?',
+        url: '/guides/rule-of-72/',
+        description:
+          'Use the doubling-time shortcut to build intuition about growth and inflation.',
+      },
+      {
+        title: 'Investment Growth Guide',
+        url: '/guides/investment-growth/',
+        description:
+          'Learn how portfolio projections use balances, contributions, returns, and time.',
+      },
+      {
         title: 'How to Use the Dividend Yield Calculator',
         url: '/guides/how-to-use-dividend-yield-calculator/',
         description:
