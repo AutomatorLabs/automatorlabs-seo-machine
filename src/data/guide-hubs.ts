@@ -297,11 +297,40 @@ export const guideHubs: GuideHub[] = [
     categoryUrl: '/calculators/investing/',
     calculatorIds: [
       'compound-interest-calculator',
-      'investment-fee-calculator',
+      'investment-growth-calculator',
+      'cagr-calculator',
+      'apy-calculator',
+      'rule-of-72-calculator',
+      'drip-calculator',
+      'dividend-yield-calculator',
+      'dividend-growth-calculator',
       'expense-ratio-calculator',
+      'etf-fee-drag-calculator',
+      'lump-sum-vs-dca-calculator',
       'inflation-adjusted-return-calculator',
+      'real-rate-of-return-calculator',
+    ],
+    exampleCollectionLinks: [
+      {
+        title: 'Compound Interest Examples',
+        url: '/calculators/compound-interest/examples/',
+        description:
+          'Browse worked examples for investment growth, monthly contributions, time horizon, and compounding assumptions.',
+      },
     ],
     comparisonGuideLinks: [
+      {
+        title: 'What Is Compound Interest?',
+        url: '/guides/what-is-compound-interest/',
+        description:
+          'Learn how returns can compound over time and why time horizon matters for long-term investors.',
+      },
+      {
+        title: 'How to Use the Rule of 72 Calculator',
+        url: '/guides/how-to-use-rule-of-72-calculator/',
+        description:
+          'Use a quick doubling-time shortcut to sanity-check growth assumptions.',
+      },
       {
         title: 'Lump Sum vs Dollar Cost Averaging',
         url: '/guides/lump-sum-vs-dollar-cost-averaging/',
@@ -313,6 +342,36 @@ export const guideHubs: GuideHub[] = [
         url: '/guides/cagr-vs-compound-interest/',
         description:
           'Learn when each growth measure is useful and what each one leaves out.',
+      },
+      {
+        title: 'How to Use the Dividend Yield Calculator',
+        url: '/guides/how-to-use-dividend-yield-calculator/',
+        description:
+          'Estimate dividend yield and income from share price, dividend rate, and position size.',
+      },
+      {
+        title: 'How to Use the Dividend Growth Calculator',
+        url: '/guides/how-to-use-dividend-growth-calculator/',
+        description:
+          'Model how dividend income may change under a steady dividend-growth assumption.',
+      },
+      {
+        title: 'How to Use the Expense Ratio Calculator',
+        url: '/guides/how-to-use-expense-ratio-calculator/',
+        description:
+          'See how recurring fund costs can reduce long-term compounding.',
+      },
+      {
+        title: 'How to Use the ETF Fee Drag Calculator',
+        url: '/guides/how-to-use-etf-fee-drag-calculator/',
+        description:
+          'Compare two ETF expense ratios and estimate the long-term drag from higher fees.',
+      },
+      {
+        title: 'How to Use the Investment Growth Calculator',
+        url: '/guides/how-to-use-investment-growth-calculator/',
+        description:
+          'Build long-term investing scenarios from starting balance, contributions, returns, and time.',
       },
       {
         title: 'APR vs APY',
