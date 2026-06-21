@@ -1,0 +1,9 @@
+---
+import GuideHubPage from '../../../components/GuideHubPage.astro';
+import { getGuideHub } from '../../../data/guide-hubs';
+
+const guide = getGuideHub('retirement');
+if (!guide) throw new Error('Missing retirement guide hub');
+---
+
+<GuideHubPage guide={guide} />

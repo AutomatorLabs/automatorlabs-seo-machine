@@ -24,12 +24,158 @@ export interface GuideHub {
   categoryTitle: string;
   categoryUrl: string;
   calculatorIds: string[];
+  exampleCollectionLinks?: GuideLink[];
   comparisonGuideLinks?: GuideLink[];
   sections: GuideSection[];
   faq: GuideFaq[];
 }
 
 export const guideHubs: GuideHub[] = [
+  {
+    slug: 'retirement',
+    title: 'Retirement Planning Guide Hub',
+    eyebrow: 'Retirement planning',
+    description:
+      'Plan retirement by connecting spending, savings, investment accounts, withdrawal rates, timelines, and practical calculator examples.',
+    seoTitle: 'Retirement Planning Guide Hub | AutomatorLabs',
+    metaDescription:
+      'Explore retirement planning calculators, FIRE tools, withdrawal examples, Roth IRA and 401(k) resources, and practical retirement guides.',
+    categoryTitle: 'FIRE & Retirement Calculators',
+    categoryUrl: '/calculators/fire-retirement/',
+    calculatorIds: [
+      'fire-calculator',
+      'coast-fire-calculator',
+      'four-percent-rule-calculator',
+      'safe-withdrawal-rate-calculator',
+      'retirement-withdrawal-calculator',
+      'retirement-income-gap-calculator',
+      'years-to-retirement-calculator',
+      'roth-ira-calculator',
+      '401k-calculator',
+    ],
+    exampleCollectionLinks: [
+      {
+        title: 'FIRE Examples',
+        url: '/calculators/fire/examples/',
+        description:
+          'Compare FIRE numbers and retirement-readiness examples across spending targets, portfolios, and withdrawal rates.',
+      },
+      {
+        title: 'Retirement Withdrawal Examples',
+        url: '/calculators/retirement-withdrawal/examples/',
+        description:
+          'Browse retirement withdrawal examples by portfolio size, annual withdrawal, return, inflation, and duration.',
+      },
+      {
+        title: 'Safe Withdrawal Rate Examples',
+        url: '/calculators/safe-withdrawal-rate/examples/',
+        description:
+          'Compare annual spending targets with portfolio values and withdrawal-rate benchmarks.',
+      },
+      {
+        title: '4 Percent Rule Examples',
+        url: '/calculators/4-percent-rule/examples/',
+        description:
+          'See how the 4% rule compares portfolio sizes with annual spending needs and planning timelines.',
+      },
+    ],
+    comparisonGuideLinks: [
+      {
+        title: 'Planning Retirement Withdrawals',
+        url: '/guides/retirement-withdrawals/',
+        description:
+          'Learn how spending, withdrawal rates, inflation, taxes, and sequence risk shape retirement income.',
+      },
+      {
+        title: 'A Beginner’s Guide to FIRE',
+        url: '/guides/fire/',
+        description:
+          'Connect annual spending, savings rate, invested assets, and withdrawal assumptions.',
+      },
+      {
+        title: 'FIRE vs Coast FIRE',
+        url: '/guides/fire-vs-coast-fire/',
+        description:
+          'Compare full financial independence with a coast milestone that relies on future growth.',
+      },
+      {
+        title: 'Roth IRA vs Traditional IRA',
+        url: '/guides/roth-vs-traditional-ira/',
+        description:
+          'Compare paying taxes now with deferring taxes until retirement.',
+      },
+      {
+        title: 'Lean FIRE vs Fat FIRE',
+        url: '/guides/lean-fire-vs-fat-fire/',
+        description:
+          'Understand how spending levels change the size and flexibility of a FIRE plan.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Start retirement planning with spending',
+        paragraphs: [
+          'Retirement planning starts with the lifestyle the portfolio needs to support. Annual spending affects the size of the target portfolio, the savings required before retirement, and the withdrawal rate needed later. A useful plan separates essential expenses from flexible spending so tradeoffs are visible before the numbers feel final.',
+          'Estimate current spending, expected retirement spending, and any major changes such as housing, healthcare, travel, family support, or debt payoff. Then subtract income sources that do not depend on portfolio withdrawals, such as Social Security, pensions, rental income, or part-time work. The remaining gap is the amount savings and investments may need to cover.',
+        ],
+      },
+      {
+        heading: 'Use calculators to compare the moving parts',
+        paragraphs: [
+          'No single retirement calculator answers every question. A FIRE calculator estimates the portfolio target connected to annual spending. A Coast FIRE calculator tests whether current investments may grow toward a future target. A 4% rule or safe withdrawal rate calculator helps compare spending against a portfolio. A retirement withdrawal calculator turns portfolio value into income estimates.',
+          'Use these tools together instead of treating one output as a verdict. Run a conservative case, a middle case, and an optimistic case. Change one input at a time so you can see whether spending, contributions, return assumptions, retirement date, or withdrawal rate drives the result.',
+        ],
+      },
+      {
+        heading: 'Connect account choices with retirement timing',
+        paragraphs: [
+          'Roth IRAs, traditional retirement accounts, taxable accounts, and workplace plans can all support retirement, but they do not behave the same way. Contribution rules, taxes, employer matches, withdrawal access, penalties, and required distributions can affect how spendable the money is at different ages.',
+          'A 401(k) calculator can help estimate workplace-plan growth and employer match value, while Roth IRA tools can show how contributions and growth compound under simplified assumptions. Treat account projections as planning scenarios. Eligibility, tax treatment, and plan rules can change, so avoid relying on stale limits or generic account advice.',
+        ],
+      },
+      {
+        heading: 'Test withdrawal risk before retirement',
+        paragraphs: [
+          'The transition from saving to withdrawing introduces risks that do not matter as much during accumulation. Poor market returns early in retirement can hurt more when withdrawals are happening. Inflation can raise the cost of the same lifestyle. Taxes and fees can reduce spendable income. A plan that looks comfortable under one constant return may be fragile under a different sequence.',
+          'Worked examples make these tradeoffs easier to inspect. Compare a $1 million portfolio with several spending targets, then compare the same spending against larger or smaller portfolios. Review the 4% rule, safe withdrawal rate, and retirement withdrawal examples as educational benchmarks rather than guarantees.',
+        ],
+      },
+      {
+        heading: 'Build flexibility into the plan',
+        paragraphs: [
+          'A durable retirement plan has room to adjust. Flexible spending, a cash buffer, diversified investments, delayed retirement, part-time income, or a lower starting withdrawal rate can all create margin. The right mix depends on household needs, health, risk tolerance, taxes, and the importance of leaving assets behind.',
+          'Review the plan periodically and after major changes in income, markets, family needs, law, health, or housing. The goal is not to predict retirement perfectly. It is to understand the main levers well enough to make practical decisions as real life unfolds.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: 'Which retirement calculator should I start with?',
+        answer:
+          'Start with the FIRE Calculator if you need a portfolio target from annual spending. Use withdrawal calculators when you already have a portfolio amount and want to estimate income or withdrawal rates.',
+      },
+      {
+        question: 'Is the 4% rule enough for retirement planning?',
+        answer:
+          'No. The 4% rule is a useful shortcut, but it does not guarantee success and does not fully model taxes, fees, inflation, account rules, or changing spending.',
+      },
+      {
+        question: 'How do Roth IRA and 401(k) calculators fit into the plan?',
+        answer:
+          'They help estimate how account balances may grow under simplified contribution and return assumptions. Actual eligibility, taxes, plan rules, and laws should be reviewed separately.',
+      },
+      {
+        question: 'How often should I update a retirement plan?',
+        answer:
+          'Review it periodically and after major changes in income, spending, market conditions, family needs, health, housing, or retirement timing.',
+      },
+      {
+        question: 'Are the worked examples personalized advice?',
+        answer:
+          'No. They are educational scenarios that show what specific assumptions produce. They exclude many personal factors and should not be treated as financial, tax, or legal advice.',
+      },
+    ],
+  },
   {
     slug: 'fire',
     title: 'A Beginner\'s Guide to FIRE',
@@ -48,6 +194,12 @@ export const guideHubs: GuideHub[] = [
       'savings-rate-calculator',
     ],
     comparisonGuideLinks: [
+      {
+        title: 'Retirement Planning Guide Hub',
+        url: '/guides/retirement/',
+        description:
+          'Use the central retirement hub to connect FIRE, withdrawal rates, retirement accounts, and worked examples.',
+      },
       {
         title: 'FIRE Number Examples',
         url: '/calculators/fire/examples/',
@@ -285,6 +437,12 @@ export const guideHubs: GuideHub[] = [
       'portfolio-withdrawal-sustainability-calculator',
     ],
     comparisonGuideLinks: [
+      {
+        title: 'Retirement Planning Guide Hub',
+        url: '/guides/retirement/',
+        description:
+          'Connect withdrawal planning with FIRE, Roth IRA, 401(k), and retirement timeline tools.',
+      },
       {
         title: 'Roth IRA vs Traditional IRA',
         url: '/guides/roth-vs-traditional-ira/',

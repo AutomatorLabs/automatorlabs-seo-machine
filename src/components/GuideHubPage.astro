@@ -93,6 +93,20 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
         </div>
       </section>
 
+      {guide.exampleCollectionLinks && guide.exampleCollectionLinks.length > 0 && (
+        <section class="worked-examples" aria-labelledby="worked-examples-heading">
+          <h2 id="worked-examples-heading">Worked examples</h2>
+          <div class="calculator-links">
+            {guide.exampleCollectionLinks.map((link) => (
+              <a href={link.url}>
+                <span>{link.title}</span>
+                <small>{link.description}</small>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
       {guide.comparisonGuideLinks && guide.comparisonGuideLinks.length > 0 && (
         <section class="related-guides" aria-labelledby="related-guides-heading">
           <h2 id="related-guides-heading">Related guides</h2>
@@ -266,6 +280,7 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
 
   .article-body h2,
   .related-calculators h2,
+  .worked-examples h2,
   .related-guides h2,
   .faq-section h2 {
     margin: 0 0 0.75rem;
@@ -281,6 +296,7 @@ const faqStructuredDataJson = JSON.stringify(faqStructuredData).replace(
   }
 
   .related-calculators,
+  .worked-examples,
   .related-guides,
   .faq-section {
     margin-top: 3rem;
