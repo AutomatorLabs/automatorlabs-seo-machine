@@ -1,0 +1,420 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  EXPECTED_FOUR_PERCENT_RULE_SEO_PAGE_COUNT,
+  fourPercentRuleSeoRecords,
+} from '../../../../data/programmatic-seo/four-percent-rule';
+import { auditFourPercentRuleSeoRecords } from '../../../../lib/programmatic-seo/four-percent-rule';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditFourPercentRuleSeoRecords(
+  fourPercentRuleSeoRecords,
+  EXPECTED_FOUR_PERCENT_RULE_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: '4 Percent Rule Calculator',
+        url: '/calculators/4-percent-rule-calculator/',
+      },
+      {
+        name: '4 Percent Rule Examples',
+        url: '/calculators/4-percent-rule/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(
+  fourPercentRuleSeoRecords,
+  [
+    {
+      id: 'can-i-retire',
+      title: 'Can I Retire With This Portfolio?',
+      description:
+        'Compare portfolio sizes from $500,000 to $3 million against realistic annual spending targets.',
+      matches: (record) => record.portfolioValue <= 1500000,
+    },
+    {
+      id: 'larger-portfolios',
+      title: 'Larger Portfolio 4% Rule Examples',
+      description:
+        'Compare $2 million and $3 million retirement portfolios with higher spending targets and longer timelines.',
+      matches: (record) => record.portfolioValue > 1500000,
+    },
+  ],
+  (a, b) =>
+    a.portfolioValue - b.portfolioValue ||
+    a.annualSpending - b.annualSpending ||
+    a.years - b.years,
+);
+---
+
+<Layout
+  title="4 Percent Rule Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} 4 percent rule examples by portfolio value, annual spending, and retirement duration.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/4-percent-rule-calculator/">
+            4 Percent Rule Calculator
+          </a>
+        </li>
+        <li aria-current="page">4 Percent Rule Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Retirement planning examples</p>
+      <h1>4 Percent Rule Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked 4% rule examples covering portfolio
+        values, annual spending targets, simple withdrawal amounts, and
+        retirement planning durations.
+      </p>
+      <a class="primary-link" href="/calculators/4-percent-rule-calculator/">
+        Calculate your 4% rule number
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section class="example-search" aria-label="Search 4 percent rule examples">
+      <label for="four-percent-rule-example-search">
+        Search 4 percent rule examples
+      </label>
+      <div class="search-row">
+        <input
+          id="four-percent-rule-example-search"
+          type="search"
+          placeholder="Try 1,000,000, 40,000, 4%, or 30 years"
+          autocomplete="off"
+          aria-controls="four-percent-rule-example-groups"
+          aria-describedby="four-percent-rule-example-count"
+        />
+        <button id="clear-four-percent-rule-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="four-percent-rule-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="four-percent-rule-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-four-percent-rule-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-four-percent-rule-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.portfolioValue,
+                  record.portfolioValue.toLocaleString('en-US'),
+                  record.annualSpending,
+                  record.annualSpending.toLocaleString('en-US'),
+                  record.years,
+                  `${record.years} years`,
+                  '4 percent rule',
+                  '4% rule',
+                  'retire',
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/4-percent-rule/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.portfolioValue)} portfolio · {currency.format(record.annualSpending)} spending · {record.years} years
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p id="no-four-percent-rule-examples" class="no-results" role="status" hidden>
+      No 4 percent rule examples found. Try a portfolio, spending target, or timeline.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#four-percent-rule-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-four-percent-rule-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#four-percent-rule-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-four-percent-rule-examples',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-four-percent-rule-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-four-percent-rule-example-group]',
+    ),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      group.hidden = !group.querySelector(
+        '[data-four-percent-rule-example-card]:not([hidden])',
+      );
+    });
+
+    count.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'example' : 'examples'}`;
+    noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query === '';
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateExamples();
+    input.focus();
+  });
+</script>
+
+<style>
+  main {
+    width: min(1120px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 4.5rem 0;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li:not(:last-child)::after {
+    content: '›';
+    margin-left: 0.45rem;
+    color: var(--border-color);
+  }
+
+  .page-header {
+    max-width: 780px;
+    margin-bottom: 2rem;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.75rem;
+    color: var(--accent-color);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 6vw, 4.6rem);
+    line-height: 1;
+    letter-spacing: -0.06em;
+  }
+
+  .intro {
+    color: var(--muted-text-color);
+    font-size: 1.1rem;
+    line-height: 1.7;
+  }
+
+  .primary-link,
+  .secondary-link {
+    display: inline-flex;
+    margin: 0.5rem 0.75rem 0 0;
+    border-radius: 999px;
+    padding: 0.85rem 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .primary-link {
+    background: var(--accent-color);
+    color: var(--accent-text-color);
+  }
+
+  .secondary-link {
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+  }
+
+  .example-search,
+  .example-group {
+    border: 1px solid var(--border-color);
+    border-radius: 1.25rem;
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+  }
+
+  .example-search {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+  }
+
+  .example-search label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  input {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    padding: 0.8rem 1rem;
+    background: var(--input-bg);
+    color: var(--text-color);
+  }
+
+  button {
+    border: 0;
+    border-radius: 999px;
+    padding: 0.8rem 1rem;
+    background: var(--text-color);
+    color: var(--background-color);
+    font-weight: 700;
+  }
+
+  .example-groups {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .example-group {
+    padding: 1rem;
+  }
+
+  .example-group header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .example-group h2,
+  .example-group p {
+    margin: 0;
+  }
+
+  .example-group p,
+  .example-group span,
+  .no-results {
+    color: var(--muted-text-color);
+  }
+
+  .example-group ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .example-group a {
+    display: grid;
+    gap: 0.35rem;
+    height: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 0.9rem;
+    color: var(--text-color);
+    text-decoration: none;
+  }
+
+  .example-group a span {
+    color: var(--muted-text-color);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .no-results {
+    padding: 1rem;
+  }
+
+  @media (max-width: 640px) {
+    .search-row,
+    .example-group header {
+      flex-direction: column;
+    }
+
+    button {
+      width: 100%;
+    }
+  }
+</style>

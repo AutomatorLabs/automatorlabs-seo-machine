@@ -3,6 +3,11 @@ import type { Page } from '@playwright/test';
 import { calculatorConfigs } from '../src/data/calculators';
 import { calculatorCategories } from '../src/data/calculator-categories';
 import {
+  EXPECTED_FOUR_PERCENT_RULE_SEO_PAGE_COUNT,
+  fourPercentRuleSeoRecords,
+} from '../src/data/programmatic-seo/four-percent-rule';
+import { auditFourPercentRuleSeoRecords } from '../src/lib/programmatic-seo/four-percent-rule';
+import {
   compoundInterestSeoRecords,
   EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
   expandedCompoundInterestSeoRecords,
@@ -1227,6 +1232,130 @@ test.describe('safe withdrawal rate programmatic SEO', () => {
     ).toHaveAttribute('href', '/calculators/safe-withdrawal-rate-calculator/');
     await expect(newsletterCta(page)).toBeVisible();
     await expect(page.locator('tbody tr')).toHaveCount(5);
+    expect(pageErrors).toEqual([]);
+  });
+});
+
+test.describe('4 percent rule programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditFourPercentRuleSeoRecords(
+      fourPercentRuleSeoRecords,
+      EXPECTED_FOUR_PERCENT_RULE_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_FOUR_PERCENT_RULE_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_FOUR_PERCENT_RULE_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_FOUR_PERCENT_RULE_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_FOUR_PERCENT_RULE_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_FOUR_PERCENT_RULE_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount:
+        EXPECTED_FOUR_PERCENT_RULE_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('examples index exposes and searches 4 percent rule pages', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/4-percent-rule/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: '4 Percent Rule Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(
+      page.locator('[data-four-percent-rule-example-group]'),
+    ).toHaveCount(2);
+    await expect(
+      page.locator('[data-four-percent-rule-example-card]'),
+    ).toHaveCount(EXPECTED_FOUR_PERCENT_RULE_SEO_PAGE_COUNT);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/4-percent-rule/examples/',
+    );
+
+    const hrefs = await page
+      .locator('[data-four-percent-rule-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(
+      EXPECTED_FOUR_PERCENT_RULE_SEO_PAGE_COUNT,
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search 4 percent rule examples',
+    });
+    await searchBox.fill('1,000,000');
+    await expect(
+      page.locator('[data-four-percent-rule-example-card]:visible'),
+    ).not.toHaveCount(0);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-four-percent-rule-example-card]:visible'),
+    ).toHaveCount(EXPECTED_FOUR_PERCENT_RULE_SEO_PAGE_COUNT);
+    await expect(
+      page.getByRole('link', {
+        name: 'Calculate your 4% rule number',
+      }),
+    ).toHaveAttribute('href', '/calculators/4-percent-rule-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  test('renders a generated 4 percent rule page with schemas and CTA', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+    const record = fourPercentRuleSeoRecords.find(
+      (candidate) =>
+        candidate.slug ===
+        '4-percent-rule-1000000-portfolio-40000-spending-30-years',
+    );
+    if (!record) {
+      throw new Error('Missing representative 4 percent rule record');
+    }
+
+    const url = `/calculators/4-percent-rule/${record.slug}/`;
+    const response = await page.goto(url, {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', { level: 1, name: record.question }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      `https://automatorlabs.co${url}`,
+    );
+
+    const schemas = await page
+      .locator('script[type="application/ld+json"]')
+      .evaluateAll((scripts) =>
+        scripts.map((script) => script.textContent ?? '').join('\n'),
+      );
+    expect(schemas).toContain('"@type":"FAQPage"');
+    expect(schemas).toContain('"@type":"BreadcrumbList"');
+    await expect(
+      page.getByRole('link', {
+        name: 'Open the 4 Percent Rule Calculator',
+      }),
+    ).toHaveAttribute('href', '/calculators/4-percent-rule-calculator/');
+    await expect(newsletterCta(page)).toBeVisible();
+    await expect(page.locator('tbody tr')).toHaveCount(4);
     expect(pageErrors).toEqual([]);
   });
 });

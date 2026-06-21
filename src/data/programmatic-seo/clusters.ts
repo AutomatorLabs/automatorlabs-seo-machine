@@ -1,3 +1,4 @@
+import { fourPercentRuleSeoRecords } from './four-percent-rule';
 import { compoundInterestSeoRecords } from './compound-interest';
 import {
   balanceTransferSeoRecords,
@@ -118,6 +119,19 @@ const safeWithdrawalRateRepresentatives = [
     (record) =>
       record.slug ===
       'safe-withdrawal-rate-100000-spending-2000000-portfolio-4-percent-30-years',
+  ),
+].filter((record) => record !== undefined);
+
+const fourPercentRuleRepresentatives = [
+  fourPercentRuleSeoRecords.find(
+    (record) =>
+      record.slug ===
+      '4-percent-rule-1000000-portfolio-40000-spending-30-years',
+  ),
+  fourPercentRuleSeoRecords.find(
+    (record) =>
+      record.slug ===
+      '4-percent-rule-2000000-portfolio-100000-spending-30-years',
   ),
 ].filter((record) => record !== undefined);
 
@@ -280,6 +294,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: safeWithdrawalRateRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/safe-withdrawal-rate/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'four-percent-rule',
+    title: '4 Percent Rule Examples',
+    description:
+      'Compare retirement portfolios, annual spending targets, 4% withdrawal amounts, and planning durations.',
+    examplesUrl: '/calculators/4-percent-rule/examples/',
+    calculator: {
+      title: '4 Percent Rule Calculator',
+      url: '/calculators/4-percent-rule-calculator/',
+    },
+    guide: {
+      title: 'Planning Retirement Withdrawals',
+      url: '/guides/retirement-withdrawals/',
+    },
+    pageCount: fourPercentRuleSeoRecords.length,
+    representativePages: fourPercentRuleRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/4-percent-rule/${record.slug}/`,
     })),
   },
 ];

@@ -1,0 +1,28 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_FOUR_PERCENT_RULE_SEO_PAGE_COUNT,
+  fourPercentRuleSeoRecords,
+} from '../../../data/programmatic-seo/four-percent-rule';
+import {
+  auditFourPercentRuleSeoRecords,
+  createFourPercentRuleSeoPage,
+} from '../../../lib/programmatic-seo/four-percent-rule';
+
+auditFourPercentRuleSeoRecords(
+  fourPercentRuleSeoRecords,
+  EXPECTED_FOUR_PERCENT_RULE_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return fourPercentRuleSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: { record },
+  }));
+}
+
+const { record } = Astro.props;
+const page = createFourPercentRuleSeoPage(record, fourPercentRuleSeoRecords);
+---
+
+<ProgrammaticSeoPage page={page} />
