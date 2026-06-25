@@ -292,6 +292,33 @@ function buildGuide(config: CalculatorConfig): CalculatorGuide {
               'Understand how investment growth and rising prices compound together.',
           },
         ]
+      : config.id === 'cagr'
+        ? [
+            {
+              title: 'CAGR Examples',
+              url: '/calculators/cagr/examples/',
+              description:
+                'Browse 200 worked CAGR examples across stocks, ETFs, index funds, real estate, crypto, business growth, revenue, and portfolio outcomes.',
+            },
+            {
+              title: 'What Is CAGR?',
+              url: '/guides/what-is-cagr/',
+              description:
+                'Learn when compound annual growth rate is useful and what it omits.',
+            },
+            {
+              title: 'CAGR vs Compound Interest',
+              url: '/guides/cagr-vs-compound-interest/',
+              description:
+                'Compare annualized historical growth with future-value projections.',
+            },
+            {
+              title: 'Investment Growth Guide',
+              url: '/guides/investment-growth/',
+              description:
+                'Connect historical annualized returns with forward-looking investment projections.',
+            },
+          ]
       : config.id === 'fire'
         ? [
             {

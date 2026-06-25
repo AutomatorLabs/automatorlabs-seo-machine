@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { cagrCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredCagrSeoRecords } from '../../../data/programmatic-seo/cagr';
 
 const relatedItems = cagrCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -9,9 +10,23 @@ const relatedItems = cagrCalculator.relatedIds.flatMap((id) => {
 });
 const guideItems = [
   {
+    title: 'What Is CAGR?',
+    url: '/guides/what-is-cagr/',
+  },
+  {
     title: 'CAGR vs Compound Interest',
     url: '/guides/cagr-vs-compound-interest/',
   },
+];
+const exampleItems = [
+  {
+    title: 'Browse all 200 CAGR examples',
+    url: '/calculators/cagr/examples/',
+  },
+  ...featuredCagrSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/cagr/${record.slug}/`,
+  })),
 ];
 ---
 
@@ -24,6 +39,8 @@ const guideItems = [
   faq={cagrCalculator.faq}
   relatedItems={relatedItems}
   guideItems={guideItems}
+  exampleItems={exampleItems}
+  exampleHeading="CAGR Examples"
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

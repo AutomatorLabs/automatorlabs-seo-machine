@@ -373,6 +373,12 @@ export const guideHubs: GuideHub[] = [
         description:
           'Browse worked investment projections for lump sums, recurring investing, retirement planning, taxable accounts, index funds, ETFs, and long-term wealth accumulation.',
       },
+      {
+        title: 'CAGR Examples',
+        url: '/calculators/cagr/examples/',
+        description:
+          'Browse annualized growth examples for stocks, ETFs, index funds, real estate, crypto, businesses, revenue, and portfolios.',
+      },
     ],
     comparisonGuideLinks: [
       {

@@ -1,5 +1,6 @@
 import { fourPercentRuleSeoRecords } from './four-percent-rule';
 import { compoundInterestSeoRecords } from './compound-interest';
+import { cagrSeoRecords } from './cagr';
 import {
   balanceTransferSeoRecords,
   creditCardPayoffSeoRecords,
@@ -37,6 +38,15 @@ const compoundInterestRepresentatives = [
   ),
   compoundInterestSeoRecords.find(
     (record) => record.slug === '50000-at-7-percent-for-20-years',
+  ),
+].filter((record) => record !== undefined);
+
+const cagrRepresentatives = [
+  cagrSeoRecords.find(
+    (record) => record.slug === 'stock-cagr-10000-to-18000-over-5-years',
+  ),
+  cagrSeoRecords.find(
+    (record) => record.slug === 'portfolio-cagr-250000-to-430000-over-12-years',
   ),
 ].filter((record) => record !== undefined);
 
@@ -167,6 +177,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: compoundInterestRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/compound-interest/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'cagr',
+    title: 'CAGR Examples',
+    description:
+      'Explore annualized growth examples across stocks, ETFs, index funds, real estate, cryptocurrency, business metrics, revenue, and portfolio outcomes.',
+    examplesUrl: '/calculators/cagr/examples/',
+    calculator: {
+      title: 'CAGR Calculator',
+      url: '/calculators/cagr-calculator/',
+    },
+    guide: {
+      title: 'What Is CAGR?',
+      url: '/guides/what-is-cagr/',
+    },
+    pageCount: cagrSeoRecords.length,
+    representativePages: cagrRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/cagr/${record.slug}/`,
     })),
   },
   {

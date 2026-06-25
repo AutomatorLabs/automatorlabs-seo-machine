@@ -3,13 +3,14 @@
 ## Current scope
 
 - Global examples hub: `/examples/`
-- 10 live clusters registered in `src/data/programmatic-seo/clusters.ts`
+- 11 live clusters registered in `src/data/programmatic-seo/clusters.ts`
 - 200 records per cluster
-- 2,000 generated example pages total
+- 2,200 generated example pages total
 
 Current live clusters:
 
 - Compound Interest
+- CAGR
 - FIRE
 - Investment Growth
 - Mortgage Payment
@@ -34,6 +35,10 @@ Current cluster routes:
   - Calculator: `/calculators/compound-interest/`
   - Index: `/calculators/compound-interest/examples/`
   - Pages: `/calculators/compound-interest/{slug}/`
+- CAGR
+  - Calculator: `/calculators/cagr-calculator/`
+  - Index: `/calculators/cagr/examples/`
+  - Pages: `/calculators/cagr/{slug}/`
 - FIRE
   - Calculator: `/calculators/fire-calculator/`
   - Index: `/calculators/fire/examples/`
@@ -99,6 +104,7 @@ Shared infrastructure:
 Cluster-specific modules:
 
 - `src/data/programmatic-seo/compound-interest.ts`
+- `src/data/programmatic-seo/cagr.ts`
 - `src/data/programmatic-seo/fire.ts`
 - `src/data/programmatic-seo/investment-growth.ts`
 - `src/data/programmatic-seo/mortgage.ts`
@@ -146,6 +152,7 @@ Every generated page is expected to include:
 Current expected counts from `src/data/programmatic-seo/*`:
 
 - Compound Interest: 200
+- CAGR: 200
 - FIRE: 200
 - Investment Growth: 200
 - Mortgage: 200
@@ -155,6 +162,55 @@ Current expected counts from `src/data/programmatic-seo/*`:
 - Retirement Withdrawal: 200
 - Safe Withdrawal Rate: 200
 - 4 Percent Rule: 200
+
+## CAGR cluster
+
+Status: implemented and registered in the current system.
+
+Primary files:
+
+- `src/data/programmatic-seo/cagr.ts`
+- `src/lib/programmatic-seo/cagr.ts`
+- `src/pages/calculators/cagr/examples/index.astro`
+- `src/pages/calculators/cagr/[slug].astro`
+
+Current route family:
+
+- Calculator: `/calculators/cagr-calculator/`
+- Examples index: `/calculators/cagr/examples/`
+- Generated page: `/calculators/cagr/{slug}/`
+
+Record intents covered:
+
+- `stocks`
+- `etfs`
+- `index-funds`
+- `real-estate`
+- `cryptocurrency`
+- `business-growth`
+- `revenue-growth`
+- `portfolio-growth`
+
+Key implementation details:
+
+- Reuses `calculateCagr` from `src/lib/math`
+- Does not change the CAGR Calculator formula
+- Uses the shared programmatic page shell and audit system
+- Shows a smoothed annual path that matches the same starting value, ending value, and time period
+- Adds calculator-page links from `src/pages/calculators/cagr-calculator/index.astro`
+- Adds internal-link relationships through guide, topic, and cluster registry updates
+
+Examples index grouping:
+
+- Stocks, ETFs, and Index Fund Examples
+- Real Estate and Cryptocurrency Examples
+- Business and Revenue Growth Examples
+- Portfolio Growth Examples
+
+Representative registered pages:
+
+- `/calculators/cagr/stock-cagr-10000-to-18000-over-5-years/`
+- `/calculators/cagr/portfolio-cagr-250000-to-430000-over-12-years/`
 
 ## Investment Growth cluster
 
@@ -256,6 +312,7 @@ Playwright coverage in `tests/calculators.spec.ts` currently includes:
 Current programmatic SEO describe blocks:
 
 - Compound interest
+- CAGR
 - FIRE
 - Investment growth
 - Mortgage

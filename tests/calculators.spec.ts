@@ -15,6 +15,11 @@ import {
 } from '../src/data/programmatic-seo/compound-interest';
 import { auditCompoundInterestSeoRecords } from '../src/lib/programmatic-seo/compound-interest';
 import {
+  cagrSeoRecords,
+  EXPECTED_CAGR_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/cagr';
+import { auditCagrSeoRecords } from '../src/lib/programmatic-seo/cagr';
+import {
   balanceTransferSeoRecords,
   creditCardPayoffSeoRecords,
   EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT,
@@ -649,6 +654,146 @@ test.describe('investment growth programmatic SEO', () => {
         page.locator(
           'a[href="/guides/investment-growth/"]',
         ).first(),
+      ).toBeVisible();
+      await expect(page.locator('tbody tr')).toHaveCount(record.years);
+      expect(pageErrors).toEqual([]);
+    });
+  }
+});
+
+test.describe('cagr programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditCagrSeoRecords(
+      cagrSeoRecords,
+      EXPECTED_CAGR_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_CAGR_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_CAGR_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_CAGR_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_CAGR_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_CAGR_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_CAGR_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the cagr examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/cagr-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 CAGR examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/cagr/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every cagr page', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/cagr/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'CAGR Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('[data-cagr-example-group]')).toHaveCount(4);
+    await expect(page.locator('[data-cagr-example-card]')).toHaveCount(
+      EXPECTED_CAGR_SEO_PAGE_COUNT,
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/cagr/examples/',
+    );
+
+    const hrefs = await page
+      .locator('[data-cagr-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(EXPECTED_CAGR_SEO_PAGE_COUNT);
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search CAGR examples',
+    });
+    await searchBox.fill('crypto');
+    await expect(page.locator('[data-cagr-example-card]:visible')).toHaveCount(
+      25,
+    );
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(page.locator('[data-cagr-example-card]:visible')).toHaveCount(
+      EXPECTED_CAGR_SEO_PAGE_COUNT,
+    );
+    await expect(
+      page.getByRole('link', { name: 'Calculate your own CAGR' }),
+    ).toHaveAttribute('href', '/calculators/cagr-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  for (const slug of [
+    'stock-cagr-10000-to-18000-over-5-years',
+    'real-estate-cagr-300000-to-480000-over-10-years',
+    'revenue-cagr-1000000-to-1800000-over-4-years',
+    'portfolio-cagr-250000-to-430000-over-12-years',
+  ]) {
+    test(`renders generated cagr page ${slug}`, async ({ page }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error.message));
+      const record = cagrSeoRecords.find((candidate) => candidate.slug === slug);
+      if (!record) {
+        throw new Error(`Missing cagr record: ${slug}`);
+      }
+
+      const url = `/calculators/cagr/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      expect(
+        await page.evaluate(() => document.querySelectorAll('h1').length),
+      ).toBe(1);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://automatorlabs.co${url}`,
+      );
+
+      const schemas = await page
+        .locator('script[type="application/ld+json"]')
+        .evaluateAll((scripts) =>
+          scripts.map((script) => script.textContent ?? '').join('\n'),
+        );
+      expect(schemas).toContain('"@type":"FAQPage"');
+      expect(schemas).toContain('"@type":"BreadcrumbList"');
+      await expect(
+        page.getByRole('link', {
+          name: 'Open the CAGR Calculator',
+        }),
+      ).toHaveAttribute('href', '/calculators/cagr-calculator/');
+      await expect(
+        page.getByRole('link', {
+          name: 'Browse All CAGR Examples',
+        }),
+      ).toHaveAttribute('href', '/calculators/cagr/examples/');
+      await expect(
+        page.locator('a[href="/guides/what-is-cagr/"]').first(),
       ).toBeVisible();
       await expect(page.locator('tbody tr')).toHaveCount(record.years);
       expect(pageErrors).toEqual([]);

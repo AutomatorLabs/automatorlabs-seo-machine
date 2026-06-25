@@ -1,0 +1,26 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  cagrSeoRecords,
+  EXPECTED_CAGR_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/cagr';
+import {
+  auditCagrSeoRecords,
+  createCagrSeoPage,
+} from '../../../lib/programmatic-seo/cagr';
+
+export function getStaticPaths() {
+  auditCagrSeoRecords(cagrSeoRecords, EXPECTED_CAGR_SEO_PAGE_COUNT);
+
+  return cagrSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createCagrSeoPage(record, cagrSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

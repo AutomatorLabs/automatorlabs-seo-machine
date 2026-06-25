@@ -655,6 +655,11 @@ export const topicalGuides: TopicalGuide[] = [
         description: 'Project growth using a starting balance, contributions, rate, and time.',
       },
       {
+        title: 'CAGR Examples',
+        url: '/calculators/cagr/examples/',
+        description: 'Browse 200 worked CAGR examples across investing, business, revenue, and portfolio scenarios.',
+      },
+      {
         title: 'Investing Guide Hub',
         url: '/guides/investing/',
         description: 'Browse investing calculators, education guides, and worked examples.',

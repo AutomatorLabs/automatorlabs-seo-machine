@@ -924,6 +924,11 @@ export const comparisonGuides: ComparisonGuide[] = [
         description: 'Compare 100 worked scenarios across different amounts, rates, and time periods.',
       },
       {
+        title: 'CAGR Examples',
+        url: '/calculators/cagr/examples/',
+        description: 'Browse 200 annualized-growth examples across market assets, real estate, crypto, business value, revenue, and portfolios.',
+      },
+      {
         title: 'CAGR Calculator Guide',
         url: '/guides/how-to-use-the-cagr-calculator/',
         description: 'Review CAGR inputs, outputs, examples, and limitations.',
