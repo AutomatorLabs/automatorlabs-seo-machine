@@ -367,6 +367,12 @@ export const guideHubs: GuideHub[] = [
         description:
           'Browse worked examples for investment growth, monthly contributions, time horizon, and compounding assumptions.',
       },
+      {
+        title: 'Investment Growth Examples',
+        url: '/calculators/investment-growth/examples/',
+        description:
+          'Browse worked investment projections for lump sums, recurring investing, retirement planning, taxable accounts, index funds, ETFs, and long-term wealth accumulation.',
+      },
     ],
     comparisonGuideLinks: [
       {

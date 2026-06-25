@@ -78,11 +78,12 @@
 - 17 topical guides.
 - 7 comparison guides.
 - Generated calculator guides from calculator configs.
-- Global examples hub plus 9 example clusters.
+- Global examples hub plus 10 example clusters.
 
 ## Existing Programmatic Example Clusters
 
 - Compound interest.
+- Investment growth.
 - FIRE.
 - Mortgage.
 - Savings goal.
@@ -92,7 +93,7 @@
 - Safe withdrawal rate.
 - 4 percent rule.
 
-Current repo state indicates 200 records per cluster, for 1,800 total examples.
+Current repo state indicates 200 records per cluster, for 2,000 total examples.
 
 ## Current Strengths
 

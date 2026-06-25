@@ -1,6 +1,7 @@
 ---
 import type { CalculatorConfig } from '../data/calculators';
 import { contentItems } from '../data/content';
+import { featuredInvestmentGrowthSeoRecords } from '../data/programmatic-seo/investment-growth';
 import CalculatorPage from './CalculatorPage.astro';
 
 interface Props {
@@ -14,6 +15,14 @@ const relatedItems = calculator.relatedIds.flatMap((id) => {
   return item ? [{ title: item.title, url: item.url }] : [];
 });
 const guideItems = [
+  ...(calculator.id === 'investment-growth'
+    ? [
+        {
+          title: 'Investment Growth Guide',
+          url: '/guides/investment-growth/',
+        },
+      ]
+    : []),
   {
     title: 'APR vs APY',
     url: '/guides/apr-vs-apy/',
@@ -27,6 +36,19 @@ const guideItems = [
     url: '/guides/effective-annual-rate/',
   },
 ];
+const exampleItems =
+  calculator.id === 'investment-growth'
+    ? [
+        {
+          title: 'Browse all 200 investment growth examples',
+          url: '/calculators/investment-growth/examples/',
+        },
+        ...featuredInvestmentGrowthSeoRecords.map((record) => ({
+          title: record.question,
+          url: `/calculators/investment-growth/${record.slug}/`,
+        })),
+      ]
+    : [];
 ---
 
 <CalculatorPage
@@ -38,6 +60,8 @@ const guideItems = [
   faq={calculator.faq}
   relatedItems={relatedItems}
   guideItems={guideItems}
+  exampleItems={exampleItems}
+  exampleHeading="Investment Growth Examples"
   calculatorData={{
     'periods-per-year': periodsPerYear,
     'tracking-id': calculator.id,

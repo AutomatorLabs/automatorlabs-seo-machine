@@ -1101,6 +1101,11 @@ export const topicalGuides: TopicalGuide[] = [
         description: 'Project portfolio growth with starting balance, contributions, return, and time.',
       },
       {
+        title: 'Investment Growth Examples',
+        url: '/calculators/investment-growth/examples/',
+        description: 'Browse worked scenarios for lump-sum investing, monthly investing, retirement investing, taxable accounts, index funds, ETFs, and long-term wealth accumulation.',
+      },
+      {
         title: 'Compound Interest Calculator',
         url: '/calculators/compound-interest/',
         description: 'Explore compounding mechanics with contribution and frequency assumptions.',

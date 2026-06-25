@@ -5,6 +5,7 @@ import {
   creditCardPayoffSeoRecords,
 } from './debt';
 import { fireSeoRecords } from './fire';
+import { investmentGrowthSeoRecords } from './investment-growth';
 import { mortgageSeoRecords } from './mortgage';
 import { retirementWithdrawalSeoRecords } from './retirement-withdrawal';
 import { safeWithdrawalRateSeoRecords } from './safe-withdrawal-rate';
@@ -46,6 +47,18 @@ const fireRepresentatives = [
   fireSeoRecords.find(
     (record) =>
       record.slug === 'can-i-retire-with-1000000-and-40000-spending',
+  ),
+].filter((record) => record !== undefined);
+
+const investmentGrowthRepresentatives = [
+  investmentGrowthSeoRecords.find(
+    (record) =>
+      record.slug === 'lump-sum-10000-at-8-percent-for-30-years',
+  ),
+  investmentGrowthSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retirement-investing-50000-with-1000-monthly-at-8-percent-for-30-years',
   ),
 ].filter((record) => record !== undefined);
 
@@ -174,6 +187,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: fireRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/fire/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'investment-growth',
+    title: 'Investment Growth Examples',
+    description:
+      'Explore lump-sum, monthly, annual, retirement, taxable, index fund, ETF, and long-term wealth-building scenarios.',
+    examplesUrl: '/calculators/investment-growth/examples/',
+    calculator: {
+      title: 'Investment Growth Calculator',
+      url: '/calculators/investment-growth-calculator/',
+    },
+    guide: {
+      title: 'Investment Growth Guide',
+      url: '/guides/investment-growth/',
+    },
+    pageCount: investmentGrowthSeoRecords.length,
+    representativePages: investmentGrowthRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/investment-growth/${record.slug}/`,
     })),
   },
   {

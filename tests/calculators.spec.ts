@@ -29,6 +29,11 @@ import {
   fireSeoRecords,
 } from '../src/data/programmatic-seo/fire';
 import { auditFireSeoRecords } from '../src/lib/programmatic-seo/fire';
+import {
+  EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT,
+  investmentGrowthSeoRecords,
+} from '../src/data/programmatic-seo/investment-growth';
+import { auditInvestmentGrowthSeoRecords } from '../src/lib/programmatic-seo/investment-growth';
 import { programmaticSeoClusters } from '../src/data/programmatic-seo/clusters';
 import {
   EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
@@ -495,6 +500,160 @@ test.describe('FIRE programmatic SEO', () => {
     await expect(page.locator('tbody tr')).toHaveCount(5);
     expect(pageErrors).toEqual([]);
   });
+});
+
+test.describe('investment growth programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditInvestmentGrowthSeoRecords(
+      investmentGrowthSeoRecords,
+      EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the investment growth examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/investment-growth-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 investment growth examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/investment-growth/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every investment growth page', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/investment-growth/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Investment Growth Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(
+      page.locator('[data-investment-growth-example-group]'),
+    ).toHaveCount(5);
+    await expect(
+      page.locator('[data-investment-growth-example-card]'),
+    ).toHaveCount(EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/investment-growth/examples/',
+    );
+
+    const hrefs = await page
+      .locator('[data-investment-growth-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(
+      EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT,
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search investment growth examples',
+    });
+    await searchBox.fill('taxable');
+    await expect(
+      page.locator(
+        '[data-investment-growth-example-card]:visible',
+      ),
+    ).toHaveCount(12);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator(
+        '[data-investment-growth-example-card]:visible',
+      ),
+    ).toHaveCount(EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT);
+    await expect(
+      page.getByRole('link', { name: 'Build your own projection' }),
+    ).toHaveAttribute('href', '/calculators/investment-growth-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  for (const slug of [
+    'lump-sum-10000-at-8-percent-for-30-years',
+    'invest-25000-with-1000-monthly-at-7-percent-for-20-years',
+    'retirement-investing-50000-with-1000-monthly-at-8-percent-for-30-years',
+    'taxable-investing-50000-with-1500-monthly-at-7-percent-for-25-years',
+  ]) {
+    test(`renders generated investment growth page ${slug}`, async ({
+      page,
+    }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error.message));
+      const record = investmentGrowthSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) {
+        throw new Error(`Missing investment growth record: ${slug}`);
+      }
+
+      const url = `/calculators/investment-growth/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      expect(
+        await page.evaluate(() => document.querySelectorAll('h1').length),
+      ).toBe(1);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://automatorlabs.co${url}`,
+      );
+
+      const schemas = await page
+        .locator('script[type="application/ld+json"]')
+        .evaluateAll((scripts) =>
+          scripts.map((script) => script.textContent ?? '').join('\n'),
+        );
+      expect(schemas).toContain('"@type":"FAQPage"');
+      expect(schemas).toContain('"@type":"BreadcrumbList"');
+      await expect(
+        page.getByRole('link', {
+          name: 'Open the Investment Growth Calculator',
+        }),
+      ).toHaveAttribute('href', '/calculators/investment-growth-calculator/');
+      await expect(
+        page.getByRole('link', {
+          name: 'Browse All Investment Growth Examples',
+        }),
+      ).toHaveAttribute('href', '/calculators/investment-growth/examples/');
+      await expect(
+        page.locator(
+          'a[href="/guides/investment-growth/"]',
+        ).first(),
+      ).toBeVisible();
+      await expect(page.locator('tbody tr')).toHaveCount(record.years);
+      expect(pageErrors).toEqual([]);
+    });
+  }
 });
 
 test.describe('mortgage programmatic SEO', () => {

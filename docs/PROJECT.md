@@ -41,7 +41,7 @@ AutomatorLabs appears to be building a search-friendly library of free financial
   - 17 topical guides.
   - 7 comparison guides.
   - Generated calculator guides derived from calculator configs.
-- Programmatic SEO example system with 9 clusters and 1,800 total example pages.
+- Programmatic SEO example system with 10 clusters and 2,000 total example pages.
 - Global examples hub at `/examples/`.
 - Shared newsletter CTA across major site sections.
 - Static SEO audit script for built output.

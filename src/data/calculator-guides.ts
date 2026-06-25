@@ -307,6 +307,33 @@ function buildGuide(config: CalculatorConfig): CalculatorGuide {
                 'Compare full financial independence with the Coast FIRE milestone.',
             },
           ]
+      : config.id === 'investment-growth'
+        ? [
+            {
+              title: 'Investment Growth Examples',
+              url: '/calculators/investment-growth/examples/',
+              description:
+                'Browse 200 worked investment projections across lump-sum, recurring, retirement, taxable, index fund, ETF, and wealth-building scenarios.',
+            },
+            {
+              title: 'Investment Growth Guide',
+              url: '/guides/investment-growth/',
+              description:
+                'Learn how balances, contributions, returns, and time shape a long-term projection.',
+            },
+            {
+              title: 'Lump Sum vs Dollar Cost Averaging',
+              url: '/guides/lump-sum-vs-dollar-cost-averaging/',
+              description:
+                'Compare immediate investing with gradually deploying the same cash.',
+            },
+            {
+              title: 'Nominal Return vs Real Return',
+              url: '/guides/nominal-vs-real-return/',
+              description:
+                'Put future balances into inflation-adjusted context.',
+            },
+          ]
       : config.id === 'mortgage-payoff'
         ? [
             {
