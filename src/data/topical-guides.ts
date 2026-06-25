@@ -1040,6 +1040,12 @@ export const topicalGuides: TopicalGuide[] = [
         description: 'Estimate doubling time or the rate needed to double.',
       },
       {
+        title: 'Rule of 72 Examples',
+        url: '/calculators/rule-of-72/examples/',
+        description:
+          'Browse worked examples for doubling money, inflation, portfolios, retirement planning, index funds, and savings assumptions.',
+      },
+      {
         title: 'Compound Interest Calculator',
         url: '/calculators/compound-interest/',
         description: 'Project a detailed future value with contributions and compounding.',

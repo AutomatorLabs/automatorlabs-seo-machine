@@ -352,6 +352,33 @@ function buildGuide(config: CalculatorConfig): CalculatorGuide {
                 'Connect historical annualized returns with forward-looking investment projections.',
             },
           ]
+      : config.id === 'rule-of-72'
+        ? [
+            {
+              title: 'Rule of 72 Examples',
+              url: '/calculators/rule-of-72/examples/',
+              description:
+                'Browse 200 worked Rule of 72 examples across investing, savings, inflation, retirement planning, portfolios, index funds, and high-yield savings assumptions.',
+            },
+            {
+              title: 'What Is the Rule of 72?',
+              url: '/guides/rule-of-72/',
+              description:
+                'Learn how the doubling-time shortcut works and where it breaks down.',
+            },
+            {
+              title: 'Nominal Return vs Real Return',
+              url: '/guides/nominal-vs-real-return/',
+              description:
+                'Compare nominal growth assumptions with inflation-adjusted outcomes.',
+            },
+            {
+              title: 'What Is APY?',
+              url: '/guides/what-is-apy/',
+              description:
+                'Connect savings yield assumptions with effective annual returns.',
+            },
+          ]
       : config.id === 'fire'
         ? [
             {

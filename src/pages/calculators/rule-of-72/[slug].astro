@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
+  ruleOf72SeoRecords,
+} from '../../../data/programmatic-seo/rule-of-72';
+import {
+  auditRuleOf72SeoRecords,
+  createRuleOf72SeoPage,
+} from '../../../lib/programmatic-seo/rule-of-72';
+
+export function getStaticPaths() {
+  auditRuleOf72SeoRecords(
+    ruleOf72SeoRecords,
+    EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
+  );
+
+  return ruleOf72SeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createRuleOf72SeoPage(record, ruleOf72SeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

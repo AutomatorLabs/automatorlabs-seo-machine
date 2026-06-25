@@ -385,6 +385,12 @@ export const guideHubs: GuideHub[] = [
         description:
           'Browse effective-yield examples for savings accounts, CDs, money market accounts, checking, and compounding-frequency comparisons.',
       },
+      {
+        title: 'Rule of 72 Examples',
+        url: '/calculators/rule-of-72/examples/',
+        description:
+          'Browse doubling-time examples for investments, inflation, portfolios, retirement planning, index funds, and high-yield savings assumptions.',
+      },
     ],
     comparisonGuideLinks: [
       {

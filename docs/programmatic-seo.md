@@ -3,15 +3,16 @@
 ## Current scope
 
 - Global examples hub: `/examples/`
-- 12 live clusters registered in `src/data/programmatic-seo/clusters.ts`
+- 13 live clusters registered in `src/data/programmatic-seo/clusters.ts`
 - 200 records per cluster
-- 2,400 generated example pages total
+- 2,600 generated example pages total
 
 Current live clusters:
 
 - Compound Interest
 - APY
 - CAGR
+- Rule of 72
 - FIRE
 - Investment Growth
 - Mortgage Payment
@@ -44,6 +45,10 @@ Current cluster routes:
   - Calculator: `/calculators/cagr-calculator/`
   - Index: `/calculators/cagr/examples/`
   - Pages: `/calculators/cagr/{slug}/`
+- Rule of 72
+  - Calculator: `/calculators/rule-of-72-calculator/`
+  - Index: `/calculators/rule-of-72/examples/`
+  - Pages: `/calculators/rule-of-72/{slug}/`
 - FIRE
   - Calculator: `/calculators/fire-calculator/`
   - Index: `/calculators/fire/examples/`
@@ -111,6 +116,7 @@ Cluster-specific modules:
 - `src/data/programmatic-seo/compound-interest.ts`
 - `src/data/programmatic-seo/apy.ts`
 - `src/data/programmatic-seo/cagr.ts`
+- `src/data/programmatic-seo/rule-of-72.ts`
 - `src/data/programmatic-seo/fire.ts`
 - `src/data/programmatic-seo/investment-growth.ts`
 - `src/data/programmatic-seo/mortgage.ts`
@@ -160,6 +166,7 @@ Current expected counts from `src/data/programmatic-seo/*`:
 - Compound Interest: 200
 - APY: 200
 - CAGR: 200
+- Rule of 72: 200
 - FIRE: 200
 - Investment Growth: 200
 - Mortgage: 200
@@ -269,6 +276,56 @@ Representative registered pages:
 - `/calculators/cagr/stock-cagr-10000-to-18000-over-5-years/`
 - `/calculators/cagr/portfolio-cagr-250000-to-430000-over-12-years/`
 
+## Rule of 72 cluster
+
+Status: implemented and registered in the current system.
+
+Primary files:
+
+- `src/data/programmatic-seo/rule-of-72.ts`
+- `src/lib/programmatic-seo/rule-of-72.ts`
+- `src/pages/calculators/rule-of-72/examples/index.astro`
+- `src/pages/calculators/rule-of-72/[slug].astro`
+
+Current route family:
+
+- Calculator: `/calculators/rule-of-72-calculator/`
+- Examples index: `/calculators/rule-of-72/examples/`
+- Generated page: `/calculators/rule-of-72/{slug}/`
+
+Record intents covered:
+
+- `doubling-money`
+- `investment-growth`
+- `savings-growth`
+- `inflation`
+- `portfolio-growth`
+- `retirement-planning`
+- `index-fund`
+- `high-yield-savings`
+
+Key implementation details:
+
+- Reuses `calculateRuleOf72` from `src/lib/math`
+- Does not change the Rule of 72 Calculator formula
+- Uses the shared programmatic page shell and audit system
+- Shows an illustrative annual path toward doubling based on the same doubling-time estimate
+- Adds calculator-page links from `src/pages/calculators/rule-of-72-calculator/index.astro`
+- Adds internal-link relationships through guide, topic, and cluster registry updates
+
+Examples index grouping:
+
+- Doubling Money and Investing Examples
+- Savings and High-Yield Savings Examples
+- Inflation and Purchasing Power Examples
+- Portfolio and Retirement Planning Examples
+- Index Fund Return Assumption Examples
+
+Representative registered pages:
+
+- `/calculators/rule-of-72/double-10000-at-8-percent/`
+- `/calculators/rule-of-72/inflation-10000-at-3-percent/`
+
 ## Investment Growth cluster
 
 Status: implemented and registered in the current system.
@@ -371,6 +428,7 @@ Current programmatic SEO describe blocks:
 - Compound interest
 - APY
 - CAGR
+- Rule of 72
 - FIRE
 - Investment growth
 - Mortgage

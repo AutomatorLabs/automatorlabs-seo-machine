@@ -3,7 +3,7 @@
 ## Today
 
 - [ ] Review older docs in `/docs` and flag stale sections.
-- [ ] Verify current guide counts and example-cluster counts after future content changes.
+- [ ] Verify current guide counts and example-cluster counts after future content changes beyond the current 13-cluster / 2,600-page state.
 - [ ] Add cross-links from legacy docs to this knowledge base where useful.
 - [ ] Confirm deployment platform and document it.
 

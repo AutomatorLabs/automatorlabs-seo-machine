@@ -25,6 +25,11 @@ import {
 } from '../src/data/programmatic-seo/cagr';
 import { auditCagrSeoRecords } from '../src/lib/programmatic-seo/cagr';
 import {
+  EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
+  ruleOf72SeoRecords,
+} from '../src/data/programmatic-seo/rule-of-72';
+import { auditRuleOf72SeoRecords } from '../src/lib/programmatic-seo/rule-of-72';
+import {
   balanceTransferSeoRecords,
   creditCardPayoffSeoRecords,
   EXPECTED_BALANCE_TRANSFER_SEO_PAGE_COUNT,
@@ -941,6 +946,154 @@ test.describe('apy programmatic SEO', () => {
         page.locator('a[href="/guides/what-is-apy/"]').first(),
       ).toBeVisible();
       await expect(page.locator('tbody tr')).toHaveCount(12);
+      expect(pageErrors).toEqual([]);
+    });
+  }
+});
+
+test.describe('rule of 72 programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditRuleOf72SeoRecords(
+      ruleOf72SeoRecords,
+      EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the rule of 72 examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/rule-of-72-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 Rule of 72 examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/rule-of-72/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every rule of 72 page', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/rule-of-72/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Rule of 72 Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('[data-rule-of-72-example-group]')).toHaveCount(
+      5,
+    );
+    await expect(page.locator('[data-rule-of-72-example-card]')).toHaveCount(
+      EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/rule-of-72/examples/',
+    );
+
+    const hrefs = await page
+      .locator('[data-rule-of-72-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(EXPECTED_RULE_OF_72_SEO_PAGE_COUNT);
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search Rule of 72 examples',
+    });
+    await searchBox.fill('inflation');
+    await expect(
+      page.locator('[data-rule-of-72-example-card]:visible'),
+    ).toHaveCount(25);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-rule-of-72-example-card]:visible'),
+    ).toHaveCount(EXPECTED_RULE_OF_72_SEO_PAGE_COUNT);
+    await expect(
+      page.getByRole('link', {
+        name: 'Estimate your own doubling time',
+      }),
+    ).toHaveAttribute('href', '/calculators/rule-of-72-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  for (const slug of [
+    'double-10000-at-8-percent',
+    'inflation-10000-at-3-percent',
+    'retirement-500000-at-7-percent',
+    'high-yield-savings-10000-at-4-5-percent',
+  ]) {
+    test(`renders generated rule of 72 page ${slug}`, async ({ page }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error.message));
+      const record = ruleOf72SeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) {
+        throw new Error(`Missing rule of 72 record: ${slug}`);
+      }
+
+      const url = `/calculators/rule-of-72/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      expect(
+        await page.evaluate(() => document.querySelectorAll('h1').length),
+      ).toBe(1);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://automatorlabs.co${url}`,
+      );
+
+      const schemas = await page
+        .locator('script[type="application/ld+json"]')
+        .evaluateAll((scripts) =>
+          scripts.map((script) => script.textContent ?? '').join('\n'),
+        );
+      expect(schemas).toContain('"@type":"FAQPage"');
+      expect(schemas).toContain('"@type":"BreadcrumbList"');
+      await expect(
+        page.getByRole('link', {
+          name: 'Open the Rule of 72 Calculator',
+        }),
+      ).toHaveAttribute('href', '/calculators/rule-of-72-calculator/');
+      await expect(
+        page.getByRole('link', {
+          name: 'Browse All Rule of 72 Examples',
+        }),
+      ).toHaveAttribute('href', '/calculators/rule-of-72/examples/');
+      await expect(
+        page.locator('a[href="/guides/rule-of-72/"]').first(),
+      ).toBeVisible();
+      await expect(page.locator('tbody tr')).toHaveCount(
+        Math.max(3, Math.ceil(72 / record.annualReturnPercent)),
+      );
       expect(pageErrors).toEqual([]);
     });
   }

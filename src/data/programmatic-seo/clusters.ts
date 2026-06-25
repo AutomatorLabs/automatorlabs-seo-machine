@@ -2,6 +2,7 @@ import { fourPercentRuleSeoRecords } from './four-percent-rule';
 import { compoundInterestSeoRecords } from './compound-interest';
 import { apySeoRecords } from './apy';
 import { cagrSeoRecords } from './cagr';
+import { ruleOf72SeoRecords } from './rule-of-72';
 import {
   balanceTransferSeoRecords,
   creditCardPayoffSeoRecords,
@@ -59,6 +60,15 @@ const cagrRepresentatives = [
   ),
   cagrSeoRecords.find(
     (record) => record.slug === 'portfolio-cagr-250000-to-430000-over-12-years',
+  ),
+].filter((record) => record !== undefined);
+
+const ruleOf72Representatives = [
+  ruleOf72SeoRecords.find(
+    (record) => record.slug === 'double-10000-at-8-percent',
+  ),
+  ruleOf72SeoRecords.find(
+    (record) => record.slug === 'inflation-10000-at-3-percent',
   ),
 ].filter((record) => record !== undefined);
 
@@ -229,6 +239,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: cagrRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/cagr/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'rule-of-72',
+    title: 'Rule of 72 Examples',
+    description:
+      'Explore doubling-time examples across investing, savings, inflation, retirement planning, portfolios, index funds, and yield assumptions.',
+    examplesUrl: '/calculators/rule-of-72/examples/',
+    calculator: {
+      title: 'Rule of 72 Calculator',
+      url: '/calculators/rule-of-72-calculator/',
+    },
+    guide: {
+      title: 'What Is the Rule of 72?',
+      url: '/guides/rule-of-72/',
+    },
+    pageCount: ruleOf72SeoRecords.length,
+    representativePages: ruleOf72Representatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/rule-of-72/${record.slug}/`,
     })),
   },
   {

@@ -1,0 +1,498 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
+  ruleOf72SeoRecords,
+} from '../../../../data/programmatic-seo/rule-of-72';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditRuleOf72SeoRecords } from '../../../../lib/programmatic-seo/rule-of-72';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditRuleOf72SeoRecords(
+  ruleOf72SeoRecords,
+  EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Rule of 72 Calculator',
+        url: '/calculators/rule-of-72-calculator/',
+      },
+      {
+        name: 'Examples',
+        url: '/calculators/rule-of-72/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(ruleOf72SeoRecords, [
+  {
+    id: 'doubling-investing',
+    title: 'Doubling Money and Investing Examples',
+    description:
+      'Compare how different annual return assumptions change estimated doubling time for simple money-doubling and investment-growth scenarios.',
+    matches: (record) =>
+      record.intent === 'doubling-money' ||
+      record.intent === 'investment-growth',
+  },
+  {
+    id: 'savings-yield',
+    title: 'Savings and High-Yield Savings Examples',
+    description:
+      'Review how modest savings rates and higher-yield assumptions change the Rule of 72 estimate.',
+    matches: (record) =>
+      record.intent === 'savings-growth' ||
+      record.intent === 'high-yield-savings',
+  },
+  {
+    id: 'inflation',
+    title: 'Inflation and Purchasing Power Examples',
+    description:
+      'Use the same shortcut to estimate how long inflation could take to double prices and erode purchasing power.',
+    matches: (record) => record.intent === 'inflation',
+  },
+  {
+    id: 'portfolio-retirement',
+    title: 'Portfolio and Retirement Planning Examples',
+    description:
+      'Apply doubling-time intuition to portfolio growth estimates and retirement-planning assumptions.',
+    matches: (record) =>
+      record.intent === 'portfolio-growth' ||
+      record.intent === 'retirement-planning',
+  },
+  {
+    id: 'index-funds',
+    title: 'Index Fund Return Assumption Examples',
+    description:
+      'See how common index-fund-style return assumptions translate into approximate years-to-double benchmarks.',
+    matches: (record) => record.intent === 'index-fund',
+  },
+]);
+---
+
+<Layout
+  title="Rule of 72 Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} Rule of 72 examples covering doubling money, investment growth, savings growth, inflation, portfolio growth, retirement planning, index fund assumptions, and high-yield savings scenarios.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/rule-of-72-calculator/">
+            Rule of 72 Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Doubling-time example library</p>
+      <h1>Rule of 72 Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering doubling money,
+        investment growth, savings growth, inflation, portfolio growth,
+        retirement planning, index fund assumptions, and high-yield savings
+        assumptions.
+      </p>
+      <a class="primary-link" href="/calculators/rule-of-72-calculator/">
+        Estimate your own doubling time
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section
+      class="example-search"
+      aria-label="Search Rule of 72 examples"
+    >
+      <label for="rule-of-72-example-search">
+        Search Rule of 72 examples
+      </label>
+      <div class="search-row">
+        <input
+          id="rule-of-72-example-search"
+          type="search"
+          placeholder="Try inflation, index fund, 8%, or $10,000"
+          autocomplete="off"
+          aria-controls="rule-of-72-example-groups"
+          aria-describedby="rule-of-72-example-count"
+        />
+        <button id="clear-rule-of-72-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="rule-of-72-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="rule-of-72-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-rule-of-72-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-rule-of-72-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.contextLabel,
+                  record.startingAmount,
+                  record.startingAmount.toLocaleString('en-US'),
+                  record.annualReturnPercent,
+                  `${record.annualReturnPercent}%`,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/rule-of-72/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.startingAmount)} context amount
+                    {' · '}
+                    {record.annualReturnPercent}% annual rate
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p
+      id="no-rule-of-72-examples"
+      class="no-results"
+      role="status"
+      hidden
+    >
+      No Rule of 72 examples found. Try a rate, amount, or scenario type.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#rule-of-72-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-rule-of-72-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#rule-of-72-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-rule-of-72-examples',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-rule-of-72-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-rule-of-72-example-group]',
+    ),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      const visibleCards = group.querySelectorAll(
+        '[data-rule-of-72-example-card]:not([hidden])',
+      ).length;
+      group.hidden = visibleCards === 0;
+      const badge = group.querySelector('header span');
+      if (badge) {
+        badge.textContent = `${visibleCards} example${visibleCards === 1 ? '' : 's'}`;
+      }
+    });
+
+    count.textContent = `Showing ${visibleCount} example${visibleCount === 1 ? '' : 's'}`;
+    noResults.hidden = visibleCount !== 0;
+
+    if (clearButton) {
+      clearButton.hidden = query === '';
+    }
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    input.focus();
+    updateExamples();
+  });
+
+  updateExamples();
+</script>
+
+<style>
+  main {
+    width: min(1080px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 4.5rem 0;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li + li::before {
+    margin-right: 0.45rem;
+    color: var(--muted-text-color);
+    content: '›';
+  }
+
+  .breadcrumbs a {
+    color: var(--link-color);
+    text-decoration: none;
+  }
+
+  .page-header {
+    max-width: 860px;
+    margin-bottom: 2rem;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--link-color);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0.6rem 0 1rem;
+    font-size: clamp(2.6rem, 8vw, 4.8rem);
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+
+  .intro {
+    margin: 0;
+    color: var(--muted-text-color);
+    font-size: 1.1rem;
+    line-height: 1.75;
+  }
+
+  .primary-link,
+  .secondary-link {
+    display: inline-flex;
+    margin-top: 1.25rem;
+    border-radius: 999px;
+    padding: 0.8rem 1.15rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .primary-link {
+    background: var(--button-background);
+    color: var(--button-text);
+  }
+
+  .secondary-link {
+    margin-left: 0.85rem;
+    border: 1px solid var(--border-color);
+    color: var(--link-color);
+  }
+
+  .example-search {
+    margin: 2rem 0;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    background: var(--card-background);
+    box-shadow: 0 16px 40px var(--shadow-color);
+    padding: 1.5rem;
+  }
+
+  .example-search label {
+    display: block;
+    margin-bottom: 0.7rem;
+    color: var(--heading-color);
+    font-weight: 700;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .search-row input {
+    flex: 1 1 320px;
+    min-width: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--background-color);
+    color: var(--text-color);
+    font: inherit;
+    padding: 0.85rem 1rem;
+  }
+
+  .search-row button {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text-color);
+    font: inherit;
+    font-weight: 700;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+  }
+
+  #rule-of-72-example-count {
+    margin: 0.85rem 0 0;
+    color: var(--muted-text-color);
+  }
+
+  .example-groups {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .example-group {
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    background: var(--card-background);
+    box-shadow: 0 16px 40px var(--shadow-color);
+    padding: 1.5rem;
+  }
+
+  .example-group header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: start;
+    margin-bottom: 1rem;
+  }
+
+  .example-group h2 {
+    margin: 0;
+    font-size: 1.35rem;
+  }
+
+  .example-group header p {
+    margin: 0.5rem 0 0;
+    color: var(--muted-text-color);
+    line-height: 1.6;
+  }
+
+  .example-group header span {
+    color: var(--link-color);
+    font-size: 0.88rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .example-group ul {
+    display: grid;
+    gap: 0.85rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .example-group li a {
+    display: grid;
+    gap: 0.3rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 1rem 1.05rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .example-group li a:hover {
+    border-color: var(--link-color);
+  }
+
+  .example-group li strong {
+    color: var(--heading-color);
+  }
+
+  .example-group li span,
+  .no-results {
+    color: var(--muted-text-color);
+  }
+
+  .no-results {
+    margin: 1.5rem 0 0;
+    text-align: center;
+  }
+
+  @media (max-width: 720px) {
+    .primary-link,
+    .secondary-link {
+      width: 100%;
+      justify-content: center;
+      margin-left: 0;
+    }
+
+    .example-group header {
+      flex-direction: column;
+    }
+
+    .example-group header span {
+      white-space: normal;
+    }
+  }
+</style>

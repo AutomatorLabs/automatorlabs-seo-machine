@@ -2,11 +2,36 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { ruleOf72Calculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredRuleOf72SeoRecords } from '../../../data/programmatic-seo/rule-of-72';
 
 const relatedItems = ruleOf72Calculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const guideItems = [
+  {
+    title: 'What Is the Rule of 72?',
+    url: '/guides/rule-of-72/',
+  },
+  {
+    title: 'Investing Basics for Long-Term Growth',
+    url: '/guides/investing/',
+  },
+  {
+    title: 'Nominal Return vs Real Return',
+    url: '/guides/nominal-vs-real-return/',
+  },
+];
+const exampleItems = [
+  {
+    title: 'Browse all 200 Rule of 72 examples',
+    url: '/calculators/rule-of-72/examples/',
+  },
+  ...featuredRuleOf72SeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/rule-of-72/${record.slug}/`,
+  })),
+];
 ---
 
 <CalculatorPage
@@ -17,6 +42,9 @@ const relatedItems = ruleOf72Calculator.relatedIds.flatMap((id) => {
   outputs={ruleOf72Calculator.outputs}
   faq={ruleOf72Calculator.faq}
   relatedItems={relatedItems}
+  guideItems={guideItems}
+  exampleItems={exampleItems}
+  exampleHeading="Rule of 72 Examples"
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';
