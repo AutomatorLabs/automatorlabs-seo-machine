@@ -23,7 +23,7 @@
 
 ## Codex-Safe Tasks
 
-- [ ] Update stale counts and wording in [programmatic-seo.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-machine/docs/programmatic-seo.md).
+- [ ] Keep [programmatic-seo.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-machine/docs/programmatic-seo.md) aligned with live cluster routes, counts, and validation rules after each cluster launch.
 - [ ] Add a `/docs` maintenance checklist to the root `README.md` if desired.
 - [ ] Create a new documentation page describing calculator creation flow from `src/data/calculators.ts` to route/component output.
 - [ ] Add a route inventory doc generated from the current file structure.

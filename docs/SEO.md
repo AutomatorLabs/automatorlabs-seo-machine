@@ -109,7 +109,7 @@ Current repo state indicates 200 records per cluster, for 2,000 total examples.
 - No repo-visible image generation pipeline for rich previews.
 - No repo-visible search-console, indexing, or analytics reporting docs.
 - No repo-visible content freshness workflow beyond manual source edits.
-- Existing `/docs/programmatic-seo.md` appears stale relative to current cluster counts.
+- Keep `/docs/programmatic-seo.md` synchronized whenever cluster counts, route patterns, or launch rules change.
 
 ## Future SEO Improvements
 

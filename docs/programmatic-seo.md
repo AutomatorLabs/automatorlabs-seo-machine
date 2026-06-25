@@ -1,294 +1,286 @@
 # Programmatic SEO System
 
-## Current clusters
+## Current scope
 
-- Compound Interest: 100 generated pages.
-- FIRE: 30 generated pages.
-- Global examples hub: `/examples/`.
+- Global examples hub: `/examples/`
+- 10 live clusters registered in `src/data/programmatic-seo/clusters.ts`
+- 200 records per cluster
+- 2,000 generated example pages total
 
-Cluster routes:
+Current live clusters:
 
-- Main calculator: `/calculators/compound-interest/`
-- Browsable examples index: `/calculators/compound-interest/examples/`
-- Generated example: `/calculators/compound-interest/{slug}/`
-- Main FIRE calculator: `/calculators/fire-calculator/`
-- Browsable FIRE examples index: `/calculators/fire/examples/`
-- Generated FIRE example: `/calculators/fire/{slug}/`
+- Compound Interest
+- FIRE
+- Investment Growth
+- Mortgage Payment
+- Savings Goal
+- Credit Card Payoff
+- Balance Transfer
+- Retirement Withdrawal
+- Safe Withdrawal Rate
+- 4 Percent Rule
 
-The original 30 compound-interest proof-of-concept records remain unchanged,
-with 70 controlled records added around them. FIRE remains a controlled
-30-page proof of concept.
+## Route pattern
+
+Each cluster follows the same static route shape:
+
+- Parent calculator page
+- Crawlable examples index under `/calculators/<cluster>/examples/`
+- Static generated page under `/calculators/<cluster>/<slug>/`
+
+Current cluster routes:
+
+- Compound Interest
+  - Calculator: `/calculators/compound-interest/`
+  - Index: `/calculators/compound-interest/examples/`
+  - Pages: `/calculators/compound-interest/{slug}/`
+- FIRE
+  - Calculator: `/calculators/fire-calculator/`
+  - Index: `/calculators/fire/examples/`
+  - Pages: `/calculators/fire/{slug}/`
+- Investment Growth
+  - Calculator: `/calculators/investment-growth-calculator/`
+  - Index: `/calculators/investment-growth/examples/`
+  - Pages: `/calculators/investment-growth/{slug}/`
+- Mortgage
+  - Calculator: `/calculators/mortgage-payoff-calculator/`
+  - Index: `/calculators/mortgage/examples/`
+  - Pages: `/calculators/mortgage/{slug}/`
+- Savings Goal
+  - Calculator: `/calculators/savings-goal-calculator/`
+  - Index: `/calculators/savings-goal/examples/`
+  - Pages: `/calculators/savings-goal/{slug}/`
+- Credit Card Payoff
+  - Calculator: `/calculators/credit-card-payoff-calculator/`
+  - Index: `/calculators/credit-card-payoff/examples/`
+  - Pages: `/calculators/credit-card-payoff/{slug}/`
+- Balance Transfer
+  - Calculator: `/calculators/balance-transfer-calculator/`
+  - Index: `/calculators/balance-transfer/examples/`
+  - Pages: `/calculators/balance-transfer/{slug}/`
+- Retirement Withdrawal
+  - Calculator: `/calculators/retirement-withdrawal-calculator/`
+  - Index: `/calculators/retirement-withdrawal/examples/`
+  - Pages: `/calculators/retirement-withdrawal/{slug}/`
+- Safe Withdrawal Rate
+  - Calculator: `/calculators/safe-withdrawal-rate-calculator/`
+  - Index: `/calculators/safe-withdrawal-rate/examples/`
+  - Pages: `/calculators/safe-withdrawal-rate/{slug}/`
+- 4 Percent Rule
+  - Calculator: `/calculators/4-percent-rule-calculator/`
+  - Index: `/calculators/4-percent-rule/examples/`
+  - Pages: `/calculators/4-percent-rule/{slug}/`
 
 ## Shared architecture
 
-The system separates source data, calculation/content generation, rendering,
-and validation:
+The current system is split into reusable shared infrastructure plus cluster-specific record and content modules.
+
+Shared infrastructure:
 
 - `src/lib/programmatic-seo/audit.ts`
-  - Enforces expected count, valid and unique slugs, unique visible and SEO
-    titles, unique non-empty descriptions, and correct unique canonical paths.
+  - Build-blocking validation for expected count, unique slugs, unique visible titles, unique SEO titles, unique non-empty descriptions, and canonical-path correctness.
 - `src/lib/programmatic-seo/paths.ts`
-  - Builds normalized canonical paths for generated pages.
+  - Canonical path helpers for generated pages.
 - `src/lib/programmatic-seo/examples.ts`
-  - Groups records for server-rendered examples indexes.
-- `src/lib/programmatic-seo/types.ts`
-  - Defines reusable page-model, table, link, FAQ, breadcrumb, result, section,
-    and chart types.
+  - Record grouping helpers for examples indexes.
 - `src/lib/programmatic-seo/metadata.ts`
-  - Creates consistent SEO titles and meta descriptions.
+  - Shared SEO title and meta-description formatting.
 - `src/lib/programmatic-seo/schema.ts`
-  - Creates FAQPage and breadcrumb structured data and safely serializes JSON-LD.
+  - FAQ and breadcrumb JSON-LD generation.
+- `src/lib/programmatic-seo/types.ts`
+  - Shared page-model, chart, result, table, section, FAQ, and link types.
 - `src/components/programmatic-seo/ProgrammaticSeoPage.astro`
-  - Renders the shared article shell while allowing cluster-specific formula,
-    table, chart, CTA, and related-page labels.
+  - Shared rendered shell for generated examples.
 - `src/data/programmatic-seo/clusters.ts`
-  - Registers each cluster for the global `/examples/` hub.
+  - Registry used by the global examples hub and tests.
 - `src/pages/examples/index.astro`
-  - Provides a crawlable overview of every current cluster and representative
-    generated pages.
+  - Crawlable hub that links to every cluster plus representative pages.
 
-Cluster-specific modules remain responsible for calculations and content:
+Cluster-specific modules:
 
 - `src/data/programmatic-seo/compound-interest.ts`
-  - Defines the record shape.
-  - Preserves the original 30 records.
-  - Generates the controlled 70-record expansion.
-  - Exports the expected page count.
-- `src/lib/programmatic-seo/compound-interest.ts`
-  - Reuses the existing compound-interest formula from `src/lib/math`.
-  - Builds page titles, descriptions, results, projections, FAQs, related
-    links, and the Compound Interest page model.
 - `src/data/programmatic-seo/fire.ts`
-  - Defines the controlled FIRE record set and expected count.
-- `src/lib/programmatic-seo/fire.ts`
-  - Reuses FIRE math helpers and builds FIRE-specific answers, sensitivity
-    tables, FAQs, related links, and page models.
-- `src/pages/calculators/compound-interest/[slug].astro`
-  - Runs the audit during static generation.
-  - Creates one route for every valid record.
-- `src/pages/calculators/compound-interest/examples/index.astro`
-  - Renders grouped links to all 100 examples in indexable HTML.
-  - Adds client-side search without hiding links from crawlers.
+- `src/data/programmatic-seo/investment-growth.ts`
+- `src/data/programmatic-seo/mortgage.ts`
+- `src/data/programmatic-seo/savings-goal.ts`
+- `src/data/programmatic-seo/debt.ts`
+  - Contains both Credit Card Payoff and Balance Transfer datasets
+- `src/data/programmatic-seo/retirement-withdrawal.ts`
+- `src/data/programmatic-seo/safe-withdrawal-rate.ts`
+- `src/data/programmatic-seo/four-percent-rule.ts`
 
-The shared layer intentionally does not know how compound interest or FIRE is
-calculated. It also does not choose record variables, write cluster-specific
-copy, score related pages, or define index card text.
+Matching page-model builders live under `src/lib/programmatic-seo/`.
 
-## Record model
+The shared layer does not choose scenario variables or rewrite calculator formulas. Each cluster reuses existing math helpers and the established page shell.
 
-Each compound-interest record contains:
+## Current data model rules
 
-- `slug`
-- `question`
-- `principal`
-- `annualRatePercent`
-- `years`
-- `monthlyContribution`
-- `periodsPerYear`
-- optional `featured`
+Every cluster currently:
 
-The current cluster intentionally uses no recurring contributions and annual
-compounding. That keeps search intent and page comparisons focused on the
-question:
+- Defines a typed record interface
+- Exports an explicit `EXPECTED_*_SEO_PAGE_COUNT`
+- Builds one page model per record
+- Audits records during `getStaticPaths()`
+- Generates a crawlable examples index
+- Registers itself in `src/data/programmatic-seo/clusters.ts`
 
-> How much will $X grow at Y% for Z years?
+Every generated page is expected to include:
 
-The calculator formula itself is not duplicated or modified. Generated pages
-call the same `calculateCompoundInterest` implementation as the interactive
-calculator.
+- Unique title
+- Unique SEO title
+- Unique non-empty meta description
+- One H1
+- Canonical URL
+- FAQ schema
+- Breadcrumb schema
+- Calculated answer
+- Formula explanation
+- Year-by-year projection table
+- Chart output
+- Assumptions/limitations copy
+- Links back to the calculator, examples index, related examples, calculators, and guides
+- Shared newsletter CTA through the existing programmatic page component
 
-## Expansion strategy
+## Current cluster sizes
 
-The first 30 records are listed explicitly and must not be removed or have
-their slugs changed.
+Current expected counts from `src/data/programmatic-seo/*`:
 
-The additional 70 records use ten starting amounts:
+- Compound Interest: 200
+- FIRE: 200
+- Investment Growth: 200
+- Mortgage: 200
+- Savings Goal: 200
+- Credit Card Payoff: 200
+- Balance Transfer: 200
+- Retirement Withdrawal: 200
+- Safe Withdrawal Rate: 200
+- 4 Percent Rule: 200
 
-- $2,000
-- $3,000
-- $6,000
-- $12,000
-- $18,000
-- $35,000
-- $60,000
-- $80,000
-- $125,000
-- $150,000
+## Investment Growth cluster
 
-Each amount is paired with seven rate/time scenarios:
+Status: implemented and registered in the current system.
 
-- 3% for 5 years
-- 4% for 10 years
-- 5% for 15 years
-- 6% for 20 years
-- 7% for 25 years
-- 8% for 30 years
-- 9% for 40 years
+Primary files:
 
-This matrix broadens coverage without creating thousands of thin,
-near-duplicate pages.
+- `src/data/programmatic-seo/investment-growth.ts`
+- `src/lib/programmatic-seo/investment-growth.ts`
+- `src/pages/calculators/investment-growth/examples/index.astro`
+- `src/pages/calculators/investment-growth/[slug].astro`
 
-## Examples index
+Current route family:
 
-The examples index groups records into four starting-balance ranges:
+- Calculator: `/calculators/investment-growth-calculator/`
+- Examples index: `/calculators/investment-growth/examples/`
+- Generated page: `/calculators/investment-growth/{slug}/`
 
-- Below $5,000
-- $5,000 to $24,999
-- $25,000 to $74,999
-- $75,000 and above
+Record intents covered:
 
-All links are present in the server-rendered HTML. Search filters cards and
-groups in the browser by question, slug, principal, formatted principal, rate,
-or years.
+- `lump-sum`
+- `monthly-investing`
+- `annual-investing`
+- `retirement-investing`
+- `taxable-investing`
+- `index-fund-investing`
+- `etf-investing`
+- `wealth-accumulation`
 
-## Internal linking
+Key implementation details:
 
-The cluster is connected through:
+- Reuses `calculateCompoundInterest` from `src/lib/math`
+- Does not change the Investment Growth Calculator formula
+- Uses monthly compounding in the generated examples to match the calculator route
+- Annual-investing pages translate annual contributions into equal monthly deposits to stay aligned with the shared calculator model
+- Adds calculator-page links through `src/components/CompoundGrowthCalculatorPage.astro`
+- Adds internal-link relationships through guide, topic, and cluster registry updates already present in source
 
-- A prominent examples-index link on the Compound Interest Calculator.
-- Featured example links on the calculator.
-- An examples-index link on every generated page.
-- Four related generated examples selected by numeric similarity.
-- Links from the main compound-interest guide.
-- Links from topical compound-interest guides.
-- A link from the CAGR vs Compound Interest comparison guide.
-- Related calculator and guide links on each generated page.
+Examples index grouping:
 
-## Required build audit
+- Lump-Sum Investing Examples
+- Monthly Investing Examples
+- Annual Investing Examples
+- Retirement and Taxable Investing Examples
+- Index Fund, ETF, and Wealth Accumulation Examples
 
-Every cluster audit must call `auditProgrammaticSeoRecords` during static path
-generation. It validates:
+Representative registered pages:
 
-- Expected record count.
-- Valid and unique slugs.
-- Unique visible titles and SEO titles.
-- Non-empty and unique meta descriptions.
-- Canonical paths matching the cluster route pattern.
-- Unique canonical paths.
+- `/calculators/investment-growth/lump-sum-10000-at-8-percent-for-30-years/`
+- `/calculators/investment-growth/retirement-investing-50000-with-1000-monthly-at-8-percent-for-30-years/`
 
-A failed audit stops `npm run build`; it is not a warning.
+## Internal linking expectations
 
-## Required browser coverage
+The current programmatic system is intentionally woven into the rest of the site.
 
-Every cluster must test:
+Expected link surfaces include:
 
-- The all-record metadata audit and exact expected count.
-- The examples index heading, canonical URL, total links, and unique hrefs.
-- Search and clear behavior when the index is searchable.
-- At least one representative generated page.
-- One H1, canonical URL, internal calculator/examples links, successful
-  response, and absence of page errors.
+- Parent calculator pages linking to examples indexes and featured examples when configured
+- Generated pages linking to:
+  - Parent calculator
+  - Same-cluster examples index
+  - Related generated pages
+  - Related calculators
+  - Related guides
+- Guide and topic pages linking to relevant example collections
+- Global `/examples/` hub linking to every registered cluster and representative pages
 
-The global `/examples/` hub must test its canonical URL, one H1, all registered
-cluster links, representative generated-page links, and absence of page errors.
+## Validation rules
 
-## Adding a new cluster
+`auditProgrammaticSeoRecords` currently validates:
 
-1. Define a typed record module under `src/data/programmatic-seo/`.
-2. Set an explicit expected page count.
-3. Create a cluster page-model builder under `src/lib/programmatic-seo/` that
-   reuses existing calculator/math helpers.
-4. Use `createProgrammaticCanonicalPath` for generated URLs.
-5. Wrap `auditProgrammaticSeoRecords` with a small cluster-specific audit
-   function.
-6. Add a static `[slug].astro` route that runs the audit before returning paths.
-7. Add a crawlable examples index. Use `createProgrammaticExampleGroups` when
-   records are grouped.
-8. Register the cluster in `src/data/programmatic-seo/clusters.ts`.
-9. Add calculator, guide, cluster-index, and global-hub internal links.
-10. Add the required audit, index, generated-page, and no-page-error tests.
-11. Preserve existing live slugs and routes.
-12. Run:
+- Expected record count
+- One page model per record
+- Valid slugs
+- Unique slugs
+- Unique visible titles
+- Unique SEO titles
+- Unique non-empty meta descriptions
+- Canonical paths matching the cluster route pattern
+- Unique canonical paths
 
-   ```sh
-   npm run build
-   npm run test:calculators
-   ```
+A failed audit stops `npm run build`.
 
-Do not scale a cluster beyond its controlled validation size until the
-previous cluster has real production indexing data. Build success and local
-tests prove technical correctness; they do not prove search demand, index
-quality, or traffic value.
+## Test coverage
 
-## Quality rules
+Playwright coverage in `tests/calculators.spec.ts` currently includes:
 
-Every generated page must have:
+- One describe block per live cluster
+- Metadata-count audits for every cluster
+- Examples-index coverage for every cluster
+- Representative generated-page coverage for every cluster
+- Global `/examples/` hub coverage
+- Investment Growth cluster coverage for:
+  - registry/count audit
+  - calculator-page backlink to the new examples hub
+  - examples-index grouping/search behavior
+  - representative generated pages across multiple intents
 
-- A unique title and meta description.
-- One H1.
-- A canonical URL.
-- FAQ and breadcrumb structured data.
-- A calculated answer and contribution/growth breakdown.
-- A formula explanation.
-- A year-by-year projection table.
-- A growth chart.
-- Assumptions and limitations.
-- Links to the main calculator, examples index, related examples, calculators,
-  and guides.
-- Responsive layout, dark-mode support, static HTML, and indexable content.
+Current programmatic SEO describe blocks:
 
-Do not mass-generate additional clusters until their records, templates,
-internal links, audits, and browser coverage meet the same standard, and the
-previous cluster has production indexing data.
+- Compound interest
+- FIRE
+- Investment growth
+- Mortgage
+- Savings goal
+- Credit card payoff
+- Balance transfer
+- Retirement withdrawal
+- Safe withdrawal rate
+- 4 percent rule
+- Global examples hub
 
-## FIRE proof-of-concept cluster
+## Launch checklist for future clusters
 
-Status: implemented as a controlled 30-page static cluster.
+1. Add a typed record module under `src/data/programmatic-seo/`.
+2. Export an explicit expected page count.
+3. Add a cluster-specific page-model builder under `src/lib/programmatic-seo/`.
+4. Reuse existing calculator or math helpers instead of copying formulas.
+5. Add a `[slug]` route that audits records during static generation.
+6. Add a crawlable examples index with server-rendered links.
+7. Register the cluster in `src/data/programmatic-seo/clusters.ts`.
+8. Add calculator, guide, topic, and global-hub internal links.
+9. Add Playwright coverage for audit, index, representative generated pages, and hub links.
+10. Run `npm run build`, `npm run audit:seo`, and `npm run test:calculators`.
 
-Routes:
+## Notes
 
-- Main calculator: `/calculators/fire-calculator/`
-- Browsable examples index: `/calculators/fire/examples/`
-- Generated example: `/calculators/fire/{slug}/`
-
-The dataset is defined in `src/data/programmatic-seo/fire.ts` and contains:
-
-- 20 FIRE-number pages based on annual retirement spending.
-- 10 portfolio-versus-spending checks.
-- A fixed expected count of 30.
-
-The page-model builder in `src/lib/programmatic-seo/fire.ts` reuses:
-
-- `calculateFireNumber`
-- `calculateWithdrawalIncome`
-- `calculateWithdrawalPlan`
-
-No FIRE calculator formula is copied or changed. The generated content uses the
-same math helpers as the interactive calculator.
-
-Each page includes:
-
-- A unique title and meta description.
-- A canonical path under `/calculators/fire/`.
-- One H1.
-- A short calculated answer.
-- FIRE number and annual/monthly spending assumptions.
-- A withdrawal-rate explanation.
-- A five-row withdrawal-rate comparison table.
-- Assumptions and limitations.
-- FAQPage and breadcrumb structured data.
-- Related FIRE examples, calculators, and guides.
-- Links to the FIRE Calculator, FIRE examples index, Beginner’s Guide to FIRE,
-  What Is FIRE guide, and FIRE vs Coast FIRE guide.
-
-The examples index exposes all 30 links in server-rendered HTML and groups them
-into:
-
-- FIRE numbers by annual spending.
-- Portfolio and spending checks.
-
-Client-side search filters by question, slug, spending amount, portfolio
-amount, or intent without removing links from the indexable source HTML.
-
-`auditFireSeoRecords` runs during static generation and fails the build when
-the cluster has:
-
-- A count other than 30.
-- Invalid or duplicate slugs.
-- Duplicate titles.
-- Duplicate descriptions.
-- Incorrect or duplicate canonical paths.
-
-Playwright coverage checks the FIRE audit, all 30 index links, index search,
-one H1, canonical URLs, the internal FIRE Calculator link, the comparison
-table, successful responses, and absence of page errors.
+- `docs/programmatic-seo.md` should describe the current live system, not the older proof-of-concept history.
+- Historical rollout notes that still mention 30-page FIRE or 100-page Compound Interest clusters are now stale relative to source.
