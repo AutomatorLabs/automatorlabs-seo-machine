@@ -157,6 +157,11 @@ export const topicalGuides: TopicalGuide[] = [
         url: '/guides/effective-annual-rate/',
         description: 'Learn how EAR puts nominal rates on an effective annual basis.',
       },
+      {
+        title: 'APY Examples',
+        url: '/calculators/apy/examples/',
+        description: 'Browse worked APY comparisons for savings accounts, CDs, checking, and compounding schedules.',
+      },
     ],
     faq: [
       {
@@ -734,6 +739,11 @@ export const topicalGuides: TopicalGuide[] = [
         title: 'Effective Annual Rate Explained',
         url: '/guides/effective-annual-rate/',
         description: 'Learn how effective annual rates normalize compounding.',
+      },
+      {
+        title: 'APY Examples',
+        url: '/calculators/apy/examples/',
+        description: 'Browse 200 worked APY examples across savings products and compounding assumptions.',
       },
       {
         title: 'Investing Guide Hub',

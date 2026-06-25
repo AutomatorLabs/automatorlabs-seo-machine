@@ -3,13 +3,14 @@
 ## Current scope
 
 - Global examples hub: `/examples/`
-- 11 live clusters registered in `src/data/programmatic-seo/clusters.ts`
+- 12 live clusters registered in `src/data/programmatic-seo/clusters.ts`
 - 200 records per cluster
-- 2,200 generated example pages total
+- 2,400 generated example pages total
 
 Current live clusters:
 
 - Compound Interest
+- APY
 - CAGR
 - FIRE
 - Investment Growth
@@ -35,6 +36,10 @@ Current cluster routes:
   - Calculator: `/calculators/compound-interest/`
   - Index: `/calculators/compound-interest/examples/`
   - Pages: `/calculators/compound-interest/{slug}/`
+- APY
+  - Calculator: `/calculators/apy-calculator/`
+  - Index: `/calculators/apy/examples/`
+  - Pages: `/calculators/apy/{slug}/`
 - CAGR
   - Calculator: `/calculators/cagr-calculator/`
   - Index: `/calculators/cagr/examples/`
@@ -104,6 +109,7 @@ Shared infrastructure:
 Cluster-specific modules:
 
 - `src/data/programmatic-seo/compound-interest.ts`
+- `src/data/programmatic-seo/apy.ts`
 - `src/data/programmatic-seo/cagr.ts`
 - `src/data/programmatic-seo/fire.ts`
 - `src/data/programmatic-seo/investment-growth.ts`
@@ -152,6 +158,7 @@ Every generated page is expected to include:
 Current expected counts from `src/data/programmatic-seo/*`:
 
 - Compound Interest: 200
+- APY: 200
 - CAGR: 200
 - FIRE: 200
 - Investment Growth: 200
@@ -162,6 +169,56 @@ Current expected counts from `src/data/programmatic-seo/*`:
 - Retirement Withdrawal: 200
 - Safe Withdrawal Rate: 200
 - 4 Percent Rule: 200
+
+## APY cluster
+
+Status: implemented and registered in the current system.
+
+Primary files:
+
+- `src/data/programmatic-seo/apy.ts`
+- `src/lib/programmatic-seo/apy.ts`
+- `src/pages/calculators/apy/examples/index.astro`
+- `src/pages/calculators/apy/[slug].astro`
+
+Current route family:
+
+- Calculator: `/calculators/apy-calculator/`
+- Examples index: `/calculators/apy/examples/`
+- Generated page: `/calculators/apy/{slug}/`
+
+Record intents covered:
+
+- `savings-account`
+- `high-yield-savings`
+- `certificate-of-deposit`
+- `money-market`
+- `checking-account`
+- `monthly-compounding`
+- `daily-compounding`
+- `stated-rate-comparison`
+
+Key implementation details:
+
+- Reuses `calculateApy` from `src/lib/math`
+- Does not change the APY Calculator formula
+- Uses the shared programmatic page shell and audit system
+- Shows a one-year balance path that stays aligned with the APY calculator assumptions
+- Adds calculator-page links from `src/components/ApyCalculatorPage.astro`
+- Adds internal-link relationships through guide, topic, and cluster registry updates
+
+Examples index grouping:
+
+- Savings and High-Yield Savings Examples
+- CD and Money Market Examples
+- Checking Account Examples
+- Monthly and Daily Compounding Examples
+- Stated Rate Versus APY Examples
+
+Representative registered pages:
+
+- `/calculators/apy/high-yield-savings-apy-25000-at-4-35-percent-daily/`
+- `/calculators/apy/monthly-compounding-apy-10000-at-5-25-percent/`
 
 ## CAGR cluster
 
@@ -312,6 +369,7 @@ Playwright coverage in `tests/calculators.spec.ts` currently includes:
 Current programmatic SEO describe blocks:
 
 - Compound interest
+- APY
 - CAGR
 - FIRE
 - Investment growth

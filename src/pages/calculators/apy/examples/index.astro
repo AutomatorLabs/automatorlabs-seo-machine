@@ -1,0 +1,474 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  apySeoRecords,
+  EXPECTED_APY_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/apy';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditApySeoRecords } from '../../../../lib/programmatic-seo/apy';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditApySeoRecords(apySeoRecords, EXPECTED_APY_SEO_PAGE_COUNT);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'APY Calculator',
+        url: '/calculators/apy-calculator/',
+      },
+      {
+        name: 'Examples',
+        url: '/calculators/apy/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(apySeoRecords, [
+  {
+    id: 'savings-yield',
+    title: 'Savings and High-Yield Savings Examples',
+    description:
+      'Compare standard and high-yield savings account scenarios across nominal rates, balances, and compounding schedules.',
+    matches: (record) =>
+      record.intent === 'savings-account' ||
+      record.intent === 'high-yield-savings',
+  },
+  {
+    id: 'deposit-products',
+    title: 'CD and Money Market Examples',
+    description:
+      'Review APY examples for deposit products that often advertise stated rates with different compounding schedules.',
+    matches: (record) =>
+      record.intent === 'certificate-of-deposit' ||
+      record.intent === 'money-market',
+  },
+  {
+    id: 'checking',
+    title: 'Checking Account Examples',
+    description:
+      'See how low nominal rates and different compounding schedules affect effective annual yield in interest checking scenarios.',
+    matches: (record) => record.intent === 'checking-account',
+  },
+  {
+    id: 'frequency',
+    title: 'Monthly and Daily Compounding Examples',
+    description:
+      'Isolate the effect of compounding frequency on APY with the same one-year calculator assumptions.',
+    matches: (record) =>
+      record.intent === 'monthly-compounding' ||
+      record.intent === 'daily-compounding',
+  },
+  {
+    id: 'stated-rate',
+    title: 'Stated Rate Versus APY Examples',
+    description:
+      'Translate APR-like stated annual rates into APY-style effective returns under different compounding assumptions.',
+    matches: (record) => record.intent === 'stated-rate-comparison',
+  },
+]);
+---
+
+<Layout
+  title="APY Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} APY examples covering savings accounts, high-yield savings, CDs, money market accounts, checking accounts, monthly compounding, daily compounding, and stated-rate versus effective-yield comparisons.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li><a href="/calculators/apy-calculator/">APY Calculator</a></li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Effective yield example library</p>
+      <h1>APY Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering savings
+        accounts, high-yield savings accounts, CDs, money market accounts,
+        checking accounts, and one-year APY comparisons across different
+        compounding schedules.
+      </p>
+      <a class="primary-link" href="/calculators/apy-calculator/">
+        Calculate your own APY
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section class="example-search" aria-label="Search APY examples">
+      <label for="apy-example-search">Search APY examples</label>
+      <div class="search-row">
+        <input
+          id="apy-example-search"
+          type="search"
+          placeholder="Try savings, CD, daily, monthly, or $10,000"
+          autocomplete="off"
+          aria-controls="apy-example-groups"
+          aria-describedby="apy-example-count"
+        />
+        <button id="clear-apy-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="apy-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="apy-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-apy-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-apy-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.accountLabel,
+                  record.frequencyLabel,
+                  record.startingBalance,
+                  record.startingBalance.toLocaleString('en-US'),
+                  record.nominalRatePercent,
+                  `${record.nominalRatePercent}%`,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/apy/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.startingBalance)} balance
+                    {' · '}
+                    {record.nominalRatePercent}% stated rate
+                    {' · '}
+                    {record.frequencyLabel}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p id="no-apy-examples" class="no-results" role="status" hidden>
+      No APY examples found. Try an account type, compounding schedule, or balance.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>('#apy-example-search');
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-apy-example-search',
+  );
+  const count = document.querySelector<HTMLElement>('#apy-example-count');
+  const noResults = document.querySelector<HTMLElement>('#no-apy-examples');
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-apy-example-card]'),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-apy-example-group]'),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      const visibleCards = group.querySelectorAll(
+        '[data-apy-example-card]:not([hidden])',
+      ).length;
+      group.hidden = visibleCards === 0;
+      const badge = group.querySelector('header span');
+      if (badge) {
+        badge.textContent = `${visibleCards} example${visibleCards === 1 ? '' : 's'}`;
+      }
+    });
+
+    count.textContent = `Showing ${visibleCount} example${visibleCount === 1 ? '' : 's'}`;
+    noResults.hidden = visibleCount !== 0;
+
+    if (clearButton) {
+      clearButton.hidden = query === '';
+    }
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    input.focus();
+    updateExamples();
+  });
+
+  updateExamples();
+</script>
+
+<style>
+  main {
+    width: min(1080px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 4.5rem 0;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li + li::before {
+    margin-right: 0.45rem;
+    color: var(--muted-text-color);
+    content: '›';
+  }
+
+  .breadcrumbs a {
+    color: var(--link-color);
+    text-decoration: none;
+  }
+
+  .page-header {
+    max-width: 860px;
+    margin-bottom: 2rem;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--link-color);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0.6rem 0 1rem;
+    font-size: clamp(2.6rem, 8vw, 4.8rem);
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+
+  .intro {
+    margin: 0;
+    color: var(--muted-text-color);
+    font-size: 1.1rem;
+    line-height: 1.75;
+  }
+
+  .primary-link,
+  .secondary-link {
+    display: inline-flex;
+    margin-top: 1.25rem;
+    border-radius: 999px;
+    padding: 0.8rem 1.15rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .primary-link {
+    background: var(--button-background);
+    color: var(--button-text);
+  }
+
+  .secondary-link {
+    margin-left: 0.85rem;
+    border: 1px solid var(--border-color);
+    color: var(--link-color);
+  }
+
+  .example-search {
+    margin: 2rem 0;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    background: var(--card-background);
+    box-shadow: 0 16px 40px var(--shadow-color);
+    padding: 1.5rem;
+  }
+
+  .example-search label {
+    display: block;
+    margin-bottom: 0.7rem;
+    color: var(--heading-color);
+    font-weight: 700;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .search-row input {
+    flex: 1 1 320px;
+    min-width: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--background-color);
+    color: var(--text-color);
+    font: inherit;
+    padding: 0.85rem 1rem;
+  }
+
+  .search-row button {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text-color);
+    font: inherit;
+    font-weight: 700;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+  }
+
+  #apy-example-count {
+    margin: 0.85rem 0 0;
+    color: var(--muted-text-color);
+  }
+
+  .example-groups {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .example-group {
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    background: var(--card-background);
+    box-shadow: 0 16px 40px var(--shadow-color);
+    padding: 1.5rem;
+  }
+
+  .example-group header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: start;
+    margin-bottom: 1rem;
+  }
+
+  .example-group h2 {
+    margin: 0;
+    font-size: 1.35rem;
+  }
+
+  .example-group header p {
+    margin: 0.5rem 0 0;
+    color: var(--muted-text-color);
+    line-height: 1.6;
+  }
+
+  .example-group header span {
+    color: var(--link-color);
+    font-size: 0.88rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .example-group ul {
+    display: grid;
+    gap: 0.85rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .example-group li a {
+    display: grid;
+    gap: 0.3rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 1rem 1.05rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .example-group li a:hover {
+    border-color: var(--link-color);
+  }
+
+  .example-group li strong {
+    color: var(--heading-color);
+  }
+
+  .example-group li span,
+  .no-results {
+    color: var(--muted-text-color);
+  }
+
+  .no-results {
+    margin: 1.5rem 0 0;
+    text-align: center;
+  }
+
+  @media (max-width: 720px) {
+    .primary-link,
+    .secondary-link {
+      width: 100%;
+      justify-content: center;
+      margin-left: 0;
+    }
+
+    .example-group header {
+      flex-direction: column;
+    }
+
+    .example-group header span {
+      white-space: normal;
+    }
+  }
+</style>

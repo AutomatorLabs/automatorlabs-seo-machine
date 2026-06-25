@@ -1,5 +1,6 @@
 import { fourPercentRuleSeoRecords } from './four-percent-rule';
 import { compoundInterestSeoRecords } from './compound-interest';
+import { apySeoRecords } from './apy';
 import { cagrSeoRecords } from './cagr';
 import {
   balanceTransferSeoRecords,
@@ -38,6 +39,17 @@ const compoundInterestRepresentatives = [
   ),
   compoundInterestSeoRecords.find(
     (record) => record.slug === '50000-at-7-percent-for-20-years',
+  ),
+].filter((record) => record !== undefined);
+
+const apyRepresentatives = [
+  apySeoRecords.find(
+    (record) =>
+      record.slug === 'high-yield-savings-apy-25000-at-4-35-percent-daily',
+  ),
+  apySeoRecords.find(
+    (record) =>
+      record.slug === 'monthly-compounding-apy-10000-at-5-25-percent',
   ),
 ].filter((record) => record !== undefined);
 
@@ -177,6 +189,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: compoundInterestRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/compound-interest/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'apy',
+    title: 'APY Examples',
+    description:
+      'Explore effective-yield examples across savings accounts, high-yield savings, CDs, money market accounts, checking accounts, and compounding-frequency comparisons.',
+    examplesUrl: '/calculators/apy/examples/',
+    calculator: {
+      title: 'APY Calculator',
+      url: '/calculators/apy-calculator/',
+    },
+    guide: {
+      title: 'What Is APY?',
+      url: '/guides/what-is-apy/',
+    },
+    pageCount: apySeoRecords.length,
+    representativePages: apyRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/apy/${record.slug}/`,
     })),
   },
   {

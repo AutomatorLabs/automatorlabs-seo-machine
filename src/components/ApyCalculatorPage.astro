@@ -2,12 +2,14 @@
 import CalculatorPage from './CalculatorPage.astro';
 import { apyCalculator } from '../data/calculators';
 import { contentItems } from '../data/content';
+import { featuredApySeoRecords } from '../data/programmatic-seo/apy';
 
 const relatedItems = apyCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((candidate) => candidate.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
 const guideItems = [
+  { title: 'What Is APY?', url: '/guides/what-is-apy/' },
   { title: 'APR vs APY', url: '/guides/apr-vs-apy/' },
   {
     title: 'Effective Annual Rate Explained',
@@ -17,6 +19,16 @@ const guideItems = [
     title: 'Daily vs Monthly Compounding',
     url: '/guides/daily-vs-monthly-compounding/',
   },
+];
+const exampleItems = [
+  {
+    title: 'Browse all 200 APY examples',
+    url: '/calculators/apy/examples/',
+  },
+  ...featuredApySeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/apy/${record.slug}/`,
+  })),
 ];
 ---
 
@@ -29,6 +41,8 @@ const guideItems = [
   faq={apyCalculator.faq}
   relatedItems={relatedItems}
   guideItems={guideItems}
+  exampleItems={exampleItems}
+  exampleHeading="APY Examples"
 >
   <script>
     import { trackSuccessfulCalculation } from '../lib/analytics';

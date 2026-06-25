@@ -379,6 +379,12 @@ export const guideHubs: GuideHub[] = [
         description:
           'Browse annualized growth examples for stocks, ETFs, index funds, real estate, crypto, businesses, revenue, and portfolios.',
       },
+      {
+        title: 'APY Examples',
+        url: '/calculators/apy/examples/',
+        description:
+          'Browse effective-yield examples for savings accounts, CDs, money market accounts, checking, and compounding-frequency comparisons.',
+      },
     ],
     comparisonGuideLinks: [
       {

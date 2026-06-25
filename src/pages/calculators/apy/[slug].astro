@@ -1,0 +1,26 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  apySeoRecords,
+  EXPECTED_APY_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/apy';
+import {
+  auditApySeoRecords,
+  createApySeoPage,
+} from '../../../lib/programmatic-seo/apy';
+
+export function getStaticPaths() {
+  auditApySeoRecords(apySeoRecords, EXPECTED_APY_SEO_PAGE_COUNT);
+
+  return apySeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createApySeoPage(record, apySeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

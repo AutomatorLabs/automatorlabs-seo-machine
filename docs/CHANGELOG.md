@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-06-26
+
+- Added the APY programmatic example cluster with 200 worked examples and updated live cluster counts to 12 clusters / 2,400 pages.
+
 ## 2026-06-25
 
 - Initialized `/docs` project knowledge base.

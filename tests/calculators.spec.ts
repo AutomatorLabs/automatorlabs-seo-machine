@@ -15,6 +15,11 @@ import {
 } from '../src/data/programmatic-seo/compound-interest';
 import { auditCompoundInterestSeoRecords } from '../src/lib/programmatic-seo/compound-interest';
 import {
+  apySeoRecords,
+  EXPECTED_APY_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/apy';
+import { auditApySeoRecords } from '../src/lib/programmatic-seo/apy';
+import {
   cagrSeoRecords,
   EXPECTED_CAGR_SEO_PAGE_COUNT,
 } from '../src/data/programmatic-seo/cagr';
@@ -796,6 +801,146 @@ test.describe('cagr programmatic SEO', () => {
         page.locator('a[href="/guides/what-is-cagr/"]').first(),
       ).toBeVisible();
       await expect(page.locator('tbody tr')).toHaveCount(record.years);
+      expect(pageErrors).toEqual([]);
+    });
+  }
+});
+
+test.describe('apy programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditApySeoRecords(
+      apySeoRecords,
+      EXPECTED_APY_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_APY_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_APY_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_APY_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_APY_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_APY_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_APY_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the apy examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/apy-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 APY examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/apy/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every apy page', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/apy/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'APY Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('[data-apy-example-group]')).toHaveCount(5);
+    await expect(page.locator('[data-apy-example-card]')).toHaveCount(
+      EXPECTED_APY_SEO_PAGE_COUNT,
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/apy/examples/',
+    );
+
+    const hrefs = await page
+      .locator('[data-apy-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(EXPECTED_APY_SEO_PAGE_COUNT);
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search APY examples',
+    });
+    await searchBox.fill('checking');
+    await expect(page.locator('[data-apy-example-card]:visible')).toHaveCount(
+      25,
+    );
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(page.locator('[data-apy-example-card]:visible')).toHaveCount(
+      EXPECTED_APY_SEO_PAGE_COUNT,
+    );
+    await expect(
+      page.getByRole('link', { name: 'Calculate your own APY' }),
+    ).toHaveAttribute('href', '/calculators/apy-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  for (const slug of [
+    'high-yield-savings-apy-25000-at-4-35-percent-daily',
+    'cd-apy-10000-at-5-percent-annual',
+    'daily-compounding-apy-10000-at-5-25-percent',
+    'stated-rate-vs-apy-10000-at-4-percent-monthly',
+  ]) {
+    test(`renders generated apy page ${slug}`, async ({ page }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error.message));
+      const record = apySeoRecords.find((candidate) => candidate.slug === slug);
+      if (!record) {
+        throw new Error(`Missing apy record: ${slug}`);
+      }
+
+      const url = `/calculators/apy/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      expect(
+        await page.evaluate(() => document.querySelectorAll('h1').length),
+      ).toBe(1);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://automatorlabs.co${url}`,
+      );
+
+      const schemas = await page
+        .locator('script[type="application/ld+json"]')
+        .evaluateAll((scripts) =>
+          scripts.map((script) => script.textContent ?? '').join('\n'),
+        );
+      expect(schemas).toContain('"@type":"FAQPage"');
+      expect(schemas).toContain('"@type":"BreadcrumbList"');
+      await expect(
+        page.getByRole('link', {
+          name: 'Open the APY Calculator',
+        }),
+      ).toHaveAttribute('href', '/calculators/apy-calculator/');
+      await expect(
+        page.getByRole('link', {
+          name: 'Browse All APY Examples',
+        }),
+      ).toHaveAttribute('href', '/calculators/apy/examples/');
+      await expect(
+        page.locator('a[href="/guides/what-is-apy/"]').first(),
+      ).toBeVisible();
+      await expect(page.locator('tbody tr')).toHaveCount(12);
       expect(pageErrors).toEqual([]);
     });
   }

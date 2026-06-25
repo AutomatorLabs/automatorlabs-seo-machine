@@ -292,6 +292,39 @@ function buildGuide(config: CalculatorConfig): CalculatorGuide {
               'Understand how investment growth and rising prices compound together.',
           },
         ]
+      : config.id === 'apy'
+        ? [
+            {
+              title: 'APY Examples',
+              url: '/calculators/apy/examples/',
+              description:
+                'Browse 200 worked APY examples across savings accounts, CDs, money market accounts, checking, and compounding-frequency comparisons.',
+            },
+            {
+              title: 'What Is APY?',
+              url: '/guides/what-is-apy/',
+              description:
+                'Learn what annual percentage yield measures and when it is useful.',
+            },
+            {
+              title: 'APR vs APY',
+              url: '/guides/apr-vs-apy/',
+              description:
+                'Compare stated annual rates with effective annual yields.',
+            },
+            {
+              title: 'Daily vs Monthly Compounding',
+              url: '/guides/daily-vs-monthly-compounding/',
+              description:
+                'See when compounding frequency meaningfully changes one-year yield.',
+            },
+            {
+              title: 'Effective Annual Rate Explained',
+              url: '/guides/effective-annual-rate/',
+              description:
+                'Put nominal rates with different compounding schedules on one annual basis.',
+            },
+          ]
       : config.id === 'cagr'
         ? [
             {
