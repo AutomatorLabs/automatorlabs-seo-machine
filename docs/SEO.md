@@ -153,6 +153,7 @@ See [programmatic-seo.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-mach
 - FAQ schema on calculator pages
 - breadcrumb schema on calculator pages
 - hosted newsletter CTA on calculator pages
+- topics data-module structure, including non-empty sections, non-empty link groups, internal absolute hrefs, and duplicate label/href checks within a topic section
 - internal-link validity
 - sitemap output
 

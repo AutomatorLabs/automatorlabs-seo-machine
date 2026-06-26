@@ -12,6 +12,7 @@
 - Extended the SEO audit to validate shared Open Graph and Twitter metadata plus canonical-to-`og:url` parity.
 - Added `docs/DEPLOYMENT.md` with the live release, sitemap resubmission, analytics, and rollback checklist.
 - Moved the manually curated `/topics/` link map into a typed data module while preserving the live page output and audit coverage.
+- Added structural audit checks for `src/data/topics.ts`, including empty-group, duplicate-label, duplicate-href, and invalid-href validation.
 
 ## 2026-06-26
 

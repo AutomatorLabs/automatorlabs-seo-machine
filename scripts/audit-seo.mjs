@@ -157,6 +157,175 @@ function parseManualTopicUrls(source) {
   ].sort();
 }
 
+function extractTopicsArraySource(source) {
+  const declaration = 'export const topics';
+  const declarationIndex = source.indexOf(declaration);
+  if (declarationIndex === -1) return null;
+
+  const assignmentIndex = source.indexOf('=', declarationIndex);
+  if (assignmentIndex === -1) return null;
+
+  const arrayStart = source.indexOf('[', assignmentIndex);
+  if (arrayStart === -1) return null;
+
+  let depth = 0;
+  let inSingleQuote = false;
+  let inDoubleQuote = false;
+  let inTemplateString = false;
+  let isEscaped = false;
+
+  for (let index = arrayStart; index < source.length; index += 1) {
+    const character = source[index];
+
+    if (isEscaped) {
+      isEscaped = false;
+      continue;
+    }
+
+    if (character === '\\') {
+      isEscaped = true;
+      continue;
+    }
+
+    if (!inDoubleQuote && !inTemplateString && character === "'") {
+      inSingleQuote = !inSingleQuote;
+      continue;
+    }
+
+    if (!inSingleQuote && !inTemplateString && character === '"') {
+      inDoubleQuote = !inDoubleQuote;
+      continue;
+    }
+
+    if (!inSingleQuote && !inDoubleQuote && character === '`') {
+      inTemplateString = !inTemplateString;
+      continue;
+    }
+
+    if (inSingleQuote || inDoubleQuote || inTemplateString) {
+      continue;
+    }
+
+    if (character === '[') {
+      depth += 1;
+      continue;
+    }
+
+    if (character === ']') {
+      depth -= 1;
+      if (depth === 0) {
+        return source.slice(arrayStart, index + 1);
+      }
+    }
+  }
+
+  return null;
+}
+
+function parseTopicsModule(source) {
+  const topicsArraySource = extractTopicsArraySource(source);
+  if (!topicsArraySource) return null;
+
+  try {
+    return Function(`"use strict"; return (${topicsArraySource});`)();
+  } catch {
+    return null;
+  }
+}
+
+function validateTopicsData(topics) {
+  if (!Array.isArray(topics) || topics.length === 0) {
+    addError('Topics data module must export a non-empty topics array.');
+    return;
+  }
+
+  const linkGroups = ['calculators', 'guides', 'examples'];
+
+  for (const [sectionIndex, section] of topics.entries()) {
+    const sectionTitle =
+      typeof section?.title === 'string' && section.title.trim().length > 0
+        ? section.title.trim()
+        : `section ${sectionIndex + 1}`;
+
+    if (!section || typeof section !== 'object') {
+      addError(`Topics data contains an invalid topic section at index ${sectionIndex}.`);
+      continue;
+    }
+
+    if (typeof section.title !== 'string' || section.title.trim().length === 0) {
+      addError(`Topics data has a topic section with an empty title at index ${sectionIndex}.`);
+    }
+
+    if (
+      typeof section.description !== 'string' ||
+      section.description.trim().length === 0
+    ) {
+      addError(`Topic section "${sectionTitle}" has an empty description.`);
+    }
+
+    for (const groupName of linkGroups) {
+      if (!(groupName in section)) {
+        addError(`Topic section "${sectionTitle}" is missing the "${groupName}" link group.`);
+        continue;
+      }
+
+      const links = section[groupName];
+
+      if (!Array.isArray(links)) {
+        addError(`Topic section "${sectionTitle}" has a non-array "${groupName}" link group.`);
+        continue;
+      }
+
+      if (links.length === 0) {
+        addError(`Topic section "${sectionTitle}" has an empty "${groupName}" link array.`);
+        continue;
+      }
+
+      const seenLabels = new Set();
+      const seenHrefs = new Set();
+
+      for (const [linkIndex, link] of links.entries()) {
+        const label = typeof link?.title === 'string' ? link.title.trim() : '';
+        const href = typeof link?.url === 'string' ? link.url.trim() : '';
+        const linkLabel = label || `link ${linkIndex + 1}`;
+
+        if (!label) {
+          addError(`Topic section "${sectionTitle}" has an empty label in "${groupName}".`);
+        }
+
+        if (!href) {
+          addError(`Topic section "${sectionTitle}" has an empty href for "${linkLabel}" in "${groupName}".`);
+          continue;
+        }
+
+        if (!href.startsWith('/')) {
+          addError(`Topic section "${sectionTitle}" has a non-internal href "${href}" in "${groupName}".`);
+        }
+
+        if (href.startsWith('#')) {
+          addError(`Topic section "${sectionTitle}" has a hash-only href "${href}" in "${groupName}".`);
+        }
+
+        if (/^[a-z]+:/i.test(href) || href.startsWith('//')) {
+          addError(`Topic section "${sectionTitle}" has an external href "${href}" in "${groupName}".`);
+        }
+
+        if (seenLabels.has(label)) {
+          addError(`Topic section "${sectionTitle}" has a duplicate label "${label}".`);
+        } else if (label) {
+          seenLabels.add(label);
+        }
+
+        if (seenHrefs.has(href)) {
+          addError(`Topic section "${sectionTitle}" has a duplicate href "${href}".`);
+        } else {
+          seenHrefs.add(href);
+        }
+      }
+    }
+  }
+}
+
 function parseContentItems(source) {
   const items = [];
   const itemPattern = /\{\s*id:\s*'([^']+)',[\s\S]*?url:\s*'([^']+)'/g;
@@ -337,6 +506,7 @@ async function main() {
   const categoriesSource = await readFile(categoriesSourcePath, 'utf8');
   const contentSource = await readFile(contentSourcePath, 'utf8');
   const topicsSource = await readFile(topicsSourcePath, 'utf8');
+  const parsedTopics = parseTopicsModule(topicsSource);
   const calculatorUrls = new Set(parseCalculatorUrls(calculatorsSource));
   const manualTopicUrls = parseManualTopicUrls(topicsSource);
   const contentItems = parseContentItems(contentSource);
@@ -348,6 +518,12 @@ async function main() {
   }
   const { ids: categoryIds, categorySlugs } =
     parseCalculatorCategoryIds(categoriesSource);
+
+  if (!parsedTopics) {
+    addError('Failed to parse src/data/topics.ts for validation.');
+  } else {
+    validateTopicsData(parsedTopics);
+  }
 
   for (const calculatorUrl of calculatorUrls) {
     if (!pageByRoute.has(calculatorUrl)) {

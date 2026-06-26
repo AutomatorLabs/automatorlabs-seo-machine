@@ -26,6 +26,7 @@ Its editorial link map now lives in `src/data/topics.ts`.
 - Topical guides: `src/data/topical-guides.ts`
 - Comparison guides: `src/data/comparison-guides.ts`
 - Topics page curation: `src/data/topics.ts`
+  - manually curated and now shape-validated by `scripts/audit-seo.mjs`
 - Worked examples on calculator pages: `src/data/calculator-examples.ts`
 - Programmatic SEO cluster registry: `src/data/programmatic-seo/clusters.ts`
 - Programmatic SEO records: `src/data/programmatic-seo/*.ts`
