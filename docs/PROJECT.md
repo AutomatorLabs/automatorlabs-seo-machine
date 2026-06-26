@@ -1,69 +1,88 @@
 # Project
 
+## One-Sentence Summary
+
+AutomatorLabs is a static financial publishing site that uses calculators, guides, and worked examples as an integrated SEO and education system.
+
 ## Mission
 
-AutomatorLabs appears to be building a search-friendly library of free financial calculators, educational guides, and worked examples that help users understand financial tradeoffs before making decisions.
+Help users ask better financial questions before making decisions by pairing free calculators with clear explanations, worked examples, and related guides.
 
-## Product Overview
+## Product Surfaces
 
-- Astro static site at `https://automatorlabs.co`.
-- Primary content types:
-  - Interactive calculators.
-  - Guide hubs and educational articles.
-  - Programmatic example pages grouped into example collections.
-  - Newsletter acquisition pages and shared signup CTAs.
-- Current positioning from the homepage:
-  - "Practical financial calculators built to explain the results."
+- Homepage: brand framing plus entry points into calculators, guides, and examples.
+- Calculator index: searchable and filterable directory of live calculator pages.
+- Calculator category pages: curated collections for major decision areas.
+- Calculator detail pages: interactive tools with explanations, FAQs, related links, and optional example links.
+- Guide index: hub for guide hubs, comparison guides, topical guides, and generated calculator guides.
+- Guide hubs: broader educational pages that connect calculators, guides, and example collections.
+- Topical guides: authored educational articles.
+- Comparison guides: side-by-side decision articles.
+- Worked examples: large static example clusters under calculator families.
+- Topics index: manually curated subject map across calculators, guides, and examples.
+- Newsletter page plus shared CTA blocks: audience capture via Beehiiv.
 
-## Target Audience
+## Current Scope
 
-- Consumers researching personal finance decisions.
-- Users comparing scenarios in investing, retirement, debt, mortgages, budgeting, and savings.
-- Search visitors looking for specific calculator intents.
-- Newsletter subscribers who want ongoing calculator and guide updates.
+Verified from source:
 
-## Technology Stack
+- 84 calculator content entries
+- 84 calculator configs
+- 6 calculator categories
+- 10 guide hubs
+- 17 topical guides
+- 7 comparison guides
+- generated calculator guides for calculator configs
+- 13 programmatic SEO clusters
+- 2,600 example pages total
 
-- Astro 6 static site.
-- TypeScript with Astro strict config.
-- `@astrojs/sitemap` for sitemap generation.
-- Playwright for browser-based regression coverage.
-- Node.js `>=22.12.0`.
-- Content/data stored in repo as TypeScript modules instead of a CMS.
+## Positioning
 
-## Current Capabilities
+The site positions itself as:
 
-- 84 live calculator entries in `src/data/content.ts`.
-- Calculator pages built from centralized calculator config/data.
-- Calculator categories and category landing pages.
-- Guide system with:
-  - 10 guide hubs.
-  - 17 topical guides.
-  - 7 comparison guides.
-  - Generated calculator guides derived from calculator configs.
-- Programmatic SEO example system with 13 clusters and 2,600 total example pages.
-- Global examples hub at `/examples/`.
-- Shared newsletter CTA across major site sections.
-- Static SEO audit script for built output.
-- Playwright tests covering calculators, examples, and SEO-critical behavior.
+- practical
+- beginner-friendly
+- scenario-based
+- educational rather than advisory
 
-## Revenue Strategy
+Homepage language reflects the core promise:
 
-- `Needs confirmation`.
-- The current repository shows audience acquisition via SEO and newsletter growth.
-- No direct monetization, checkout, subscription paywall, or ad system is visible in the inspected code.
+- "Practical financial calculators built to explain the results"
+- "Clear numbers. Better questions."
 
-## Design Philosophy
+## User Jobs
 
-- Static-first and content-heavy.
-- Calculator pages pair tools with explanations, FAQs, breadcrumbs, related links, and guide links.
-- Programmatic SEO pages are controlled, typed, and validated instead of mass-generated blindly.
-- Site messaging emphasizes education and scenario testing rather than prediction or advice.
+The repo suggests users come here to:
 
-## Known Constraints
+- estimate a financial outcome
+- compare multiple scenarios
+- understand what calculator outputs mean
+- move from a narrow query into adjacent education
+- browse examples when they do not know what inputs to choose
 
-- No visible backend, database, or CMS in the inspected repo.
-- Most content is hard-coded in TypeScript data files, so updates are code changes.
-- SEO quality depends on keeping metadata, schema, canonicals, and internal links consistent.
-- Deployment target is `Needs confirmation`; the site is clearly a static Astro build, but hosting platform is not stated in the inspected files.
-- Existing docs in `/docs` include older planning notes; treat them as historical unless they still match source.
+## Technical Shape
+
+- Astro 6 static site
+- TypeScript
+- `@astrojs/sitemap`
+- Playwright end-to-end coverage
+- repo-hosted content and config in `.ts` files
+- no visible CMS, backend, or database
+
+## Operating Constraints
+
+- The site is static-first; most "content operations" are code edits.
+- Internal linking is core product behavior, not optional polish.
+- Counts in docs can go stale quickly after calculator or example launches.
+- Deployment artifact is clearly `dist/`, but host and deploy trigger remain `Needs confirmation`.
+
+## Non-Goals Visible In Source
+
+The inspected repo does not currently implement:
+
+- authenticated users
+- user accounts
+- saved scenarios on a backend
+- personalized financial advice
+- ecommerce or checkout
+- a visible editorial CMS

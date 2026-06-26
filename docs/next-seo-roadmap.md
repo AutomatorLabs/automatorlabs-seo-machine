@@ -1,5 +1,7 @@
 # Next SEO Roadmap
 
+This file is historical proof-of-concept planning. The repo has already moved past the "20-50 pages only" phase and now contains 13 live programmatic clusters and 2,600 example pages.
+
 ## Hold before next deploy
 - Keep changes local.
 - Push one larger update later.

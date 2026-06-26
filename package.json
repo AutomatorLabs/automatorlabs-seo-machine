@@ -9,6 +9,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "audit:seo": "node scripts/audit-seo.mjs",
+    "verify": "npm run build && npm run audit:seo && npm run test:calculators",
     "preview": "astro preview",
     "test:calculators": "playwright test tests/calculators.spec.ts",
     "astro": "astro"

@@ -1,5 +1,7 @@
 # Local Release Audit
 
+This is a dated point-in-time report from June 14, 2026. Treat it as historical release context, not the current live state of the repository.
+
 Date: June 14, 2026
 
 Status: **Needs Fix**

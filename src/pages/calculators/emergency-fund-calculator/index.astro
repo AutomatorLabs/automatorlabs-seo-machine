@@ -8,7 +8,7 @@ const relatedItems = emergencyFundCalculator.relatedIds.flatMap((id) => {
   return item
     ? [{
         title: item.title,
-        url: item.status === 'live' ? item.url : '/calculators/',
+        url: item.url,
       }]
     : [];
 });

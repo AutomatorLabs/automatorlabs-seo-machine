@@ -1,5 +1,7 @@
-export type ContentCategory = 'calculator' | 'guide';
-export type ContentStatus = 'live' | 'planned';
+// The public content registry currently powers live calculator discovery only.
+// Guides, hubs, and examples are registered in their own data modules.
+export type ContentCategory = 'calculator';
+export type ContentStatus = 'live';
 
 export interface ContentItem {
   id: string;

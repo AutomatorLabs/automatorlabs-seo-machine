@@ -1,5 +1,16 @@
 # Calculator QA Checklist
 
+## Status
+
+This file is a historical QA template and is not a current source of truth for live calculator counts.
+
+Current repo state on 2026-06-27:
+
+- `src/data/content.ts` contains 84 calculator entries
+- this checklist still reflects an older 53-calculator release pass
+
+Use this template structure for manual QA, but regenerate the registry section before relying on the listed calculator inventory.
+
 Use this document for manual release QA of every calculator registered in both
 `src/data/content.ts` and `src/data/calculators.ts`.
 

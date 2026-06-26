@@ -1,125 +1,167 @@
 # SEO
 
+## SEO Philosophy
+
+AutomatorLabs is not just "a site with SEO." The product is organized as an SEO-aware publishing system.
+
+The core approach is:
+
+- publish tools for explicit intent
+- attach explanation and education to those tools
+- cover adjacent search journeys with guides
+- cover long-tail scenario queries with worked examples
+- link every layer together
+
+Good SEO work in this repo usually means improving the whole system, not just one title tag.
+
 ## Existing SEO Implementation
 
-- Site-level canonical generation in `src/layouts/Layout.astro`.
-- Sitemap integration enabled through `@astrojs/sitemap`.
-- `public/robots.txt` allows crawling and points to `https://automatorlabs.co/sitemap-index.xml`.
-- Static SEO audit script checks built HTML and source data for common issues.
+- shared canonical generation in `src/layouts/Layout.astro`
+- sitemap integration via `@astrojs/sitemap`
+- permissive `public/robots.txt`
+- build-time SEO audit in `scripts/audit-seo.mjs`
+- browser-based checks in `tests/calculators.spec.ts`
 
-## Metadata
+## Metadata System
 
-- `Layout.astro` sets:
-  - `<title>`
-  - meta description
-  - canonical URL
-  - optional `noindex`
-- Calculator, guide, and example pages pass page-specific titles and descriptions into the layout.
-- Programmatic SEO utilities include shared metadata generation helpers in `src/lib/programmatic-seo/metadata.ts`.
+`src/layouts/Layout.astro` currently manages:
+
+- `<title>`
+- meta description
+- canonical URL
+- optional `noindex`
+
+Page-specific titles and descriptions are passed in by:
+
+- calculator routes
+- guide components
+- examples hub
+- programmatic SEO page builders
+
+Programmatic metadata helpers live in:
+
+- `src/lib/programmatic-seo/metadata.ts`
 
 ## Structured Data
 
-- Calculator pages include:
-  - `SoftwareApplication`
-  - `FAQPage`
-  - `BreadcrumbList`
-- Guide pages include:
-  - `FAQPage`
-- Programmatic example pages include:
-  - `FAQPage`
-  - `BreadcrumbList`
-- Example and topic hubs include breadcrumb schema.
+### Calculator pages
 
-## Sitemap
+- `SoftwareApplication`
+- `FAQPage`
+- `BreadcrumbList`
 
-- Enabled via `astro.config.mjs`.
-- Audit script expects `dist/sitemap-index.xml` or `dist/sitemap.xml`.
+### Guide pages
 
-## Robots
+- `FAQPage`
 
-- Current `robots.txt`:
-  - `User-agent: *`
-  - `Allow: /`
-  - sitemap declaration
-- No repo-visible crawl blocking beyond optional per-page `noindex`.
+### Programmatic example pages
 
-## Internal Linking
+- `FAQPage`
+- `BreadcrumbList`
 
-- Global nav links to Home, Calculators, Guides, and About.
-- Footer links extend to Topics, Examples, Newsletter, Privacy, and Contact.
-- Calculator pages link to:
-  - Related calculators.
-  - Related guides.
-  - Worked/example pages when available.
-  - Newsletter CTA.
-- Guide pages link back into calculators and examples.
-- Programmatic example pages link to:
-  - Parent calculator.
-  - Example index.
-  - Related pages.
-  - Guide and newsletter CTA.
-- Topic pages aggregate calculators, guides, and examples by subject.
+### Hubs
 
-## Existing Calculators
+- breadcrumb schema on examples and topic surfaces
 
-- 84 live calculator entries are indexed in `src/data/content.ts`.
-- Major calculator families:
-  - Investing and compound growth.
-  - FIRE and retirement.
-  - Debt and credit cards.
-  - Mortgage and home buying.
-  - Savings and budgeting.
-  - Tax-advantaged account planning.
+## Indexability And Crawl Rules
 
-## Existing Content Pages
+Current repo-visible behavior:
 
-- Guides index with search/filter UI.
-- 10 guide hubs.
-- 17 topical guides.
-- 7 comparison guides.
-- Generated calculator guides from calculator configs.
-- Global examples hub plus 13 example clusters.
+- `robots.txt` allows crawling
+- sitemap URL is declared
+- optional per-page `noindex` is supported by the layout
 
-## Existing Programmatic Example Clusters
+There is no repo-visible global crawl suppression beyond that.
 
-- Compound interest.
-- APY.
-- CAGR.
-- Rule of 72.
-- Investment growth.
-- FIRE.
-- Mortgage.
-- Savings goal.
-- Credit card payoff.
-- Balance transfer.
-- Retirement withdrawal.
-- Safe withdrawal rate.
-- 4 percent rule.
+## Internal Linking Philosophy
 
-Current repo state indicates 200 records per cluster, for 2,600 total examples.
+Internal linking is one of the main SEO mechanisms in this repo.
 
-## Current Strengths
+Expected flow:
 
-- Static-first architecture with clean canonical handling.
-- Strong internal linking between calculators, guides, categories, topics, and examples.
-- Structured data is embedded in shared page components.
-- SEO guardrails exist in both source-level audits and browser tests.
-- Programmatic SEO is controlled by typed record sets rather than unconstrained generation.
+- broad entry pages route users toward narrower tools
+- narrow tool pages route users toward related calculators and education
+- example pages route users back to calculators and into adjacent scenarios
+- guide pages connect higher-funnel educational intent back to calculator intent
 
-## Missing Opportunities
+This reduces orphan pages and increases topical depth.
 
-- No repo-visible OG/Twitter social metadata in the shared layout.
-- No repo-visible image generation pipeline for rich previews.
-- No repo-visible search-console, indexing, or analytics reporting docs.
-- No repo-visible content freshness workflow beyond manual source edits.
-- Keep `/docs/programmatic-seo.md` synchronized whenever cluster counts, route patterns, or launch rules change.
+## Current Link Surfaces
 
-## Future SEO Improvements
+- main nav: Home, Calculators, Guides, About
+- footer: Topics, Examples, Newsletter, Privacy, Contact, GitHub
+- calculator pages:
+  - related calculators
+  - related guides
+  - optional worked-example links
+  - newsletter CTA
+- guide pages:
+  - matching calculators
+  - adjacent guides
+  - example collections when relevant
+- example pages:
+  - parent calculator
+  - cluster examples index
+  - related examples
+  - related calculators
+  - related guides
+- topics page:
+  - manual cross-type curation
 
-- Add explicit Open Graph and Twitter card metadata.
-- Document and standardize title/meta rules for each content type.
-- Add a current SEO inventory doc for live URLs and clusters.
-- Expand test/audit coverage to social metadata if added.
-- Review topic page links against live guide/calculator coverage for gaps.
-- Validate whether all guide links referenced from topics are currently live.
-- Keep programmatic SEO docs synchronized with actual cluster counts and route patterns.
+## Programmatic SEO Within The SEO System
+
+Programmatic pages are not standalone SEO experiments. They are part of the main content graph.
+
+Each cluster should:
+
+- answer a distinct scenario intent
+- map cleanly to one calculator family
+- link back to the calculator
+- link to the examples index
+- link to adjacent guides
+- maintain unique metadata
+
+See [programmatic-seo.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-machine/docs/programmatic-seo.md) for the cluster system itself.
+
+## What The Audit Actually Enforces
+
+`scripts/audit-seo.mjs` verifies:
+
+- unique titles
+- unique meta descriptions
+- unique canonicals
+- canonical presence
+- single H1 on pages
+- calculator registry-to-page consistency
+- category coverage
+- FAQ schema on calculator pages
+- breadcrumb schema on calculator pages
+- hosted newsletter CTA on calculator pages
+- internal-link validity
+- sitemap output
+
+## Strengths
+
+- static output with predictable canonical behavior
+- good route-to-registry consistency checks
+- strong use of cross-linking between calculators, guides, and examples
+- shared page shells reduce metadata drift
+- controlled programmatic SEO rather than unbounded generation
+
+## Gaps And Open Opportunities
+
+- no repo-visible Open Graph or Twitter card metadata
+- no repo-visible social preview image system
+- no documented Search Console workflow
+- no documented analytics review workflow beyond embedded tags
+- no explicit freshness workflow outside source edits
+- topics page should be reviewed periodically for stale or missing links
+
+## Common SEO Mistakes In This Repo
+
+- shipping a route without updating the index registries
+- adding content without internal-link support
+- stale counts in docs after launches
+- duplicate or near-duplicate programmatic metadata
+- assuming build success means SEO quality without running the audit
+- treating the topics page as self-updating when it is manual

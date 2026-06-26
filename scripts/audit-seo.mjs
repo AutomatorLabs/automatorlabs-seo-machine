@@ -12,6 +12,7 @@ const categoriesSourcePath = path.join(
   'src/data/calculator-categories.ts',
 );
 const contentSourcePath = path.join(rootDir, 'src/data/content.ts');
+const topicsSourcePath = path.join(rootDir, 'src/pages/topics/index.astro');
 const siteOrigin = 'https://automatorlabs.co';
 
 const errors = [];
@@ -124,6 +125,16 @@ function parseCalculatorUrls(source) {
       [...source.matchAll(/url:\s*'([^']+)'/g)]
         .map((match) => match[1])
         .filter((url) => url.startsWith('/calculators/')),
+    ),
+  ].sort();
+}
+
+function parseManualTopicUrls(source) {
+  return [
+    ...new Set(
+      [...source.matchAll(/url:\s*'([^']+)'/g)]
+        .map((match) => match[1])
+        .filter((url) => url.startsWith('/')),
     ),
   ].sort();
 }
@@ -270,7 +281,9 @@ async function main() {
   const calculatorsSource = await readFile(calculatorsSourcePath, 'utf8');
   const categoriesSource = await readFile(categoriesSourcePath, 'utf8');
   const contentSource = await readFile(contentSourcePath, 'utf8');
+  const topicsSource = await readFile(topicsSourcePath, 'utf8');
   const calculatorUrls = new Set(parseCalculatorUrls(calculatorsSource));
+  const manualTopicUrls = parseManualTopicUrls(topicsSource);
   const contentItems = parseContentItems(contentSource);
   const contentIds = new Set(contentItems.map((item) => item.id));
   const contentIdsByUrl = new Map();
@@ -328,6 +341,12 @@ async function main() {
     }
   }
 
+  for (const topicUrl of manualTopicUrls) {
+    if (!htmlRouteExists(topicUrl, htmlRoutes)) {
+      addError(`Topics index links to a missing built page: ${topicUrl}`);
+    }
+  }
+
   auditInternalLinks(pages, htmlRoutes);
 
   if (errors.length > 0) {
@@ -344,6 +363,7 @@ async function main() {
   console.log(`Checked ${pages.length} built HTML pages.`);
   console.log(`Checked ${calculatorUrls.size} registered calculator pages.`);
   console.log(`Checked ${categoryIds.size} calculator category assignments.`);
+  console.log(`Checked ${manualTopicUrls.length} manually curated topic links.`);
   console.log(`Sitemap found in dist/ (built ${distStats.mtime.toISOString()}).`);
 }
 

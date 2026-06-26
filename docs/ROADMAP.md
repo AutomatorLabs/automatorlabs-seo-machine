@@ -1,31 +1,21 @@
 # Roadmap
 
-## Current Sprint
+## Current Priorities
 
-- [ ] Establish `/docs` as the durable project knowledge base.
-- [ ] Keep architecture and SEO documentation aligned with the current codebase.
-- [ ] Harden the existing calculator + guide + example system rather than expanding blindly.
-- [ ] Verify that older docs in `/docs` still match the current repo.
+- [ ] Keep the new handbook aligned with live source as calculators, guides, and clusters expand.
+- [ ] Strengthen the calculator -> guide -> example -> newsletter journey rather than adding disconnected pages.
+- [ ] Confirm the real deployment workflow and platform.
 
-## Next Milestone
+## Near-Term Opportunities
 
-- [ ] Review content consistency across calculators, guides, topic pages, and example hubs.
-- [ ] Reconcile stale counts and descriptions in existing SEO documentation.
-- [ ] Expand or refine test coverage where new calculators or clusters were recently added.
-- [ ] Confirm deployment workflow and capture it in docs.
-- [ ] Confirm revenue strategy and audience goals, then document them in `PROJECT.md`.
+- [ ] Add Open Graph and Twitter card metadata if social sharing becomes important.
+- [ ] Audit the manually curated topics page for completeness and staleness.
+- [ ] Review guide coverage for newer calculator families and variants.
+- [ ] Decide whether some route families should remain intentionally hidden from the public calculator index.
 
-## Future Features
+## Longer-Term Opportunities
 
-- [ ] Add richer social metadata support for all major page types.
-- [ ] Improve documentation around calculator creation workflow.
-- [ ] Add a repeatable process for launching new programmatic SEO clusters.
-- [ ] Add content operations guidance for updating calculator inputs, FAQs, and related links safely.
-- [ ] Consider lightweight reporting for SEO audits and test results over time.
-
-## Long-Term Vision
-
-- [ ] Maintain AutomatorLabs as a large, well-linked static finance content library.
-- [ ] Use calculators, guides, and worked examples as a cohesive search acquisition system.
-- [ ] Keep programmatic SEO quality controlled with strong audits and tests.
-- [ ] Build a repository where future contributors can ship safely without re-learning the whole project from scratch.
+- [ ] Add clearer analytics / Search Console operating docs if those tools exist outside the repo.
+- [ ] Expand route and content inventory documentation if the site keeps growing quickly.
+- [ ] Improve repeatable launch checklists for calculators and clusters with stricter validation.
+- [ ] Consider CI-friendly reporting for build, SEO audit, and Playwright outcomes.

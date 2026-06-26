@@ -49,29 +49,18 @@ const calculators = contentItems
 
       <ul class="calculator-list">
         {calculators.map((item) => (
-          <li class:list={{ 'is-live': item.status === 'live' }}>
-            {item.status === 'live' ? (
-              <a class="calculator-card" href={item.url}>
-                <span class="card-meta">
-                  <span class="category-label">{category.title}</span>
-                  <span class="status live">Live</span>
-                </span>
-                <span class="card-title">{item.title}</span>
-                <span class="card-description">{item.description}</span>
-                <span class="card-action" aria-hidden="true">
-                  Open calculator <span>→</span>
-                </span>
-              </a>
-            ) : (
-              <div class="calculator-card planned-card">
-                <span class="card-meta">
-                  <span class="category-label">{category.title}</span>
-                  <span class="status">Planned</span>
-                </span>
-                <h3 class="card-title">{item.title}</h3>
-                <p class="card-description">{item.description}</p>
-              </div>
-            )}
+          <li>
+            <a class="calculator-card" href={item.url}>
+              <span class="card-meta">
+                <span class="category-label">{category.title}</span>
+                <span class="status live">Live</span>
+              </span>
+              <span class="card-title">{item.title}</span>
+              <span class="card-description">{item.description}</span>
+              <span class="card-action" aria-hidden="true">
+                Open calculator <span>→</span>
+              </span>
+            </a>
           </li>
         ))}
       </ul>
@@ -196,7 +185,7 @@ const calculators = contentItems
       transform 160ms ease;
   }
 
-  .calculator-list li.is-live:hover {
+  .calculator-list li:hover {
     border-color: var(--link-color);
     box-shadow: 0 12px 30px var(--shadow-color);
     transform: translateY(-2px);
@@ -215,10 +204,6 @@ const calculators = contentItems
     border-radius: 13px;
     box-shadow: inset 0 0 0 3px var(--focus-ring);
     outline: none;
-  }
-
-  .planned-card {
-    cursor: default;
   }
 
   .card-meta {

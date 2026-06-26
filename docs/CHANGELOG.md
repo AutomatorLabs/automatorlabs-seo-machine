@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-06-27
+
+- Reworked `/docs` into an AI-oriented developer handbook with new business, content, style, workflow, decisions, and contributing docs.
+- Expanded architecture, SEO, and programmatic SEO documentation around the live registry-driven system.
+- Updated task and roadmap docs to reflect the current documentation baseline and remaining unknowns.
+- Removed unused Astro starter files and dead planned/live UI branches that were no longer reachable in the current live-only content model.
+- Added `npm run verify` plus an SEO audit check for manually curated topic links.
+
 ## 2026-06-26
 
 - Added the Rule of 72 programmatic example cluster with 200 worked examples and updated live cluster counts to 13 clusters / 2,600 pages.
