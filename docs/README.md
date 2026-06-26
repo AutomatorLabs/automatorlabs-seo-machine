@@ -32,6 +32,7 @@ Use these as supporting or historical references:
 - [TASKS.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-machine/docs/TASKS.md)
 - [ROADMAP.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-machine/docs/ROADMAP.md)
 - [CHANGELOG.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-machine/docs/CHANGELOG.md)
+- [DEPLOYMENT.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-machine/docs/DEPLOYMENT.md)
 - [calculator-qa-checklist.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-machine/docs/calculator-qa-checklist.md)
 - [email-marketing.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-machine/docs/email-marketing.md)
 - [local-release-report.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-machine/docs/local-release-report.md)

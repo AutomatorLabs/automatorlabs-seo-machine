@@ -49,6 +49,7 @@ What the repo proves:
 1. Build the static Astro artifact into `dist/`.
 2. Run the local verification flow before release.
 3. Treat the generated `dist/` output as the deployable artifact.
+4. Use [DEPLOYMENT.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-machine/docs/DEPLOYMENT.md) as the current operator release checklist.
 
 What still needs confirmation:
 
@@ -66,6 +67,7 @@ What still needs confirmation:
 - `astro check` is not wired into the standard workflow because the repo does not yet include the required checker dependencies.
 - Some larger calculator-family abstractions remain intentionally unsimplified to avoid risky refactors in short implementation windows.
 - Deployment and CI workflow details are still undocumented in repo-backed terms.
+- External release tooling details such as Netlify project settings and search-console ownership still require primary-source confirmation.
 
 ## Recommended Next Claude Priorities
 

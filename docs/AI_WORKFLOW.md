@@ -121,6 +121,8 @@ Available repo checks:
 
 For documentation-only changes, `git diff --check` is the minimum required check.
 
+For an actual production release workflow, use [DEPLOYMENT.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-machine/docs/DEPLOYMENT.md) as the operator checklist after local verification passes.
+
 ## Common Failure Modes For AI Agents
 
 - Updating one calculator registry but not the others
