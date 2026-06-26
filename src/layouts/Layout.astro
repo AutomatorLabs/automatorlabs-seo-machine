@@ -12,6 +12,7 @@ const {
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const canonicalHref = canonicalURL.toString();
 ---
 
 <!doctype html>
@@ -43,7 +44,15 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 		<title>{title}</title>
 		<meta name="description" content={description} />
 		{noindex && <meta name="robots" content="noindex, nofollow" />}
-		<link rel="canonical" href={canonicalURL} />
+		<link rel="canonical" href={canonicalHref} />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="AutomatorLabs" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonicalHref} />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
 
 				{import.meta.env.PROD && (
 			<>

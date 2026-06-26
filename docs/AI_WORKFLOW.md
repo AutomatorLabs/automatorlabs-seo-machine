@@ -44,6 +44,7 @@ That means "small" changes often touch multiple registries and docs.
 - Do not assume a calculator is discoverable unless it is also in `src/data/content.ts`.
 - Do not add content without planning its internal links.
 - Do not change formulas casually; many pages and tests depend on shared math.
+- Treat `src/layouts/Layout.astro` as shared metadata infrastructure; small head changes affect the whole site.
 - Do not describe unknown deployment details as facts.
 - Update docs whenever architecture, content shape, or workflow changes.
 

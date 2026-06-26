@@ -30,6 +30,19 @@ Good SEO work in this repo usually means improving the whole system, not just on
 - meta description
 - canonical URL
 - optional `noindex`
+- shared Open Graph defaults
+- shared Twitter card defaults
+
+Current shared social defaults:
+
+- `og:type = website`
+- `og:site_name = AutomatorLabs`
+- `og:title` from the page title
+- `og:description` from the page description
+- `og:url` from the canonical URL
+- `twitter:card = summary`
+- `twitter:title` from the page title
+- `twitter:description` from the page description
 
 Page-specific titles and descriptions are passed in by:
 
@@ -150,12 +163,12 @@ See [programmatic-seo.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-mach
 
 ## Gaps And Open Opportunities
 
-- no repo-visible Open Graph or Twitter card metadata
 - no repo-visible social preview image system
 - no documented Search Console workflow
 - no documented analytics review workflow beyond embedded tags
 - no explicit freshness workflow outside source edits
 - topics page should be reviewed periodically for stale or missing links
+- shared social metadata exists, but it is not yet covered by a dedicated automated assertion
 
 ## Common SEO Mistakes In This Repo
 

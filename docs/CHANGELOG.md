@@ -7,6 +7,8 @@
 - Updated task and roadmap docs to reflect the current documentation baseline and remaining unknowns.
 - Removed unused Astro starter files and dead planned/live UI branches that were no longer reachable in the current live-only content model.
 - Added `npm run verify` plus an SEO audit check for manually curated topic links.
+- Added shared Open Graph and Twitter metadata defaults in the shared layout.
+- Added `docs/RELEASE.md` as the current Claude handoff release snapshot.
 
 ## 2026-06-26
 
