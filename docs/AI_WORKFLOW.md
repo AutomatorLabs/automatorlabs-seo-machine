@@ -117,6 +117,8 @@ Available repo checks:
 
 `npm run verify` is the default full-pass check for low-risk production changes.
 
+`npm run audit:seo` now also validates shared Open Graph and Twitter metadata on built pages, including canonical and `og:url` parity.
+
 For documentation-only changes, `git diff --check` is the minimum required check.
 
 ## Common Failure Modes For AI Agents

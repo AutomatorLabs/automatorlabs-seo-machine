@@ -9,6 +9,7 @@
 - Added `npm run verify` plus an SEO audit check for manually curated topic links.
 - Added shared Open Graph and Twitter metadata defaults in the shared layout.
 - Added `docs/RELEASE.md` as the current Claude handoff release snapshot.
+- Extended the SEO audit to validate shared Open Graph and Twitter metadata plus canonical-to-`og:url` parity.
 
 ## 2026-06-26
 

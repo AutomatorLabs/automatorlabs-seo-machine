@@ -22,6 +22,7 @@ Verified from the inspected repo:
 - shared SEO metadata includes title, description, canonical URL, optional `noindex`
 - shared Open Graph defaults now live in `src/layouts/Layout.astro`
 - shared Twitter metadata defaults now live in `src/layouts/Layout.astro`
+- build-time SEO audit now validates shared OG/Twitter metadata and canonical-to-`og:url` parity
 - calculator discovery is driven by `src/data/content.ts`
 - calculator config is driven by `src/data/calculators.ts`
 - programmatic SEO is cluster-based and source-controlled
@@ -69,7 +70,7 @@ What still needs confirmation:
 ## Recommended Next Claude Priorities
 
 1. Add a safe shared social preview image system and decide whether any page families need image overrides.
-2. Add lightweight metadata assertions so shared OG/Twitter tags are checked automatically.
+2. Add a safe fallback strategy for social images before introducing page-level overrides.
 3. Confirm and document the real deployment workflow from a primary source.
 4. Review manual topic curation for coverage gaps and stale links.
 5. Tackle the deferred medium and large architecture refactors only in a longer dedicated window.

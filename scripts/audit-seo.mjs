@@ -70,6 +70,24 @@ function extractMetaDescription(html) {
   return descriptionTag ? getAttribute(descriptionTag, 'content')?.trim() ?? '' : '';
 }
 
+function extractMetaByName(html, name) {
+  const tags = html.match(/<meta\b[^>]*>/gi) ?? [];
+  const metaTag = tags.find(
+    (tag) => getAttribute(tag, 'name')?.toLowerCase() === name.toLowerCase(),
+  );
+
+  return metaTag ? getAttribute(metaTag, 'content')?.trim() ?? '' : '';
+}
+
+function extractMetaByProperty(html, property) {
+  const tags = html.match(/<meta\b[^>]*>/gi) ?? [];
+  const metaTag = tags.find(
+    (tag) => getAttribute(tag, 'property')?.toLowerCase() === property.toLowerCase(),
+  );
+
+  return metaTag ? getAttribute(metaTag, 'content')?.trim() ?? '' : '';
+}
+
 function extractCanonical(html) {
   const tags = html.match(/<link\b[^>]*>/gi) ?? [];
   const canonicalTag = tags.find((tag) =>
@@ -255,6 +273,14 @@ async function main() {
       title: extractTitle(html),
       description: extractMetaDescription(html),
       canonical: extractCanonical(html),
+      ogType: extractMetaByProperty(html, 'og:type'),
+      ogSiteName: extractMetaByProperty(html, 'og:site_name'),
+      ogTitle: extractMetaByProperty(html, 'og:title'),
+      ogDescription: extractMetaByProperty(html, 'og:description'),
+      ogUrl: extractMetaByProperty(html, 'og:url'),
+      twitterCard: extractMetaByName(html, 'twitter:card'),
+      twitterTitle: extractMetaByName(html, 'twitter:title'),
+      twitterDescription: extractMetaByName(html, 'twitter:description'),
       h1Count: extractH1Count(html),
     });
   }
@@ -269,6 +295,35 @@ async function main() {
   for (const page of pages) {
     if (!page.canonical) {
       addError(`Missing canonical URL: ${page.route}`);
+    }
+    if (!page.ogType) {
+      addError(`Missing og:type: ${page.route}`);
+    }
+    if (!page.ogSiteName) {
+      addError(`Missing og:site_name: ${page.route}`);
+    }
+    if (!page.ogTitle) {
+      addError(`Missing og:title: ${page.route}`);
+    }
+    if (!page.ogDescription) {
+      addError(`Missing og:description: ${page.route}`);
+    }
+    if (!page.ogUrl) {
+      addError(`Missing og:url: ${page.route}`);
+    }
+    if (!page.twitterCard) {
+      addError(`Missing twitter:card: ${page.route}`);
+    }
+    if (!page.twitterTitle) {
+      addError(`Missing twitter:title: ${page.route}`);
+    }
+    if (!page.twitterDescription) {
+      addError(`Missing twitter:description: ${page.route}`);
+    }
+    if (page.canonical && page.ogUrl && page.canonical !== page.ogUrl) {
+      addError(
+        `Canonical URL and og:url do not match on ${page.route}: canonical=${page.canonical} og:url=${page.ogUrl}`,
+      );
     }
     if (page.h1Count === 0) {
       addError(`Missing H1: ${page.route}`);

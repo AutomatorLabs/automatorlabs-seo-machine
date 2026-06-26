@@ -144,6 +144,9 @@ See [programmatic-seo.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-mach
 - unique meta descriptions
 - unique canonicals
 - canonical presence
+- Open Graph presence for `og:type`, `og:site_name`, `og:title`, `og:description`, and `og:url`
+- Twitter metadata presence for `twitter:card`, `twitter:title`, and `twitter:description`
+- canonical and `og:url` parity
 - single H1 on pages
 - calculator registry-to-page consistency
 - category coverage
@@ -168,7 +171,7 @@ See [programmatic-seo.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-mach
 - no documented analytics review workflow beyond embedded tags
 - no explicit freshness workflow outside source edits
 - topics page should be reviewed periodically for stale or missing links
-- shared social metadata exists, but it is not yet covered by a dedicated automated assertion
+- shared social metadata now has a build-output assertion, but there is still no shared social preview image system
 
 ## Common SEO Mistakes In This Repo
 
