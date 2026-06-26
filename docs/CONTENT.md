@@ -12,6 +12,7 @@ The site currently operates with six major content types:
 6. Programmatic worked examples
 
 There is also a topics index that manually curates links across these types.
+Its editorial link map now lives in `src/data/topics.ts`.
 
 ## Source Of Truth By Content Type
 
@@ -24,6 +25,7 @@ There is also a topics index that manually curates links across these types.
 - Guide hubs: `src/data/guide-hubs.ts`
 - Topical guides: `src/data/topical-guides.ts`
 - Comparison guides: `src/data/comparison-guides.ts`
+- Topics page curation: `src/data/topics.ts`
 - Worked examples on calculator pages: `src/data/calculator-examples.ts`
 - Programmatic SEO cluster registry: `src/data/programmatic-seo/clusters.ts`
 - Programmatic SEO records: `src/data/programmatic-seo/*.ts`

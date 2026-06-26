@@ -119,7 +119,7 @@ This reduces orphan pages and increases topical depth.
   - related calculators
   - related guides
 - topics page:
-  - manual cross-type curation
+  - manual cross-type curation backed by `src/data/topics.ts`
 
 ## Programmatic SEO Within The SEO System
 

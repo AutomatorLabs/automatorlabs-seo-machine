@@ -12,7 +12,7 @@ const categoriesSourcePath = path.join(
   'src/data/calculator-categories.ts',
 );
 const contentSourcePath = path.join(rootDir, 'src/data/content.ts');
-const topicsSourcePath = path.join(rootDir, 'src/pages/topics/index.astro');
+const topicsSourcePath = path.join(rootDir, 'src/data/topics.ts');
 const siteOrigin = 'https://automatorlabs.co';
 
 const errors = [];
