@@ -817,6 +817,11 @@ export const topicalGuides: TopicalGuide[] = [
         description: 'Estimate dividend yield and income from dividend and share price inputs.',
       },
       {
+        title: 'Dividend Yield Examples',
+        url: '/calculators/dividend-yield/examples/',
+        description: 'Browse worked dividend yield scenarios across stocks, ETFs, portfolio income, monthly income, retirement income, and price-change sensitivity cases.',
+      },
+      {
         title: 'Dividend Growth Calculator',
         url: '/calculators/dividend-growth-calculator/',
         description: 'Project dividend income growth under a steady growth assumption.',

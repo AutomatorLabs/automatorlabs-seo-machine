@@ -9,10 +9,10 @@ Current release snapshot for Claude handoff.
 
 ## Verified Repo Counts
 
-- Total built pages: `3,033`
+- Total built pages: `3,234`
 - Calculator count: `84`
-- Calculator Playwright test count: `197`
-- Programmatic SEO cluster count: `14`
+- Calculator Playwright test count: `204`
+- Programmatic SEO cluster count: `15`
 - Standard verification command: `npm run verify`
 
 ## Current Release Surface
@@ -24,6 +24,7 @@ Verified from the inspected repo:
 - shared Twitter metadata defaults now live in `src/layouts/Layout.astro`
 - shared default social preview image now lives at `public/social/automatorlabs-default-social.svg`
 - shared noindex release verification page now lives at `/status/`
+- dividend yield worked examples now live at `/calculators/dividend-yield/examples/`
 - dividend growth worked examples now live at `/calculators/dividend-growth/examples/`
 - build-time SEO audit now validates shared OG/Twitter metadata, canonical-to-`og:url` parity, and shared social image asset resolution
 - build-time SEO audit now validates the manual topics data module structure as well as built topic-link targets
@@ -31,6 +32,7 @@ Verified from the inspected repo:
 - calculator discovery is driven by `src/data/content.ts`
 - calculator config is driven by `src/data/calculators.ts`
 - programmatic SEO is cluster-based and source-controlled
+- programmatic SEO now includes a dividend yield cluster built on the shared worked-example framework
 - programmatic SEO now includes a dividend growth cluster built on the shared worked-example framework
 
 ## Verification Workflow
@@ -77,6 +79,7 @@ What still needs confirmation:
 
 - `src/data/content.ts` is still a narrow public discovery registry and not a universal content registry.
 - Calculator, guide, topic, and example linking remains spread across multiple source files and manual link surfaces.
+- Dividend yield examples intentionally model current yield and income snapshots rather than multi-year dividend growth, so price-change sensitivity is shown as a static comparison instead of a forecast timeline.
 - Dividend growth reinvestment and snowball examples intentionally reuse the simple dividend-income growth formula, so they are educational framing pages rather than full DRIP or share-count simulations.
 - The topics page is manually curated and can drift without audits.
 - `astro check` is not wired into the standard workflow because the repo does not yet include the required checker dependencies.
@@ -89,7 +92,7 @@ What still needs confirmation:
 1. Decide whether any page families need image overrides beyond the shared default social preview asset.
 2. Confirm and document the real deployment workflow from a primary source.
 3. Review manual topic curation for coverage gaps and stale links.
-4. Decide whether dividend-focused clusters should later expand into a separate DRIP-style worked-example family.
+4. Decide whether dividend-yield and dividend-growth clusters should later expand into deeper share-count or DRIP-style worked-example families.
 5. Tackle the deferred medium and large architecture refactors only in a longer dedicated window.
 
 ## What Not To Touch Casually

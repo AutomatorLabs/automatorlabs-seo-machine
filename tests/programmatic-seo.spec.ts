@@ -27,6 +27,11 @@ import {
 } from '../src/data/programmatic-seo/dividend-growth';
 import { auditDividendGrowthSeoRecords } from '../src/lib/programmatic-seo/dividend-growth';
 import {
+  dividendYieldSeoRecords,
+  EXPECTED_DIVIDEND_YIELD_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/dividend-yield';
+import { auditDividendYieldSeoRecords } from '../src/lib/programmatic-seo/dividend-yield';
+import {
   EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
   ruleOf72SeoRecords,
 } from '../src/data/programmatic-seo/rule-of-72';
@@ -747,6 +752,150 @@ test.describe('dividend growth programmatic SEO', () => {
         page.locator('a[href="/guides/how-to-use-dividend-growth-calculator/"]').first(),
       ).toBeVisible();
       await expect(page.locator('tbody tr')).toHaveCount(record.years);
+      expect(pageErrors).toEqual([]);
+    });
+  }
+});
+
+test.describe('dividend yield programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditDividendYieldSeoRecords(
+      dividendYieldSeoRecords,
+      EXPECTED_DIVIDEND_YIELD_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_DIVIDEND_YIELD_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_DIVIDEND_YIELD_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_DIVIDEND_YIELD_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_DIVIDEND_YIELD_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_DIVIDEND_YIELD_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_DIVIDEND_YIELD_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the dividend yield examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/dividend-yield-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 dividend yield examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/dividend-yield/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every dividend yield page', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/dividend-yield/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Dividend Yield Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('[data-dividend-yield-example-group]')).toHaveCount(5);
+    await expect(page.locator('[data-dividend-yield-example-card]')).toHaveCount(
+      EXPECTED_DIVIDEND_YIELD_SEO_PAGE_COUNT,
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/dividend-yield/examples/',
+    );
+
+    const hrefs = await page
+      .locator('[data-dividend-yield-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(EXPECTED_DIVIDEND_YIELD_SEO_PAGE_COUNT);
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search dividend yield examples',
+    });
+    await searchBox.fill('retirement');
+    await expect(
+      page.locator('[data-dividend-yield-example-card]:visible'),
+    ).toHaveCount(40);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-dividend-yield-example-card]:visible'),
+    ).toHaveCount(EXPECTED_DIVIDEND_YIELD_SEO_PAGE_COUNT);
+    await expect(
+      page.getByRole('link', {
+        name: 'Model your own dividend yield',
+      }),
+    ).toHaveAttribute('href', '/calculators/dividend-yield-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  for (const slug of [
+    'stock-dividend-yield-2-4-annual-dividend-40-share-price-200-shares',
+    'etf-dividend-yield-3-annual-dividend-50-share-price-300-shares',
+    'portfolio-dividend-yield-100000-portfolio-3-annual-dividend-50-share-price',
+    'retirement-dividend-yield-3500-shares-4-annual-dividend-50-share-price',
+  ]) {
+    test(`renders generated dividend yield page ${slug}`, async ({ page }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error.message));
+      const record = dividendYieldSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) {
+        throw new Error(`Missing dividend yield record: ${slug}`);
+      }
+
+      const url = `/calculators/dividend-yield/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      expect(
+        await page.evaluate(() => document.querySelectorAll('h1').length),
+      ).toBe(1);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://automatorlabs.co${url}`,
+      );
+
+      const schemas = await page
+        .locator('script[type="application/ld+json"]')
+        .evaluateAll((scripts) =>
+          scripts.map((script) => script.textContent ?? '').join('\n'),
+        );
+      expect(schemas).toContain('"@type":"FAQPage"');
+      expect(schemas).toContain('"@type":"BreadcrumbList"');
+      await expect(
+        page.getByRole('link', {
+          name: 'Open the Dividend Yield Calculator',
+        }),
+      ).toHaveAttribute('href', '/calculators/dividend-yield-calculator/');
+      await expect(
+        page.getByRole('link', {
+          name: 'Browse All Dividend Yield Examples',
+        }),
+      ).toHaveAttribute('href', '/calculators/dividend-yield/examples/');
+      await expect(
+        page.locator('a[href="/guides/how-to-use-dividend-yield-calculator/"]').first(),
+      ).toBeVisible();
+      await expect(page.locator('tbody tr')).toHaveCount(3);
       expect(pageErrors).toEqual([]);
     });
   }

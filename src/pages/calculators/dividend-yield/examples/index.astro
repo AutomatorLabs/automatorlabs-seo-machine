@@ -1,0 +1,488 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  EXPECTED_DIVIDEND_YIELD_SEO_PAGE_COUNT,
+  dividendYieldSeoRecords,
+} from '../../../../data/programmatic-seo/dividend-yield';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditDividendYieldSeoRecords } from '../../../../lib/programmatic-seo/dividend-yield';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditDividendYieldSeoRecords(
+  dividendYieldSeoRecords,
+  EXPECTED_DIVIDEND_YIELD_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Dividend Yield Calculator',
+        url: '/calculators/dividend-yield-calculator/',
+      },
+      {
+        name: 'Examples',
+        url: '/calculators/dividend-yield/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(dividendYieldSeoRecords, [
+  {
+    id: 'stock',
+    title: 'Stock Dividend Yield Examples',
+    description:
+      'Share-price and annual-dividend scenarios for individual stock yield snapshots from low-yield to high-yield setups.',
+    matches: (record) => record.intent === 'stock-dividend-yield',
+  },
+  {
+    id: 'etf',
+    title: 'ETF Dividend Yield Examples',
+    description:
+      'Fund-based yield scenarios that connect annual payout per share, share price, and position size.',
+    matches: (record) => record.intent === 'etf-dividend-yield',
+  },
+  {
+    id: 'portfolio',
+    title: 'Portfolio Dividend Yield Examples',
+    description:
+      'Account-level income examples for different portfolio sizes, payout assumptions, and yield levels.',
+    matches: (record) => record.intent === 'portfolio-dividend-yield',
+  },
+  {
+    id: 'monthly-income',
+    title: 'Monthly Dividend Income Examples',
+    description:
+      'Examples that translate annual dividend yield assumptions into monthly cash-flow estimates.',
+    matches: (record) => record.intent === 'monthly-income-dividend-yield',
+  },
+  {
+    id: 'retirement-income',
+    title: 'Retirement Income Yield Examples',
+    description:
+      'Retirement-oriented yield examples for different portfolio sizes and annual income targets.',
+    matches: (record) => record.intent === 'retirement-income-dividend-yield',
+  },
+]);
+---
+
+<Layout
+  title="Dividend Yield Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} dividend yield examples covering stock and ETF yields, portfolio income, monthly income, retirement income, and price-change sensitivity scenarios.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/dividend-yield-calculator/">
+            Dividend Yield Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Dividend yield scenario library</p>
+      <h1>Dividend Yield Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering dividend yield
+        from annual dividend and share price, ETF and stock yield snapshots,
+        portfolio income, monthly income, retirement income, and how yield
+        changes when price moves.
+      </p>
+      <a
+        class="primary-link"
+        href="/calculators/dividend-yield-calculator/"
+      >
+        Model your own dividend yield
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section
+      class="example-search"
+      aria-label="Search dividend yield examples"
+    >
+      <label for="dividend-yield-example-search">
+        Search dividend yield examples
+      </label>
+      <div class="search-row">
+        <input
+          id="dividend-yield-example-search"
+          type="search"
+          placeholder="Try ETF, retirement, $50 share price, or monthly income"
+          autocomplete="off"
+          aria-controls="dividend-yield-example-groups"
+          aria-describedby="dividend-yield-example-count"
+        />
+        <button
+          id="clear-dividend-yield-example-search"
+          type="button"
+          hidden
+        >
+          Clear search
+        </button>
+      </div>
+      <p id="dividend-yield-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div
+      id="dividend-yield-example-groups"
+      class="example-groups"
+    >
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-dividend-yield-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-dividend-yield-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.scenarioLabel,
+                  record.sharePrice,
+                  record.sharePrice.toLocaleString('en-US'),
+                  record.annualDividendPerShare,
+                  record.annualDividendPerShare.toLocaleString('en-US'),
+                  record.numberOfShares,
+                  record.numberOfShares.toLocaleString('en-US'),
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/dividend-yield/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.sharePrice)} share price
+                    {' · '}
+                    {currency.format(record.annualDividendPerShare)} annual dividend
+                    {' · '}
+                    {record.numberOfShares.toLocaleString('en-US')} shares
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p
+      id="no-dividend-yield-examples"
+      class="no-results"
+      role="status"
+      hidden
+    >
+      No dividend yield examples found. Try a ticker style, amount, or income scenario.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#dividend-yield-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-dividend-yield-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#dividend-yield-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-dividend-yield-examples',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-dividend-yield-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-dividend-yield-example-group]',
+    ),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      group.hidden = !group.querySelector(
+        '[data-dividend-yield-example-card]:not([hidden])',
+      );
+    });
+
+    count.textContent = `Showing ${visibleCount} ${
+      visibleCount === 1 ? 'example' : 'examples'
+    }`;
+    noResults.hidden = visibleCount > 0;
+
+    if (clearButton) {
+      clearButton.hidden = query === '';
+    }
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    input.focus();
+    updateExamples();
+  });
+</script>
+
+<style>
+  main {
+    width: min(1120px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 4.5rem 0;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
+  }
+
+  .breadcrumbs li + li::before {
+    color: var(--muted-text-color);
+    content: '›';
+  }
+
+  .breadcrumbs a {
+    color: var(--link-color);
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .page-header {
+    margin-bottom: 2rem;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.5rem;
+    color: var(--link-color);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 7vw, 4rem);
+    letter-spacing: -0.045em;
+    line-height: 1.06;
+  }
+
+  .intro {
+    max-width: 860px;
+    margin: 1rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 1.1rem;
+    line-height: 1.72;
+  }
+
+  .primary-link,
+  .secondary-link {
+    display: inline-block;
+    margin-top: 1.25rem;
+    font-weight: 750;
+  }
+
+  .primary-link {
+    border-radius: 10px;
+    background: var(--button-background);
+    color: var(--button-text);
+    padding: 0.8rem 1rem;
+    text-decoration: none;
+  }
+
+  .primary-link:hover {
+    background: var(--button-hover-background);
+  }
+
+  .secondary-link {
+    margin-left: 0.75rem;
+    color: var(--link-color);
+  }
+
+  .example-search,
+  .example-group {
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--card-background);
+    box-shadow: 0 12px 35px var(--shadow-color);
+    padding: clamp(1.1rem, 3vw, 1.6rem);
+  }
+
+  .example-search label {
+    display: block;
+    margin-bottom: 0.75rem;
+    color: var(--heading-color);
+    font-weight: 700;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .search-row input {
+    flex: 1;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--input-background);
+    color: var(--text-color);
+    font: inherit;
+    padding: 0.85rem 0.95rem;
+  }
+
+  .search-row button {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--card-background);
+    color: var(--heading-color);
+    font: inherit;
+    font-weight: 700;
+    padding: 0.85rem 1rem;
+  }
+
+  .example-groups {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .example-group header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: start;
+    margin-bottom: 1rem;
+  }
+
+  .example-group h2 {
+    margin: 0;
+    font-size: 1.45rem;
+    letter-spacing: -0.03em;
+  }
+
+  .example-group p,
+  .example-group span,
+  #dividend-yield-example-count,
+  .no-results {
+    color: var(--muted-text-color);
+  }
+
+  .example-group ul {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .example-group a {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--subtle-background);
+    color: inherit;
+    padding: 1rem;
+    text-decoration: none;
+  }
+
+  .example-group a:hover {
+    border-color: var(--link-color);
+    background: var(--card-background);
+  }
+
+  .example-group strong {
+    color: var(--link-color);
+  }
+
+  .example-group a span {
+    margin-top: 0.35rem;
+    font-size: 0.92rem;
+  }
+
+  .no-results {
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+  @media (max-width: 720px) {
+    .search-row,
+    .example-group header {
+      flex-direction: column;
+    }
+
+    .secondary-link {
+      display: block;
+      margin-left: 0;
+    }
+  }
+</style>

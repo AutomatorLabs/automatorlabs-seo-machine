@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  dividendYieldSeoRecords,
+  EXPECTED_DIVIDEND_YIELD_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/dividend-yield';
+import {
+  auditDividendYieldSeoRecords,
+  createDividendYieldSeoPage,
+} from '../../../lib/programmatic-seo/dividend-yield';
+
+export function getStaticPaths() {
+  auditDividendYieldSeoRecords(
+    dividendYieldSeoRecords,
+    EXPECTED_DIVIDEND_YIELD_SEO_PAGE_COUNT,
+  );
+
+  return dividendYieldSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createDividendYieldSeoPage(record, dividendYieldSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

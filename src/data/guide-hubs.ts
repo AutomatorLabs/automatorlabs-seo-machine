@@ -374,6 +374,12 @@ export const guideHubs: GuideHub[] = [
           'Browse worked investment projections for lump sums, recurring investing, retirement planning, taxable accounts, index funds, ETFs, and long-term wealth accumulation.',
       },
       {
+        title: 'Dividend Yield Examples',
+        url: '/calculators/dividend-yield/examples/',
+        description:
+          'Browse worked dividend yield snapshots across stocks, ETFs, portfolio income, monthly income, retirement income, and price-change sensitivity scenarios.',
+      },
+      {
         title: 'Dividend Growth Examples',
         url: '/calculators/dividend-growth/examples/',
         description:

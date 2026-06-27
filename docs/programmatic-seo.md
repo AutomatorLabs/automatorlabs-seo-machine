@@ -15,15 +15,16 @@ Its job is to:
 
 Verified from source:
 
-- 14 live clusters in `src/data/programmatic-seo/clusters.ts`
+- 15 live clusters in `src/data/programmatic-seo/clusters.ts`
 - 200 records per cluster
-- 2,800 generated example pages total
+- 3,000 generated example pages total
 - global examples hub at `/examples/`
 
 Current live clusters:
 
 - Compound Interest
 - APY
+- Dividend Yield
 - Dividend Growth
 - CAGR
 - Rule of 72
@@ -134,6 +135,13 @@ Required surfaces:
 - relevant guides and topics link to relevant example collections
 
 ## Cluster Notes
+
+### Dividend Yield
+
+- calculator: `/calculators/dividend-yield-calculator/`
+- examples index: `/calculators/dividend-yield/examples/`
+- generated page route: `/calculators/dividend-yield/<slug>/`
+- reuses `calculateDividendYield`
 
 ### Dividend Growth
 

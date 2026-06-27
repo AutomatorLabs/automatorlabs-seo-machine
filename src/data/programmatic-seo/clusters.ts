@@ -3,6 +3,7 @@ import { compoundInterestSeoRecords } from './compound-interest';
 import { apySeoRecords } from './apy';
 import { cagrSeoRecords } from './cagr';
 import { dividendGrowthSeoRecords } from './dividend-growth';
+import { dividendYieldSeoRecords } from './dividend-yield';
 import { ruleOf72SeoRecords } from './rule-of-72';
 import {
   balanceTransferSeoRecords,
@@ -74,6 +75,19 @@ const dividendGrowthRepresentatives = [
     (record) =>
       record.slug ===
       'retirement-dividend-income-24000-at-4-percent-for-15-years',
+  ),
+].filter((record) => record !== undefined);
+
+const dividendYieldRepresentatives = [
+  dividendYieldSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'stock-dividend-yield-2-4-annual-dividend-40-share-price-200-shares',
+  ),
+  dividendYieldSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retirement-dividend-yield-3500-shares-4-annual-dividend-50-share-price',
   ),
 ].filter((record) => record !== undefined);
 
@@ -233,6 +247,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: apyRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/apy/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'dividend-yield',
+    title: 'Dividend Yield Examples',
+    description:
+      'Explore worked dividend yield snapshots across stocks, ETFs, portfolio income, monthly income, retirement income, and price-change sensitivity scenarios.',
+    examplesUrl: '/calculators/dividend-yield/examples/',
+    calculator: {
+      title: 'Dividend Yield Calculator',
+      url: '/calculators/dividend-yield-calculator/',
+    },
+    guide: {
+      title: 'How to Use the Dividend Yield Calculator',
+      url: '/guides/how-to-use-dividend-yield-calculator/',
+    },
+    pageCount: dividendYieldSeoRecords.length,
+    representativePages: dividendYieldRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/dividend-yield/${record.slug}/`,
     })),
   },
   {
