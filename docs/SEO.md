@@ -157,6 +157,12 @@ See [programmatic-seo.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-mach
 - internal-link validity
 - sitemap output
 
+Related calculator selection currently follows this fallback philosophy:
+
+- preserve explicit `relatedIds` first
+- prefer reciprocal and same-family matches before broader category fill
+- use broad site-wide fallback only after topical and category-local options are exhausted
+
 ## Strengths
 
 - static output with predictable canonical behavior

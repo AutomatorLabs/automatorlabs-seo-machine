@@ -24,6 +24,7 @@ Verified from the inspected repo:
 - shared Twitter metadata defaults now live in `src/layouts/Layout.astro`
 - build-time SEO audit now validates shared OG/Twitter metadata and canonical-to-`og:url` parity
 - build-time SEO audit now validates the manual topics data module structure as well as built topic-link targets
+- related calculator fallback now prioritizes explicit links, reciprocal links, and same-topic/same-family matches before broad site-wide fill
 - calculator discovery is driven by `src/data/content.ts`
 - calculator config is driven by `src/data/calculators.ts`
 - programmatic SEO is cluster-based and source-controlled

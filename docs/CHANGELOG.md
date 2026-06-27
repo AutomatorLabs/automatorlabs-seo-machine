@@ -13,6 +13,7 @@
 - Added `docs/DEPLOYMENT.md` with the live release, sitemap resubmission, analytics, and rollback checklist.
 - Moved the manually curated `/topics/` link map into a typed data module while preserving the live page output and audit coverage.
 - Added structural audit checks for `src/data/topics.ts`, including empty-group, duplicate-label, duplicate-href, and invalid-href validation.
+- Tightened related-calculator fallback ranking so pages prefer same-family and same-topic calculators before broad global fallback, while preserving explicit `relatedIds` priority.
 
 ## 2026-06-26
 

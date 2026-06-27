@@ -124,6 +124,12 @@ Pages are expected to connect laterally and vertically:
 
 Good new content should improve this graph rather than create orphan pages.
 
+For calculator-to-calculator links, the current intent is:
+
+- editor-chosen `relatedIds` stay authoritative
+- fallback links should remain in the same category and the closest topic/family neighborhood when possible
+- broad global fallback should be a last resort, not the default filler
+
 ## Common Content Mistakes
 
 - Adding a calculator route without adding it to `src/data/content.ts`

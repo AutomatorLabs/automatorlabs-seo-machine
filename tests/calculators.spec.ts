@@ -2544,6 +2544,42 @@ test.describe('calculator QA', () => {
     expect(new Set(allFaqQuestions).size).toBe(allFaqQuestions.length);
   });
 
+  test('explicit relatedIds keep priority over fallback relevance scoring', () => {
+    const relatedUrls = createRelatedCalculatorLinks(
+      '/calculators/401k-calculator/',
+    ).map((item) => item.url);
+
+    expect(relatedUrls.slice(0, 6)).toEqual([
+      '/calculators/roth-ira-calculator/',
+      '/calculators/roth-ira-growth-calculator/',
+      '/calculators/roth-ira-vs-taxable-account-calculator/',
+      '/calculators/ira-growth-calculator/',
+      '/calculators/roth-vs-traditional-ira-calculator/',
+      '/calculators/taxable-vs-tax-advantaged-calculator/',
+    ]);
+  });
+
+  test('related calculator fallback prefers closer topical matches before broad category fallback', () => {
+    const relatedUrls = createRelatedCalculatorLinks(
+      '/calculators/retirement-income-gap-calculator/',
+    ).map((item) => item.url);
+
+    expect(relatedUrls).toEqual(
+      expect.arrayContaining([
+        '/calculators/retirement-withdrawal-calculator/',
+        '/calculators/safe-withdrawal-rate-calculator/',
+        '/calculators/fire-calculator/',
+        '/calculators/portfolio-withdrawal-sustainability-calculator/',
+      ]),
+    );
+    expect(relatedUrls).not.toEqual(
+      expect.arrayContaining([
+        '/calculators/roth-ira-calculator/',
+        '/calculators/401k-calculator/',
+      ]),
+    );
+  });
+
   for (const calculator of calculators) {
     test(`${calculator.title} (${calculator.url})`, async ({ page }) => {
       const consoleErrors: string[] = [];
