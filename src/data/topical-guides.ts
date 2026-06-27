@@ -812,6 +812,11 @@ export const topicalGuides: TopicalGuide[] = [
         description: 'Estimate dividend reinvestment growth under simplified assumptions.',
       },
       {
+        title: 'DRIP Examples',
+        url: '/calculators/drip/examples/',
+        description: 'Browse worked dividend reinvestment scenarios across stocks, ETFs, dividend snowball setups, portfolio growth, and retirement-oriented planning.',
+      },
+      {
         title: 'Dividend Yield Calculator',
         url: '/calculators/dividend-yield-calculator/',
         description: 'Estimate dividend yield and income from dividend and share price inputs.',

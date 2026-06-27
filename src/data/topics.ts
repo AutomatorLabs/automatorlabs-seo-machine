@@ -47,6 +47,7 @@ export const topics: TopicSection[] = [
     examples: [
       { title: 'Compound Interest Examples', url: '/calculators/compound-interest/examples/' },
       { title: 'APY Examples', url: '/calculators/apy/examples/' },
+      { title: 'DRIP Examples', url: '/calculators/drip/examples/' },
       { title: 'Dividend Yield Examples', url: '/calculators/dividend-yield/examples/' },
       { title: 'Investment Growth Examples', url: '/calculators/investment-growth/examples/' },
       { title: 'Dividend Growth Examples', url: '/calculators/dividend-growth/examples/' },
@@ -71,6 +72,7 @@ export const topics: TopicSection[] = [
       { title: 'Roth IRA vs Traditional IRA', url: '/guides/roth-vs-traditional-ira/' },
     ],
     examples: [
+      { title: 'DRIP Examples', url: '/calculators/drip/examples/' },
       { title: 'Dividend Yield Examples', url: '/calculators/dividend-yield/examples/' },
       { title: 'Investment Growth Examples', url: '/calculators/investment-growth/examples/' },
       { title: 'Dividend Growth Examples', url: '/calculators/dividend-growth/examples/' },

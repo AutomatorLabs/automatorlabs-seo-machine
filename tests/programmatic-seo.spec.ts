@@ -22,6 +22,11 @@ import {
 } from '../src/data/programmatic-seo/cagr';
 import { auditCagrSeoRecords } from '../src/lib/programmatic-seo/cagr';
 import {
+  dripSeoRecords,
+  EXPECTED_DRIP_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/drip';
+import { auditDripSeoRecords } from '../src/lib/programmatic-seo/drip';
+import {
   dividendGrowthSeoRecords,
   EXPECTED_DIVIDEND_GROWTH_SEO_PAGE_COUNT,
 } from '../src/data/programmatic-seo/dividend-growth';
@@ -751,6 +756,133 @@ test.describe('dividend growth programmatic SEO', () => {
       await expect(
         page.locator('a[href="/guides/how-to-use-dividend-growth-calculator/"]').first(),
       ).toBeVisible();
+      await expect(page.locator('tbody tr')).toHaveCount(record.years);
+      expect(pageErrors).toEqual([]);
+    });
+  }
+});
+
+test.describe('DRIP programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditDripSeoRecords(
+      dripSeoRecords,
+      EXPECTED_DRIP_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_DRIP_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_DRIP_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_DRIP_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_DRIP_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_DRIP_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_DRIP_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the DRIP examples cluster', async ({
+    page,
+  }) => {
+    await page.goto('/calculators/drip-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    await expect(
+      page.getByRole('link', { name: 'Browse all 200 DRIP examples' }),
+    ).toHaveAttribute('href', '/calculators/drip/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every DRIP page', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/drip/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'DRIP Examples',
+      }),
+    ).toBeVisible();
+    await expect(page.locator('[data-drip-example-group]')).toHaveCount(5);
+    await expect(page.locator('[data-drip-example-card]')).toHaveCount(
+      EXPECTED_DRIP_SEO_PAGE_COUNT,
+    );
+    await expect(page.locator('#drip-example-count')).toHaveText(
+      `Showing ${EXPECTED_DRIP_SEO_PAGE_COUNT} examples`,
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/drip/examples/',
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search DRIP examples',
+    });
+    await searchBox.fill('retirement');
+    await expect(page.locator('[data-drip-example-card]:visible')).toHaveCount(
+      40,
+    );
+    await expect(page.locator('#drip-example-count')).toHaveText(
+      'Showing 40 examples',
+    );
+
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(searchBox).toHaveValue('');
+    await expect(page.locator('[data-drip-example-card]:visible')).toHaveCount(
+      EXPECTED_DRIP_SEO_PAGE_COUNT,
+    );
+    expect(pageErrors).toEqual([]);
+  });
+
+  const representativeRecords = [
+    dripSeoRecords.find(
+      (record) =>
+        record.slug ===
+        'stock-drip-200-shares-50-share-price-3-5-yield-15-years',
+    ),
+    dripSeoRecords.find(
+      (record) =>
+        record.slug ===
+        'etf-drip-300-shares-50-share-price-4-yield-18-years',
+    ),
+    dripSeoRecords.find(
+      (record) =>
+        record.slug ===
+        'portfolio-drip-50000-starting-3-5-yield-500-monthly-15-years',
+    ),
+    dripSeoRecords.find(
+      (record) =>
+        record.slug ===
+        'retirement-drip-500000-starting-4-yield-15-years',
+    ),
+  ].filter((record) => record !== undefined);
+
+  for (const record of representativeRecords) {
+    test(`renders generated DRIP page ${record.slug}`, async ({ page }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error.message));
+
+      const url = `/calculators/drip/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://automatorlabs.co${url}`,
+      );
+      await expect(
+        page.getByRole('link', { name: 'Browse All DRIP Examples' }),
+      ).toHaveAttribute('href', '/calculators/drip/examples/');
       await expect(page.locator('tbody tr')).toHaveCount(record.years);
       expect(pageErrors).toEqual([]);
     });

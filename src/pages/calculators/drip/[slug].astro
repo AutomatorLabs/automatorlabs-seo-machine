@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  dripSeoRecords,
+  EXPECTED_DRIP_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/drip';
+import {
+  auditDripSeoRecords,
+  createDripSeoPage,
+} from '../../../lib/programmatic-seo/drip';
+
+export function getStaticPaths() {
+  auditDripSeoRecords(
+    dripSeoRecords,
+    EXPECTED_DRIP_SEO_PAGE_COUNT,
+  );
+
+  return dripSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createDripSeoPage(record, dripSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

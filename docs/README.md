@@ -49,9 +49,9 @@ Verified from source on 2026-06-27:
 - 17 topical guides
 - 7 comparison guides
 - generated calculator guides built from calculator configs
-- 15 programmatic SEO clusters
+- 16 programmatic SEO clusters
 - 200 records per cluster
-- 3,000 generated example pages total
+- 3,200 generated example pages total
 
 ## What Future Agents Need To Understand
 

@@ -374,6 +374,12 @@ export const guideHubs: GuideHub[] = [
           'Browse worked investment projections for lump sums, recurring investing, retirement planning, taxable accounts, index funds, ETFs, and long-term wealth accumulation.',
       },
       {
+        title: 'DRIP Examples',
+        url: '/calculators/drip/examples/',
+        description:
+          'Browse worked dividend reinvestment scenarios across stocks, ETFs, dividend snowball setups, portfolio growth, and retirement-oriented planning.',
+      },
+      {
         title: 'Dividend Yield Examples',
         url: '/calculators/dividend-yield/examples/',
         description:

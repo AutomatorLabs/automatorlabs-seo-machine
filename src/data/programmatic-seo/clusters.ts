@@ -2,6 +2,7 @@ import { fourPercentRuleSeoRecords } from './four-percent-rule';
 import { compoundInterestSeoRecords } from './compound-interest';
 import { apySeoRecords } from './apy';
 import { cagrSeoRecords } from './cagr';
+import { dripSeoRecords } from './drip';
 import { dividendGrowthSeoRecords } from './dividend-growth';
 import { dividendYieldSeoRecords } from './dividend-yield';
 import { ruleOf72SeoRecords } from './rule-of-72';
@@ -88,6 +89,19 @@ const dividendYieldRepresentatives = [
     (record) =>
       record.slug ===
       'retirement-dividend-yield-3500-shares-4-annual-dividend-50-share-price',
+  ),
+].filter((record) => record !== undefined);
+
+const dripRepresentatives = [
+  dripSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'stock-drip-200-shares-50-share-price-3-5-yield-15-years',
+  ),
+  dripSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retirement-drip-500000-starting-4-yield-15-years',
   ),
 ].filter((record) => record !== undefined);
 
@@ -267,6 +281,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: dividendYieldRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/dividend-yield/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'drip',
+    title: 'DRIP Examples',
+    description:
+      'Explore worked dividend reinvestment scenarios across stocks, ETFs, portfolio growth, dividend snowball setups, and retirement income planning.',
+    examplesUrl: '/calculators/drip/examples/',
+    calculator: {
+      title: 'DRIP Calculator',
+      url: '/calculators/drip-calculator/',
+    },
+    guide: {
+      title: 'What Is DRIP Investing?',
+      url: '/guides/what-is-drip-investing/',
+    },
+    pageCount: dripSeoRecords.length,
+    representativePages: dripRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/drip/${record.slug}/`,
     })),
   },
   {
