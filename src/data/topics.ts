@@ -48,6 +48,7 @@ export const topics: TopicSection[] = [
       { title: 'Compound Interest Examples', url: '/calculators/compound-interest/examples/' },
       { title: 'APY Examples', url: '/calculators/apy/examples/' },
       { title: 'Investment Growth Examples', url: '/calculators/investment-growth/examples/' },
+      { title: 'Dividend Growth Examples', url: '/calculators/dividend-growth/examples/' },
       { title: 'CAGR Examples', url: '/calculators/cagr/examples/' },
       { title: 'Rule of 72 Examples', url: '/calculators/rule-of-72/examples/' },
     ],
@@ -70,6 +71,7 @@ export const topics: TopicSection[] = [
     ],
     examples: [
       { title: 'Investment Growth Examples', url: '/calculators/investment-growth/examples/' },
+      { title: 'Dividend Growth Examples', url: '/calculators/dividend-growth/examples/' },
       { title: 'Retirement Withdrawal Examples', url: '/calculators/retirement-withdrawal/examples/' },
       { title: 'Safe Withdrawal Rate Examples', url: '/calculators/safe-withdrawal-rate/examples/' },
       { title: '4 Percent Rule Examples', url: '/calculators/4-percent-rule/examples/' },

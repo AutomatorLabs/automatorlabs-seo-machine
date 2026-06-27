@@ -22,6 +22,11 @@ import {
 } from '../src/data/programmatic-seo/cagr';
 import { auditCagrSeoRecords } from '../src/lib/programmatic-seo/cagr';
 import {
+  dividendGrowthSeoRecords,
+  EXPECTED_DIVIDEND_GROWTH_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/dividend-growth';
+import { auditDividendGrowthSeoRecords } from '../src/lib/programmatic-seo/dividend-growth';
+import {
   EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
   ruleOf72SeoRecords,
 } from '../src/data/programmatic-seo/rule-of-72';
@@ -596,6 +601,150 @@ test.describe('cagr programmatic SEO', () => {
       ).toHaveAttribute('href', '/calculators/cagr/examples/');
       await expect(
         page.locator('a[href="/guides/what-is-cagr/"]').first(),
+      ).toBeVisible();
+      await expect(page.locator('tbody tr')).toHaveCount(record.years);
+      expect(pageErrors).toEqual([]);
+    });
+  }
+});
+
+test.describe('dividend growth programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditDividendGrowthSeoRecords(
+      dividendGrowthSeoRecords,
+      EXPECTED_DIVIDEND_GROWTH_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_DIVIDEND_GROWTH_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_DIVIDEND_GROWTH_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_DIVIDEND_GROWTH_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_DIVIDEND_GROWTH_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_DIVIDEND_GROWTH_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_DIVIDEND_GROWTH_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the dividend growth examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/dividend-growth-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 dividend growth examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/dividend-growth/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every dividend growth page', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/dividend-growth/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Dividend Growth Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('[data-dividend-growth-example-group]')).toHaveCount(5);
+    await expect(page.locator('[data-dividend-growth-example-card]')).toHaveCount(
+      EXPECTED_DIVIDEND_GROWTH_SEO_PAGE_COUNT,
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/dividend-growth/examples/',
+    );
+
+    const hrefs = await page
+      .locator('[data-dividend-growth-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(EXPECTED_DIVIDEND_GROWTH_SEO_PAGE_COUNT);
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search dividend growth examples',
+    });
+    await searchBox.fill('retirement');
+    await expect(
+      page.locator('[data-dividend-growth-example-card]:visible'),
+    ).toHaveCount(40);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-dividend-growth-example-card]:visible'),
+    ).toHaveCount(EXPECTED_DIVIDEND_GROWTH_SEO_PAGE_COUNT);
+    await expect(
+      page.getByRole('link', {
+        name: 'Model your own dividend income growth',
+      }),
+    ).toHaveAttribute('href', '/calculators/dividend-growth-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  for (const slug of [
+    'annual-dividend-income-2400-growing-at-7-percent-for-10-years',
+    'reinvested-dividend-income-2400-at-8-percent-for-15-years',
+    'dividend-snowball-1200-at-9-percent-for-20-years',
+    'retirement-dividend-income-24000-at-4-percent-for-15-years',
+  ]) {
+    test(`renders generated dividend growth page ${slug}`, async ({ page }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error.message));
+      const record = dividendGrowthSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) {
+        throw new Error(`Missing dividend growth record: ${slug}`);
+      }
+
+      const url = `/calculators/dividend-growth/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      expect(
+        await page.evaluate(() => document.querySelectorAll('h1').length),
+      ).toBe(1);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://automatorlabs.co${url}`,
+      );
+
+      const schemas = await page
+        .locator('script[type="application/ld+json"]')
+        .evaluateAll((scripts) =>
+          scripts.map((script) => script.textContent ?? '').join('\n'),
+        );
+      expect(schemas).toContain('"@type":"FAQPage"');
+      expect(schemas).toContain('"@type":"BreadcrumbList"');
+      await expect(
+        page.getByRole('link', {
+          name: 'Open the Dividend Growth Calculator',
+        }),
+      ).toHaveAttribute('href', '/calculators/dividend-growth-calculator/');
+      await expect(
+        page.getByRole('link', {
+          name: 'Browse All Dividend Growth Examples',
+        }),
+      ).toHaveAttribute('href', '/calculators/dividend-growth/examples/');
+      await expect(
+        page.locator('a[href="/guides/how-to-use-dividend-growth-calculator/"]').first(),
       ).toBeVisible();
       await expect(page.locator('tbody tr')).toHaveCount(record.years);
       expect(pageErrors).toEqual([]);

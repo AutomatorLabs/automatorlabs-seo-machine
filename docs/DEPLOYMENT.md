@@ -102,9 +102,14 @@ Recommended sample pages:
 
 - `/`
 - `/calculators/`
+- `/status/`
 - one high-traffic calculator route
 - one `/guides/...` route
 - one `/calculators/.../examples/` or generated example route
+
+Recommended quick verification URL:
+
+- `/status/` for one static page that confirms the shared layout, source-backed counts, and public smoke-test links are all rendering in production
 
 ## Sitemap URL Check
 
@@ -206,8 +211,9 @@ Use this as the short operational checklist:
 4. Commit and push the intended release.
 5. Confirm the Netlify production deploy succeeds.
 6. Smoke-test the live site.
-7. Confirm `https://automatorlabs.com/sitemap-index.xml` loads.
-8. Resubmit the sitemap in Google Search Console if the release affects discovery or indexing.
-9. Resubmit the sitemap in Bing Webmaster Tools if the release affects discovery or indexing.
-10. Confirm GA4 realtime receives a live page view.
-11. Confirm Microsoft Clarity still receives production traffic.
+7. Open `/status/` and confirm the status page renders with the expected counts and smoke-test links.
+8. Confirm `https://automatorlabs.com/sitemap-index.xml` loads.
+9. Resubmit the sitemap in Google Search Console if the release affects discovery or indexing.
+10. Resubmit the sitemap in Bing Webmaster Tools if the release affects discovery or indexing.
+11. Confirm GA4 realtime receives a live page view.
+12. Confirm Microsoft Clarity still receives production traffic.

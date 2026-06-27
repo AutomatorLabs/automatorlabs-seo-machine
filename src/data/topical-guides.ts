@@ -822,6 +822,11 @@ export const topicalGuides: TopicalGuide[] = [
         description: 'Project dividend income growth under a steady growth assumption.',
       },
       {
+        title: 'Dividend Growth Examples',
+        url: '/calculators/dividend-growth/examples/',
+        description: 'Browse worked dividend income scenarios across growth rates, time horizons, reinvestment framing, and retirement-oriented income planning.',
+      },
+      {
         title: 'Investing Guide Hub',
         url: '/guides/investing/',
         description: 'Browse investing calculators and long-term planning guides.',

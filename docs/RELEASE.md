@@ -5,14 +5,14 @@ Current release snapshot for Claude handoff.
 ## Release ID
 
 - Version/tag: `v1.1-ai-ready-handoff`
-- Snapshot date: `2026-06-27`
+- Snapshot date: `2026-06-28`
 
 ## Verified Repo Counts
 
-- Total built pages: `2,831`
+- Total built pages: `3,033`
 - Calculator count: `84`
-- Calculator Playwright test count: `190`
-- Programmatic SEO cluster count: `13`
+- Calculator Playwright test count: `197`
+- Programmatic SEO cluster count: `14`
 - Standard verification command: `npm run verify`
 
 ## Current Release Surface
@@ -23,12 +23,15 @@ Verified from the inspected repo:
 - shared Open Graph defaults now live in `src/layouts/Layout.astro`
 - shared Twitter metadata defaults now live in `src/layouts/Layout.astro`
 - shared default social preview image now lives at `public/social/automatorlabs-default-social.svg`
+- shared noindex release verification page now lives at `/status/`
+- dividend growth worked examples now live at `/calculators/dividend-growth/examples/`
 - build-time SEO audit now validates shared OG/Twitter metadata, canonical-to-`og:url` parity, and shared social image asset resolution
 - build-time SEO audit now validates the manual topics data module structure as well as built topic-link targets
 - related calculator fallback now prioritizes explicit links, reciprocal links, and same-topic/same-family matches before broad site-wide fill
 - calculator discovery is driven by `src/data/content.ts`
 - calculator config is driven by `src/data/calculators.ts`
 - programmatic SEO is cluster-based and source-controlled
+- programmatic SEO now includes a dividend growth cluster built on the shared worked-example framework
 
 ## Verification Workflow
 
@@ -74,6 +77,7 @@ What still needs confirmation:
 
 - `src/data/content.ts` is still a narrow public discovery registry and not a universal content registry.
 - Calculator, guide, topic, and example linking remains spread across multiple source files and manual link surfaces.
+- Dividend growth reinvestment and snowball examples intentionally reuse the simple dividend-income growth formula, so they are educational framing pages rather than full DRIP or share-count simulations.
 - The topics page is manually curated and can drift without audits.
 - `astro check` is not wired into the standard workflow because the repo does not yet include the required checker dependencies.
 - Some larger calculator-family abstractions remain intentionally unsimplified to avoid risky refactors in short implementation windows.
@@ -85,7 +89,8 @@ What still needs confirmation:
 1. Decide whether any page families need image overrides beyond the shared default social preview asset.
 2. Confirm and document the real deployment workflow from a primary source.
 3. Review manual topic curation for coverage gaps and stale links.
-4. Tackle the deferred medium and large architecture refactors only in a longer dedicated window.
+4. Decide whether dividend-focused clusters should later expand into a separate DRIP-style worked-example family.
+5. Tackle the deferred medium and large architecture refactors only in a longer dedicated window.
 
 ## What Not To Touch Casually
 

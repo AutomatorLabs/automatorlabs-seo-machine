@@ -2,6 +2,7 @@ import { fourPercentRuleSeoRecords } from './four-percent-rule';
 import { compoundInterestSeoRecords } from './compound-interest';
 import { apySeoRecords } from './apy';
 import { cagrSeoRecords } from './cagr';
+import { dividendGrowthSeoRecords } from './dividend-growth';
 import { ruleOf72SeoRecords } from './rule-of-72';
 import {
   balanceTransferSeoRecords,
@@ -60,6 +61,19 @@ const cagrRepresentatives = [
   ),
   cagrSeoRecords.find(
     (record) => record.slug === 'portfolio-cagr-250000-to-430000-over-12-years',
+  ),
+].filter((record) => record !== undefined);
+
+const dividendGrowthRepresentatives = [
+  dividendGrowthSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'annual-dividend-income-2400-growing-at-7-percent-for-10-years',
+  ),
+  dividendGrowthSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retirement-dividend-income-24000-at-4-percent-for-15-years',
   ),
 ].filter((record) => record !== undefined);
 
@@ -219,6 +233,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: apyRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/apy/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'dividend-growth',
+    title: 'Dividend Growth Examples',
+    description:
+      'Explore worked dividend income scenarios across steady income growth, reinvestment framing, dividend snowball paths, portfolio income, and retirement income planning.',
+    examplesUrl: '/calculators/dividend-growth/examples/',
+    calculator: {
+      title: 'Dividend Growth Calculator',
+      url: '/calculators/dividend-growth-calculator/',
+    },
+    guide: {
+      title: 'How to Use the Dividend Growth Calculator',
+      url: '/guides/how-to-use-dividend-growth-calculator/',
+    },
+    pageCount: dividendGrowthSeoRecords.length,
+    representativePages: dividendGrowthRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/dividend-growth/${record.slug}/`,
     })),
   },
   {

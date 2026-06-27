@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-06-28
+
+- Added a new Dividend Growth programmatic example cluster with 200 worked examples under `/calculators/dividend-growth/`, plus calculator, topic, and guide links into the shared examples ecosystem.
+- Added a noindex `/status/` page for release verification with source-backed public counts and smoke-test links to core site surfaces.
+- Updated `docs/DEPLOYMENT.md` to use `/status/` as a recommended live smoke-test URL during releases.
+
 ## 2026-06-27
 
 - Reworked `/docs` into an AI-oriented developer handbook with new business, content, style, workflow, decisions, and contributing docs.

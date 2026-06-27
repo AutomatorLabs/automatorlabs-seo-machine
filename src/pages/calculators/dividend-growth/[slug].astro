@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  dividendGrowthSeoRecords,
+  EXPECTED_DIVIDEND_GROWTH_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/dividend-growth';
+import {
+  auditDividendGrowthSeoRecords,
+  createDividendGrowthSeoPage,
+} from '../../../lib/programmatic-seo/dividend-growth';
+
+export function getStaticPaths() {
+  auditDividendGrowthSeoRecords(
+    dividendGrowthSeoRecords,
+    EXPECTED_DIVIDEND_GROWTH_SEO_PAGE_COUNT,
+  );
+
+  return dividendGrowthSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createDividendGrowthSeoPage(record, dividendGrowthSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

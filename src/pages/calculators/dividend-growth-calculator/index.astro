@@ -7,6 +7,13 @@ const relatedItems = dividendGrowthCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+
+const exampleItems = [
+  {
+    title: 'Browse all 200 dividend growth examples',
+    url: '/calculators/dividend-growth/examples/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +24,7 @@ const relatedItems = dividendGrowthCalculator.relatedIds.flatMap((id) => {
   outputs={dividendGrowthCalculator.outputs}
   faq={dividendGrowthCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

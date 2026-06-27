@@ -374,6 +374,12 @@ export const guideHubs: GuideHub[] = [
           'Browse worked investment projections for lump sums, recurring investing, retirement planning, taxable accounts, index funds, ETFs, and long-term wealth accumulation.',
       },
       {
+        title: 'Dividend Growth Examples',
+        url: '/calculators/dividend-growth/examples/',
+        description:
+          'Browse worked dividend income projections across growth assumptions, reinvestment framing, dividend snowball scenarios, portfolio income, and retirement income planning.',
+      },
+      {
         title: 'CAGR Examples',
         url: '/calculators/cagr/examples/',
         description:
