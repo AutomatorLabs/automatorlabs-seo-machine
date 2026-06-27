@@ -40,6 +40,15 @@ Equivalent one-command flow:
 
 1. `npm run verify`
 
+Current Playwright spec layout:
+
+- `tests/acquisition.spec.ts`
+- `tests/calculator-index.spec.ts`
+- `tests/programmatic-seo.spec.ts`
+- `tests/calculator-qa.spec.ts`
+- `tests/result-tables.spec.ts`
+- shared helpers in `tests/helpers/`
+
 ## Deployment Workflow
 
 Known from repo:
@@ -111,7 +120,7 @@ First decide which guide type it is.
 
 The topics surface is manual.
 
-1. Update `src/pages/topics/index.astro`.
+1. Update `src/data/topics.ts`.
 2. Add calculator, guide, and example links intentionally.
 3. Run `npm run audit:seo` or `npm run verify` to catch broken manually curated topic links.
 4. Avoid creating topics that are too thin or redundant with category pages.

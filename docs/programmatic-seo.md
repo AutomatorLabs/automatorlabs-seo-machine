@@ -175,7 +175,7 @@ That shared module supports two public cluster families.
 
 ## Test Coverage
 
-`tests/calculators.spec.ts` currently includes:
+`tests/programmatic-seo.spec.ts` currently includes:
 
 - one programmatic describe block per live cluster
 - record-count audits

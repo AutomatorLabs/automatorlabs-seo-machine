@@ -35,7 +35,8 @@ That means "small" changes often touch multiple registries and docs.
 - `src/components/CalculatorPage.astro`
 - `src/components/programmatic-seo/ProgrammaticSeoPage.astro`
 - `src/layouts/Layout.astro`
-- `tests/calculators.spec.ts`
+- `tests/*.spec.ts`
+- `tests/helpers/calculator-test-helpers.ts`
 - `scripts/audit-seo.mjs`
 
 ## Safe Working Rules
@@ -59,7 +60,7 @@ Inspect first:
 - `src/data/calculator-categories.ts`
 - similar route files in `src/pages/calculators/`
 - `src/data/calculator-guides.ts`
-- `tests/calculators.spec.ts`
+- the relevant spec files in `tests/*.spec.ts`
 
 Then verify:
 
@@ -116,6 +117,14 @@ Available repo checks:
 - `git diff --check`
 
 `npm run verify` is the default full-pass check for low-risk production changes.
+
+The Playwright suite is now split by concern:
+
+- `tests/acquisition.spec.ts`
+- `tests/calculator-index.spec.ts`
+- `tests/programmatic-seo.spec.ts`
+- `tests/calculator-qa.spec.ts`
+- `tests/result-tables.spec.ts`
 
 `npm run audit:seo` now also validates shared Open Graph and Twitter metadata on built pages, including canonical and `og:url` parity.
 

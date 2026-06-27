@@ -225,7 +225,7 @@ If you add new content without updating its link graph, the content is incomplet
 
 ### Browser regression suite
 
-`tests/calculators.spec.ts` covers:
+The split Playwright suite under `tests/*.spec.ts` covers:
 
 - calculator index search/filter UX
 - newsletter CTA presence

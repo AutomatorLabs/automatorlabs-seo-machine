@@ -11,7 +11,7 @@ Current release snapshot for Claude handoff.
 
 - Total built pages: `2,831`
 - Calculator count: `84`
-- Calculator Playwright test count: `188`
+- Calculator Playwright test count: `190`
 - Programmatic SEO cluster count: `13`
 - Standard verification command: `npm run verify`
 
@@ -43,6 +43,14 @@ git diff --check
 1. `npm run build`
 2. `npm run audit:seo`
 3. `npm run test:calculators`
+
+`npm run test:calculators` now runs the split Playwright suite under `tests/`:
+
+- `acquisition.spec.ts`
+- `calculator-index.spec.ts`
+- `programmatic-seo.spec.ts`
+- `calculator-qa.spec.ts`
+- `result-tables.spec.ts`
 
 ## Deployment Flow
 

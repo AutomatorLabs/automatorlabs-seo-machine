@@ -20,7 +20,7 @@ Good SEO work in this repo usually means improving the whole system, not just on
 - sitemap integration via `@astrojs/sitemap`
 - permissive `public/robots.txt`
 - build-time SEO audit in `scripts/audit-seo.mjs`
-- browser-based checks in `tests/calculators.spec.ts`
+- browser-based checks in the split Playwright suite under `tests/*.spec.ts`
 
 ## Metadata System
 
