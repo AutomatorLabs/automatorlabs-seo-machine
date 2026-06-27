@@ -46,6 +46,7 @@ That means "small" changes often touch multiple registries and docs.
 - Do not add content without planning its internal links.
 - Do not change formulas casually; many pages and tests depend on shared math.
 - Treat `src/layouts/Layout.astro` as shared metadata infrastructure; small head changes affect the whole site.
+- Treat the default social preview asset in `public/social/` as shared release infrastructure; changing it affects every page share preview.
 - Do not describe unknown deployment details as facts.
 - Update docs whenever architecture, content shape, or workflow changes.
 
@@ -126,7 +127,7 @@ The Playwright suite is now split by concern:
 - `tests/calculator-qa.spec.ts`
 - `tests/result-tables.spec.ts`
 
-`npm run audit:seo` now also validates shared Open Graph and Twitter metadata on built pages, including canonical and `og:url` parity.
+`npm run audit:seo` now also validates shared Open Graph and Twitter metadata on built pages, including canonical and `og:url` parity plus shared social image asset resolution.
 
 For documentation-only changes, `git diff --check` is the minimum required check.
 

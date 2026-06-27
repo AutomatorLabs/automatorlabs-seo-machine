@@ -1,0 +1,32 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">AutomatorLabs social preview</title>
+  <desc id="desc">AutomatorLabs branding for free financial calculators, practical guides, and worked examples.</desc>
+  <defs>
+    <linearGradient id="bg" x1="120" y1="72" x2="1080" y2="558" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F6F7FB"/>
+      <stop offset="1" stop-color="#E8EEF9"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#3158D3"/>
+      <stop offset="1" stop-color="#2446AD"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1030" cy="120" r="180" fill="#DCE6FB"/>
+  <circle cx="160" cy="560" r="220" fill="#E5ECFB"/>
+  <rect x="74" y="74" width="1052" height="482" rx="36" fill="#FFFFFF"/>
+  <rect x="74" y="74" width="1052" height="482" rx="36" stroke="#E1E4EC" stroke-width="2"/>
+  <rect x="118" y="126" width="268" height="268" rx="28" fill="#172033"/>
+  <rect x="146" y="154" width="212" height="212" rx="24" fill="url(#panel)"/>
+  <path d="M199 308L239 268L277 292L325 220" stroke="#FFFFFF" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="199" cy="308" r="14" fill="#FFFFFF"/>
+  <circle cx="239" cy="268" r="14" fill="#FFFFFF"/>
+  <circle cx="277" cy="292" r="14" fill="#FFFFFF"/>
+  <circle cx="325" cy="220" r="14" fill="#FFFFFF"/>
+  <text x="432" y="206" fill="#3158D3" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" letter-spacing="1.4">AUTOMATORLABS</text>
+  <text x="432" y="290" fill="#172033" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="700">Financial calculators</text>
+  <text x="432" y="366" fill="#172033" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="700">&amp; practical guides</text>
+  <text x="432" y="438" fill="#586176" font-family="Arial, Helvetica, sans-serif" font-size="34">Tools, worked examples, and clear money planning content.</text>
+  <rect x="432" y="474" width="272" height="34" rx="17" fill="#EEF1F7"/>
+  <text x="466" y="497" fill="#3158D3" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">84 calculators • 13 example clusters</text>
+</svg>

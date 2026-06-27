@@ -40,9 +40,12 @@ Current shared social defaults:
 - `og:title` from the page title
 - `og:description` from the page description
 - `og:url` from the canonical URL
+- `og:image` from the shared default social preview asset at `/social/automatorlabs-default-social.svg`
+- `og:image:alt` from a shared branded alt string
 - `twitter:card = summary`
 - `twitter:title` from the page title
 - `twitter:description` from the page description
+- `twitter:image` from the shared default social preview asset at `/social/automatorlabs-default-social.svg`
 
 Page-specific titles and descriptions are passed in by:
 
@@ -144,9 +147,10 @@ See [programmatic-seo.md](/Users/tim/Desktop/MICRO%20SAAS/automatorlabs-seo-mach
 - unique meta descriptions
 - unique canonicals
 - canonical presence
-- Open Graph presence for `og:type`, `og:site_name`, `og:title`, `og:description`, and `og:url`
-- Twitter metadata presence for `twitter:card`, `twitter:title`, and `twitter:description`
+- Open Graph presence for `og:type`, `og:site_name`, `og:title`, `og:description`, `og:url`, `og:image`, and `og:image:alt`
+- Twitter metadata presence for `twitter:card`, `twitter:title`, `twitter:description`, and `twitter:image`
 - canonical and `og:url` parity
+- shared social image URLs/path resolution against the built output
 - single H1 on pages
 - calculator registry-to-page consistency
 - category coverage
@@ -173,12 +177,11 @@ Related calculator selection currently follows this fallback philosophy:
 
 ## Gaps And Open Opportunities
 
-- no repo-visible social preview image system
 - no documented Search Console workflow
 - no documented analytics review workflow beyond embedded tags
 - no explicit freshness workflow outside source edits
 - topics page should be reviewed periodically for stale or missing links
-- shared social metadata now has a build-output assertion, but there is still no shared social preview image system
+- all pages currently share one default social preview asset, so per-page or per-family image overrides remain a future enhancement
 
 ## Common SEO Mistakes In This Repo
 

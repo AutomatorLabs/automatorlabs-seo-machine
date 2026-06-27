@@ -15,6 +15,7 @@
 - Added structural audit checks for `src/data/topics.ts`, including empty-group, duplicate-label, duplicate-href, and invalid-href validation.
 - Tightened related-calculator fallback ranking so pages prefer same-family and same-topic calculators before broad global fallback, while preserving explicit `relatedIds` priority.
 - Split the Playwright calculator suite into smaller concern-based spec files and moved shared test helpers into `tests/helpers/` without reducing coverage.
+- Added a shared default social preview image in `public/social/`, wired it into shared OG/Twitter metadata, and extended the SEO audit to validate image metadata plus built-asset resolution.
 
 ## 2026-06-26
 

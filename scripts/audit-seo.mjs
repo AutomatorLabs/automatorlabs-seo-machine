@@ -395,6 +395,37 @@ function distAssetExists(route) {
   return existsSync(filePath);
 }
 
+function validateInternalAssetMeta(value, label, route) {
+  if (!value) {
+    addError(`Missing ${label}: ${route}`);
+    return;
+  }
+
+  let url;
+
+  try {
+    url = new URL(value, siteOrigin);
+  } catch {
+    addError(`Invalid ${label} URL on ${route}: ${value}`);
+    return;
+  }
+
+  if (url.origin !== siteOrigin) {
+    addError(`${label} must point to an internal absolute URL/path on ${route}: ${value}`);
+    return;
+  }
+
+  const assetPath = decodeURIComponent(url.pathname);
+  if (!assetPath.startsWith('/')) {
+    addError(`${label} must resolve to an internal absolute path on ${route}: ${value}`);
+    return;
+  }
+
+  if (!distAssetExists(assetPath)) {
+    addError(`${label} points to a missing built asset on ${route}: ${value}`);
+  }
+}
+
 function auditInternalLinks(pages, htmlRoutes) {
   for (const page of pages) {
     const links = page.html.match(/<a\b[^>]*href=["'][^"']+["'][^>]*>/gi) ?? [];
@@ -447,9 +478,12 @@ async function main() {
       ogTitle: extractMetaByProperty(html, 'og:title'),
       ogDescription: extractMetaByProperty(html, 'og:description'),
       ogUrl: extractMetaByProperty(html, 'og:url'),
+      ogImage: extractMetaByProperty(html, 'og:image'),
+      ogImageAlt: extractMetaByProperty(html, 'og:image:alt'),
       twitterCard: extractMetaByName(html, 'twitter:card'),
       twitterTitle: extractMetaByName(html, 'twitter:title'),
       twitterDescription: extractMetaByName(html, 'twitter:description'),
+      twitterImage: extractMetaByName(html, 'twitter:image'),
       h1Count: extractH1Count(html),
     });
   }
@@ -480,6 +514,9 @@ async function main() {
     if (!page.ogUrl) {
       addError(`Missing og:url: ${page.route}`);
     }
+    if (!page.ogImageAlt) {
+      addError(`Missing og:image:alt: ${page.route}`);
+    }
     if (!page.twitterCard) {
       addError(`Missing twitter:card: ${page.route}`);
     }
@@ -489,6 +526,8 @@ async function main() {
     if (!page.twitterDescription) {
       addError(`Missing twitter:description: ${page.route}`);
     }
+    validateInternalAssetMeta(page.ogImage, 'og:image', page.route);
+    validateInternalAssetMeta(page.twitterImage, 'twitter:image', page.route);
     if (page.canonical && page.ogUrl && page.canonical !== page.ogUrl) {
       addError(
         `Canonical URL and og:url do not match on ${page.route}: canonical=${page.canonical} og:url=${page.ogUrl}`,

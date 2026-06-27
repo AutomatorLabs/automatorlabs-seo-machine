@@ -22,7 +22,8 @@ Verified from the inspected repo:
 - shared SEO metadata includes title, description, canonical URL, optional `noindex`
 - shared Open Graph defaults now live in `src/layouts/Layout.astro`
 - shared Twitter metadata defaults now live in `src/layouts/Layout.astro`
-- build-time SEO audit now validates shared OG/Twitter metadata and canonical-to-`og:url` parity
+- shared default social preview image now lives at `public/social/automatorlabs-default-social.svg`
+- build-time SEO audit now validates shared OG/Twitter metadata, canonical-to-`og:url` parity, and shared social image asset resolution
 - build-time SEO audit now validates the manual topics data module structure as well as built topic-link targets
 - related calculator fallback now prioritizes explicit links, reciprocal links, and same-topic/same-family matches before broad site-wide fill
 - calculator discovery is driven by `src/data/content.ts`
@@ -81,11 +82,10 @@ What still needs confirmation:
 
 ## Recommended Next Claude Priorities
 
-1. Add a safe shared social preview image system and decide whether any page families need image overrides.
-2. Add a safe fallback strategy for social images before introducing page-level overrides.
-3. Confirm and document the real deployment workflow from a primary source.
-4. Review manual topic curation for coverage gaps and stale links.
-5. Tackle the deferred medium and large architecture refactors only in a longer dedicated window.
+1. Decide whether any page families need image overrides beyond the shared default social preview asset.
+2. Confirm and document the real deployment workflow from a primary source.
+3. Review manual topic curation for coverage gaps and stale links.
+4. Tackle the deferred medium and large architecture refactors only in a longer dedicated window.
 
 ## What Not To Touch Casually
 
