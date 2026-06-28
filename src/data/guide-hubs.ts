@@ -841,6 +841,24 @@ export const guideHubs: GuideHub[] = [
           'Compare payoff timelines, interest costs, and extra-payment scenarios for credit card balances.',
       },
       {
+        title: 'Credit Card Interest Examples',
+        url: '/calculators/credit-card-interest/examples/',
+        description:
+          'Review monthly interest, payoff timing, and high-APR card scenarios with and without extra payments.',
+      },
+      {
+        title: 'Credit Card Minimum Payment Examples',
+        url: '/calculators/credit-card-minimum-payment/examples/',
+        description:
+          'Review issuer-style minimum payment scenarios across payment percentages, floors, balances, and APRs.',
+      },
+      {
+        title: 'Credit Card Extra Payment Examples',
+        url: '/calculators/credit-card-extra-payment/examples/',
+        description:
+          'Review how recurring extra payments can shorten payoff time and reduce total interest on card balances.',
+      },
+      {
         title: 'Balance Transfer Examples',
         url: '/calculators/balance-transfer/examples/',
         description:
@@ -1127,6 +1145,24 @@ export const guideHubs: GuideHub[] = [
         url: '/calculators/heloc/examples/',
         description:
           'Browse home equity line scenarios across home values, mortgage balances, CLTV limits, and rate assumptions.',
+      },
+      {
+        title: 'Mortgage Recast Examples',
+        url: '/calculators/mortgage-recast/examples/',
+        description:
+          'Browse lump-sum recast scenarios across remaining balances, payment reductions, and recast fees.',
+      },
+      {
+        title: 'Property Tax Examples',
+        url: '/calculators/property-tax/examples/',
+        description:
+          'Browse annual and long-run property tax scenarios across assessed values, tax rates, and ownership horizons.',
+      },
+      {
+        title: 'Closing Cost Examples',
+        url: '/calculators/closing-cost/examples/',
+        description:
+          'Browse cash-to-close scenarios across down payments, lender credits, prepaids, and higher-priced purchases.',
       },
     ],
     comparisonGuideLinks: [

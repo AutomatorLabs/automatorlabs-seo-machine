@@ -7,6 +7,13 @@ const relatedItems = creditCardInterestCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+
+const exampleItems = [
+  {
+    title: 'Browse all 200 credit card interest examples',
+    url: '/calculators/credit-card-interest/examples/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +24,7 @@ const relatedItems = creditCardInterestCalculator.relatedIds.flatMap((id) => {
   outputs={creditCardInterestCalculator.outputs}
   faq={creditCardInterestCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

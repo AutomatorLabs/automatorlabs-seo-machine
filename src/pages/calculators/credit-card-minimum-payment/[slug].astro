@@ -1,0 +1,32 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  creditCardMinimumPaymentSeoRecords,
+  EXPECTED_CREDIT_CARD_MINIMUM_PAYMENT_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/credit-card-minimum-payment';
+import {
+  auditCreditCardMinimumPaymentSeoRecords,
+  createCreditCardMinimumPaymentSeoPage,
+} from '../../../lib/programmatic-seo/credit-card-minimum-payment';
+
+auditCreditCardMinimumPaymentSeoRecords(
+  creditCardMinimumPaymentSeoRecords,
+  EXPECTED_CREDIT_CARD_MINIMUM_PAYMENT_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return creditCardMinimumPaymentSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createCreditCardMinimumPaymentSeoPage(
+        record,
+        creditCardMinimumPaymentSeoRecords,
+      ),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

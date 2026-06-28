@@ -1,0 +1,242 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  EXPECTED_MORTGAGE_RECAST_SEO_PAGE_COUNT,
+  mortgageRecastSeoRecords,
+} from '../../../../data/programmatic-seo/mortgage-recast';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditMortgageRecastSeoRecords } from '../../../../lib/programmatic-seo/mortgage-recast';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditMortgageRecastSeoRecords(
+  mortgageRecastSeoRecords,
+  EXPECTED_MORTGAGE_RECAST_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Mortgage Recast Calculator',
+        url: '/calculators/mortgage-recast-calculator/',
+      },
+      {
+        name: 'Examples',
+        url: '/calculators/mortgage-recast/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(mortgageRecastSeoRecords, [
+  {
+    id: 'starter-recast',
+    title: 'Starter Recast Examples',
+    description:
+      'Examples focused on moderate balances and smaller lump-sum recast payments.',
+    matches: (record) => record.intent === 'starter-recast',
+  },
+  {
+    id: 'move-up-home',
+    title: 'Move-Up Home Examples',
+    description:
+      'Examples focused on larger balances and mid-sized lump-sum recast payments.',
+    matches: (record) => record.intent === 'move-up-home',
+  },
+  {
+    id: 'retirement-cashflow',
+    title: 'Retirement Cash-Flow Examples',
+    description:
+      'Examples focused on reducing required housing payments later in the mortgage lifecycle.',
+    matches: (record) => record.intent === 'retirement-cashflow',
+  },
+  {
+    id: 'low-fee',
+    title: 'Low Fee Examples',
+    description:
+      'Examples focused on lenders that allow lower-fee or no-fee recasts.',
+    matches: (record) => record.intent === 'low-fee',
+  },
+  {
+    id: 'large-balance',
+    title: 'Large Balance Examples',
+    description:
+      'Examples focused on high remaining balances and substantial principal reductions.',
+    matches: (record) => record.intent === 'large-balance',
+  },
+]);
+---
+
+<Layout
+  title="Mortgage Recast Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} mortgage recast examples covering payment reductions, large balances, retirement cash-flow goals, and different recast fees.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li><a href="/calculators/mortgage-recast-calculator/">Mortgage Recast Calculator</a></li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Mortgage recast scenario library</p>
+      <h1>Mortgage Recast Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering lump-sum recast
+        payments, lower required monthly payments, and different fee or
+        remaining-term assumptions.
+      </p>
+      <a class="primary-link" href="/calculators/mortgage-recast-calculator/">
+        Model your own mortgage recast scenario
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section class="example-search" aria-label="Search mortgage recast examples">
+      <label for="mortgage-recast-example-search">
+        Search mortgage recast examples
+      </label>
+      <div class="search-row">
+        <input
+          id="mortgage-recast-example-search"
+          type="search"
+          placeholder="Try 50000 recast, 300000, or 20 years"
+          autocomplete="off"
+          aria-controls="mortgage-recast-example-groups"
+          aria-describedby="mortgage-recast-example-count"
+        />
+        <button id="clear-mortgage-recast-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="mortgage-recast-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="mortgage-recast-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-mortgage-recast-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-mortgage-recast-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.currentMortgageBalance,
+                  record.annualInterestRatePercent,
+                  record.remainingLoanTermYears,
+                  record.lumpSumRecastPayment,
+                  record.recastFee,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/mortgage-recast/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.currentMortgageBalance)} balance {' · '}
+                    {currency.format(record.lumpSumRecastPayment)} recast {' · '}
+                    {record.remainingLoanTermYears} years left
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p id="no-mortgage-recast-examples" class="no-results" role="status" hidden>
+      No mortgage recast examples found. Try a remaining balance, lump sum, or term.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#mortgage-recast-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-mortgage-recast-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#mortgage-recast-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-mortgage-recast-examples',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-mortgage-recast-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-mortgage-recast-example-group]',
+    ),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      group.hidden = !group.querySelector(
+        '[data-mortgage-recast-example-card]:not([hidden])',
+      );
+    });
+
+    count.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'example' : 'examples'}`;
+    noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query === '';
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateExamples();
+    input.focus();
+  });
+</script>

@@ -9,11 +9,11 @@ Current release snapshot for Claude handoff.
 
 ## Verified Repo Counts
 
-- Total built pages: `7,053`
+- Total built pages: `10,068`
 - Calculator count: `84`
-- Calculator Playwright test count: `298`
-- Programmatic SEO cluster count: `34`
+- Programmatic SEO cluster count: `48`
 - Standard verification command: `npm run verify`
+- Playwright note: `npm run verify` still fails in this sandbox because Playwright's configured web server cannot bind to `127.0.0.1:4321`
 
 ## Current Release Surface
 
@@ -39,6 +39,12 @@ Verified from the inspected repo:
 - retirement tax drag worked examples now live at `/calculators/retirement-tax-drag/examples/`
 - 401(k) worked examples now live at `/calculators/401k/examples/`
 - Roth IRA worked examples now live at `/calculators/roth-ira/examples/`
+- credit card interest worked examples now live at `/calculators/credit-card-interest/examples/`
+- credit card minimum payment worked examples now live at `/calculators/credit-card-minimum-payment/examples/`
+- credit card extra payment worked examples now live at `/calculators/credit-card-extra-payment/examples/`
+- mortgage recast worked examples now live at `/calculators/mortgage-recast/examples/`
+- property tax worked examples now live at `/calculators/property-tax/examples/`
+- closing cost worked examples now live at `/calculators/closing-cost/examples/`
 - build-time SEO audit now validates shared OG/Twitter metadata, canonical-to-`og:url` parity, and shared social image asset resolution
 - build-time SEO audit now validates the manual topics data module structure as well as built topic-link targets
 - related calculator fallback now prioritizes explicit links, reciprocal links, and same-topic/same-family matches before broad site-wide fill
@@ -64,6 +70,8 @@ git diff --check
 1. `npm run build`
 2. `npm run audit:seo`
 3. `npm run test:calculators`
+
+In this Codex sandbox, the first two steps pass and the Playwright step still fails because the configured test web server cannot bind to `127.0.0.1:4321`.
 
 `npm run test:calculators` now runs the split Playwright suite under `tests/`:
 

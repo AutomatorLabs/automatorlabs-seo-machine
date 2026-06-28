@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_MORTGAGE_RECAST_SEO_PAGE_COUNT,
+  mortgageRecastSeoRecords,
+} from '../../../data/programmatic-seo/mortgage-recast';
+import {
+  auditMortgageRecastSeoRecords,
+  createMortgageRecastSeoPage,
+} from '../../../lib/programmatic-seo/mortgage-recast';
+
+auditMortgageRecastSeoRecords(
+  mortgageRecastSeoRecords,
+  EXPECTED_MORTGAGE_RECAST_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return mortgageRecastSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createMortgageRecastSeoPage(record, mortgageRecastSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

@@ -15,6 +15,9 @@ import {
   balanceTransferSeoRecords,
   creditCardPayoffSeoRecords,
 } from './debt';
+import { creditCardInterestSeoRecords } from './credit-card-interest';
+import { creditCardMinimumPaymentSeoRecords } from './credit-card-minimum-payment';
+import { creditCardExtraPaymentSeoRecords } from './credit-card-extra-payment';
 import { debtAvalancheSeoRecords } from './debt-avalanche';
 import { debtPayoffSeoRecords } from './debt-payoff';
 import { debtSnowballSeoRecords } from './debt-snowball';
@@ -26,7 +29,9 @@ import { lumpSumVsDcaSeoRecords } from './lump-sum-vs-dca';
 import { loanPaymentSeoRecords } from './loan-payment';
 import { mortgageSeoRecords } from './mortgage';
 import { mortgagePayoffSeoRecords } from './mortgage-payoff';
+import { mortgageRecastSeoRecords } from './mortgage-recast';
 import { fourOhOneKSeoRecords } from './401k';
+import { propertyTaxSeoRecords } from './property-tax';
 import { realRateOfReturnSeoRecords } from './real-rate-of-return';
 import { retirementIncomeGapSeoRecords } from './retirement-income-gap';
 import { retirementTaxDragSeoRecords } from './retirement-tax-drag';
@@ -43,6 +48,7 @@ import { studentLoanPayoffSeoRecords } from './student-loan-payoff';
 import { studentLoanSeoRecords } from './student-loan';
 import { vacationSavingsSeoRecords } from './vacation-savings';
 import { yearsToRetirementSeoRecords } from './years-to-retirement';
+import { closingCostSeoRecords } from './closing-cost';
 
 export interface ProgrammaticSeoClusterSummary {
   id: string;
@@ -356,6 +362,45 @@ const mortgagePayoffRepresentatives = [
   ),
 ].filter((record) => record !== undefined);
 
+const mortgageRecastRepresentatives = [
+  mortgageRecastSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'starter-recast-300000-balance-5-rate-25-years-20000-recast-250-fee',
+  ),
+  mortgageRecastSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'large-balance-1200000-balance-5-5-rate-25-years-100000-recast-350-fee',
+  ),
+].filter((record) => record !== undefined);
+
+const propertyTaxRepresentatives = [
+  propertyTaxSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'starter-home-350000-home-0-95-tax-90-assessed-2-5-growth-15-years',
+  ),
+  propertyTaxSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'high-tax-area-600000-home-1-9-tax-100-assessed-3-growth-15-years',
+  ),
+].filter((record) => record !== undefined);
+
+const closingCostRepresentatives = [
+  closingCostSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'starter-home-350000-price-35000-down-2-closing-3500-fixed-4000-prepaids-0-credits',
+  ),
+  closingCostSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'jumbo-home-1500000-price-300000-down-2-5-closing-8000-fixed-13000-prepaids-0-credits',
+  ),
+].filter((record) => record !== undefined);
+
 const savingsGoalRepresentatives = [
   savingsGoalSeoRecords.find(
     (record) => record.slug === 'save-100000-in-5-years',
@@ -376,6 +421,45 @@ const creditCardPayoffRepresentatives = [
     (record) =>
       record.slug ===
       'pay-off-10000-credit-card-at-24-99-apr-with-300-per-month-with-100-extra',
+  ),
+].filter((record) => record !== undefined);
+
+const creditCardInterestRepresentatives = [
+  creditCardInterestSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'monthly-interest-5000-balance-at-24-99-apr-paying-225-with-50-extra',
+  ),
+  creditCardInterestSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'large-balance-20000-balance-at-18-99-apr-paying-400-with-50-extra',
+  ),
+].filter((record) => record !== undefined);
+
+const creditCardMinimumPaymentRepresentatives = [
+  creditCardMinimumPaymentSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'starter-balance-1500-balance-at-18-99-apr-2-percent-minimum-25-floor',
+  ),
+  creditCardMinimumPaymentSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'high-apr-5000-balance-at-26-99-apr-2-percent-minimum-40-floor',
+  ),
+].filter((record) => record !== undefined);
+
+const creditCardExtraPaymentRepresentatives = [
+  creditCardExtraPaymentSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'starter-balance-3000-balance-at-18-99-apr-125-payment-25-extra',
+  ),
+  creditCardExtraPaymentSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'aggressive-extra-10000-balance-at-19-99-apr-200-payment-100-extra',
   ),
 ].filter((record) => record !== undefined);
 
@@ -958,6 +1042,66 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     })),
   },
   {
+    id: 'mortgage-recast',
+    title: 'Mortgage Recast Examples',
+    description:
+      'Explore lump-sum recast scenarios across remaining balances, recast fees, and cash-flow reduction goals.',
+    examplesUrl: '/calculators/mortgage-recast/examples/',
+    calculator: {
+      title: 'Mortgage Recast Calculator',
+      url: '/calculators/mortgage-recast-calculator/',
+    },
+    guide: {
+      title: 'How to Use the Mortgage Recast Calculator',
+      url: '/guides/how-to-use-mortgage-recast-calculator/',
+    },
+    pageCount: mortgageRecastSeoRecords.length,
+    representativePages: mortgageRecastRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/mortgage-recast/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'property-tax',
+    title: 'Property Tax Examples',
+    description:
+      'Explore yearly and long-run property tax scenarios across assessed values, tax rates, and ownership horizons.',
+    examplesUrl: '/calculators/property-tax/examples/',
+    calculator: {
+      title: 'Property Tax Calculator',
+      url: '/calculators/property-tax-calculator/',
+    },
+    guide: {
+      title: 'Mortgage and Home Buying Guide Hub',
+      url: '/guides/mortgage/',
+    },
+    pageCount: propertyTaxSeoRecords.length,
+    representativePages: propertyTaxRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/property-tax/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'closing-cost',
+    title: 'Closing Cost Examples',
+    description:
+      'Explore cash-to-close scenarios across down payments, lender credits, prepaids, and higher-priced home purchases.',
+    examplesUrl: '/calculators/closing-cost/examples/',
+    calculator: {
+      title: 'Closing Cost Calculator',
+      url: '/calculators/closing-cost-calculator/',
+    },
+    guide: {
+      title: 'A Practical Guide to Buying a Home',
+      url: '/guides/home-buying/',
+    },
+    pageCount: closingCostSeoRecords.length,
+    representativePages: closingCostRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/closing-cost/${record.slug}/`,
+    })),
+  },
+  {
     id: 'real-rate-of-return',
     title: 'Real Rate of Return Examples',
     description:
@@ -1118,6 +1262,70 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
       title: record.question,
       url: `/calculators/credit-card-payoff/${record.slug}/`,
     })),
+  },
+  {
+    id: 'credit-card-interest',
+    title: 'Credit Card Interest Examples',
+    description:
+      'Explore monthly interest, payoff timeline, extra-payment, high-APR, and larger-balance credit card scenarios.',
+    examplesUrl: '/calculators/credit-card-interest/examples/',
+    calculator: {
+      title: 'Credit Card Interest Calculator',
+      url: '/calculators/credit-card-interest-calculator/',
+    },
+    guide: {
+      title: 'How Credit Card Interest Works',
+      url: '/guides/how-credit-card-interest-works/',
+    },
+    pageCount: creditCardInterestSeoRecords.length,
+    representativePages: creditCardInterestRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/credit-card-interest/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'credit-card-minimum-payment',
+    title: 'Credit Card Minimum Payment Examples',
+    description:
+      'Explore issuer-style minimum payment scenarios across payment percentages, floors, balances, and APRs.',
+    examplesUrl: '/calculators/credit-card-minimum-payment/examples/',
+    calculator: {
+      title: 'Credit Card Minimum Payment Calculator',
+      url: '/calculators/credit-card-minimum-payment-calculator/',
+    },
+    guide: {
+      title: 'Minimum Payment vs Extra Payment',
+      url: '/guides/minimum-payment-vs-extra-payment/',
+    },
+    pageCount: creditCardMinimumPaymentSeoRecords.length,
+    representativePages: creditCardMinimumPaymentRepresentatives.map(
+      (record) => ({
+        title: record.question,
+        url: `/calculators/credit-card-minimum-payment/${record.slug}/`,
+      }),
+    ),
+  },
+  {
+    id: 'credit-card-extra-payment',
+    title: 'Credit Card Extra Payment Examples',
+    description:
+      'Explore recurring extra-payment scenarios across balances, APRs, and accelerated credit card payoff paths.',
+    examplesUrl: '/calculators/credit-card-extra-payment/examples/',
+    calculator: {
+      title: 'Credit Card Extra Payment Calculator',
+      url: '/calculators/credit-card-extra-payment-calculator/',
+    },
+    guide: {
+      title: 'Minimum Payment vs Extra Payment',
+      url: '/guides/minimum-payment-vs-extra-payment/',
+    },
+    pageCount: creditCardExtraPaymentSeoRecords.length,
+    representativePages: creditCardExtraPaymentRepresentatives.map(
+      (record) => ({
+        title: record.question,
+        url: `/calculators/credit-card-extra-payment/${record.slug}/`,
+      }),
+    ),
   },
   {
     id: 'debt-payoff',

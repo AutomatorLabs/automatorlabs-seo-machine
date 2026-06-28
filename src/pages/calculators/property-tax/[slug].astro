@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_PROPERTY_TAX_SEO_PAGE_COUNT,
+  propertyTaxSeoRecords,
+} from '../../../data/programmatic-seo/property-tax';
+import {
+  auditPropertyTaxSeoRecords,
+  createPropertyTaxSeoPage,
+} from '../../../lib/programmatic-seo/property-tax';
+
+auditPropertyTaxSeoRecords(
+  propertyTaxSeoRecords,
+  EXPECTED_PROPERTY_TAX_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return propertyTaxSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createPropertyTaxSeoPage(record, propertyTaxSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

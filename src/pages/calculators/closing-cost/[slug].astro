@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  closingCostSeoRecords,
+  EXPECTED_CLOSING_COST_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/closing-cost';
+import {
+  auditClosingCostSeoRecords,
+  createClosingCostSeoPage,
+} from '../../../lib/programmatic-seo/closing-cost';
+
+auditClosingCostSeoRecords(
+  closingCostSeoRecords,
+  EXPECTED_CLOSING_COST_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return closingCostSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createClosingCostSeoPage(record, closingCostSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

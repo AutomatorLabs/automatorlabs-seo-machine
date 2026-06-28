@@ -1,0 +1,246 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  creditCardInterestSeoRecords,
+  EXPECTED_CREDIT_CARD_INTEREST_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/credit-card-interest';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditCreditCardInterestSeoRecords } from '../../../../lib/programmatic-seo/credit-card-interest';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditCreditCardInterestSeoRecords(
+  creditCardInterestSeoRecords,
+  EXPECTED_CREDIT_CARD_INTEREST_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Credit Card Interest Calculator',
+        url: '/calculators/credit-card-interest-calculator/',
+      },
+      {
+        name: 'Examples',
+        url: '/calculators/credit-card-interest/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(creditCardInterestSeoRecords, [
+  {
+    id: 'monthly-interest',
+    title: 'Monthly Interest Examples',
+    description:
+      'Examples focused on first-month interest cost across smaller balances and realistic card APRs.',
+    matches: (record) => record.intent === 'monthly-interest',
+  },
+  {
+    id: 'payoff-timeline',
+    title: 'Payoff Timeline Examples',
+    description:
+      'Examples focused on how long payoff may take under steady monthly payments.',
+    matches: (record) => record.intent === 'payoff-timeline',
+  },
+  {
+    id: 'extra-payment',
+    title: 'Extra Payment Examples',
+    description:
+      'Examples showing how recurring extra payments can reduce total interest and payoff time.',
+    matches: (record) => record.intent === 'extra-payment',
+  },
+  {
+    id: 'high-apr',
+    title: 'High APR Examples',
+    description:
+      'Examples focused on high-rate balances where monthly interest charges are especially painful.',
+    matches: (record) => record.intent === 'high-apr',
+  },
+  {
+    id: 'large-balance',
+    title: 'Large Balance Examples',
+    description:
+      'Examples focused on larger revolving balances and more aggressive monthly payments.',
+    matches: (record) => record.intent === 'large-balance',
+  },
+]);
+---
+
+<Layout
+  title="Credit Card Interest Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} credit card interest examples covering monthly interest, payoff timelines, extra payments, high APR scenarios, and large balances.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/credit-card-interest-calculator/">
+            Credit Card Interest Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Credit card interest scenario library</p>
+      <h1>Credit Card Interest Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering first-month
+        interest, payoff timelines, extra payments, high APR scenarios, and
+        larger balances.
+      </p>
+      <a class="primary-link" href="/calculators/credit-card-interest-calculator/">
+        Model your own credit card interest scenario
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section class="example-search" aria-label="Search credit card interest examples">
+      <label for="credit-card-interest-example-search">
+        Search credit card interest examples
+      </label>
+      <div class="search-row">
+        <input
+          id="credit-card-interest-example-search"
+          type="search"
+          placeholder="Try 24.99, 10000, extra, or payoff"
+          autocomplete="off"
+          aria-controls="credit-card-interest-example-groups"
+          aria-describedby="credit-card-interest-example-count"
+        />
+        <button id="clear-credit-card-interest-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="credit-card-interest-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="credit-card-interest-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-credit-card-interest-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-credit-card-interest-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.balance,
+                  record.balance.toLocaleString('en-US'),
+                  record.aprPercent,
+                  record.monthlyPayment,
+                  record.extraMonthlyPayment,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/credit-card-interest/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.balance)} balance {' · '}
+                    {record.aprPercent}% APR {' · '}
+                    {currency.format(record.monthlyPayment)} payment
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p id="no-credit-card-interest-examples" class="no-results" role="status" hidden>
+      No credit card interest examples found. Try a balance, APR, or payment amount.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#credit-card-interest-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-credit-card-interest-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#credit-card-interest-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-credit-card-interest-examples',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-credit-card-interest-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-credit-card-interest-example-group]',
+    ),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      group.hidden = !group.querySelector(
+        '[data-credit-card-interest-example-card]:not([hidden])',
+      );
+    });
+
+    count.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'example' : 'examples'}`;
+    noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query === '';
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateExamples();
+    input.focus();
+  });
+</script>

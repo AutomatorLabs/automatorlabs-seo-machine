@@ -9,6 +9,13 @@ const relatedItems = creditCardMinimumPaymentCalculator.relatedIds.flatMap(
     return item ? [{ title: item.title, url: item.url }] : [];
   },
 );
+
+const exampleItems = [
+  {
+    title: 'Browse all 200 credit card minimum payment examples',
+    url: '/calculators/credit-card-minimum-payment/examples/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -19,6 +26,7 @@ const relatedItems = creditCardMinimumPaymentCalculator.relatedIds.flatMap(
   outputs={creditCardMinimumPaymentCalculator.outputs}
   faq={creditCardMinimumPaymentCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

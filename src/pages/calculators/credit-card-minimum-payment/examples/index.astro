@@ -1,0 +1,249 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  creditCardMinimumPaymentSeoRecords,
+  EXPECTED_CREDIT_CARD_MINIMUM_PAYMENT_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/credit-card-minimum-payment';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditCreditCardMinimumPaymentSeoRecords } from '../../../../lib/programmatic-seo/credit-card-minimum-payment';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditCreditCardMinimumPaymentSeoRecords(
+  creditCardMinimumPaymentSeoRecords,
+  EXPECTED_CREDIT_CARD_MINIMUM_PAYMENT_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Credit Card Minimum Payment Calculator',
+        url: '/calculators/credit-card-minimum-payment-calculator/',
+      },
+      {
+        name: 'Examples',
+        url: '/calculators/credit-card-minimum-payment/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(
+  creditCardMinimumPaymentSeoRecords,
+  [
+    {
+      id: 'starter-balance',
+      title: 'Starter Balance Examples',
+      description:
+        'Examples focused on smaller balances and how issuer minimums behave early in the payoff path.',
+      matches: (record) => record.intent === 'starter-balance',
+    },
+    {
+      id: 'average-balance',
+      title: 'Average Balance Examples',
+      description:
+        'Examples focused on mid-sized balances and common issuer minimum formulas.',
+      matches: (record) => record.intent === 'average-balance',
+    },
+    {
+      id: 'high-apr',
+      title: 'High APR Examples',
+      description:
+        'Examples focused on high-rate balances where minimum payments are most likely to drag out.',
+      matches: (record) => record.intent === 'high-apr',
+    },
+    {
+      id: 'low-floor',
+      title: 'Low Floor Examples',
+      description:
+        'Examples focused on how low dollar minimums can slow payoff even when the balance is falling.',
+      matches: (record) => record.intent === 'low-floor',
+    },
+    {
+      id: 'higher-percent',
+      title: 'Higher Minimum Percentage Examples',
+      description:
+        'Examples focused on more aggressive issuer minimum formulas with larger payment percentages.',
+      matches: (record) => record.intent === 'higher-percent',
+    },
+  ],
+);
+---
+
+<Layout
+  title="Credit Card Minimum Payment Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} credit card minimum payment examples covering issuer minimum formulas, high APR balances, and different payment floors.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/credit-card-minimum-payment-calculator/">
+            Credit Card Minimum Payment Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Minimum payment scenario library</p>
+      <h1>Credit Card Minimum Payment Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering issuer minimum
+        payment formulas, high APR balances, low payment floors, and more
+        aggressive payment percentages.
+      </p>
+      <a class="primary-link" href="/calculators/credit-card-minimum-payment-calculator/">
+        Model your own minimum payment scenario
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section class="example-search" aria-label="Search minimum payment examples">
+      <label for="credit-card-minimum-payment-example-search">
+        Search minimum payment examples
+      </label>
+      <div class="search-row">
+        <input
+          id="credit-card-minimum-payment-example-search"
+          type="search"
+          placeholder="Try 2%, 35 floor, 24.99, or 5000"
+          autocomplete="off"
+          aria-controls="credit-card-minimum-payment-example-groups"
+          aria-describedby="credit-card-minimum-payment-example-count"
+        />
+        <button id="clear-credit-card-minimum-payment-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="credit-card-minimum-payment-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="credit-card-minimum-payment-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-credit-card-minimum-payment-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-credit-card-minimum-payment-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.balance,
+                  record.balance.toLocaleString('en-US'),
+                  record.aprPercent,
+                  record.minimumPaymentPercent,
+                  record.minimumPaymentFloor,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/credit-card-minimum-payment/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.balance)} balance {' · '}
+                    {record.aprPercent}% APR {' · '}
+                    {record.minimumPaymentPercent}% minimum
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p id="no-credit-card-minimum-payment-examples" class="no-results" role="status" hidden>
+      No minimum payment examples found. Try a balance, APR, or minimum-payment setting.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#credit-card-minimum-payment-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-credit-card-minimum-payment-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#credit-card-minimum-payment-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-credit-card-minimum-payment-examples',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-credit-card-minimum-payment-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-credit-card-minimum-payment-example-group]',
+    ),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      group.hidden = !group.querySelector(
+        '[data-credit-card-minimum-payment-example-card]:not([hidden])',
+      );
+    });
+
+    count.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'example' : 'examples'}`;
+    noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query === '';
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateExamples();
+    input.focus();
+  });
+</script>

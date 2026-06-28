@@ -1,0 +1,235 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  EXPECTED_PROPERTY_TAX_SEO_PAGE_COUNT,
+  propertyTaxSeoRecords,
+} from '../../../../data/programmatic-seo/property-tax';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditPropertyTaxSeoRecords } from '../../../../lib/programmatic-seo/property-tax';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditPropertyTaxSeoRecords(
+  propertyTaxSeoRecords,
+  EXPECTED_PROPERTY_TAX_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Property Tax Calculator',
+        url: '/calculators/property-tax-calculator/',
+      },
+      {
+        name: 'Examples',
+        url: '/calculators/property-tax/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(propertyTaxSeoRecords, [
+  {
+    id: 'starter-home',
+    title: 'Starter Home Examples',
+    description:
+      'Examples focused on modest home values and common property-tax assumptions.',
+    matches: (record) => record.intent === 'starter-home',
+  },
+  {
+    id: 'move-up-home',
+    title: 'Move-Up Home Examples',
+    description:
+      'Examples focused on larger home values and mid-range local tax assumptions.',
+    matches: (record) => record.intent === 'move-up-home',
+  },
+  {
+    id: 'high-tax-area',
+    title: 'High Tax Area Examples',
+    description:
+      'Examples focused on jurisdictions with meaningfully higher property-tax rates.',
+    matches: (record) => record.intent === 'high-tax-area',
+  },
+  {
+    id: 'assessment-growth',
+    title: 'Assessment Growth Examples',
+    description:
+      'Examples focused on how rising assessed values can change long-run tax costs.',
+    matches: (record) => record.intent === 'assessment-growth',
+  },
+  {
+    id: 'long-horizon',
+    title: 'Long Horizon Examples',
+    description:
+      'Examples focused on multi-decade ownership periods and cumulative tax drag.',
+    matches: (record) => record.intent === 'long-horizon',
+  },
+]);
+---
+
+<Layout
+  title="Property Tax Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} property tax examples covering starter homes, high-tax areas, assessment growth, and long-horizon ownership costs.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li><a href="/calculators/property-tax-calculator/">Property Tax Calculator</a></li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Property tax scenario library</p>
+      <h1>Property Tax Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering first-year tax,
+        monthly escrow, assessment growth, and long-term ownership costs.
+      </p>
+      <a class="primary-link" href="/calculators/property-tax-calculator/">
+        Model your own property tax scenario
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section class="example-search" aria-label="Search property tax examples">
+      <label for="property-tax-example-search">Search property tax examples</label>
+      <div class="search-row">
+        <input
+          id="property-tax-example-search"
+          type="search"
+          placeholder="Try 1.25%, 500000, or 30 years"
+          autocomplete="off"
+          aria-controls="property-tax-example-groups"
+          aria-describedby="property-tax-example-count"
+        />
+        <button id="clear-property-tax-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="property-tax-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="property-tax-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-property-tax-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-property-tax-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.homeValue,
+                  record.propertyTaxRatePercent,
+                  record.assessedValuePercent,
+                  record.annualAssessmentGrowthPercent,
+                  record.years,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/property-tax/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.homeValue)} home {' · '}
+                    {record.propertyTaxRatePercent}% rate {' · '}
+                    {record.years} years
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p id="no-property-tax-examples" class="no-results" role="status" hidden>
+      No property tax examples found. Try a home value, tax rate, or time horizon.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#property-tax-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-property-tax-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#property-tax-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-property-tax-examples',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-property-tax-example-card]'),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-property-tax-example-group]'),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      group.hidden = !group.querySelector(
+        '[data-property-tax-example-card]:not([hidden])',
+      );
+    });
+
+    count.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'example' : 'examples'}`;
+    noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query === '';
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateExamples();
+    input.focus();
+  });
+</script>

@@ -1,0 +1,32 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  creditCardExtraPaymentSeoRecords,
+  EXPECTED_CREDIT_CARD_EXTRA_PAYMENT_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/credit-card-extra-payment';
+import {
+  auditCreditCardExtraPaymentSeoRecords,
+  createCreditCardExtraPaymentSeoPage,
+} from '../../../lib/programmatic-seo/credit-card-extra-payment';
+
+auditCreditCardExtraPaymentSeoRecords(
+  creditCardExtraPaymentSeoRecords,
+  EXPECTED_CREDIT_CARD_EXTRA_PAYMENT_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return creditCardExtraPaymentSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createCreditCardExtraPaymentSeoPage(
+        record,
+        creditCardExtraPaymentSeoRecords,
+      ),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

@@ -15,9 +15,9 @@ Its job is to:
 
 Verified from source:
 
-- 34 live clusters in `src/data/programmatic-seo/clusters.ts`
+- 48 live clusters in `src/data/programmatic-seo/clusters.ts`
 - 200 records per cluster
-- 6,800 generated example pages total
+- 9,600 generated example pages total
 - global examples hub at `/examples/`
 
 Current live clusters:
@@ -28,6 +28,12 @@ Current live clusters:
 - Dividend Yield
 - Dividend Growth
 - Expense Ratio
+- Credit Card Interest
+- Credit Card Minimum Payment
+- Credit Card Extra Payment
+- Mortgage Recast
+- Property Tax
+- Closing Cost
 - Savings Growth
 - Monthly Savings
 - Vacation Savings

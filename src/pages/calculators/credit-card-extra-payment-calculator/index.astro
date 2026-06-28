@@ -9,6 +9,13 @@ const relatedItems = creditCardExtraPaymentCalculator.relatedIds.flatMap(
     return item ? [{ title: item.title, url: item.url }] : [];
   },
 );
+
+const exampleItems = [
+  {
+    title: 'Browse all 200 credit card extra payment examples',
+    url: '/calculators/credit-card-extra-payment/examples/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -19,6 +26,7 @@ const relatedItems = creditCardExtraPaymentCalculator.relatedIds.flatMap(
   outputs={creditCardExtraPaymentCalculator.outputs}
   faq={creditCardExtraPaymentCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

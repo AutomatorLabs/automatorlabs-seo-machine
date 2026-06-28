@@ -2,6 +2,8 @@
 
 ## 2026-06-28
 
+- Added six new worked-example clusters for `credit-card-interest`, `credit-card-minimum-payment`, `credit-card-extra-payment`, `mortgage-recast`, `property-tax`, and `closing-cost`, plus calculator-page links, topic links, guide-hub links, cluster registry entries, and Playwright coverage.
+- Updated verified docs counts to reflect 48 live programmatic SEO clusters and 10,068 built pages in the current repo snapshot; full `npm run verify` still hits the known Playwright sandbox port-binding blocker on `127.0.0.1:4321`.
 - Added new retirement worked-example clusters for `coast-fire`, `years-to-retirement`, `retirement-income-gap`, `portfolio-withdrawal-sustainability`, `retirement-tax-drag`, `401k`, and `roth-ira`, plus retirement-family calculator, topic, guide, and examples-hub links.
 - Added new debt-oriented worked-example clusters for `loan-payment`, `mortgage-payoff`, `debt-payoff`, `debt-snowball`, `debt-avalanche`, `auto-loan`, `student-loan`, `student-loan-payoff`, and `heloc`, plus calculator, topic, guide, registry, and Playwright coverage updates.
 - Updated verified docs counts to reflect 34 live programmatic SEO clusters, 7,053 built pages, and 298 Playwright checks in the current repo snapshot.

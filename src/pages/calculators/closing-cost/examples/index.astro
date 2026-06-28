@@ -1,0 +1,236 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  closingCostSeoRecords,
+  EXPECTED_CLOSING_COST_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/closing-cost';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditClosingCostSeoRecords } from '../../../../lib/programmatic-seo/closing-cost';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditClosingCostSeoRecords(
+  closingCostSeoRecords,
+  EXPECTED_CLOSING_COST_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Closing Cost Calculator',
+        url: '/calculators/closing-cost-calculator/',
+      },
+      {
+        name: 'Examples',
+        url: '/calculators/closing-cost/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(closingCostSeoRecords, [
+  {
+    id: 'starter-home',
+    title: 'Starter Home Examples',
+    description:
+      'Examples focused on smaller purchases and modest down payments.',
+    matches: (record) => record.intent === 'starter-home',
+  },
+  {
+    id: 'conventional',
+    title: 'Conventional Purchase Examples',
+    description:
+      'Examples focused on standard down payments and mid-range fee assumptions.',
+    matches: (record) => record.intent === 'conventional',
+  },
+  {
+    id: 'lender-credit',
+    title: 'Lender Credit Examples',
+    description:
+      'Examples focused on how lender credits offset part of the upfront cost stack.',
+    matches: (record) => record.intent === 'lender-credit',
+  },
+  {
+    id: 'high-prepaids',
+    title: 'High Prepaid Examples',
+    description:
+      'Examples focused on deals where taxes and escrow prepaids drive a larger share of cash to close.',
+    matches: (record) => record.intent === 'high-prepaids',
+  },
+  {
+    id: 'jumbo-home',
+    title: 'Jumbo Home Examples',
+    description:
+      'Examples focused on higher-priced purchases and larger cash-to-close ranges.',
+    matches: (record) => record.intent === 'jumbo-home',
+  },
+]);
+---
+
+<Layout
+  title="Closing Cost Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} closing cost examples covering starter homes, lender credits, high prepaids, and jumbo purchases.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li><a href="/calculators/closing-cost-calculator/">Closing Cost Calculator</a></li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Closing cost scenario library</p>
+      <h1>Closing Cost Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering estimated closing
+        costs, cash to close, lender credits, and prepaid tax or escrow
+        scenarios.
+      </p>
+      <a class="primary-link" href="/calculators/closing-cost-calculator/">
+        Model your own closing cost scenario
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section class="example-search" aria-label="Search closing cost examples">
+      <label for="closing-cost-example-search">Search closing cost examples</label>
+      <div class="search-row">
+        <input
+          id="closing-cost-example-search"
+          type="search"
+          placeholder="Try 500000, lender credit, or 20% down"
+          autocomplete="off"
+          aria-controls="closing-cost-example-groups"
+          aria-describedby="closing-cost-example-count"
+        />
+        <button id="clear-closing-cost-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="closing-cost-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="closing-cost-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-closing-cost-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-closing-cost-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.homePurchasePrice,
+                  record.downPayment,
+                  record.closingCostPercent,
+                  record.prepaidEscrowAndTaxes,
+                  record.lenderCredits,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/closing-cost/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.homePurchasePrice)} price {' · '}
+                    {currency.format(record.downPayment)} down {' · '}
+                    {record.closingCostPercent}% variable costs
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p id="no-closing-cost-examples" class="no-results" role="status" hidden>
+      No closing cost examples found. Try a home price, down payment, or lender-credit amount.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#closing-cost-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-closing-cost-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#closing-cost-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-closing-cost-examples',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-closing-cost-example-card]'),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-closing-cost-example-group]'),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      group.hidden = !group.querySelector(
+        '[data-closing-cost-example-card]:not([hidden])',
+      );
+    });
+
+    count.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'example' : 'examples'}`;
+    noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query === '';
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateExamples();
+    input.focus();
+  });
+</script>

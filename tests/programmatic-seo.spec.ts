@@ -73,9 +73,24 @@ import {
   EXPECTED_CREDIT_CARD_PAYOFF_SEO_PAGE_COUNT,
 } from '../src/data/programmatic-seo/debt';
 import {
+  creditCardInterestSeoRecords,
+  EXPECTED_CREDIT_CARD_INTEREST_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/credit-card-interest';
+import {
+  creditCardMinimumPaymentSeoRecords,
+  EXPECTED_CREDIT_CARD_MINIMUM_PAYMENT_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/credit-card-minimum-payment';
+import {
+  creditCardExtraPaymentSeoRecords,
+  EXPECTED_CREDIT_CARD_EXTRA_PAYMENT_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/credit-card-extra-payment';
+import {
   auditBalanceTransferSeoRecords,
   auditCreditCardPayoffSeoRecords,
 } from '../src/lib/programmatic-seo/debt';
+import { auditCreditCardInterestSeoRecords } from '../src/lib/programmatic-seo/credit-card-interest';
+import { auditCreditCardMinimumPaymentSeoRecords } from '../src/lib/programmatic-seo/credit-card-minimum-payment';
+import { auditCreditCardExtraPaymentSeoRecords } from '../src/lib/programmatic-seo/credit-card-extra-payment';
 import {
   autoLoanSeoRecords,
   EXPECTED_AUTO_LOAN_SEO_PAGE_COUNT,
@@ -143,6 +158,11 @@ import {
 } from '../src/data/programmatic-seo/mortgage-payoff';
 import { auditMortgagePayoffSeoRecords } from '../src/lib/programmatic-seo/mortgage-payoff';
 import {
+  EXPECTED_MORTGAGE_RECAST_SEO_PAGE_COUNT,
+  mortgageRecastSeoRecords,
+} from '../src/data/programmatic-seo/mortgage-recast';
+import { auditMortgageRecastSeoRecords } from '../src/lib/programmatic-seo/mortgage-recast';
+import {
   EXPECTED_MONTHLY_SAVINGS_SEO_PAGE_COUNT,
   monthlySavingsSeoRecords,
 } from '../src/data/programmatic-seo/monthly-savings';
@@ -152,6 +172,11 @@ import {
   realRateOfReturnSeoRecords,
 } from '../src/data/programmatic-seo/real-rate-of-return';
 import { auditRealRateOfReturnSeoRecords } from '../src/lib/programmatic-seo/real-rate-of-return';
+import {
+  EXPECTED_PROPERTY_TAX_SEO_PAGE_COUNT,
+  propertyTaxSeoRecords,
+} from '../src/data/programmatic-seo/property-tax';
+import { auditPropertyTaxSeoRecords } from '../src/lib/programmatic-seo/property-tax';
 import {
   EXPECTED_RETIREMENT_INCOME_GAP_SEO_PAGE_COUNT,
   retirementIncomeGapSeoRecords,
@@ -201,6 +226,11 @@ import {
 } from '../src/data/programmatic-seo/student-loan';
 import { auditStudentLoanSeoRecords } from '../src/lib/programmatic-seo/student-loan';
 import {
+  closingCostSeoRecords,
+  EXPECTED_CLOSING_COST_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/closing-cost';
+import { auditClosingCostSeoRecords } from '../src/lib/programmatic-seo/closing-cost';
+import {
   EXPECTED_VACATION_SAVINGS_SEO_PAGE_COUNT,
   vacationSavingsSeoRecords,
 } from '../src/data/programmatic-seo/vacation-savings';
@@ -221,6 +251,87 @@ import {
 } from '../src/data/programmatic-seo/years-to-retirement';
 import { auditYearsToRetirementSeoRecords } from '../src/lib/programmatic-seo/years-to-retirement';
 import { newsletterCta } from './helpers/calculator-test-helpers';
+
+const safeBatchProgrammaticConfigs = [
+  {
+    label: 'credit card interest',
+    records: creditCardInterestSeoRecords,
+    expectedCount: EXPECTED_CREDIT_CARD_INTEREST_SEO_PAGE_COUNT,
+    audit: auditCreditCardInterestSeoRecords,
+    calculatorPath: '/calculators/credit-card-interest-calculator/',
+    examplesPath: '/calculators/credit-card-interest/examples/',
+    exampleLinkName: 'Browse all 200 credit card interest examples',
+    representativeSlug:
+      'monthly-interest-5000-balance-at-24-99-apr-paying-225-with-50-extra',
+    pagePrefix: '/calculators/credit-card-interest/',
+    ctaName: 'Open the Credit Card Interest Calculator',
+  },
+  {
+    label: 'credit card minimum payment',
+    records: creditCardMinimumPaymentSeoRecords,
+    expectedCount: EXPECTED_CREDIT_CARD_MINIMUM_PAYMENT_SEO_PAGE_COUNT,
+    audit: auditCreditCardMinimumPaymentSeoRecords,
+    calculatorPath: '/calculators/credit-card-minimum-payment-calculator/',
+    examplesPath: '/calculators/credit-card-minimum-payment/examples/',
+    exampleLinkName: 'Browse all 200 credit card minimum payment examples',
+    representativeSlug:
+      'starter-balance-1500-balance-at-18-99-apr-2-percent-minimum-25-floor',
+    pagePrefix: '/calculators/credit-card-minimum-payment/',
+    ctaName: 'Open the Credit Card Minimum Payment Calculator',
+  },
+  {
+    label: 'credit card extra payment',
+    records: creditCardExtraPaymentSeoRecords,
+    expectedCount: EXPECTED_CREDIT_CARD_EXTRA_PAYMENT_SEO_PAGE_COUNT,
+    audit: auditCreditCardExtraPaymentSeoRecords,
+    calculatorPath: '/calculators/credit-card-extra-payment-calculator/',
+    examplesPath: '/calculators/credit-card-extra-payment/examples/',
+    exampleLinkName: 'Browse all 200 credit card extra payment examples',
+    representativeSlug:
+      'starter-balance-3000-balance-at-18-99-apr-125-payment-25-extra',
+    pagePrefix: '/calculators/credit-card-extra-payment/',
+    ctaName: 'Open the Credit Card Extra Payment Calculator',
+  },
+  {
+    label: 'mortgage recast',
+    records: mortgageRecastSeoRecords,
+    expectedCount: EXPECTED_MORTGAGE_RECAST_SEO_PAGE_COUNT,
+    audit: auditMortgageRecastSeoRecords,
+    calculatorPath: '/calculators/mortgage-recast-calculator/',
+    examplesPath: '/calculators/mortgage-recast/examples/',
+    exampleLinkName: 'Browse all 200 mortgage recast examples',
+    representativeSlug:
+      'starter-recast-300000-balance-5-rate-25-years-20000-recast-250-fee',
+    pagePrefix: '/calculators/mortgage-recast/',
+    ctaName: 'Open the Mortgage Recast Calculator',
+  },
+  {
+    label: 'property tax',
+    records: propertyTaxSeoRecords,
+    expectedCount: EXPECTED_PROPERTY_TAX_SEO_PAGE_COUNT,
+    audit: auditPropertyTaxSeoRecords,
+    calculatorPath: '/calculators/property-tax-calculator/',
+    examplesPath: '/calculators/property-tax/examples/',
+    exampleLinkName: 'Browse all 200 property tax examples',
+    representativeSlug:
+      'starter-home-350000-home-0-95-tax-90-assessed-2-5-growth-15-years',
+    pagePrefix: '/calculators/property-tax/',
+    ctaName: 'Open the Property Tax Calculator',
+  },
+  {
+    label: 'closing cost',
+    records: closingCostSeoRecords,
+    expectedCount: EXPECTED_CLOSING_COST_SEO_PAGE_COUNT,
+    audit: auditClosingCostSeoRecords,
+    calculatorPath: '/calculators/closing-cost-calculator/',
+    examplesPath: '/calculators/closing-cost/examples/',
+    exampleLinkName: 'Browse all 200 closing cost examples',
+    representativeSlug:
+      'starter-home-350000-price-35000-down-2-closing-3500-fixed-4000-prepaids-0-credits',
+    pagePrefix: '/calculators/closing-cost/',
+    ctaName: 'Open the Closing Cost Calculator',
+  },
+] as const;
 
 test.describe('compound interest programmatic SEO', () => {
   test('record audit enforces count and unique metadata', () => {
@@ -2567,6 +2678,61 @@ test.describe('credit card payoff programmatic SEO', () => {
     expect(pageErrors).toEqual([]);
   });
 });
+
+for (const config of safeBatchProgrammaticConfigs) {
+  test.describe(`${config.label} programmatic SEO`, () => {
+    test('record audit enforces count and unique metadata', () => {
+      expect(config.audit(config.records, config.expectedCount)).toEqual({
+        expectedCount: config.expectedCount,
+        actualCount: config.expectedCount,
+        uniqueSlugCount: config.expectedCount,
+        uniqueTitleCount: config.expectedCount,
+        uniqueDescriptionCount: config.expectedCount,
+        uniqueCanonicalPathCount: config.expectedCount,
+      });
+    });
+
+    test('calculator page links to the examples cluster', async ({ page }) => {
+      const response = await page.goto(config.calculatorPath, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('link', { name: config.exampleLinkName }),
+      ).toHaveAttribute('href', config.examplesPath);
+    });
+
+    test('renders a representative generated page', async ({ page }) => {
+      const record = config.records.find(
+        (candidate) => candidate.slug === config.representativeSlug,
+      );
+      if (!record) {
+        throw new Error(
+          `Missing ${config.label} record: ${config.representativeSlug}`,
+        );
+      }
+
+      const url = `${config.pagePrefix}${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://automatorlabs.co${url}`,
+      );
+      await expect(
+        page.getByRole('link', { name: config.ctaName }),
+      ).toHaveAttribute('href', config.calculatorPath);
+      expect(await page.locator('tbody tr').count()).toBeGreaterThan(0);
+    });
+  });
+}
 
 test.describe('balance transfer programmatic SEO', () => {
   test('record audit enforces count and unique metadata', () => {
