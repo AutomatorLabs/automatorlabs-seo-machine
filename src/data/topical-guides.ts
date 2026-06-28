@@ -473,6 +473,18 @@ export const topicalGuides: TopicalGuide[] = [
         description: 'See how compounding growth and compounding prices interact.',
       },
       {
+        title: 'Real Rate of Return Examples',
+        url: '/calculators/real-rate-of-return/examples/',
+        description:
+          'Browse worked inflation-adjusted return examples across savings, portfolios, and retirement scenarios.',
+      },
+      {
+        title: 'Inflation-Adjusted Return Examples',
+        url: '/calculators/inflation-adjusted-return/examples/',
+        description:
+          'Browse worked nominal-versus-real balance projections across multiple time horizons and inflation assumptions.',
+      },
+      {
         title: 'CAGR vs Compound Interest',
         url: '/guides/cagr-vs-compound-interest/',
         description: 'Understand how annualized growth differs from a compounding assumption.',
@@ -582,6 +594,18 @@ export const topicalGuides: TopicalGuide[] = [
         title: 'Nominal Return vs Real Return',
         url: '/guides/nominal-vs-real-return/',
         description: 'Learn the exact relationship between investment return and inflation.',
+      },
+      {
+        title: 'Real Rate of Return Examples',
+        url: '/calculators/real-rate-of-return/examples/',
+        description:
+          'Browse worked inflation-adjusted return examples across savings, portfolios, and retirement planning.',
+      },
+      {
+        title: 'Inflation-Adjusted Return Examples',
+        url: '/calculators/inflation-adjusted-return/examples/',
+        description:
+          'Browse worked nominal-versus-real balance projections across conservative, growth, retirement, and taxable scenarios.',
       },
       {
         title: 'What Is Compound Interest?',
@@ -908,6 +932,12 @@ export const topicalGuides: TopicalGuide[] = [
         description: 'Compare two ETF expense ratios over time.',
       },
       {
+        title: 'Expense Ratio Examples',
+        url: '/calculators/expense-ratio/examples/',
+        description:
+          'Browse worked expense-ratio scenarios across ETFs, mutual funds, retirement portfolios, and taxable accounts.',
+      },
+      {
         title: 'Compound Interest Calculator',
         url: '/calculators/compound-interest/',
         description: 'Project growth and see how assumptions compound over time.',
@@ -982,6 +1012,18 @@ export const topicalGuides: TopicalGuide[] = [
         title: 'Expense Ratio Calculator',
         url: '/calculators/expense-ratio-calculator/',
         description: 'Estimate the annual and long-term cost of a fund fee.',
+      },
+      {
+        title: 'Expense Ratio Examples',
+        url: '/calculators/expense-ratio/examples/',
+        description:
+          'Browse worked fee-drag scenarios across low-cost ETFs, higher-fee funds, retirement balances, and taxable accounts.',
+      },
+      {
+        title: 'ETF Fee Drag Examples',
+        url: '/calculators/etf-fee-drag/examples/',
+        description:
+          'Browse worked ETF comparison scenarios across low-cost funds, larger retirement balances, taxable accounts, and wider fee gaps.',
       },
       {
         title: 'Investment Growth Calculator',

@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  expenseRatioSeoRecords,
+  EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/expense-ratio';
+import {
+  auditExpenseRatioSeoRecords,
+  createExpenseRatioSeoPage,
+} from '../../../lib/programmatic-seo/expense-ratio';
+
+export function getStaticPaths() {
+  auditExpenseRatioSeoRecords(
+    expenseRatioSeoRecords,
+    EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT,
+  );
+
+  return expenseRatioSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createExpenseRatioSeoPage(record, expenseRatioSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

@@ -37,6 +37,31 @@ import {
 } from '../src/data/programmatic-seo/dividend-yield';
 import { auditDividendYieldSeoRecords } from '../src/lib/programmatic-seo/dividend-yield';
 import {
+  emergencyFundSeoRecords,
+  EXPECTED_EMERGENCY_FUND_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/emergency-fund';
+import { auditEmergencyFundSeoRecords } from '../src/lib/programmatic-seo/emergency-fund';
+import {
+  etfFeeDragSeoRecords,
+  EXPECTED_ETF_FEE_DRAG_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/etf-fee-drag';
+import { auditEtfFeeDragSeoRecords } from '../src/lib/programmatic-seo/etf-fee-drag';
+import {
+  expenseRatioSeoRecords,
+  EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/expense-ratio';
+import { auditExpenseRatioSeoRecords } from '../src/lib/programmatic-seo/expense-ratio';
+import {
+  EXPECTED_INFLATION_ADJUSTED_RETURN_SEO_PAGE_COUNT,
+  inflationAdjustedReturnSeoRecords,
+} from '../src/data/programmatic-seo/inflation-adjusted-return';
+import { auditInflationAdjustedReturnSeoRecords } from '../src/lib/programmatic-seo/inflation-adjusted-return';
+import {
+  EXPECTED_INVESTMENT_FEE_SEO_PAGE_COUNT,
+  investmentFeeSeoRecords,
+} from '../src/data/programmatic-seo/investment-fee';
+import { auditInvestmentFeeSeoRecords } from '../src/lib/programmatic-seo/investment-fee';
+import {
   EXPECTED_RULE_OF_72_SEO_PAGE_COUNT,
   ruleOf72SeoRecords,
 } from '../src/data/programmatic-seo/rule-of-72';
@@ -61,12 +86,22 @@ import {
   investmentGrowthSeoRecords,
 } from '../src/data/programmatic-seo/investment-growth';
 import { auditInvestmentGrowthSeoRecords } from '../src/lib/programmatic-seo/investment-growth';
+import {
+  EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT,
+  lumpSumVsDcaSeoRecords,
+} from '../src/data/programmatic-seo/lump-sum-vs-dca';
+import { auditLumpSumVsDcaSeoRecords } from '../src/lib/programmatic-seo/lump-sum-vs-dca';
 import { programmaticSeoClusters } from '../src/data/programmatic-seo/clusters';
 import {
   EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
   mortgageSeoRecords,
 } from '../src/data/programmatic-seo/mortgage';
 import { auditMortgageSeoRecords } from '../src/lib/programmatic-seo/mortgage';
+import {
+  EXPECTED_REAL_RATE_OF_RETURN_SEO_PAGE_COUNT,
+  realRateOfReturnSeoRecords,
+} from '../src/data/programmatic-seo/real-rate-of-return';
+import { auditRealRateOfReturnSeoRecords } from '../src/lib/programmatic-seo/real-rate-of-return';
 import {
   EXPECTED_RETIREMENT_WITHDRAWAL_SEO_PAGE_COUNT,
   retirementWithdrawalSeoRecords,
@@ -755,6 +790,158 @@ test.describe('dividend growth programmatic SEO', () => {
       ).toHaveAttribute('href', '/calculators/dividend-growth/examples/');
       await expect(
         page.locator('a[href="/guides/how-to-use-dividend-growth-calculator/"]').first(),
+      ).toBeVisible();
+      await expect(page.locator('tbody tr')).toHaveCount(record.years);
+      expect(pageErrors).toEqual([]);
+    });
+  }
+});
+
+test.describe('expense ratio programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditExpenseRatioSeoRecords(
+      expenseRatioSeoRecords,
+      EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the expense ratio examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/expense-ratio-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 expense ratio examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/expense-ratio/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every expense ratio page', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/expense-ratio/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Expense Ratio Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(page.locator('[data-expense-ratio-example-group]')).toHaveCount(5);
+    await expect(page.locator('[data-expense-ratio-example-card]')).toHaveCount(
+      EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT,
+    );
+    await expect(page.locator('#expense-ratio-example-count')).toHaveText(
+      `Showing ${EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT} examples`,
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/expense-ratio/examples/',
+    );
+
+    const hrefs = await page
+      .locator('[data-expense-ratio-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT);
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search expense ratio examples',
+    });
+    await searchBox.fill('retirement');
+    await expect(
+      page.locator('[data-expense-ratio-example-card]:visible'),
+    ).toHaveCount(40);
+    await expect(page.locator('#expense-ratio-example-count')).toHaveText(
+      'Showing 40 examples',
+    );
+
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(searchBox).toHaveValue('');
+    await expect(
+      page.locator('[data-expense-ratio-example-card]:visible'),
+    ).toHaveCount(EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT);
+    await expect(
+      page.getByRole('link', {
+        name: 'Model your own expense ratio scenario',
+      }),
+    ).toHaveAttribute('href', '/calculators/expense-ratio-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  for (const slug of [
+    'annual-fund-fees-100000-at-0-5-expense-ratio-for-30-years',
+    'etf-expense-ratio-100000-at-0-15-percent-for-30-years',
+    'mutual-fund-expense-ratio-100000-at-1-1-percent-for-30-years',
+    'retirement-portfolio-fees-500000-at-0-35-expense-ratio-for-30-years',
+  ]) {
+    test(`renders generated expense ratio page ${slug}`, async ({ page }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error.message));
+      const record = expenseRatioSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) {
+        throw new Error(`Missing expense ratio record: ${slug}`);
+      }
+
+      const url = `/calculators/expense-ratio/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      expect(
+        await page.evaluate(() => document.querySelectorAll('h1').length),
+      ).toBe(1);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://automatorlabs.co${url}`,
+      );
+
+      const schemas = await page
+        .locator('script[type="application/ld+json"]')
+        .evaluateAll((scripts) =>
+          scripts.map((script) => script.textContent ?? '').join('\n'),
+        );
+      expect(schemas).toContain('"@type":"FAQPage"');
+      expect(schemas).toContain('"@type":"BreadcrumbList"');
+      await expect(
+        page.getByRole('link', {
+          name: 'Open the Expense Ratio Calculator',
+        }),
+      ).toHaveAttribute('href', '/calculators/expense-ratio-calculator/');
+      await expect(
+        page.getByRole('link', {
+          name: 'Browse All Expense Ratio Examples',
+        }),
+      ).toHaveAttribute('href', '/calculators/expense-ratio/examples/');
+      await expect(
+        page.locator('a[href="/guides/what-is-expense-ratio/"]').first(),
       ).toBeVisible();
       await expect(page.locator('tbody tr')).toHaveCount(record.years);
       expect(pageErrors).toEqual([]);
@@ -2182,6 +2369,632 @@ test.describe('4 percent rule programmatic SEO', () => {
     await expect(page.locator('tbody tr')).toHaveCount(4);
     expect(pageErrors).toEqual([]);
   });
+});
+
+test.describe('ETF fee drag programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditEtfFeeDragSeoRecords(
+      etfFeeDragSeoRecords,
+      EXPECTED_ETF_FEE_DRAG_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_ETF_FEE_DRAG_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_ETF_FEE_DRAG_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_ETF_FEE_DRAG_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_ETF_FEE_DRAG_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_ETF_FEE_DRAG_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_ETF_FEE_DRAG_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the ETF fee drag examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/etf-fee-drag-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 ETF fee drag examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/etf-fee-drag/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every ETF fee drag page', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/etf-fee-drag/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'ETF Fee Drag Examples',
+      }),
+    ).toBeVisible();
+    await expect(page.locator('[data-etf-fee-drag-example-group]')).toHaveCount(
+      5,
+    );
+    await expect(page.locator('[data-etf-fee-drag-example-card]')).toHaveCount(
+      EXPECTED_ETF_FEE_DRAG_SEO_PAGE_COUNT,
+    );
+    await expect(page.locator('#etf-fee-drag-example-count')).toHaveText(
+      `Showing ${EXPECTED_ETF_FEE_DRAG_SEO_PAGE_COUNT} examples`,
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search ETF fee drag examples',
+    });
+    await searchBox.fill('retirement');
+    await expect(
+      page.locator('[data-etf-fee-drag-example-card]:visible'),
+    ).toHaveCount(40);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-etf-fee-drag-example-card]:visible'),
+    ).toHaveCount(EXPECTED_ETF_FEE_DRAG_SEO_PAGE_COUNT);
+  });
+
+  for (const slug of [
+    'low-cost-etf-fee-drag-100000-starting-1000-monthly-0-05-vs-0-2-for-30-years',
+    'index-fund-fee-drag-50000-starting-500-monthly-0-06-vs-0-15-for-20-years',
+    'retirement-etf-fee-drag-500000-starting-1000-monthly-0-07-vs-0-22-for-25-years',
+    'taxable-etf-fee-drag-100000-starting-1000-monthly-0-09-vs-0-24-for-30-years',
+  ]) {
+    test(`renders generated ETF fee drag page ${slug}`, async ({ page }) => {
+      const record = etfFeeDragSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) {
+        throw new Error(`Missing ETF fee drag record: ${slug}`);
+      }
+
+      const url = `/calculators/etf-fee-drag/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: 'Browse All ETF Fee Drag Examples' }),
+      ).toHaveAttribute('href', '/calculators/etf-fee-drag/examples/');
+      await expect(page.locator('tbody tr')).toHaveCount(record.years);
+    });
+  }
+});
+
+test.describe('investment fee programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditInvestmentFeeSeoRecords(
+      investmentFeeSeoRecords,
+      EXPECTED_INVESTMENT_FEE_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_INVESTMENT_FEE_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_INVESTMENT_FEE_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_INVESTMENT_FEE_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_INVESTMENT_FEE_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_INVESTMENT_FEE_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_INVESTMENT_FEE_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the investment fee examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/investment-fee-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 investment fee examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/investment-fee/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every investment fee page', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/investment-fee/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Investment Fee Examples',
+      }),
+    ).toBeVisible();
+    await expect(
+      page.locator('[data-investment-fee-example-group]'),
+    ).toHaveCount(5);
+    await expect(
+      page.locator('[data-investment-fee-example-card]'),
+    ).toHaveCount(EXPECTED_INVESTMENT_FEE_SEO_PAGE_COUNT);
+    await expect(page.locator('#investment-fee-example-count')).toHaveText(
+      `Showing ${EXPECTED_INVESTMENT_FEE_SEO_PAGE_COUNT} examples`,
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search investment fee examples',
+    });
+    await searchBox.fill('retirement');
+    await expect(
+      page.locator('[data-investment-fee-example-card]:visible'),
+    ).toHaveCount(40);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-investment-fee-example-card]:visible'),
+    ).toHaveCount(EXPECTED_INVESTMENT_FEE_SEO_PAGE_COUNT);
+  });
+
+  for (const slug of [
+    'investment-fees-100000-starting-1000-monthly-0-75-fee-for-30-years',
+    'retirement-investment-fees-500000-starting-1250-monthly-0-75-fee-for-30-years',
+    'advisor-fee-drag-100000-starting-1000-monthly-1-15-fee-for-25-years',
+    'taxable-investment-fees-100000-starting-1000-monthly-0-8-fee-for-30-years',
+  ]) {
+    test(`renders generated investment fee page ${slug}`, async ({ page }) => {
+      const record = investmentFeeSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) {
+        throw new Error(`Missing investment fee record: ${slug}`);
+      }
+
+      const url = `/calculators/investment-fee/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: 'Browse All Investment Fee Examples' }),
+      ).toHaveAttribute('href', '/calculators/investment-fee/examples/');
+      await expect(page.locator('tbody tr')).toHaveCount(record.years);
+    });
+  }
+});
+
+test.describe('lump sum vs DCA programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditLumpSumVsDcaSeoRecords(
+      lumpSumVsDcaSeoRecords,
+      EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the lump sum vs DCA examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/lump-sum-vs-dca-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 lump sum vs DCA examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/lump-sum-vs-dca/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every lump sum vs DCA page', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/lump-sum-vs-dca/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Lump Sum vs DCA Examples',
+      }),
+    ).toBeVisible();
+    await expect(
+      page.locator('[data-lump-sum-vs-dca-example-group]'),
+    ).toHaveCount(5);
+    await expect(
+      page.locator('[data-lump-sum-vs-dca-example-card]'),
+    ).toHaveCount(EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT);
+    await expect(page.locator('#lump-sum-vs-dca-example-count')).toHaveText(
+      `Showing ${EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT} examples`,
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search lump sum vs DCA examples',
+    });
+    await searchBox.fill('retirement');
+    await expect(
+      page.locator('[data-lump-sum-vs-dca-example-card]:visible'),
+    ).toHaveCount(40);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-lump-sum-vs-dca-example-card]:visible'),
+    ).toHaveCount(EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT);
+  });
+
+  for (const slug of [
+    'lump-sum-vs-dca-120000-at-2000-monthly-8-percent-for-6-years',
+    'windfall-lump-sum-vs-dca-100000-at-2000-monthly-7-percent-for-5-years',
+    'retirement-rollover-lump-sum-vs-dca-250000-at-7000-monthly-8-percent-for-8-years',
+    'taxable-lump-sum-vs-dca-50000-at-1000-monthly-5-5-percent-for-4-years',
+  ]) {
+    test(`renders generated lump sum vs DCA page ${slug}`, async ({ page }) => {
+      const record = lumpSumVsDcaSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) {
+        throw new Error(`Missing lump sum vs DCA record: ${slug}`);
+      }
+
+      const url = `/calculators/lump-sum-vs-dca/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: 'Browse All Lump Sum vs DCA Examples' }),
+      ).toHaveAttribute('href', '/calculators/lump-sum-vs-dca/examples/');
+      await expect(page.locator('tbody tr')).toHaveCount(record.years);
+    });
+  }
+});
+
+test.describe('real rate of return programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditRealRateOfReturnSeoRecords(
+      realRateOfReturnSeoRecords,
+      EXPECTED_REAL_RATE_OF_RETURN_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_REAL_RATE_OF_RETURN_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_REAL_RATE_OF_RETURN_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_REAL_RATE_OF_RETURN_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_REAL_RATE_OF_RETURN_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_REAL_RATE_OF_RETURN_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_REAL_RATE_OF_RETURN_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the real rate of return examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto(
+      '/calculators/real-rate-of-return-calculator/',
+      {
+        waitUntil: 'domcontentloaded',
+      },
+    );
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 real rate of return examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/real-rate-of-return/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every real return page', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/real-rate-of-return/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Real Rate of Return Examples',
+      }),
+    ).toBeVisible();
+    await expect(
+      page.locator('[data-real-rate-of-return-example-group]'),
+    ).toHaveCount(5);
+    await expect(
+      page.locator('[data-real-rate-of-return-example-card]'),
+    ).toHaveCount(EXPECTED_REAL_RATE_OF_RETURN_SEO_PAGE_COUNT);
+    await expect(page.locator('#real-rate-of-return-example-count')).toHaveText(
+      `Showing ${EXPECTED_REAL_RATE_OF_RETURN_SEO_PAGE_COUNT} examples`,
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search real return examples',
+    });
+    await searchBox.fill('retirement');
+    await expect(
+      page.locator('[data-real-rate-of-return-example-card]:visible'),
+    ).toHaveCount(40);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-real-rate-of-return-example-card]:visible'),
+    ).toHaveCount(EXPECTED_REAL_RATE_OF_RETURN_SEO_PAGE_COUNT);
+  });
+
+  for (const slug of [
+    'savings-account-real-return-4-nominal-return-with-3-inflation',
+    'bond-portfolio-real-return-5-nominal-return-with-3-inflation',
+    'balanced-portfolio-real-return-6-nominal-return-with-2-5-inflation',
+    'retirement-real-return-6-nominal-return-with-3-inflation',
+  ]) {
+    test(`renders generated real return page ${slug}`, async ({ page }) => {
+      const record = realRateOfReturnSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) {
+        throw new Error(`Missing real return record: ${slug}`);
+      }
+
+      const url = `/calculators/real-rate-of-return/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', {
+          name: 'Browse All Real Rate of Return Examples',
+        }),
+      ).toHaveAttribute('href', '/calculators/real-rate-of-return/examples/');
+      await expect(page.locator('tbody tr')).toHaveCount(4);
+    });
+  }
+});
+
+test.describe('inflation-adjusted return programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditInflationAdjustedReturnSeoRecords(
+      inflationAdjustedReturnSeoRecords,
+      EXPECTED_INFLATION_ADJUSTED_RETURN_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_INFLATION_ADJUSTED_RETURN_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_INFLATION_ADJUSTED_RETURN_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_INFLATION_ADJUSTED_RETURN_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_INFLATION_ADJUSTED_RETURN_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_INFLATION_ADJUSTED_RETURN_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount:
+        EXPECTED_INFLATION_ADJUSTED_RETURN_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the inflation-adjusted return examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto(
+      '/calculators/inflation-adjusted-return-calculator/',
+      {
+        waitUntil: 'domcontentloaded',
+      },
+    );
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 inflation-adjusted return examples',
+      }),
+    ).toHaveAttribute(
+      'href',
+      '/calculators/inflation-adjusted-return/examples/',
+    );
+  });
+
+  test('examples index exposes, groups, and searches every inflation-adjusted return page', async ({
+    page,
+  }) => {
+    const response = await page.goto(
+      '/calculators/inflation-adjusted-return/examples/',
+      {
+        waitUntil: 'domcontentloaded',
+      },
+    );
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Inflation-Adjusted Return Examples',
+      }),
+    ).toBeVisible();
+    await expect(
+      page.locator('[data-inflation-adjusted-return-example-group]'),
+    ).toHaveCount(5);
+    await expect(
+      page.locator('[data-inflation-adjusted-return-example-card]'),
+    ).toHaveCount(EXPECTED_INFLATION_ADJUSTED_RETURN_SEO_PAGE_COUNT);
+    await expect(
+      page.locator('#inflation-adjusted-return-example-count'),
+    ).toHaveText(
+      `Showing ${EXPECTED_INFLATION_ADJUSTED_RETURN_SEO_PAGE_COUNT} examples`,
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search inflation-adjusted return examples',
+    });
+    await searchBox.fill('retirement');
+    await expect(
+      page.locator('[data-inflation-adjusted-return-example-card]:visible'),
+    ).toHaveCount(40);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-inflation-adjusted-return-example-card]:visible'),
+    ).toHaveCount(EXPECTED_INFLATION_ADJUSTED_RETURN_SEO_PAGE_COUNT);
+  });
+
+  for (const slug of [
+    'conservative-inflation-adjusted-return-100000-at-5-percent-with-3-5-inflation-for-30-years',
+    'balanced-inflation-adjusted-return-100000-at-7-percent-with-3-5-inflation-for-30-years',
+    'growth-inflation-adjusted-return-100000-at-9-percent-with-3-5-inflation-for-30-years',
+    'retirement-inflation-adjusted-return-500000-at-6-percent-with-3-5-inflation-for-30-years',
+  ]) {
+    test(`renders generated inflation-adjusted return page ${slug}`, async ({
+      page,
+    }) => {
+      const record = inflationAdjustedReturnSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) {
+        throw new Error(
+          `Missing inflation-adjusted return record: ${slug}`,
+        );
+      }
+
+      const url = `/calculators/inflation-adjusted-return/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', {
+          name: 'Browse All Inflation-Adjusted Return Examples',
+        }),
+      ).toHaveAttribute(
+        'href',
+        '/calculators/inflation-adjusted-return/examples/',
+      );
+      await expect(page.locator('tbody tr')).toHaveCount(record.years);
+    });
+  }
+});
+
+test.describe('emergency fund programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditEmergencyFundSeoRecords(
+      emergencyFundSeoRecords,
+      EXPECTED_EMERGENCY_FUND_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_EMERGENCY_FUND_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_EMERGENCY_FUND_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_EMERGENCY_FUND_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_EMERGENCY_FUND_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_EMERGENCY_FUND_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_EMERGENCY_FUND_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the emergency fund examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/emergency-fund-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 emergency fund examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/emergency-fund/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every emergency fund page', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/emergency-fund/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Emergency Fund Examples',
+      }),
+    ).toBeVisible();
+    await expect(
+      page.locator('[data-emergency-fund-example-group]'),
+    ).toHaveCount(5);
+    await expect(
+      page.locator('[data-emergency-fund-example-card]'),
+    ).toHaveCount(EXPECTED_EMERGENCY_FUND_SEO_PAGE_COUNT);
+    await expect(page.locator('#emergency-fund-example-count')).toHaveText(
+      `Showing ${EXPECTED_EMERGENCY_FUND_SEO_PAGE_COUNT} examples`,
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search emergency fund examples',
+    });
+    await searchBox.fill('family');
+    await expect(
+      page.locator('[data-emergency-fund-example-card]:visible'),
+    ).toHaveCount(40);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-emergency-fund-example-card]:visible'),
+    ).toHaveCount(EXPECTED_EMERGENCY_FUND_SEO_PAGE_COUNT);
+  });
+
+  for (const slug of [
+    'starter-emergency-fund-3000-monthly-expenses-3-months-1500-saved-800-monthly',
+    'three-month-emergency-fund-3000-monthly-expenses-4-months-3000-saved-900-monthly',
+    'six-month-emergency-fund-4000-monthly-expenses-6-months-10000-saved-1000-monthly',
+    'family-emergency-fund-6000-monthly-expenses-6-months-10000-saved-1700-monthly',
+  ]) {
+    test(`renders generated emergency fund page ${slug}`, async ({ page }) => {
+      const record = emergencyFundSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) {
+        throw new Error(`Missing emergency fund record: ${slug}`);
+      }
+
+      const url = `/calculators/emergency-fund/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: 'Browse All Emergency Fund Examples' }),
+      ).toHaveAttribute('href', '/calculators/emergency-fund/examples/');
+      await expect(page.locator('tbody tr')).toHaveCount(7);
+    });
+  }
 });
 
 test.describe('global programmatic examples hub', () => {

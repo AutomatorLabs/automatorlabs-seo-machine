@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  emergencyFundSeoRecords,
+  EXPECTED_EMERGENCY_FUND_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/emergency-fund';
+import {
+  auditEmergencyFundSeoRecords,
+  createEmergencyFundSeoPage,
+} from '../../../lib/programmatic-seo/emergency-fund';
+
+const audit = auditEmergencyFundSeoRecords(
+  emergencyFundSeoRecords,
+  EXPECTED_EMERGENCY_FUND_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return emergencyFundSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createEmergencyFundSeoPage(record, emergencyFundSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

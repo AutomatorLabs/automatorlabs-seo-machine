@@ -7,6 +7,12 @@ const relatedItems = etfFeeDragCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const exampleItems = [
+  {
+    title: 'Browse all 200 ETF fee drag examples',
+    url: '/calculators/etf-fee-drag/examples/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +23,7 @@ const relatedItems = etfFeeDragCalculator.relatedIds.flatMap((id) => {
   outputs={etfFeeDragCalculator.outputs}
   faq={etfFeeDragCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

@@ -13,6 +13,12 @@ const guideItems = [
     url: '/guides/lump-sum-vs-dollar-cost-averaging/',
   },
 ];
+const exampleItems = [
+  {
+    title: 'Browse all 200 lump sum vs DCA examples',
+    url: '/calculators/lump-sum-vs-dca/examples/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -24,6 +30,7 @@ const guideItems = [
   faq={lumpSumVsDcaCalculator.faq}
   relatedItems={relatedItems}
   guideItems={guideItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

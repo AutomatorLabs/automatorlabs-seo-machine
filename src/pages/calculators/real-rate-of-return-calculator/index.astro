@@ -7,6 +7,12 @@ const relatedItems = realRateOfReturnCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const exampleItems = [
+  {
+    title: 'Browse all 200 real rate of return examples',
+    url: '/calculators/real-rate-of-return/examples/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +23,7 @@ const relatedItems = realRateOfReturnCalculator.relatedIds.flatMap((id) => {
   outputs={realRateOfReturnCalculator.outputs}
   faq={realRateOfReturnCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

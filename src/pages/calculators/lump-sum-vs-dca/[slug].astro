@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  lumpSumVsDcaSeoRecords,
+  EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/lump-sum-vs-dca';
+import {
+  auditLumpSumVsDcaSeoRecords,
+  createLumpSumVsDcaSeoPage,
+} from '../../../lib/programmatic-seo/lump-sum-vs-dca';
+
+const audit = auditLumpSumVsDcaSeoRecords(
+  lumpSumVsDcaSeoRecords,
+  EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return lumpSumVsDcaSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createLumpSumVsDcaSeoPage(record, lumpSumVsDcaSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

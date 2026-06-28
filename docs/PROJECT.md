@@ -33,8 +33,8 @@ Verified from source:
 - 17 topical guides
 - 7 comparison guides
 - generated calculator guides for calculator configs
-- 13 programmatic SEO clusters
-- 2,600 example pages total
+- 17 programmatic SEO clusters
+- 3,400 example pages total
 
 ## Positioning
 

@@ -1,0 +1,32 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_INFLATION_ADJUSTED_RETURN_SEO_PAGE_COUNT,
+  inflationAdjustedReturnSeoRecords,
+} from '../../../data/programmatic-seo/inflation-adjusted-return';
+import {
+  auditInflationAdjustedReturnSeoRecords,
+  createInflationAdjustedReturnSeoPage,
+} from '../../../lib/programmatic-seo/inflation-adjusted-return';
+
+const audit = auditInflationAdjustedReturnSeoRecords(
+  inflationAdjustedReturnSeoRecords,
+  EXPECTED_INFLATION_ADJUSTED_RETURN_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return inflationAdjustedReturnSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createInflationAdjustedReturnSeoPage(
+        record,
+        inflationAdjustedReturnSeoRecords,
+      ),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

@@ -12,6 +12,12 @@ const relatedItems = emergencyFundCalculator.relatedIds.flatMap((id) => {
       }]
     : [];
 });
+const exampleItems = [
+  {
+    title: 'Browse all 200 emergency fund examples',
+    url: '/calculators/emergency-fund/examples/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -22,6 +28,7 @@ const relatedItems = emergencyFundCalculator.relatedIds.flatMap((id) => {
   outputs={emergencyFundCalculator.outputs}
   faq={emergencyFundCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

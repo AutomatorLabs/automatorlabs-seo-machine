@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  investmentFeeSeoRecords,
+  EXPECTED_INVESTMENT_FEE_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/investment-fee';
+import {
+  auditInvestmentFeeSeoRecords,
+  createInvestmentFeeSeoPage,
+} from '../../../lib/programmatic-seo/investment-fee';
+
+const audit = auditInvestmentFeeSeoRecords(
+  investmentFeeSeoRecords,
+  EXPECTED_INVESTMENT_FEE_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return investmentFeeSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createInvestmentFeeSeoPage(record, investmentFeeSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

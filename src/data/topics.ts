@@ -49,7 +49,11 @@ export const topics: TopicSection[] = [
       { title: 'APY Examples', url: '/calculators/apy/examples/' },
       { title: 'DRIP Examples', url: '/calculators/drip/examples/' },
       { title: 'Dividend Yield Examples', url: '/calculators/dividend-yield/examples/' },
+      { title: 'Expense Ratio Examples', url: '/calculators/expense-ratio/examples/' },
+      { title: 'ETF Fee Drag Examples', url: '/calculators/etf-fee-drag/examples/' },
+      { title: 'Investment Fee Examples', url: '/calculators/investment-fee/examples/' },
       { title: 'Investment Growth Examples', url: '/calculators/investment-growth/examples/' },
+      { title: 'Lump Sum vs DCA Examples', url: '/calculators/lump-sum-vs-dca/examples/' },
       { title: 'Dividend Growth Examples', url: '/calculators/dividend-growth/examples/' },
       { title: 'CAGR Examples', url: '/calculators/cagr/examples/' },
       { title: 'Rule of 72 Examples', url: '/calculators/rule-of-72/examples/' },
@@ -74,6 +78,7 @@ export const topics: TopicSection[] = [
     examples: [
       { title: 'DRIP Examples', url: '/calculators/drip/examples/' },
       { title: 'Dividend Yield Examples', url: '/calculators/dividend-yield/examples/' },
+      { title: 'Expense Ratio Examples', url: '/calculators/expense-ratio/examples/' },
       { title: 'Investment Growth Examples', url: '/calculators/investment-growth/examples/' },
       { title: 'Dividend Growth Examples', url: '/calculators/dividend-growth/examples/' },
       { title: 'Retirement Withdrawal Examples', url: '/calculators/retirement-withdrawal/examples/' },
@@ -218,6 +223,7 @@ export const topics: TopicSection[] = [
     examples: [
       { title: 'APY Examples', url: '/calculators/apy/examples/' },
       { title: 'Savings Goal Examples', url: '/calculators/savings-goal/examples/' },
+      { title: 'Emergency Fund Examples', url: '/calculators/emergency-fund/examples/' },
     ],
   },
   {
@@ -236,6 +242,7 @@ export const topics: TopicSection[] = [
     ],
     examples: [
       { title: 'Savings Goal Examples', url: '/calculators/savings-goal/examples/' },
+      { title: 'Emergency Fund Examples', url: '/calculators/emergency-fund/examples/' },
     ],
   },
   {
@@ -256,6 +263,8 @@ export const topics: TopicSection[] = [
     examples: [
       { title: 'Compound Interest Examples', url: '/calculators/compound-interest/examples/' },
       { title: 'Investment Growth Examples', url: '/calculators/investment-growth/examples/' },
+      { title: 'Real Rate of Return Examples', url: '/calculators/real-rate-of-return/examples/' },
+      { title: 'Inflation-Adjusted Return Examples', url: '/calculators/inflation-adjusted-return/examples/' },
     ],
   },
   {

@@ -15,9 +15,9 @@ Its job is to:
 
 Verified from source:
 
-- 16 live clusters in `src/data/programmatic-seo/clusters.ts`
+- 17 live clusters in `src/data/programmatic-seo/clusters.ts`
 - 200 records per cluster
-- 3,200 generated example pages total
+- 3,400 generated example pages total
 - global examples hub at `/examples/`
 
 Current live clusters:
@@ -27,6 +27,7 @@ Current live clusters:
 - DRIP
 - Dividend Yield
 - Dividend Growth
+- Expense Ratio
 - CAGR
 - Rule of 72
 - FIRE
@@ -157,6 +158,14 @@ Required surfaces:
 - examples index: `/calculators/dividend-growth/examples/`
 - generated page route: `/calculators/dividend-growth/<slug>/`
 - reuses `calculateDividendGrowth`
+
+### Expense Ratio
+
+- calculator: `/calculators/expense-ratio-calculator/`
+- examples index: `/calculators/expense-ratio/examples/`
+- generated page route: `/calculators/expense-ratio/<slug>/`
+- reuses `calculateExpenseRatioImpact`
+- intentionally models one starting balance with a constant return and constant expense ratio, with no contributions or withdrawals
 
 ### APY
 

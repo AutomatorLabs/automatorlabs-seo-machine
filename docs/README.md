@@ -40,7 +40,7 @@ Use these as supporting or historical references:
 
 ## Current Repo Facts
 
-Verified from source on 2026-06-27:
+Verified from source on 2026-06-28:
 
 - 84 calculator entries in `src/data/content.ts`
 - 84 calculator configs in `src/data/calculators.ts`
@@ -49,9 +49,9 @@ Verified from source on 2026-06-27:
 - 17 topical guides
 - 7 comparison guides
 - generated calculator guides built from calculator configs
-- 16 programmatic SEO clusters
+- 17 programmatic SEO clusters
 - 200 records per cluster
-- 3,200 generated example pages total
+- 3,400 generated example pages total
 
 ## What Future Agents Need To Understand
 

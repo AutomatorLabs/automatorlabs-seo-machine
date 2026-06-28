@@ -5,6 +5,11 @@ import { cagrSeoRecords } from './cagr';
 import { dripSeoRecords } from './drip';
 import { dividendGrowthSeoRecords } from './dividend-growth';
 import { dividendYieldSeoRecords } from './dividend-yield';
+import { emergencyFundSeoRecords } from './emergency-fund';
+import { etfFeeDragSeoRecords } from './etf-fee-drag';
+import { expenseRatioSeoRecords } from './expense-ratio';
+import { inflationAdjustedReturnSeoRecords } from './inflation-adjusted-return';
+import { investmentFeeSeoRecords } from './investment-fee';
 import { ruleOf72SeoRecords } from './rule-of-72';
 import {
   balanceTransferSeoRecords,
@@ -12,7 +17,9 @@ import {
 } from './debt';
 import { fireSeoRecords } from './fire';
 import { investmentGrowthSeoRecords } from './investment-growth';
+import { lumpSumVsDcaSeoRecords } from './lump-sum-vs-dca';
 import { mortgageSeoRecords } from './mortgage';
+import { realRateOfReturnSeoRecords } from './real-rate-of-return';
 import { retirementWithdrawalSeoRecords } from './retirement-withdrawal';
 import { safeWithdrawalRateSeoRecords } from './safe-withdrawal-rate';
 import { savingsGoalSeoRecords } from './savings-goal';
@@ -102,6 +109,97 @@ const dripRepresentatives = [
     (record) =>
       record.slug ===
       'retirement-drip-500000-starting-4-yield-15-years',
+  ),
+].filter((record) => record !== undefined);
+
+const expenseRatioRepresentatives = [
+  expenseRatioSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'annual-fund-fees-100000-at-0-5-expense-ratio-for-30-years',
+  ),
+  expenseRatioSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retirement-portfolio-fees-500000-at-0-35-expense-ratio-for-30-years',
+  ),
+].filter((record) => record !== undefined);
+
+const etfFeeDragRepresentatives = [
+  etfFeeDragSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'low-cost-etf-fee-drag-100000-starting-1000-monthly-0-05-vs-0-2-for-30-years',
+  ),
+  etfFeeDragSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retirement-etf-fee-drag-500000-starting-1000-monthly-0-07-vs-0-22-for-25-years',
+  ),
+].filter((record) => record !== undefined);
+
+const investmentFeeRepresentatives = [
+  investmentFeeSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'investment-fees-100000-starting-1000-monthly-0-75-fee-for-30-years',
+  ),
+  investmentFeeSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retirement-investment-fees-500000-starting-1250-monthly-0-75-fee-for-30-years',
+  ),
+].filter((record) => record !== undefined);
+
+const lumpSumVsDcaRepresentatives = [
+  lumpSumVsDcaSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'lump-sum-vs-dca-120000-at-2000-monthly-8-percent-for-6-years',
+  ),
+  lumpSumVsDcaSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retirement-rollover-lump-sum-vs-dca-250000-at-7000-monthly-8-percent-for-8-years',
+  ),
+].filter((record) => record !== undefined);
+
+const realRateOfReturnRepresentatives = [
+  realRateOfReturnSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'balanced-portfolio-real-return-6-nominal-return-with-2-5-inflation',
+  ),
+  realRateOfReturnSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retirement-real-return-6-nominal-return-with-3-inflation',
+  ),
+].filter((record) => record !== undefined);
+
+const inflationAdjustedReturnRepresentatives = [
+  inflationAdjustedReturnSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'balanced-inflation-adjusted-return-100000-at-7-percent-with-3-5-inflation-for-30-years',
+  ),
+  inflationAdjustedReturnSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retirement-inflation-adjusted-return-500000-at-6-percent-with-3-5-inflation-for-30-years',
+  ),
+].filter((record) => record !== undefined);
+
+const emergencyFundRepresentatives = [
+  emergencyFundSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'starter-emergency-fund-3000-monthly-expenses-3-months-1500-saved-800-monthly',
+  ),
+  emergencyFundSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'family-emergency-fund-6000-monthly-expenses-6-months-10000-saved-1700-monthly',
   ),
 ].filter((record) => record !== undefined);
 
@@ -324,6 +422,66 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     })),
   },
   {
+    id: 'expense-ratio',
+    title: 'Expense Ratio Examples',
+    description:
+      'Explore worked fund-fee examples across ETFs, mutual funds, retirement portfolios, taxable accounts, and long-term fee drag scenarios.',
+    examplesUrl: '/calculators/expense-ratio/examples/',
+    calculator: {
+      title: 'Expense Ratio Calculator',
+      url: '/calculators/expense-ratio-calculator/',
+    },
+    guide: {
+      title: 'What Is an Expense Ratio?',
+      url: '/guides/what-is-expense-ratio/',
+    },
+    pageCount: expenseRatioSeoRecords.length,
+    representativePages: expenseRatioRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/expense-ratio/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'etf-fee-drag',
+    title: 'ETF Fee Drag Examples',
+    description:
+      'Explore worked ETF comparisons across low-cost funds, retirement balances, taxable accounts, and larger fee-gap scenarios.',
+    examplesUrl: '/calculators/etf-fee-drag/examples/',
+    calculator: {
+      title: 'ETF Fee Drag Calculator',
+      url: '/calculators/etf-fee-drag-calculator/',
+    },
+    guide: {
+      title: 'What Is ETF Fee Drag?',
+      url: '/guides/what-is-etf-fee-drag/',
+    },
+    pageCount: etfFeeDragSeoRecords.length,
+    representativePages: etfFeeDragRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/etf-fee-drag/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'investment-fee',
+    title: 'Investment Fee Examples',
+    description:
+      'Explore worked annual-fee scenarios across retirement balances, taxable accounts, advisor fees, and recurring contributions.',
+    examplesUrl: '/calculators/investment-fee/examples/',
+    calculator: {
+      title: 'Investment Fee Calculator',
+      url: '/calculators/investment-fee-calculator/',
+    },
+    guide: {
+      title: 'What Is an Expense Ratio?',
+      url: '/guides/what-is-expense-ratio/',
+    },
+    pageCount: investmentFeeSeoRecords.length,
+    representativePages: investmentFeeRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/investment-fee/${record.slug}/`,
+    })),
+  },
+  {
     id: 'cagr',
     title: 'CAGR Examples',
     description:
@@ -404,6 +562,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     })),
   },
   {
+    id: 'lump-sum-vs-dca',
+    title: 'Lump Sum vs DCA Examples',
+    description:
+      'Explore worked comparisons between investing immediately and spreading cash into monthly deposits over time.',
+    examplesUrl: '/calculators/lump-sum-vs-dca/examples/',
+    calculator: {
+      title: 'Lump Sum vs DCA Calculator',
+      url: '/calculators/lump-sum-vs-dca-calculator/',
+    },
+    guide: {
+      title: 'Lump Sum vs Dollar Cost Averaging',
+      url: '/guides/lump-sum-vs-dollar-cost-averaging/',
+    },
+    pageCount: lumpSumVsDcaSeoRecords.length,
+    representativePages: lumpSumVsDcaRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/lump-sum-vs-dca/${record.slug}/`,
+    })),
+  },
+  {
     id: 'mortgage',
     title: 'Mortgage Payment Examples',
     description:
@@ -421,6 +599,68 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: mortgageRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/mortgage/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'real-rate-of-return',
+    title: 'Real Rate of Return Examples',
+    description:
+      'Explore inflation-adjusted return examples across savings, bonds, balanced portfolios, stocks, and retirement scenarios.',
+    examplesUrl: '/calculators/real-rate-of-return/examples/',
+    calculator: {
+      title: 'Real Rate of Return Calculator',
+      url: '/calculators/real-rate-of-return-calculator/',
+    },
+    guide: {
+      title: 'Nominal Return vs Real Return',
+      url: '/guides/nominal-vs-real-return/',
+    },
+    pageCount: realRateOfReturnSeoRecords.length,
+    representativePages: realRateOfReturnRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/real-rate-of-return/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'inflation-adjusted-return',
+    title: 'Inflation-Adjusted Return Examples',
+    description:
+      'Explore worked nominal-versus-real balance projections across conservative, growth, retirement, and taxable investing scenarios.',
+    examplesUrl: '/calculators/inflation-adjusted-return/examples/',
+    calculator: {
+      title: 'Inflation-Adjusted Return Calculator',
+      url: '/calculators/inflation-adjusted-return-calculator/',
+    },
+    guide: {
+      title: 'How Inflation Affects Compound Interest',
+      url: '/guides/inflation-and-compound-interest/',
+    },
+    pageCount: inflationAdjustedReturnSeoRecords.length,
+    representativePages: inflationAdjustedReturnRepresentatives.map(
+      (record) => ({
+        title: record.question,
+        url: `/calculators/inflation-adjusted-return/${record.slug}/`,
+      }),
+    ),
+  },
+  {
+    id: 'emergency-fund',
+    title: 'Emergency Fund Examples',
+    description:
+      'Explore worked emergency-fund scenarios across starter reserves, multi-month buffers, family cash targets, and job-transition planning.',
+    examplesUrl: '/calculators/emergency-fund/examples/',
+    calculator: {
+      title: 'Emergency Fund Calculator',
+      url: '/calculators/emergency-fund-calculator/',
+    },
+    guide: {
+      title: 'How to Use the Emergency Fund Calculator',
+      url: '/guides/how-to-use-emergency-fund-calculator/',
+    },
+    pageCount: emergencyFundSeoRecords.length,
+    representativePages: emergencyFundRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/emergency-fund/${record.slug}/`,
     })),
   },
   {

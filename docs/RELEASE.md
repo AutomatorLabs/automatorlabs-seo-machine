@@ -9,10 +9,10 @@ Current release snapshot for Claude handoff.
 
 ## Verified Repo Counts
 
-- Total built pages: `3,434`
+- Total built pages: `3,636`
 - Calculator count: `84`
-- Calculator Playwright test count: `211`
-- Programmatic SEO cluster count: `16`
+- Calculator Playwright test count: `218`
+- Programmatic SEO cluster count: `17`
 - Standard verification command: `npm run verify`
 
 ## Current Release Surface
@@ -27,6 +27,7 @@ Verified from the inspected repo:
 - DRIP worked examples now live at `/calculators/drip/examples/`
 - dividend yield worked examples now live at `/calculators/dividend-yield/examples/`
 - dividend growth worked examples now live at `/calculators/dividend-growth/examples/`
+- expense ratio worked examples now live at `/calculators/expense-ratio/examples/`
 - build-time SEO audit now validates shared OG/Twitter metadata, canonical-to-`og:url` parity, and shared social image asset resolution
 - build-time SEO audit now validates the manual topics data module structure as well as built topic-link targets
 - related calculator fallback now prioritizes explicit links, reciprocal links, and same-topic/same-family matches before broad site-wide fill
@@ -36,6 +37,7 @@ Verified from the inspected repo:
 - programmatic SEO now includes a DRIP cluster built on the shared worked-example framework
 - programmatic SEO now includes a dividend yield cluster built on the shared worked-example framework
 - programmatic SEO now includes a dividend growth cluster built on the shared worked-example framework
+- programmatic SEO now includes an expense ratio cluster built on the shared worked-example framework
 
 ## Verification Workflow
 
@@ -84,6 +86,7 @@ What still needs confirmation:
 - Dividend yield examples intentionally model current yield and income snapshots rather than multi-year dividend growth, so price-change sensitivity is shown as a static comparison instead of a forecast timeline.
 - DRIP examples intentionally reuse the shared portfolio-value DRIP model, so share-price framing is contextual and not an exact share-lot or brokerage-execution simulation.
 - Dividend growth reinvestment and snowball examples intentionally reuse the simple dividend-income growth formula, so they are educational framing pages rather than full DRIP or share-count simulations.
+- Expense ratio examples intentionally reuse the shared one-balance fee-drag calculator, so they do not model contributions, withdrawals, taxes, or changing fee schedules.
 - The topics page is manually curated and can drift without audits.
 - `astro check` is not wired into the standard workflow because the repo does not yet include the required checker dependencies.
 - Some larger calculator-family abstractions remain intentionally unsimplified to avoid risky refactors in short implementation windows.

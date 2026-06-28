@@ -1,0 +1,255 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  emergencyFundSeoRecords,
+  EXPECTED_EMERGENCY_FUND_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/emergency-fund';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditEmergencyFundSeoRecords } from '../../../../lib/programmatic-seo/emergency-fund';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditEmergencyFundSeoRecords(
+  emergencyFundSeoRecords,
+  EXPECTED_EMERGENCY_FUND_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Emergency Fund Calculator',
+        url: '/calculators/emergency-fund-calculator/',
+      },
+      { name: 'Examples', url: '/calculators/emergency-fund/examples/' },
+    ],
+    site,
+  ),
+);
+
+const groups = createProgrammaticExampleGroups(emergencyFundSeoRecords, [
+  {
+    id: 'starter',
+    title: 'Starter Emergency Fund Examples',
+    description:
+      'Examples for small starter funds and early-stage savings habits.',
+    matches: (record) => record.intent === 'starter-emergency-fund',
+  },
+  {
+    id: 'three-month',
+    title: 'Three-Month Emergency Fund Examples',
+    description:
+      'Examples built around a three-to-four month cash reserve target.',
+    matches: (record) => record.intent === 'three-month-buffer',
+  },
+  {
+    id: 'six-month',
+    title: 'Six-Month Emergency Fund Examples',
+    description:
+      'Examples showing larger reserves and longer target timelines.',
+    matches: (record) => record.intent === 'six-month-buffer',
+  },
+  {
+    id: 'job-transition',
+    title: 'Job-Transition Emergency Fund Examples',
+    description:
+      'Examples for building a buffer ahead of employment uncertainty or career changes.',
+    matches: (record) => record.intent === 'job-transition-buffer',
+  },
+  {
+    id: 'family',
+    title: 'Family Emergency Fund Examples',
+    description:
+      'Examples for larger household expenses and family-sized cash reserves.',
+    matches: (record) => record.intent === 'family-emergency-fund',
+  },
+]);
+---
+
+<Layout
+  title="Emergency Fund Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} emergency fund examples across starter funds, three-month buffers, six-month reserves, job-transition scenarios, and family cash targets.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/emergency-fund-calculator/">
+            Emergency Fund Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Emergency savings library</p>
+      <h1>Emergency Fund Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering starter emergency
+        funds, multi-month reserves, family cash buffers, and job-transition
+        planning scenarios.
+      </p>
+      <a class="primary-link" href="/calculators/emergency-fund-calculator/">
+        Model your own emergency fund plan
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section
+      class="example-search"
+      aria-label="Search emergency fund examples"
+    >
+      <label for="emergency-fund-example-search">
+        Search emergency fund examples
+      </label>
+      <div class="search-row">
+        <input
+          id="emergency-fund-example-search"
+          type="search"
+          placeholder="Try family, starter, 6 months, or $4,000"
+          autocomplete="off"
+          aria-controls="emergency-fund-example-groups"
+          aria-describedby="emergency-fund-example-count"
+        />
+        <button id="clear-emergency-fund-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="emergency-fund-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="emergency-fund-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-emergency-fund-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-emergency-fund-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.scenarioLabel,
+                  record.monthlyEssentialExpenses,
+                  `${record.targetMonths} months`,
+                  record.currentEmergencySavings,
+                  record.monthlySavingsContribution,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/emergency-fund/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    ${record.monthlyEssentialExpenses.toLocaleString('en-US')}
+                    monthly expenses
+                    {' · '}
+                    {record.targetMonths} months
+                    {' · '}
+                    ${record.monthlySavingsContribution.toLocaleString('en-US')}
+                    monthly saving
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p id="no-emergency-fund-examples" class="no-results" role="status" hidden>
+      No emergency fund examples found. Try a savings amount, coverage target,
+      or scenario type.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#emergency-fund-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-emergency-fund-example-search',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-emergency-fund-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-emergency-fund-example-group]',
+    ),
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#emergency-fund-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-emergency-fund-examples',
+  );
+
+  function updateSearch() {
+    const query = input?.value.trim().toLocaleLowerCase() ?? '';
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query.length === 0 ||
+        (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      const hasVisibleCard = Array.from(
+        group.querySelectorAll<HTMLElement>(
+          '[data-emergency-fund-example-card]',
+        ),
+      ).some((card) => !card.hidden);
+      group.hidden = !hasVisibleCard;
+    });
+
+    if (count) {
+      count.textContent = `Showing ${visibleCount} example${visibleCount === 1 ? '' : 's'}`;
+    }
+    if (noResults) noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query.length === 0;
+  }
+
+  input?.addEventListener('input', updateSearch);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateSearch();
+    input.focus();
+  });
+</script>
+
+<style>
+  @import '../../../../styles/programmatic-examples.css';
+</style>

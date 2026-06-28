@@ -1,0 +1,255 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  EXPECTED_REAL_RATE_OF_RETURN_SEO_PAGE_COUNT,
+  realRateOfReturnSeoRecords,
+} from '../../../../data/programmatic-seo/real-rate-of-return';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditRealRateOfReturnSeoRecords } from '../../../../lib/programmatic-seo/real-rate-of-return';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditRealRateOfReturnSeoRecords(
+  realRateOfReturnSeoRecords,
+  EXPECTED_REAL_RATE_OF_RETURN_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Real Rate of Return Calculator',
+        url: '/calculators/real-rate-of-return-calculator/',
+      },
+      { name: 'Examples', url: '/calculators/real-rate-of-return/examples/' },
+    ],
+    site,
+  ),
+);
+
+const groups = createProgrammaticExampleGroups(realRateOfReturnSeoRecords, [
+  {
+    id: 'savings',
+    title: 'Savings Account Real Return Examples',
+    description:
+      'Examples comparing savings-account yields with different inflation assumptions.',
+    matches: (record) => record.intent === 'savings-account',
+  },
+  {
+    id: 'bond',
+    title: 'Bond Portfolio Real Return Examples',
+    description:
+      'Examples showing how inflation affects bond-like return assumptions.',
+    matches: (record) => record.intent === 'bond-portfolio',
+  },
+  {
+    id: 'balanced',
+    title: 'Balanced Portfolio Real Return Examples',
+    description:
+      'Examples comparing moderate portfolio returns with changing inflation.',
+    matches: (record) => record.intent === 'balanced-portfolio',
+  },
+  {
+    id: 'stock',
+    title: 'Stock Portfolio Real Return Examples',
+    description:
+      'Examples for higher nominal-return scenarios after the inflation adjustment.',
+    matches: (record) => record.intent === 'stock-portfolio',
+  },
+  {
+    id: 'retirement',
+    title: 'Retirement Real Return Examples',
+    description:
+      'Examples focused on real return assumptions for retirement planning.',
+    matches: (record) => record.intent === 'retirement-planning',
+  },
+]);
+---
+
+<Layout
+  title="Real Rate of Return Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} real rate of return examples across savings, bonds, balanced portfolios, stock portfolios, and retirement inflation assumptions.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/real-rate-of-return-calculator/">
+            Real Rate of Return Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Inflation-adjusted return library</p>
+      <h1>Real Rate of Return Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples comparing nominal return and
+        inflation across savings, bonds, diversified portfolios, stocks, and
+        retirement planning assumptions.
+      </p>
+      <a class="primary-link" href="/calculators/real-rate-of-return-calculator/">
+        Model your own real return
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section class="example-search" aria-label="Search real return examples">
+      <label for="real-rate-of-return-example-search">
+        Search real return examples
+      </label>
+      <div class="search-row">
+        <input
+          id="real-rate-of-return-example-search"
+          type="search"
+          placeholder="Try retirement, savings, 7%, or 3% inflation"
+          autocomplete="off"
+          aria-controls="real-rate-of-return-example-groups"
+          aria-describedby="real-rate-of-return-example-count"
+        />
+        <button
+          id="clear-real-rate-of-return-example-search"
+          type="button"
+          hidden
+        >
+          Clear search
+        </button>
+      </div>
+      <p id="real-rate-of-return-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="real-rate-of-return-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-real-rate-of-return-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-real-rate-of-return-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.scenarioLabel,
+                  `${record.nominalAnnualReturnPercent}% nominal`,
+                  `${record.inflationRatePercent}% inflation`,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/real-rate-of-return/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {record.nominalAnnualReturnPercent}% nominal
+                    {' · '}
+                    {record.inflationRatePercent}% inflation
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p
+      id="no-real-rate-of-return-examples"
+      class="no-results"
+      role="status"
+      hidden
+    >
+      No real return examples found. Try an inflation rate, return assumption,
+      or scenario type.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#real-rate-of-return-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-real-rate-of-return-example-search',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-real-rate-of-return-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-real-rate-of-return-example-group]',
+    ),
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#real-rate-of-return-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-real-rate-of-return-examples',
+  );
+
+  function updateSearch() {
+    const query = input?.value.trim().toLocaleLowerCase() ?? '';
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query.length === 0 ||
+        (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      const hasVisibleCard = Array.from(
+        group.querySelectorAll<HTMLElement>(
+          '[data-real-rate-of-return-example-card]',
+        ),
+      ).some((card) => !card.hidden);
+      group.hidden = !hasVisibleCard;
+    });
+
+    if (count) {
+      count.textContent = `Showing ${visibleCount} example${visibleCount === 1 ? '' : 's'}`;
+    }
+    if (noResults) noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query.length === 0;
+  }
+
+  input?.addEventListener('input', updateSearch);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateSearch();
+    input.focus();
+  });
+</script>
+
+<style>
+  @import '../../../../styles/programmatic-examples.css';
+</style>

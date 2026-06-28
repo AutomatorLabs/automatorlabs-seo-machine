@@ -1,0 +1,240 @@
+main {
+  width: min(1120px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 4.5rem 0;
+}
+
+.breadcrumbs {
+  margin-bottom: 1.5rem;
+  color: var(--muted-text-color);
+  font-size: 0.9rem;
+}
+
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.breadcrumbs li {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.breadcrumbs li + li::before {
+  color: var(--muted-text-color);
+  content: '›';
+}
+
+.breadcrumbs a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumbs [aria-current='page'] {
+  color: var(--text-color);
+  font-weight: 650;
+}
+
+.page-header {
+  max-width: 850px;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  color: var(--link-color);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 7vw, 4.2rem);
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.intro {
+  margin: 1rem 0 1.25rem;
+  color: var(--muted-text-color);
+  font-size: 1.12rem;
+  line-height: 1.72;
+}
+
+.primary-link {
+  display: inline-block;
+  border-radius: 10px;
+  background: var(--button-background);
+  color: var(--button-text);
+  font-weight: 750;
+  padding: 0.8rem 1rem;
+  text-decoration: none;
+}
+
+.primary-link:hover {
+  background: var(--button-hover-background);
+}
+
+.secondary-link {
+  display: inline-block;
+  margin-left: 0.75rem;
+  color: var(--link-color);
+  font-weight: 750;
+}
+
+.example-search {
+  margin: 3rem 0;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  background: var(--card-background);
+  padding: 1.25rem;
+}
+
+.example-search label {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: var(--heading-color);
+  font-weight: 750;
+}
+
+.search-row {
+  display: flex;
+  gap: 0.7rem;
+}
+
+.search-row input {
+  width: 100%;
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+  background: var(--input-background);
+  color: var(--input-text);
+  font: inherit;
+  padding: 0.8rem 0.9rem;
+}
+
+.search-row input:focus {
+  border-color: var(--link-color);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+  outline: none;
+}
+
+.search-row button {
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+  background: var(--subtle-background);
+  color: var(--text-color);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 0.8rem 1rem;
+  white-space: nowrap;
+}
+
+.example-search p {
+  margin: 0.75rem 0 0;
+  color: var(--muted-text-color);
+  font-size: 0.92rem;
+}
+
+.example-groups {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.example-group > header {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.example-group h2 {
+  margin: 0;
+  color: var(--heading-color);
+  font-size: 1.65rem;
+}
+
+.example-group header p {
+  margin: 0.35rem 0 0;
+  color: var(--muted-text-color);
+}
+
+.example-group header span {
+  color: var(--muted-text-color);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.example-group ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.example-group a {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--card-background);
+  color: var(--link-color);
+  padding: 1rem;
+  text-decoration: none;
+}
+
+.example-group a:hover {
+  border-color: var(--link-color);
+  background: var(--subtle-background);
+}
+
+.example-group a span {
+  margin-top: 0.4rem;
+  color: var(--muted-text-color);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.no-results {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--subtle-background);
+  color: var(--text-color);
+  padding: 1rem;
+}
+
+@media (max-width: 720px) {
+  main {
+    padding: 3rem 0;
+  }
+
+  .search-row,
+  .example-group > header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .example-group ul {
+    grid-template-columns: 1fr;
+  }
+
+  .secondary-link {
+    display: block;
+    margin: 1rem 0 0;
+  }
+}

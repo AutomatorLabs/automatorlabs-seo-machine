@@ -9,6 +9,12 @@ const relatedItems = inflationAdjustedReturnCalculator.relatedIds.flatMap(
     return item ? [{ title: item.title, url: item.url }] : [];
   },
 );
+const exampleItems = [
+  {
+    title: 'Browse all 200 inflation-adjusted return examples',
+    url: '/calculators/inflation-adjusted-return/examples/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -19,6 +25,7 @@ const relatedItems = inflationAdjustedReturnCalculator.relatedIds.flatMap(
   outputs={inflationAdjustedReturnCalculator.outputs}
   faq={inflationAdjustedReturnCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

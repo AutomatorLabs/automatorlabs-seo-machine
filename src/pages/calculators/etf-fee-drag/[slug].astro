@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  etfFeeDragSeoRecords,
+  EXPECTED_ETF_FEE_DRAG_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/etf-fee-drag';
+import {
+  auditEtfFeeDragSeoRecords,
+  createEtfFeeDragSeoPage,
+} from '../../../lib/programmatic-seo/etf-fee-drag';
+
+const audit = auditEtfFeeDragSeoRecords(
+  etfFeeDragSeoRecords,
+  EXPECTED_ETF_FEE_DRAG_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return etfFeeDragSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createEtfFeeDragSeoPage(record, etfFeeDragSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

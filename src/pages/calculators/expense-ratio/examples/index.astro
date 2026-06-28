@@ -1,0 +1,483 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT,
+  expenseRatioSeoRecords,
+} from '../../../../data/programmatic-seo/expense-ratio';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditExpenseRatioSeoRecords } from '../../../../lib/programmatic-seo/expense-ratio';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditExpenseRatioSeoRecords(
+  expenseRatioSeoRecords,
+  EXPECTED_EXPENSE_RATIO_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Expense Ratio Calculator',
+        url: '/calculators/expense-ratio-calculator/',
+      },
+      {
+        name: 'Examples',
+        url: '/calculators/expense-ratio/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(expenseRatioSeoRecords, [
+  {
+    id: 'annual-fund-fees',
+    title: 'Annual Fund Fee Examples',
+    description:
+      'Examples focused on annual fund costs, low-cost index fund assumptions, and long-term fee drag on a single invested balance.',
+    matches: (record) => record.intent === 'annual-fund-fees',
+  },
+  {
+    id: 'etf',
+    title: 'ETF Expense Ratio Examples',
+    description:
+      'ETF fee scenarios covering low-cost index funds, higher-cost funds, different balances, and long holding periods.',
+    matches: (record) => record.intent === 'etf-expense-ratio',
+  },
+  {
+    id: 'mutual-fund',
+    title: 'Mutual Fund Expense Ratio Examples',
+    description:
+      'Mutual fund fee scenarios ranging from moderate-cost to high-fee assumptions across multiple portfolio sizes.',
+    matches: (record) => record.intent === 'mutual-fund-expense-ratio',
+  },
+  {
+    id: 'retirement',
+    title: 'Retirement Portfolio Fee Examples',
+    description:
+      'Retirement-oriented examples for larger balances, multi-decade holding periods, and recurring fee drag on long-term portfolios.',
+    matches: (record) => record.intent === 'retirement-portfolio-fees',
+  },
+  {
+    id: 'taxable',
+    title: 'Taxable Brokerage Fee Examples',
+    description:
+      'Taxable brokerage fund-fee examples for different balances, fee levels, and long-term compounding assumptions.',
+    matches: (record) => record.intent === 'taxable-brokerage-fees',
+  },
+]);
+---
+
+<Layout
+  title="Expense Ratio Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} expense ratio examples covering annual fund fees, ETF and mutual fund expense ratios, low-cost index funds, high-fee funds, retirement portfolios, taxable brokerage scenarios, and long-term fee drag.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/expense-ratio-calculator/">
+            Expense Ratio Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Fund fee scenario library</p>
+      <h1>Expense Ratio Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering annual fund fees,
+        ETF and mutual fund expense ratios, low-cost index funds, high-fee
+        fund scenarios, long-term fee drag, retirement portfolios, and
+        taxable brokerage balances.
+      </p>
+      <a
+        class="primary-link"
+        href="/calculators/expense-ratio-calculator/"
+      >
+        Model your own expense ratio scenario
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section
+      class="example-search"
+      aria-label="Search expense ratio examples"
+    >
+      <label for="expense-ratio-example-search">
+        Search expense ratio examples
+      </label>
+      <div class="search-row">
+        <input
+          id="expense-ratio-example-search"
+          type="search"
+          placeholder="Try ETF, retirement, taxable, 0.03%, or $100,000"
+          autocomplete="off"
+          aria-controls="expense-ratio-example-groups"
+          aria-describedby="expense-ratio-example-count"
+        />
+        <button
+          id="clear-expense-ratio-example-search"
+          type="button"
+          hidden
+        >
+          Clear search
+        </button>
+      </div>
+      <p id="expense-ratio-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div
+      id="expense-ratio-example-groups"
+      class="example-groups"
+    >
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-expense-ratio-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-expense-ratio-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.scenarioLabel,
+                  record.investmentAmount,
+                  record.investmentAmount.toLocaleString('en-US'),
+                  record.expenseRatioPercent,
+                  `${record.expenseRatioPercent}%`,
+                  record.years,
+                  `${record.years} years`,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/expense-ratio/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.investmentAmount)} invested
+                    {' · '}
+                    {record.expenseRatioPercent}% expense ratio
+                    {' · '}
+                    {record.years} years
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p
+      id="no-expense-ratio-examples"
+      class="no-results"
+      role="status"
+      hidden
+    >
+      No expense ratio examples found. Try a fund type, balance, fee, or time horizon.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#expense-ratio-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-expense-ratio-example-search',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-expense-ratio-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-expense-ratio-example-group]',
+    ),
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#expense-ratio-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-expense-ratio-examples',
+  );
+
+  const updateResults = () => {
+    const query = input?.value.trim().toLocaleLowerCase() ?? '';
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const searchableText = card.dataset.searchText ?? '';
+      const matches = query.length === 0 || searchableText.includes(query);
+      card.hidden = !matches;
+
+      if (matches) {
+        visibleCount += 1;
+      }
+    });
+
+    groups.forEach((group) => {
+      const visibleCards = group.querySelectorAll(
+        '[data-expense-ratio-example-card]:not([hidden])',
+      );
+      group.hidden = visibleCards.length === 0;
+    });
+
+    if (count) {
+      count.textContent = `Showing ${visibleCount} example${
+        visibleCount === 1 ? '' : 's'
+      }`;
+    }
+
+    if (noResults) {
+      noResults.hidden = visibleCount !== 0;
+    }
+
+    if (clearButton) {
+      clearButton.hidden = query.length === 0;
+    }
+  };
+
+  input?.addEventListener('input', updateResults);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateResults();
+    input.focus();
+  });
+</script>
+
+<style>
+  main {
+    width: min(1120px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 4.5rem 0;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li + li::before {
+    content: '/';
+    margin-right: 0.45rem;
+    color: var(--border-strong);
+  }
+
+  .page-header {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .eyebrow {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--link-color);
+  }
+
+  .page-header h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 4vw, 3.6rem);
+    line-height: 1.05;
+  }
+
+  .intro {
+    margin: 0;
+    max-width: 72ch;
+    color: var(--muted-text-color);
+    font-size: 1.05rem;
+  }
+
+  .primary-link,
+  .secondary-link {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 0.8rem 1.2rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .primary-link {
+    background: var(--link-color);
+    color: white;
+  }
+
+  .secondary-link {
+    border: 1px solid var(--border-strong);
+    color: var(--text-color);
+  }
+
+  .example-search {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    padding: 1.25rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: 1.25rem;
+    background: var(--surface-muted);
+  }
+
+  .example-search label {
+    font-weight: 700;
+  }
+
+  .search-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .search-row input {
+    flex: 1 1 16rem;
+    min-width: 0;
+    border: 1px solid var(--border-strong);
+    border-radius: 0.9rem;
+    padding: 0.85rem 1rem;
+    font: inherit;
+    color: inherit;
+    background: white;
+  }
+
+  .search-row button {
+    border: 1px solid var(--border-strong);
+    border-radius: 0.9rem;
+    padding: 0.85rem 1rem;
+    font: inherit;
+    font-weight: 700;
+    color: inherit;
+    background: white;
+    cursor: pointer;
+  }
+
+  .example-groups {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .example-group {
+    border: 1px solid var(--border-subtle);
+    border-radius: 1.25rem;
+    background: white;
+    padding: 1.25rem;
+  }
+
+  .example-group header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .example-group h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1.3rem;
+  }
+
+  .example-group p {
+    margin: 0;
+    max-width: 64ch;
+    color: var(--muted-text-color);
+  }
+
+  .example-group header span {
+    color: var(--muted-text-color);
+    font-weight: 700;
+  }
+
+  .example-group ul {
+    display: grid;
+    gap: 0.85rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .example-group a {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: 1rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .example-group a:hover {
+    border-color: var(--link-color);
+    box-shadow: 0 10px 24px color-mix(in srgb, var(--link-color) 12%, transparent);
+  }
+
+  .example-group strong {
+    font-size: 1rem;
+  }
+
+  .example-group a span {
+    color: var(--muted-text-color);
+  }
+
+  .no-results {
+    margin-top: 1.5rem;
+    color: var(--muted-text-color);
+  }
+
+  @media (max-width: 720px) {
+    main {
+      width: min(100% - 1rem, 1120px);
+      padding: 3.5rem 0;
+    }
+  }
+</style>

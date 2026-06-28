@@ -1,0 +1,254 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  lumpSumVsDcaSeoRecords,
+  EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/lump-sum-vs-dca';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditLumpSumVsDcaSeoRecords } from '../../../../lib/programmatic-seo/lump-sum-vs-dca';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditLumpSumVsDcaSeoRecords(
+  lumpSumVsDcaSeoRecords,
+  EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Lump Sum vs DCA Calculator',
+        url: '/calculators/lump-sum-vs-dca-calculator/',
+      },
+      { name: 'Examples', url: '/calculators/lump-sum-vs-dca/examples/' },
+    ],
+    site,
+  ),
+);
+
+const groups = createProgrammaticExampleGroups(lumpSumVsDcaSeoRecords, [
+  {
+    id: 'broad-market',
+    title: 'Broad Market Lump Sum vs DCA Examples',
+    description:
+      'Examples comparing lump sum and DCA under broad-market style return assumptions.',
+    matches: (record) => record.intent === 'broad-market',
+  },
+  {
+    id: 'windfall',
+    title: 'Windfall Investing Examples',
+    description:
+      'Examples framed around deploying a windfall immediately or in monthly slices.',
+    matches: (record) => record.intent === 'windfall-investing',
+  },
+  {
+    id: 'retirement',
+    title: 'Retirement Rollover Examples',
+    description:
+      'Examples comparing a rollover invested immediately versus phased in over time.',
+    matches: (record) => record.intent === 'retirement-rollover',
+  },
+  {
+    id: 'taxable',
+    title: 'Taxable Investing Examples',
+    description:
+      'Examples for taxable-account investing timing under the same return assumption.',
+    matches: (record) => record.intent === 'taxable-investing',
+  },
+  {
+    id: 'volatile',
+    title: 'Volatile Market Examples',
+    description:
+      'Examples with lower or more cautious return assumptions to compare timing decisions in choppier markets.',
+    matches: (record) => record.intent === 'volatile-market',
+  },
+]);
+---
+
+<Layout
+  title="Lump Sum vs DCA Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} lump sum vs DCA examples covering windfalls, retirement rollovers, taxable accounts, and broad-market investing scenarios.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/lump-sum-vs-dca-calculator/">
+            Lump Sum vs DCA Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Investing timing scenario library</p>
+      <h1>Lump Sum vs DCA Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples comparing investing all at
+        once versus spreading the same cash out over time across windfalls,
+        retirement rollovers, taxable accounts, and broad-market assumptions.
+      </p>
+      <a class="primary-link" href="/calculators/lump-sum-vs-dca-calculator/">
+        Compare your own investing timing
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section class="example-search" aria-label="Search lump sum vs DCA examples">
+      <label for="lump-sum-vs-dca-example-search">
+        Search lump sum vs DCA examples
+      </label>
+      <div class="search-row">
+        <input
+          id="lump-sum-vs-dca-example-search"
+          type="search"
+          placeholder="Try rollover, windfall, taxable, $120,000, or 8%"
+          autocomplete="off"
+          aria-controls="lump-sum-vs-dca-example-groups"
+          aria-describedby="lump-sum-vs-dca-example-count"
+        />
+        <button id="clear-lump-sum-vs-dca-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="lump-sum-vs-dca-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="lump-sum-vs-dca-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-lump-sum-vs-dca-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-lump-sum-vs-dca-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.scenarioLabel,
+                  record.totalAmount,
+                  record.dcaMonthlyAmount,
+                  `${record.expectedAnnualReturnPercent}%`,
+                  `${record.years} years`,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/lump-sum-vs-dca/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    ${record.totalAmount.toLocaleString('en-US')} total
+                    {' · '}
+                    ${record.dcaMonthlyAmount.toLocaleString('en-US')} monthly DCA
+                    {' · '}
+                    {record.expectedAnnualReturnPercent}% assumed return
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p
+      id="no-lump-sum-vs-dca-examples"
+      class="no-results"
+      role="status"
+      hidden
+    >
+      No lump sum vs DCA examples found. Try a scenario type, amount, or return level.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#lump-sum-vs-dca-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-lump-sum-vs-dca-example-search',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-lump-sum-vs-dca-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-lump-sum-vs-dca-example-group]',
+    ),
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#lump-sum-vs-dca-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-lump-sum-vs-dca-examples',
+  );
+
+  function updateSearch() {
+    const query = input?.value.trim().toLocaleLowerCase() ?? '';
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query.length === 0 ||
+        (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      const hasVisibleCard = Array.from(
+        group.querySelectorAll<HTMLElement>(
+          '[data-lump-sum-vs-dca-example-card]',
+        ),
+      ).some((card) => !card.hidden);
+      group.hidden = !hasVisibleCard;
+    });
+
+    if (count) {
+      count.textContent = `Showing ${visibleCount} example${visibleCount === 1 ? '' : 's'}`;
+    }
+    if (noResults) noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query.length === 0;
+  }
+
+  input?.addEventListener('input', updateSearch);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateSearch();
+    input.focus();
+  });
+</script>
+
+<style>
+  @import '../../../../styles/programmatic-examples.css';
+</style>

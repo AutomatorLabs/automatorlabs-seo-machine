@@ -1,0 +1,273 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  EXPECTED_INFLATION_ADJUSTED_RETURN_SEO_PAGE_COUNT,
+  inflationAdjustedReturnSeoRecords,
+} from '../../../../data/programmatic-seo/inflation-adjusted-return';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditInflationAdjustedReturnSeoRecords } from '../../../../lib/programmatic-seo/inflation-adjusted-return';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditInflationAdjustedReturnSeoRecords(
+  inflationAdjustedReturnSeoRecords,
+  EXPECTED_INFLATION_ADJUSTED_RETURN_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Inflation-Adjusted Return Calculator',
+        url: '/calculators/inflation-adjusted-return-calculator/',
+      },
+      {
+        name: 'Examples',
+        url: '/calculators/inflation-adjusted-return/examples/',
+      },
+    ],
+    site,
+  ),
+);
+
+const groups = createProgrammaticExampleGroups(
+  inflationAdjustedReturnSeoRecords,
+  [
+    {
+      id: 'conservative',
+      title: 'Conservative Inflation-Adjusted Return Examples',
+      description:
+        'Examples using lower nominal-return assumptions and steady inflation.',
+      matches: (record) => record.intent === 'conservative-portfolio',
+    },
+    {
+      id: 'balanced',
+      title: 'Balanced Portfolio Inflation-Adjusted Examples',
+      description:
+        'Examples for diversified portfolio returns translated into today’s dollars.',
+      matches: (record) => record.intent === 'balanced-portfolio',
+    },
+    {
+      id: 'growth',
+      title: 'Growth Portfolio Inflation-Adjusted Examples',
+      description:
+        'Examples showing how stronger nominal returns still lose purchasing power to inflation.',
+      matches: (record) => record.intent === 'growth-portfolio',
+    },
+    {
+      id: 'retirement',
+      title: 'Retirement Inflation-Adjusted Return Examples',
+      description:
+        'Examples for retirement balances and longer planning horizons.',
+      matches: (record) => record.intent === 'retirement-portfolio',
+    },
+    {
+      id: 'taxable',
+      title: 'Taxable Brokerage Inflation-Adjusted Examples',
+      description:
+        'Examples framing inflation-adjusted balances in a taxable investing context.',
+      matches: (record) => record.intent === 'taxable-brokerage',
+    },
+  ],
+);
+---
+
+<Layout
+  title="Inflation-Adjusted Return Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} inflation-adjusted return examples across conservative, balanced, growth, retirement, and taxable portfolio scenarios.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/inflation-adjusted-return-calculator/">
+            Inflation-Adjusted Return Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Purchasing-power scenario library</p>
+      <h1>Inflation-Adjusted Return Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples comparing nominal ending
+        balances with inflation-adjusted balances across conservative, growth,
+        retirement, and taxable portfolio scenarios.
+      </p>
+      <a
+        class="primary-link"
+        href="/calculators/inflation-adjusted-return-calculator/"
+      >
+        Model your own inflation-adjusted return
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section
+      class="example-search"
+      aria-label="Search inflation-adjusted return examples"
+    >
+      <label for="inflation-adjusted-return-example-search">
+        Search inflation-adjusted return examples
+      </label>
+      <div class="search-row">
+        <input
+          id="inflation-adjusted-return-example-search"
+          type="search"
+          placeholder="Try retirement, taxable, 7%, 3.5%, or $100,000"
+          autocomplete="off"
+          aria-controls="inflation-adjusted-return-example-groups"
+          aria-describedby="inflation-adjusted-return-example-count"
+        />
+        <button
+          id="clear-inflation-adjusted-return-example-search"
+          type="button"
+          hidden
+        >
+          Clear search
+        </button>
+      </div>
+      <p id="inflation-adjusted-return-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="inflation-adjusted-return-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-inflation-adjusted-return-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-inflation-adjusted-return-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.scenarioLabel,
+                  record.startingInvestment,
+                  `${record.nominalAnnualReturnPercent}% nominal`,
+                  `${record.inflationRatePercent}% inflation`,
+                  `${record.years} years`,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a
+                  href={`/calculators/inflation-adjusted-return/${record.slug}/`}
+                >
+                  <strong>{record.question}</strong>
+                  <span>
+                    ${record.startingInvestment.toLocaleString('en-US')} start
+                    {' · '}
+                    {record.nominalAnnualReturnPercent}% nominal
+                    {' · '}
+                    {record.inflationRatePercent}% inflation
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p
+      id="no-inflation-adjusted-return-examples"
+      class="no-results"
+      role="status"
+      hidden
+    >
+      No inflation-adjusted return examples found. Try a balance, rate, time
+      horizon, or scenario type.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#inflation-adjusted-return-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-inflation-adjusted-return-example-search',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-inflation-adjusted-return-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-inflation-adjusted-return-example-group]',
+    ),
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#inflation-adjusted-return-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-inflation-adjusted-return-examples',
+  );
+
+  function updateSearch() {
+    const query = input?.value.trim().toLocaleLowerCase() ?? '';
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query.length === 0 ||
+        (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      const hasVisibleCard = Array.from(
+        group.querySelectorAll<HTMLElement>(
+          '[data-inflation-adjusted-return-example-card]',
+        ),
+      ).some((card) => !card.hidden);
+      group.hidden = !hasVisibleCard;
+    });
+
+    if (count) {
+      count.textContent = `Showing ${visibleCount} example${visibleCount === 1 ? '' : 's'}`;
+    }
+    if (noResults) noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query.length === 0;
+  }
+
+  input?.addEventListener('input', updateSearch);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateSearch();
+    input.focus();
+  });
+</script>
+
+<style>
+  @import '../../../../styles/programmatic-examples.css';
+</style>

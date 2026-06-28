@@ -2,6 +2,7 @@
 
 ## 2026-06-28
 
+- Added a new Expense Ratio programmatic example cluster with 200 worked examples under `/calculators/expense-ratio/`, plus calculator, topic, and guide links into the shared examples ecosystem.
 - Added a new DRIP programmatic example cluster with 200 worked examples under `/calculators/drip/`, plus calculator, topic, and guide links into the shared examples ecosystem.
 - Added a new Dividend Yield programmatic example cluster with 200 worked examples under `/calculators/dividend-yield/`, plus calculator, topic, and guide links into the shared examples ecosystem.
 - Added a new Dividend Growth programmatic example cluster with 200 worked examples under `/calculators/dividend-growth/`, plus calculator, topic, and guide links into the shared examples ecosystem.

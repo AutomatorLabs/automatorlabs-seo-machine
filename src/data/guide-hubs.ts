@@ -392,6 +392,30 @@ export const guideHubs: GuideHub[] = [
           'Browse worked dividend income projections across growth assumptions, reinvestment framing, dividend snowball scenarios, portfolio income, and retirement income planning.',
       },
       {
+        title: 'Expense Ratio Examples',
+        url: '/calculators/expense-ratio/examples/',
+        description:
+          'Browse worked fund-fee scenarios across low-cost ETFs, mutual funds, retirement balances, taxable accounts, and long-term fee drag.',
+      },
+      {
+        title: 'ETF Fee Drag Examples',
+        url: '/calculators/etf-fee-drag/examples/',
+        description:
+          'Browse worked ETF comparison scenarios across low-cost funds, retirement balances, taxable accounts, and higher-fee fund gaps.',
+      },
+      {
+        title: 'Investment Fee Examples',
+        url: '/calculators/investment-fee/examples/',
+        description:
+          'Browse worked recurring-fee scenarios across retirement balances, advisor fees, taxable accounts, and monthly contributions.',
+      },
+      {
+        title: 'Lump Sum vs DCA Examples',
+        url: '/calculators/lump-sum-vs-dca/examples/',
+        description:
+          'Browse worked comparisons between investing immediately and spreading a cash amount into monthly deposits.',
+      },
+      {
         title: 'CAGR Examples',
         url: '/calculators/cagr/examples/',
         description:
@@ -536,6 +560,18 @@ export const guideHubs: GuideHub[] = [
         url: '/guides/inflation-and-compound-interest/',
         description:
           'Learn how compounding returns and compounding prices interact over time.',
+      },
+      {
+        title: 'Real Rate of Return Examples',
+        url: '/calculators/real-rate-of-return/examples/',
+        description:
+          'Browse inflation-adjusted return examples across savings, bonds, balanced portfolios, stocks, and retirement assumptions.',
+      },
+      {
+        title: 'Inflation-Adjusted Return Examples',
+        url: '/calculators/inflation-adjusted-return/examples/',
+        description:
+          'Browse worked nominal-versus-real balance projections across conservative, growth, retirement, and taxable scenarios.',
       },
     ],
     sections: [
@@ -1264,6 +1300,12 @@ export const guideHubs: GuideHub[] = [
         url: '/calculators/savings-goal/examples/',
         description:
           'Browse worked savings scenarios for emergency funds, down payments, vacations, cars, retirement, education, and other goals.',
+      },
+      {
+        title: 'Emergency Fund Examples',
+        url: '/calculators/emergency-fund/examples/',
+        description:
+          'Browse worked emergency-fund scenarios across starter buffers, multi-month reserves, family cash targets, and job-transition planning.',
       },
     ],
     comparisonGuideLinks: [
