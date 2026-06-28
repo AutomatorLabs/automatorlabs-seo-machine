@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_HELOC_SEO_PAGE_COUNT,
+  helocSeoRecords,
+} from '../../../data/programmatic-seo/heloc';
+import {
+  auditHelocSeoRecords,
+  createHelocSeoPage,
+} from '../../../lib/programmatic-seo/heloc';
+
+auditHelocSeoRecords(
+  helocSeoRecords,
+  EXPECTED_HELOC_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return helocSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createHelocSeoPage(record, helocSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

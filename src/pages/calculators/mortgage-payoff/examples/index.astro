@@ -1,0 +1,55 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  EXPECTED_MORTGAGE_PAYOFF_SEO_PAGE_COUNT,
+  mortgagePayoffSeoRecords,
+} from '../../../../data/programmatic-seo/mortgage-payoff';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditMortgagePayoffSeoRecords } from '../../../../lib/programmatic-seo/mortgage-payoff';
+
+const audit = auditMortgagePayoffSeoRecords(
+  mortgagePayoffSeoRecords,
+  EXPECTED_MORTGAGE_PAYOFF_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(mortgagePayoffSeoRecords, [
+  {
+    id: 'shorter-term',
+    title: 'Shorter-Term Mortgage Payoff Examples',
+    description: 'Examples focused on 15-year and 20-year loans.',
+    matches: (record) => record.loanTermYears <= 20,
+  },
+  {
+    id: 'thirty-year',
+    title: '30-Year Mortgage Payoff Examples',
+    description: 'Examples showing how extra principal changes standard 30-year mortgage paths.',
+    matches: (record) => record.loanTermYears > 20,
+  },
+]);
+---
+
+<ProgrammaticExampleIndexPage
+  title="Mortgage Payoff Examples"
+  description={`Browse ${audit.actualCount} mortgage payoff examples across balances, rates, terms, and extra monthly payments.`}
+  eyebrow="Mortgage payoff library"
+  intro={`Browse ${audit.actualCount} worked examples showing how extra principal can shorten a mortgage and reduce interest.`}
+  calculatorTitle="Mortgage Payoff Calculator"
+  calculatorUrl="/calculators/mortgage-payoff-calculator/"
+  examplesUrl="/calculators/mortgage-payoff/examples/"
+  calculatorLinkLabel="Estimate your own mortgage payoff"
+  count={audit.actualCount}
+  searchLabel="Search mortgage payoff examples"
+  searchPlaceholder="Try $350,000, 30 years, 6.5%, or $300 extra"
+  noResultsText="No mortgage payoff examples found. Try a balance, rate, term, or extra payment."
+  prefix="mortgage-payoff"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/mortgage-payoff/${record.slug}/`,
+      subtitle: `$${record.loanAmount.toLocaleString('en-US')} mortgage · ${record.annualInterestRatePercent}% APR · ${record.loanTermYears} years`,
+      searchText: [record.question, record.slug, record.loanAmount, record.annualInterestRatePercent, record.loanTermYears, record.extraMonthlyPayment].join(' '),
+    })),
+  }))}/>

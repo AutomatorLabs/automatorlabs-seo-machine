@@ -2,11 +2,22 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { yearsToRetirementCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredYearsToRetirementSeoRecords } from '../../../data/programmatic-seo/years-to-retirement';
 
 const relatedItems = yearsToRetirementCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const exampleItems = [
+  {
+    title: 'Browse all 200 years-to-retirement examples',
+    url: '/calculators/years-to-retirement/examples/',
+  },
+  ...featuredYearsToRetirementSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/years-to-retirement/${record.slug}/`,
+  })),
+];
 ---
 
 <CalculatorPage
@@ -17,6 +28,7 @@ const relatedItems = yearsToRetirementCalculator.relatedIds.flatMap((id) => {
   outputs={yearsToRetirementCalculator.outputs}
   faq={yearsToRetirementCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

@@ -1,0 +1,256 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
+  savingsGrowthSeoRecords,
+} from '../../../../data/programmatic-seo/savings-growth';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditSavingsGrowthSeoRecords } from '../../../../lib/programmatic-seo/savings-growth';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditSavingsGrowthSeoRecords(
+  savingsGrowthSeoRecords,
+  EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Savings Growth Calculator',
+        url: '/calculators/savings-growth-calculator/',
+      },
+      { name: 'Examples', url: '/calculators/savings-growth/examples/' },
+    ],
+    site,
+  ),
+);
+
+const groups = createProgrammaticExampleGroups(savingsGrowthSeoRecords, [
+  {
+    id: 'existing-savings',
+    title: 'Existing Savings Growth Examples',
+    description:
+      'Worked examples focused on how an existing savings balance can grow with recurring deposits.',
+    matches: (record) => record.intent === 'existing-savings-growth',
+  },
+  {
+    id: 'monthly-contributions',
+    title: 'Monthly Savings Growth Examples',
+    description:
+      'Examples centered on recurring monthly savings plans and future value projections.',
+    matches: (record) => record.intent === 'monthly-contribution-growth',
+  },
+  {
+    id: 'high-yield',
+    title: 'High-Yield Savings Growth Examples',
+    description:
+      'Examples showing how higher savings yields can affect shorter and medium-term balances.',
+    matches: (record) => record.intent === 'high-yield-savings-growth',
+  },
+  {
+    id: 'conservative',
+    title: 'Conservative Savings Growth Examples',
+    description:
+      'Examples using lower growth assumptions for more cautious savings planning.',
+    matches: (record) => record.intent === 'conservative-savings-growth',
+  },
+  {
+    id: 'retirement',
+    title: 'Retirement Savings Growth Examples',
+    description:
+      'Examples covering longer timelines and larger balances aimed at retirement-oriented saving.',
+    matches: (record) => record.intent === 'retirement-savings-growth',
+  },
+]);
+---
+
+<Layout
+  title="Savings Growth Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} savings growth examples across existing balances, monthly savings plans, high-yield savings, conservative scenarios, and retirement-oriented growth projections.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/savings-growth-calculator/">
+            Savings Growth Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Savings growth library</p>
+      <h1>Savings Growth Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering existing savings
+        balances, monthly contributions, high-yield savings assumptions,
+        conservative growth cases, and retirement-oriented timelines.
+      </p>
+      <a class="primary-link" href="/calculators/savings-growth-calculator/">
+        Project your own savings growth
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section
+      class="example-search"
+      aria-label="Search savings growth examples"
+    >
+      <label for="savings-growth-example-search">
+        Search savings growth examples
+      </label>
+      <div class="search-row">
+        <input
+          id="savings-growth-example-search"
+          type="search"
+          placeholder="Try retirement, high-yield, $25,000, or 15 years"
+          autocomplete="off"
+          aria-controls="savings-growth-example-groups"
+          aria-describedby="savings-growth-example-count"
+        />
+        <button id="clear-savings-growth-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="savings-growth-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="savings-growth-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-savings-growth-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-savings-growth-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.scenarioLabel,
+                  record.startingSavings,
+                  record.monthlyContribution,
+                  record.annualReturnPercent,
+                  `${record.years} years`,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/savings-growth/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    ${record.startingSavings.toLocaleString('en-US')}
+                    starting savings
+                    {' · '}
+                    ${record.monthlyContribution.toLocaleString('en-US')}
+                    monthly
+                    {' · '}
+                    {record.years} years
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p id="no-savings-growth-examples" class="no-results" role="status" hidden>
+      No savings growth examples found. Try a balance, contribution amount,
+      rate, or time horizon.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#savings-growth-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-savings-growth-example-search',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-savings-growth-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-savings-growth-example-group]',
+    ),
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#savings-growth-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-savings-growth-examples',
+  );
+
+  function updateSearch() {
+    const query = input?.value.trim().toLocaleLowerCase() ?? '';
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query.length === 0 ||
+        (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      const hasVisibleCard = Array.from(
+        group.querySelectorAll<HTMLElement>(
+          '[data-savings-growth-example-card]',
+        ),
+      ).some((card) => !card.hidden);
+      group.hidden = !hasVisibleCard;
+    });
+
+    if (count) {
+      count.textContent = `Showing ${visibleCount} example${visibleCount === 1 ? '' : 's'}`;
+    }
+    if (noResults) noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query.length === 0;
+  }
+
+  input?.addEventListener('input', updateSearch);
+  clearButton?.addEventListener('click', () => {
+    if (input) {
+      input.value = '';
+      input.focus();
+    }
+    updateSearch();
+  });
+</script>
+
+<style>
+  @import '../../../../styles/programmatic-examples.css';
+</style>

@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  autoLoanSeoRecords,
+  EXPECTED_AUTO_LOAN_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/auto-loan';
+import {
+  auditAutoLoanSeoRecords,
+  createAutoLoanSeoPage,
+} from '../../../lib/programmatic-seo/auto-loan';
+
+auditAutoLoanSeoRecords(
+  autoLoanSeoRecords,
+  EXPECTED_AUTO_LOAN_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return autoLoanSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createAutoLoanSeoPage(record, autoLoanSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

@@ -1,0 +1,32 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_PORTFOLIO_WITHDRAWAL_SUSTAINABILITY_SEO_PAGE_COUNT,
+  portfolioWithdrawalSustainabilitySeoRecords,
+} from '../../../data/programmatic-seo/portfolio-withdrawal-sustainability';
+import {
+  auditPortfolioWithdrawalSustainabilitySeoRecords,
+  createPortfolioWithdrawalSustainabilitySeoPage,
+} from '../../../lib/programmatic-seo/portfolio-withdrawal-sustainability';
+
+auditPortfolioWithdrawalSustainabilitySeoRecords(
+  portfolioWithdrawalSustainabilitySeoRecords,
+  EXPECTED_PORTFOLIO_WITHDRAWAL_SUSTAINABILITY_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return portfolioWithdrawalSustainabilitySeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createPortfolioWithdrawalSustainabilitySeoPage(
+        record,
+        portfolioWithdrawalSustainabilitySeoRecords,
+      ),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

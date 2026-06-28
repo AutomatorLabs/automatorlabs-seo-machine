@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_MORTGAGE_PAYOFF_SEO_PAGE_COUNT,
+  mortgagePayoffSeoRecords,
+} from '../../../data/programmatic-seo/mortgage-payoff';
+import {
+  auditMortgagePayoffSeoRecords,
+  createMortgagePayoffSeoPage,
+} from '../../../lib/programmatic-seo/mortgage-payoff';
+
+auditMortgagePayoffSeoRecords(
+  mortgagePayoffSeoRecords,
+  EXPECTED_MORTGAGE_PAYOFF_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return mortgagePayoffSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createMortgagePayoffSeoPage(record, mortgagePayoffSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

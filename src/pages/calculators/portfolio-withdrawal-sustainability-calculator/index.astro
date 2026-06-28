@@ -2,12 +2,23 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { portfolioWithdrawalSustainabilityCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredPortfolioWithdrawalSustainabilitySeoRecords } from '../../../data/programmatic-seo/portfolio-withdrawal-sustainability';
 
 const relatedItems =
   portfolioWithdrawalSustainabilityCalculator.relatedIds.flatMap((id) => {
     const item = contentItems.find((contentItem) => contentItem.id === id);
     return item ? [{ title: item.title, url: item.url }] : [];
   });
+const exampleItems = [
+  {
+    title: 'Browse all 200 withdrawal sustainability examples',
+    url: '/calculators/portfolio-withdrawal-sustainability/examples/',
+  },
+  ...featuredPortfolioWithdrawalSustainabilitySeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/portfolio-withdrawal-sustainability/${record.slug}/`,
+  })),
+];
 ---
 
 <CalculatorPage
@@ -18,6 +29,7 @@ const relatedItems =
   outputs={portfolioWithdrawalSustainabilityCalculator.outputs}
   faq={portfolioWithdrawalSustainabilityCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

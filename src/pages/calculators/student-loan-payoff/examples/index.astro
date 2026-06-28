@@ -1,0 +1,55 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  EXPECTED_STUDENT_LOAN_PAYOFF_SEO_PAGE_COUNT,
+  studentLoanPayoffSeoRecords,
+} from '../../../../data/programmatic-seo/student-loan-payoff';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditStudentLoanPayoffSeoRecords } from '../../../../lib/programmatic-seo/student-loan-payoff';
+
+const audit = auditStudentLoanPayoffSeoRecords(
+  studentLoanPayoffSeoRecords,
+  EXPECTED_STUDENT_LOAN_PAYOFF_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(studentLoanPayoffSeoRecords, [
+  {
+    id: 'baseline',
+    title: 'Baseline Student Loan Payoff Examples',
+    description: 'Examples with modest extra payments or none at all.',
+    matches: (record) => record.extraMonthlyPayment <= 75,
+  },
+  {
+    id: 'accelerated',
+    title: 'Accelerated Student Loan Payoff Examples',
+    description: 'Examples focused on more aggressive extra-payment strategies.',
+    matches: (record) => record.extraMonthlyPayment > 75,
+  },
+]);
+---
+
+<ProgrammaticExampleIndexPage
+  title="Student Loan Payoff Examples"
+  description={`Browse ${audit.actualCount} student loan payoff examples across balances, interest rates, current payments, and extra monthly payments.`}
+  eyebrow="Student payoff library"
+  intro={`Browse ${audit.actualCount} worked examples comparing a current student loan payment with a faster payoff strategy.`}
+  calculatorTitle="Student Loan Payoff Calculator"
+  calculatorUrl="/calculators/student-loan-payoff-calculator/"
+  examplesUrl="/calculators/student-loan-payoff/examples/"
+  calculatorLinkLabel="Estimate your own student loan payoff"
+  count={audit.actualCount}
+  searchLabel="Search student loan payoff examples"
+  searchPlaceholder="Try $30,000, 6%, $275 payment, or $75 extra"
+  noResultsText="No student loan payoff examples found. Try a balance, rate, payment, or extra amount."
+  prefix="student-loan-payoff"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/student-loan-payoff/${record.slug}/`,
+      subtitle: `$${record.studentLoanBalance.toLocaleString('en-US')} balance · ${record.annualInterestRatePercent}% rate · $${record.currentMonthlyPayment.toLocaleString('en-US')} payment`,
+      searchText: [record.question, record.slug, record.studentLoanBalance, record.annualInterestRatePercent, record.currentMonthlyPayment, record.extraMonthlyPayment].join(' '),
+    })),
+  }))}/>

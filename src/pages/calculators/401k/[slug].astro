@@ -1,0 +1,24 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_401K_SEO_PAGE_COUNT,
+  fourOhOneKSeoRecords,
+} from '../../../data/programmatic-seo/401k';
+import {
+  audit401kSeoRecords,
+  create401kSeoPage,
+} from '../../../lib/programmatic-seo/401k';
+
+audit401kSeoRecords(fourOhOneKSeoRecords, EXPECTED_401K_SEO_PAGE_COUNT);
+
+export function getStaticPaths() {
+  return fourOhOneKSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: { page: create401kSeoPage(record, fourOhOneKSeoRecords) },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

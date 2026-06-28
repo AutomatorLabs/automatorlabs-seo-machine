@@ -1,0 +1,55 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  debtPayoffSeoRecords,
+  EXPECTED_DEBT_PAYOFF_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/debt-payoff';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditDebtPayoffSeoRecords } from '../../../../lib/programmatic-seo/debt-payoff';
+
+const audit = auditDebtPayoffSeoRecords(
+  debtPayoffSeoRecords,
+  EXPECTED_DEBT_PAYOFF_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(debtPayoffSeoRecords, [
+  {
+    id: 'lower-apr',
+    title: 'Lower-APR Debt Payoff Examples',
+    description: 'Examples where payment size matters more than very high interest drag.',
+    matches: (record) => record.annualInterestRatePercent <= 15,
+  },
+  {
+    id: 'higher-apr',
+    title: 'Higher-APR Debt Payoff Examples',
+    description: 'Examples showing the effect of faster payments on more expensive debt.',
+    matches: (record) => record.annualInterestRatePercent > 15,
+  },
+]);
+---
+
+<ProgrammaticExampleIndexPage
+  title="Debt Payoff Examples"
+  description={`Browse ${audit.actualCount} debt payoff examples across balances, APRs, monthly payments, and extra principal strategies.`}
+  eyebrow="Debt payoff library"
+  intro={`Browse ${audit.actualCount} worked examples showing how recurring payments and extra principal change a debt payoff timeline.`}
+  calculatorTitle="Debt Payoff Calculator"
+  calculatorUrl="/calculators/debt-payoff-calculator/"
+  examplesUrl="/calculators/debt-payoff/examples/"
+  calculatorLinkLabel="Estimate your own debt payoff"
+  count={audit.actualCount}
+  searchLabel="Search debt payoff examples"
+  searchPlaceholder="Try $10,000, 18%, $250 payment, or $75 extra"
+  noResultsText="No debt payoff examples found. Try a balance, APR, payment, or extra payment."
+  prefix="debt-payoff"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/debt-payoff/${record.slug}/`,
+      subtitle: `$${record.debtBalance.toLocaleString('en-US')} balance · ${record.annualInterestRatePercent}% APR · $${record.monthlyPayment.toLocaleString('en-US')} payment`,
+      searchText: [record.question, record.slug, record.debtBalance, record.annualInterestRatePercent, record.monthlyPayment, record.extraMonthlyPayment].join(' '),
+    })),
+  }))}/>

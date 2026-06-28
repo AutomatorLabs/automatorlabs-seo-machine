@@ -1,0 +1,383 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../lib/programmatic-seo/schema';
+
+interface ExampleCard {
+  title: string;
+  url: string;
+  subtitle: string;
+  searchText: string;
+}
+
+interface ExampleGroup {
+  id: string;
+  title: string;
+  description: string;
+  records: ExampleCard[];
+}
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow: string;
+  intro: string;
+  calculatorTitle: string;
+  calculatorUrl: string;
+  examplesUrl: string;
+  calculatorLinkLabel: string;
+  count: number;
+  searchLabel: string;
+  searchPlaceholder: string;
+  noResultsText: string;
+  prefix: string;
+  groups: ExampleGroup[];
+}
+
+const {
+  title,
+  description,
+  eyebrow,
+  intro,
+  calculatorTitle,
+  calculatorUrl,
+  examplesUrl,
+  calculatorLinkLabel,
+  count,
+  searchLabel,
+  searchPlaceholder,
+  noResultsText,
+  prefix,
+  groups,
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      { name: calculatorTitle, url: calculatorUrl },
+      { name: 'Examples', url: examplesUrl },
+    ],
+    site,
+  ),
+);
+const searchId = `${prefix}-example-search`;
+const clearId = `clear-${prefix}-example-search`;
+const countId = `${prefix}-example-count`;
+const noResultsId = `no-${prefix}-examples`;
+const groupsId = `${prefix}-example-groups`;
+const groupAttr = `data-${prefix}-example-group`;
+const cardAttr = `data-${prefix}-example-card`;
+---
+
+<Layout title={title} description={description}>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li><a href={calculatorUrl}>{calculatorTitle}</a></li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">{eyebrow}</p>
+      <h1>{title}</h1>
+      <p class="intro">{intro}</p>
+      <a class="primary-link" href={calculatorUrl}>{calculatorLinkLabel}</a>
+      <a class="secondary-link" href="/examples/">Browse all financial examples</a>
+    </header>
+
+    <section class="example-search" aria-label={searchLabel}>
+      <label for={searchId}>{searchLabel}</label>
+      <div class="search-row">
+        <input
+          id={searchId}
+          type="search"
+          placeholder={searchPlaceholder}
+          autocomplete="off"
+          aria-controls={groupsId}
+          aria-describedby={countId}
+        />
+        <button id={clearId} type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id={countId} aria-live="polite">
+        Showing {count} examples
+      </p>
+    </section>
+
+    <div id={groupsId} class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-example-group
+          {...{ [groupAttr]: '' }}
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-example-card
+                {...{ [cardAttr]: '' }}
+                data-search-text={record.searchText.toLocaleLowerCase()}
+              >
+                <a href={record.url}>
+                  <strong>{record.title}</strong>
+                  <span>{record.subtitle}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p id={noResultsId} class="no-results" role="status" hidden>
+      {noResultsText}
+    </p>
+  </main>
+</Layout>
+
+<script define:vars={{ searchId, clearId, countId, noResultsId, groupAttr, cardAttr }}>
+  const input = document.querySelector(`#${searchId}`);
+  const clearButton = document.querySelector(`#${clearId}`);
+  const count = document.querySelector(`#${countId}`);
+  const noResults = document.querySelector(`#${noResultsId}`);
+  const cards = Array.from(
+    document.querySelectorAll(`[${cardAttr}]`),
+  );
+  const groups = Array.from(
+    document.querySelectorAll(`[${groupAttr}]`),
+  );
+
+  function updateSearch() {
+    const query = input?.value.trim().toLocaleLowerCase() ?? '';
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const haystack = card.dataset.searchText ?? '';
+      const matches = query.length === 0 || haystack.includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      const visibleItems = group.querySelectorAll('li:not([hidden])').length;
+      group.hidden = visibleItems === 0;
+    });
+
+    if (count) {
+      count.textContent = `Showing ${visibleCount} example${visibleCount === 1 ? '' : 's'}`;
+    }
+
+    if (noResults) {
+      noResults.hidden = visibleCount !== 0;
+    }
+
+    if (clearButton) {
+      clearButton.hidden = query.length === 0;
+    }
+  }
+
+  input?.addEventListener('input', updateSearch);
+  clearButton?.addEventListener('click', () => {
+    if (input instanceof HTMLInputElement) {
+      input.value = '';
+      input.focus();
+    }
+    updateSearch();
+  });
+</script>
+
+<style>
+  main {
+    width: min(1080px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 4.5rem 0;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li + li::before {
+    content: '/';
+    margin-right: 0.45rem;
+    color: var(--border-color);
+  }
+
+  .page-header {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 1.5rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(244,246,248,0.96));
+  }
+
+  .eyebrow {
+    margin: 0;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-color);
+  }
+
+  .page-header h1 {
+    margin: 0;
+    font-size: clamp(2.25rem, 4vw, 3.5rem);
+    line-height: 1.05;
+  }
+
+  .intro {
+    margin: 0;
+    max-width: 64ch;
+    color: var(--muted-text-color);
+    font-size: 1.02rem;
+  }
+
+  .primary-link,
+  .secondary-link {
+    width: fit-content;
+    border-radius: 999px;
+    padding: 0.8rem 1.15rem;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .primary-link {
+    background: var(--accent-color);
+    color: white;
+  }
+
+  .secondary-link {
+    border: 1px solid var(--border-color);
+    color: inherit;
+  }
+
+  .example-search,
+  .example-group {
+    border: 1px solid var(--border-color);
+    border-radius: 1.25rem;
+    background: white;
+  }
+
+  .example-search {
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.65rem;
+  }
+
+  .search-row input {
+    flex: 1;
+    border: 1px solid var(--border-color);
+    border-radius: 0.9rem;
+    padding: 0.85rem 1rem;
+    font: inherit;
+  }
+
+  .search-row button {
+    border: 1px solid var(--border-color);
+    border-radius: 0.9rem;
+    background: white;
+    padding: 0.85rem 1rem;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .example-groups {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .example-group {
+    padding: 1.25rem;
+  }
+
+  .example-group header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: start;
+    margin-bottom: 1rem;
+  }
+
+  .example-group h2 {
+    margin: 0 0 0.35rem;
+  }
+
+  .example-group p,
+  .example-group span {
+    margin: 0;
+    color: var(--muted-text-color);
+  }
+
+  .example-group ul {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .example-group li a {
+    display: grid;
+    gap: 0.3rem;
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 0.95rem 1rem;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .example-group li a:hover {
+    border-color: var(--accent-color);
+  }
+
+  .no-results {
+    margin-top: 1rem;
+    color: var(--muted-text-color);
+  }
+
+  @media (max-width: 720px) {
+    .search-row,
+    .example-group header {
+      flex-direction: column;
+    }
+  }
+</style>

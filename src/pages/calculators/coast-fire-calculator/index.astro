@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { coastFireCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredCoastFireSeoRecords } from '../../../data/programmatic-seo/coast-fire';
 
 const relatedItems = coastFireCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -11,6 +12,13 @@ const guideItems = [
   { title: 'FIRE vs Coast FIRE', url: '/guides/fire-vs-coast-fire/' },
   { title: 'Planning Retirement Withdrawals', url: '/guides/retirement-withdrawals/' },
   { title: 'A Beginner’s Guide to FIRE', url: '/guides/fire/' },
+];
+const exampleItems = [
+  { title: 'Browse all 200 Coast FIRE examples', url: '/calculators/coast-fire/examples/' },
+  ...featuredCoastFireSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/coast-fire/${record.slug}/`,
+  })),
 ];
 ---
 
@@ -23,6 +31,7 @@ const guideItems = [
   faq={coastFireCalculator.faq}
   relatedItems={relatedItems}
   guideItems={guideItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { rothVsTraditionalIraCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredRothIraSeoRecords } from '../../../data/programmatic-seo/roth-ira';
 
 const relatedItems = rothVsTraditionalIraCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -12,6 +13,16 @@ const guideItems = [
     title: 'Roth IRA vs Traditional IRA',
     url: '/guides/roth-vs-traditional-ira/',
   },
+];
+const exampleItems = [
+  {
+    title: 'Browse all 200 Roth IRA examples',
+    url: '/calculators/roth-ira/examples/',
+  },
+  ...featuredRothIraSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/roth-ira/${record.slug}/`,
+  })),
 ];
 ---
 
@@ -24,6 +35,8 @@ const guideItems = [
   faq={rothVsTraditionalIraCalculator.faq}
   relatedItems={relatedItems}
   guideItems={guideItems}
+  exampleItems={exampleItems}
+  exampleHeading="More Retirement Planning Tools"
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

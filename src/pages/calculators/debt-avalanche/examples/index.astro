@@ -1,0 +1,55 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  debtAvalancheSeoRecords,
+  EXPECTED_DEBT_AVALANCHE_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/debt-avalanche';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditDebtAvalancheSeoRecords } from '../../../../lib/programmatic-seo/debt-avalanche';
+
+const audit = auditDebtAvalancheSeoRecords(
+  debtAvalancheSeoRecords,
+  EXPECTED_DEBT_AVALANCHE_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(debtAvalancheSeoRecords, [
+  {
+    id: 'moderate-extra',
+    title: 'Moderate Extra-Payment Avalanche Examples',
+    description: 'Examples where the debt budget is only slightly above required minimums.',
+    matches: (record) => record.extraMonthlyPayment <= 150,
+  },
+  {
+    id: 'aggressive-extra',
+    title: 'More Aggressive Avalanche Examples',
+    description: 'Examples with larger extra payments aimed at reducing interest faster.',
+    matches: (record) => record.extraMonthlyPayment > 150,
+  },
+]);
+---
+
+<ProgrammaticExampleIndexPage
+  title="Debt Avalanche Examples"
+  description={`Browse ${audit.actualCount} debt avalanche examples across different debt mixes, interest-rate stacks, and extra monthly payments.`}
+  eyebrow="Avalanche strategy library"
+  intro={`Browse ${audit.actualCount} worked debt avalanche examples showing how highest-interest-first repayment behaves across different debt stacks.`}
+  calculatorTitle="Debt Avalanche Calculator"
+  calculatorUrl="/calculators/debt-avalanche-calculator/"
+  examplesUrl="/calculators/debt-avalanche/examples/"
+  calculatorLinkLabel="Build your own debt avalanche"
+  count={audit.actualCount}
+  searchLabel="Search debt avalanche examples"
+  searchPlaceholder="Try family, $200 extra, card, or consolidation loan"
+  noResultsText="No debt avalanche examples found. Try a profile name, extra payment, or debt label."
+  prefix="debt-avalanche"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/debt-avalanche/${record.slug}/`,
+      subtitle: `${record.profileLabel} profile · $${record.extraMonthlyPayment.toLocaleString('en-US')} extra each month`,
+      searchText: [record.question, record.slug, record.profileLabel, record.extraMonthlyPayment, record.debt1Name, record.debt2Name, record.debt3Name].join(' '),
+    })),
+  }))}/>

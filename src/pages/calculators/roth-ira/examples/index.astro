@@ -1,0 +1,55 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  EXPECTED_ROTH_IRA_SEO_PAGE_COUNT,
+  rothIraSeoRecords,
+} from '../../../../data/programmatic-seo/roth-ira';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditRothIraSeoRecords } from '../../../../lib/programmatic-seo/roth-ira';
+
+const audit = auditRothIraSeoRecords(
+  rothIraSeoRecords,
+  EXPECTED_ROTH_IRA_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(rothIraSeoRecords, [
+  {
+    id: 'monthly',
+    title: 'Monthly Roth IRA Contribution Examples',
+    description: 'Examples using monthly Roth IRA contributions over long retirement timelines.',
+    matches: (record) => record.periodsPerYear === 12,
+  },
+  {
+    id: 'annual',
+    title: 'Annual Roth IRA Contribution Examples',
+    description: 'Examples using annual contribution schedules and long-term compounding.',
+    matches: (record) => record.periodsPerYear === 1,
+  },
+]);
+---
+
+<ProgrammaticExampleIndexPage
+  title="Roth IRA Examples"
+  description={`Browse ${audit.actualCount} Roth IRA examples across starting balances, monthly or annual contributions, time horizons, and return assumptions.`}
+  eyebrow="Roth IRA planning library"
+  intro={`Browse ${audit.actualCount} worked Roth IRA examples covering both monthly and annual contribution patterns across long-term retirement horizons.`}
+  calculatorTitle="Roth IRA Calculator"
+  calculatorUrl="/calculators/roth-ira-calculator/"
+  examplesUrl="/calculators/roth-ira/examples/"
+  calculatorLinkLabel="Project your own Roth IRA growth"
+  count={audit.actualCount}
+  searchLabel="Search Roth IRA examples"
+  searchPlaceholder="Try $25,000, $500 monthly, $6,000 yearly, or 20 years"
+  noResultsText="No Roth IRA examples found. Try a balance, contribution amount, or time horizon."
+  prefix="roth-ira"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/roth-ira/${record.slug}/`,
+      subtitle: `$${record.currentBalance.toLocaleString('en-US')} starting · $${record.contributionPerPeriod.toLocaleString('en-US')} ${record.periodsPerYear === 12 ? 'monthly' : 'yearly'}`,
+      searchText: [record.question, record.slug, record.currentBalance, record.contributionPerPeriod, record.periodsPerYear].join(' '),
+    })),
+  }))}/>

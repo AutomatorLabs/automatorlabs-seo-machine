@@ -1,0 +1,55 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  EXPECTED_HELOC_SEO_PAGE_COUNT,
+  helocSeoRecords,
+} from '../../../../data/programmatic-seo/heloc';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditHelocSeoRecords } from '../../../../lib/programmatic-seo/heloc';
+
+const audit = auditHelocSeoRecords(
+  helocSeoRecords,
+  EXPECTED_HELOC_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(helocSeoRecords, [
+  {
+    id: 'more-equity',
+    title: 'Higher-Equity HELOC Examples',
+    description: 'Examples where the mortgage balance leaves more borrowing room.',
+    matches: (record) => record.currentMortgageBalance / record.homeValue <= 0.5,
+  },
+  {
+    id: 'tighter-capacity',
+    title: 'Tighter-Capacity HELOC Examples',
+    description: 'Examples showing how a larger mortgage balance can limit the requested line.',
+    matches: (record) => record.currentMortgageBalance / record.homeValue > 0.5,
+  },
+]);
+---
+
+<ProgrammaticExampleIndexPage
+  title="HELOC Examples"
+  description={`Browse ${audit.actualCount} HELOC examples across home values, mortgage balances, CLTV caps, requested line sizes, and interest assumptions.`}
+  eyebrow="Home equity library"
+  intro={`Browse ${audit.actualCount} worked HELOC examples showing how home equity, CLTV rules, and requested line sizes interact.`}
+  calculatorTitle="HELOC Calculator"
+  calculatorUrl="/calculators/heloc-calculator/"
+  examplesUrl="/calculators/heloc/examples/"
+  calculatorLinkLabel="Estimate your own HELOC"
+  count={audit.actualCount}
+  searchLabel="Search HELOC examples"
+  searchPlaceholder="Try $600,000, 50% mortgage balance, 85% CLTV, or $75,000 requested"
+  noResultsText="No HELOC examples found. Try a home value, mortgage balance, CLTV, or requested line amount."
+  prefix="heloc"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/heloc/${record.slug}/`,
+      subtitle: `$${record.homeValue.toLocaleString('en-US')} home · $${record.currentMortgageBalance.toLocaleString('en-US')} mortgage · ${record.maximumCltvPercent}% CLTV`,
+      searchText: [record.question, record.slug, record.homeValue, record.currentMortgageBalance, record.maximumCltvPercent, record.requestedHelocAmount].join(' '),
+    })),
+  }))}/>

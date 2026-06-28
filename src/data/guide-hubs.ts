@@ -78,6 +78,42 @@ export const guideHubs: GuideHub[] = [
         description:
           'See how the 4% rule compares portfolio sizes with annual spending needs and planning timelines.',
       },
+      {
+        title: 'Coast FIRE Examples',
+        url: '/calculators/coast-fire/examples/',
+        description:
+          'See how current invested balances compare with coast FIRE thresholds across ages, spending targets, and retirement dates.',
+      },
+      {
+        title: 'Years to Retirement Examples',
+        url: '/calculators/years-to-retirement/examples/',
+        description:
+          'Compare target retirement ages with portfolio goals, contributions, and return assumptions.',
+      },
+      {
+        title: 'Retirement Income Gap Examples',
+        url: '/calculators/retirement-income-gap/examples/',
+        description:
+          'See how portfolio income and non-portfolio income can combine to support a retirement spending target.',
+      },
+      {
+        title: 'Retirement Tax Drag Examples',
+        url: '/calculators/retirement-tax-drag/examples/',
+        description:
+          'Estimate how taxes can reduce spendable retirement income over many years.',
+      },
+      {
+        title: '401(k) Examples',
+        url: '/calculators/401k/examples/',
+        description:
+          'Browse workplace-retirement growth scenarios across employee contributions, employer match, and compounding timelines.',
+      },
+      {
+        title: 'Roth IRA Examples',
+        url: '/calculators/roth-ira/examples/',
+        description:
+          'Browse Roth IRA growth scenarios across starting balances, contribution schedules, and long-term compounding.',
+      },
     ],
     comparisonGuideLinks: [
       {
@@ -223,6 +259,18 @@ export const guideHubs: GuideHub[] = [
         url: '/calculators/retirement-withdrawal/examples/',
         description:
           'Browse withdrawal scenarios by portfolio size, annual income need, return, inflation, and duration.',
+      },
+      {
+        title: 'Coast FIRE Examples',
+        url: '/calculators/coast-fire/examples/',
+        description:
+          'Compare current invested balances with future retirement targets across ages and spending assumptions.',
+      },
+      {
+        title: 'Years to Retirement Examples',
+        url: '/calculators/years-to-retirement/examples/',
+        description:
+          'Compare timeline scenarios across current age, target retirement date, portfolio goal, and ongoing savings.',
       },
     ],
     comparisonGuideLinks: [
@@ -769,6 +817,24 @@ export const guideHubs: GuideHub[] = [
     ],
     exampleCollectionLinks: [
       {
+        title: 'Debt Payoff Examples',
+        url: '/calculators/debt-payoff/examples/',
+        description:
+          'Compare single-debt payoff timelines across balances, rates, monthly payments, and extra principal.',
+      },
+      {
+        title: 'Debt Snowball Examples',
+        url: '/calculators/debt-snowball/examples/',
+        description:
+          'Review smallest-balance-first payoff scenarios across different debt mixes and extra monthly budgets.',
+      },
+      {
+        title: 'Debt Avalanche Examples',
+        url: '/calculators/debt-avalanche/examples/',
+        description:
+          'Review highest-interest-first payoff scenarios across different debt mixes and extra monthly budgets.',
+      },
+      {
         title: 'Credit Card Payoff Examples',
         url: '/calculators/credit-card-payoff/examples/',
         description:
@@ -779,6 +845,30 @@ export const guideHubs: GuideHub[] = [
         url: '/calculators/balance-transfer/examples/',
         description:
           'Review promotional APRs, transfer fees, payoff timelines, and interest savings before moving a balance.',
+      },
+      {
+        title: 'Loan Payment Examples',
+        url: '/calculators/loan-payment/examples/',
+        description:
+          'Browse fixed-rate loan examples across balances, APRs, terms, and extra monthly payments.',
+      },
+      {
+        title: 'Auto Loan Examples',
+        url: '/calculators/auto-loan/examples/',
+        description:
+          'Browse vehicle financing scenarios across prices, down payments, trade-ins, rates, and terms.',
+      },
+      {
+        title: 'Student Loan Examples',
+        url: '/calculators/student-loan/examples/',
+        description:
+          'Browse student loan scenarios across balances, rates, repayment terms, and extra monthly payments.',
+      },
+      {
+        title: 'Student Loan Payoff Examples',
+        url: '/calculators/student-loan-payoff/examples/',
+        description:
+          'Compare payoff timelines for student loan balances using different current and extra payment assumptions.',
       },
     ],
     comparisonGuideLinks: [
@@ -1025,6 +1115,18 @@ export const guideHubs: GuideHub[] = [
         url: '/calculators/mortgage/examples/',
         description:
           'Browse fixed-rate mortgage examples by price, down payment, loan amount, interest rate, and term.',
+      },
+      {
+        title: 'Mortgage Payoff Examples',
+        url: '/calculators/mortgage-payoff/examples/',
+        description:
+          'Browse extra-principal mortgage payoff scenarios across balances, rates, terms, and accelerated-payment strategies.',
+      },
+      {
+        title: 'HELOC Examples',
+        url: '/calculators/heloc/examples/',
+        description:
+          'Browse home equity line scenarios across home values, mortgage balances, CLTV limits, and rate assumptions.',
       },
     ],
     comparisonGuideLinks: [
@@ -1302,10 +1404,34 @@ export const guideHubs: GuideHub[] = [
           'Browse worked savings scenarios for emergency funds, down payments, vacations, cars, retirement, education, and other goals.',
       },
       {
+        title: 'Monthly Savings Examples',
+        url: '/calculators/monthly-savings/examples/',
+        description:
+          'Browse worked monthly savings plans across starter funds, major purchases, family targets, and catch-up scenarios.',
+      },
+      {
+        title: 'Savings Growth Examples',
+        url: '/calculators/savings-growth/examples/',
+        description:
+          'Browse future-value savings projections across existing balances, monthly deposits, high-yield accounts, and retirement-oriented timelines.',
+      },
+      {
         title: 'Emergency Fund Examples',
         url: '/calculators/emergency-fund/examples/',
         description:
           'Browse worked emergency-fund scenarios across starter buffers, multi-month reserves, family cash targets, and job-transition planning.',
+      },
+      {
+        title: 'Vacation Savings Examples',
+        url: '/calculators/vacation-savings/examples/',
+        description:
+          'Browse travel savings scenarios across weekend trips, family vacations, international travel, and retirement travel goals.',
+      },
+      {
+        title: 'Car Savings Examples',
+        url: '/calculators/car-savings/examples/',
+        description:
+          'Browse vehicle savings scenarios across down payments, used cars, new cars, family SUVs, and replacement-car planning.',
       },
     ],
     comparisonGuideLinks: [

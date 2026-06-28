@@ -1,0 +1,61 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  EXPECTED_401K_SEO_PAGE_COUNT,
+  fourOhOneKSeoRecords,
+} from '../../../../data/programmatic-seo/401k';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { audit401kSeoRecords } from '../../../../lib/programmatic-seo/401k';
+
+const audit = audit401kSeoRecords(
+  fourOhOneKSeoRecords,
+  EXPECTED_401K_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(fourOhOneKSeoRecords, [
+  {
+    id: 'starting-small',
+    title: 'Early 401(k) Balance Examples',
+    description: 'Examples starting from smaller balances and building momentum through recurring contributions.',
+    matches: (record) => record.currentBalance <= 25000,
+  },
+  {
+    id: 'mid-balance',
+    title: 'Mid-Balance 401(k) Examples',
+    description: 'Examples for established 401(k) savers with moderate balances and contribution rates.',
+    matches: (record) => record.currentBalance > 25000 && record.currentBalance <= 150000,
+  },
+  {
+    id: 'larger-balance',
+    title: 'Larger 401(k) Balance Examples',
+    description: 'Examples for bigger workplace-plan balances and longer compounding windows.',
+    matches: (record) => record.currentBalance > 150000,
+  },
+]);
+---
+
+<ProgrammaticExampleIndexPage
+  title="401(k) Examples"
+  description={`Browse ${audit.actualCount} 401(k) examples across starting balances, employee contributions, employer match amounts, time horizons, and return assumptions.`}
+  eyebrow="401(k) planning library"
+  intro={`Browse ${audit.actualCount} worked examples for 401(k) growth across different balances, contribution patterns, employer-match setups, and long-term retirement timelines.`}
+  calculatorTitle="401(k) Calculator"
+  calculatorUrl="/calculators/401k-calculator/"
+  examplesUrl="/calculators/401k/examples/"
+  calculatorLinkLabel="Model your own 401(k) plan"
+  count={audit.actualCount}
+  searchLabel="Search 401(k) examples"
+  searchPlaceholder="Try $75,000, $1,000 monthly, $250 match, or 20 years"
+  noResultsText="No 401(k) examples found. Try a balance, contribution amount, or time horizon."
+  prefix="401k"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/401k/${record.slug}/`,
+      subtitle: `$${record.currentBalance.toLocaleString('en-US')} starting · $${record.employeeMonthlyContribution.toLocaleString('en-US')} employee · $${record.employerMonthlyMatch.toLocaleString('en-US')} match`,
+      searchText: [record.question, record.slug, record.currentBalance, record.employeeMonthlyContribution, record.employerMonthlyMatch].join(' '),
+    })),
+  }))}/>

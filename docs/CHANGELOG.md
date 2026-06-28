@@ -2,6 +2,11 @@
 
 ## 2026-06-28
 
+- Added new retirement worked-example clusters for `coast-fire`, `years-to-retirement`, `retirement-income-gap`, `portfolio-withdrawal-sustainability`, `retirement-tax-drag`, `401k`, and `roth-ira`, plus retirement-family calculator, topic, guide, and examples-hub links.
+- Added new debt-oriented worked-example clusters for `loan-payment`, `mortgage-payoff`, `debt-payoff`, `debt-snowball`, `debt-avalanche`, `auto-loan`, `student-loan`, `student-loan-payoff`, and `heloc`, plus calculator, topic, guide, registry, and Playwright coverage updates.
+- Updated verified docs counts to reflect 34 live programmatic SEO clusters, 7,053 built pages, and 298 Playwright checks in the current repo snapshot.
+- Added new Savings Growth, Monthly Savings, Vacation Savings, and Car Savings programmatic example clusters with 200 worked examples each, plus calculator, topic, and guide links into the shared examples ecosystem.
+- Updated verified docs counts to reflect 27 live programmatic SEO clusters, 5,646 built pages, and 284 Playwright checks in the current repo snapshot.
 - Added a new Expense Ratio programmatic example cluster with 200 worked examples under `/calculators/expense-ratio/`, plus calculator, topic, and guide links into the shared examples ecosystem.
 - Added a new DRIP programmatic example cluster with 200 worked examples under `/calculators/drip/`, plus calculator, topic, and guide links into the shared examples ecosystem.
 - Added a new Dividend Yield programmatic example cluster with 200 worked examples under `/calculators/dividend-yield/`, plus calculator, topic, and guide links into the shared examples ecosystem.

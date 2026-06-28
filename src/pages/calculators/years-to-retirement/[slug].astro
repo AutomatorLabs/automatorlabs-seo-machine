@@ -1,0 +1,32 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_YEARS_TO_RETIREMENT_SEO_PAGE_COUNT,
+  yearsToRetirementSeoRecords,
+} from '../../../data/programmatic-seo/years-to-retirement';
+import {
+  auditYearsToRetirementSeoRecords,
+  createYearsToRetirementSeoPage,
+} from '../../../lib/programmatic-seo/years-to-retirement';
+
+auditYearsToRetirementSeoRecords(
+  yearsToRetirementSeoRecords,
+  EXPECTED_YEARS_TO_RETIREMENT_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return yearsToRetirementSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createYearsToRetirementSeoPage(
+        record,
+        yearsToRetirementSeoRecords,
+      ),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

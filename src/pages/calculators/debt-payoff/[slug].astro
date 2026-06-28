@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  debtPayoffSeoRecords,
+  EXPECTED_DEBT_PAYOFF_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/debt-payoff';
+import {
+  auditDebtPayoffSeoRecords,
+  createDebtPayoffSeoPage,
+} from '../../../lib/programmatic-seo/debt-payoff';
+
+auditDebtPayoffSeoRecords(
+  debtPayoffSeoRecords,
+  EXPECTED_DEBT_PAYOFF_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return debtPayoffSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createDebtPayoffSeoPage(record, debtPayoffSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

@@ -7,6 +7,13 @@ const relatedItems = autoLoanCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+
+const exampleItems = [
+  {
+    title: 'Browse all 200 auto loan examples',
+    url: '/calculators/auto-loan/examples/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +24,7 @@ const relatedItems = autoLoanCalculator.relatedIds.flatMap((id) => {
   outputs={autoLoanCalculator.outputs}
   faq={autoLoanCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

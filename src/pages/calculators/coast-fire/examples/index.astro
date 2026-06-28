@@ -1,0 +1,61 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  coastFireSeoRecords,
+  EXPECTED_COAST_FIRE_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/coast-fire';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditCoastFireSeoRecords } from '../../../../lib/programmatic-seo/coast-fire';
+
+const audit = auditCoastFireSeoRecords(
+  coastFireSeoRecords,
+  EXPECTED_COAST_FIRE_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(coastFireSeoRecords, [
+  {
+    id: 'early-career',
+    title: 'Early Career Coast FIRE Examples',
+    description: 'Examples for younger savers testing whether current investments may already carry enough future compounding.',
+    matches: (record) => record.currentAge <= 30,
+  },
+  {
+    id: 'mid-career',
+    title: 'Mid-Career Coast FIRE Examples',
+    description: 'Examples for savers comparing current invested assets with a future retirement target in their 30s and 40s.',
+    matches: (record) => record.currentAge > 30 && record.currentAge <= 40,
+  },
+  {
+    id: 'later-start',
+    title: 'Later-Start Coast FIRE Examples',
+    description: 'Examples for savers with shorter compounding windows before the planned retirement age.',
+    matches: (record) => record.currentAge > 40,
+  },
+]);
+---
+
+<ProgrammaticExampleIndexPage
+  title="Coast FIRE Examples"
+  description={`Browse ${audit.actualCount} Coast FIRE examples across current ages, invested balances, retirement ages, spending targets, and return assumptions.`}
+  eyebrow="Coast FIRE scenario library"
+  intro={`Browse ${audit.actualCount} worked Coast FIRE examples covering early-career, mid-career, and later-start retirement planning scenarios.`}
+  calculatorTitle="Coast FIRE Calculator"
+  calculatorUrl="/calculators/coast-fire-calculator/"
+  examplesUrl="/calculators/coast-fire/examples/"
+  calculatorLinkLabel="Check your own Coast FIRE numbers"
+  count={audit.actualCount}
+  searchLabel="Search Coast FIRE examples"
+  searchPlaceholder="Try age 35, $100,000, retire at 60, or $40,000 spending"
+  noResultsText="No Coast FIRE examples found. Try an age, savings balance, or spending amount."
+  prefix="coast-fire"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/coast-fire/${record.slug}/`,
+      subtitle: `${record.currentAge} now · retire at ${record.retirementAge} · $${record.currentInvestedAssets.toLocaleString('en-US')} invested`,
+      searchText: [record.question, record.slug, record.currentAge, record.retirementAge, record.currentInvestedAssets, record.annualExpenses].join(' '),
+    })),
+  }))}/>

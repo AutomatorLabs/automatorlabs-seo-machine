@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_MONTHLY_SAVINGS_SEO_PAGE_COUNT,
+  monthlySavingsSeoRecords,
+} from '../../../data/programmatic-seo/monthly-savings';
+import {
+  auditMonthlySavingsSeoRecords,
+  createMonthlySavingsSeoPage,
+} from '../../../lib/programmatic-seo/monthly-savings';
+
+const audit = auditMonthlySavingsSeoRecords(
+  monthlySavingsSeoRecords,
+  EXPECTED_MONTHLY_SAVINGS_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return monthlySavingsSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createMonthlySavingsSeoPage(record, monthlySavingsSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

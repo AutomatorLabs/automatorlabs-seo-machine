@@ -15,14 +15,34 @@ import {
   balanceTransferSeoRecords,
   creditCardPayoffSeoRecords,
 } from './debt';
+import { debtAvalancheSeoRecords } from './debt-avalanche';
+import { debtPayoffSeoRecords } from './debt-payoff';
+import { debtSnowballSeoRecords } from './debt-snowball';
 import { fireSeoRecords } from './fire';
+import { helocSeoRecords } from './heloc';
+import { coastFireSeoRecords } from './coast-fire';
 import { investmentGrowthSeoRecords } from './investment-growth';
 import { lumpSumVsDcaSeoRecords } from './lump-sum-vs-dca';
+import { loanPaymentSeoRecords } from './loan-payment';
 import { mortgageSeoRecords } from './mortgage';
+import { mortgagePayoffSeoRecords } from './mortgage-payoff';
+import { fourOhOneKSeoRecords } from './401k';
 import { realRateOfReturnSeoRecords } from './real-rate-of-return';
+import { retirementIncomeGapSeoRecords } from './retirement-income-gap';
+import { retirementTaxDragSeoRecords } from './retirement-tax-drag';
 import { retirementWithdrawalSeoRecords } from './retirement-withdrawal';
+import { rothIraSeoRecords } from './roth-ira';
 import { safeWithdrawalRateSeoRecords } from './safe-withdrawal-rate';
+import { autoLoanSeoRecords } from './auto-loan';
+import { carSavingsSeoRecords } from './car-savings';
+import { monthlySavingsSeoRecords } from './monthly-savings';
+import { portfolioWithdrawalSustainabilitySeoRecords } from './portfolio-withdrawal-sustainability';
 import { savingsGoalSeoRecords } from './savings-goal';
+import { savingsGrowthSeoRecords } from './savings-growth';
+import { studentLoanPayoffSeoRecords } from './student-loan-payoff';
+import { studentLoanSeoRecords } from './student-loan';
+import { vacationSavingsSeoRecords } from './vacation-savings';
+import { yearsToRetirementSeoRecords } from './years-to-retirement';
 
 export interface ProgrammaticSeoClusterSummary {
   id: string;
@@ -190,6 +210,19 @@ const inflationAdjustedReturnRepresentatives = [
   ),
 ].filter((record) => record !== undefined);
 
+const savingsGrowthRepresentatives = [
+  savingsGrowthSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'savings-growth-10000-starting-500-monthly-at-3-5-percent-for-10-years',
+  ),
+  savingsGrowthSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retirement-savings-growth-100000-starting-1000-monthly-at-5-5-percent-for-20-years',
+  ),
+].filter((record) => record !== undefined);
+
 const emergencyFundRepresentatives = [
   emergencyFundSeoRecords.find(
     (record) =>
@@ -200,6 +233,45 @@ const emergencyFundRepresentatives = [
     (record) =>
       record.slug ===
       'family-emergency-fund-6000-monthly-expenses-6-months-10000-saved-1700-monthly',
+  ),
+].filter((record) => record !== undefined);
+
+const monthlySavingsRepresentatives = [
+  monthlySavingsSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'milestone-monthly-savings-25000-goal-3-years-5000-saved-at-3-25-percent',
+  ),
+  monthlySavingsSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'catch-up-monthly-savings-50000-goal-4-years-15000-saved-at-3-5-percent',
+  ),
+].filter((record) => record !== undefined);
+
+const vacationSavingsRepresentatives = [
+  vacationSavingsSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'family-vacation-savings-6000-goal-3-years-3000-saved-at-3-percent',
+  ),
+  vacationSavingsSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'luxury-vacation-savings-20000-goal-5-years-10000-saved-at-3-25-percent',
+  ),
+].filter((record) => record !== undefined);
+
+const carSavingsRepresentatives = [
+  carSavingsSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'new-car-savings-30000-goal-5-years-10000-saved-at-3-percent',
+  ),
+  carSavingsSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'family-suv-savings-50000-goal-6-years-20000-saved-at-3-25-percent',
   ),
 ].filter((record) => record !== undefined);
 
@@ -219,6 +291,32 @@ const fireRepresentatives = [
   fireSeoRecords.find(
     (record) =>
       record.slug === 'can-i-retire-with-1000000-and-40000-spending',
+  ),
+].filter((record) => record !== undefined);
+
+const coastFireRepresentatives = [
+  coastFireSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'coast-fire-age-35-retire-60-with-100000-saved-for-40000-spending-at-7-percent',
+  ),
+  coastFireSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'coast-fire-age-45-retire-65-with-250000-saved-for-80000-spending-at-6-percent',
+  ),
+].filter((record) => record !== undefined);
+
+const fourOhOneKRepresentatives = [
+  fourOhOneKSeoRecords.find(
+    (record) =>
+      record.slug ===
+      '401k-growth-75000-starting-1000-employee-250-match-at-7-percent-for-20-years',
+  ),
+  fourOhOneKSeoRecords.find(
+    (record) =>
+      record.slug ===
+      '401k-growth-300000-starting-1500-employee-250-match-at-8-percent-for-25-years',
   ),
 ].filter((record) => record !== undefined);
 
@@ -242,6 +340,19 @@ const mortgageRepresentatives = [
   mortgageSeoRecords.find(
     (record) =>
       record.slug === '750000-mortgage-at-5-5-percent-for-15-years',
+  ),
+].filter((record) => record !== undefined);
+
+const mortgagePayoffRepresentatives = [
+  mortgagePayoffSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'mortgage-payoff-250000-at-6-percent-for-30-years-with-500-extra',
+  ),
+  mortgagePayoffSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'mortgage-payoff-500000-at-6-5-percent-for-30-years-with-500-extra',
   ),
 ].filter((record) => record !== undefined);
 
@@ -281,6 +392,106 @@ const balanceTransferRepresentatives = [
   ),
 ].filter((record) => record !== undefined);
 
+const loanPaymentRepresentatives = [
+  loanPaymentSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'loan-payment-10000-at-6-5-percent-for-4-years-with-50-extra',
+  ),
+  loanPaymentSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'loan-payment-27500-at-8-5-percent-for-6-years-with-100-extra',
+  ),
+].filter((record) => record !== undefined);
+
+const debtPayoffRepresentatives = [
+  debtPayoffSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'debt-payoff-4000-at-12-percent-with-200-payment-and-50-extra',
+  ),
+  debtPayoffSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'debt-payoff-20000-at-24-percent-with-500-payment-and-200-extra',
+  ),
+].filter((record) => record !== undefined);
+
+const debtSnowballRepresentatives = [
+  debtSnowballSeoRecords.find(
+    (record) =>
+      record.slug === 'debt-snowball-rebuild-120-scale-with-200-extra',
+  ),
+  debtSnowballSeoRecords.find(
+    (record) =>
+      record.slug === 'debt-snowball-family-100-scale-with-150-extra',
+  ),
+].filter((record) => record !== undefined);
+
+const debtAvalancheRepresentatives = [
+  debtAvalancheSeoRecords.find(
+    (record) =>
+      record.slug === 'debt-avalanche-rebuild-120-scale-with-200-extra',
+  ),
+  debtAvalancheSeoRecords.find(
+    (record) =>
+      record.slug === 'debt-avalanche-mixed-100-scale-with-150-extra',
+  ),
+].filter((record) => record !== undefined);
+
+const autoLoanRepresentatives = [
+  autoLoanSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'auto-loan-30000-price-6000-down-2000-trade-in-5-5-percent-for-5-years',
+  ),
+  autoLoanSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'auto-loan-55000-price-8000-down-4000-trade-in-6-5-percent-for-6-years',
+  ),
+].filter((record) => record !== undefined);
+
+const studentLoanRepresentatives = [
+  studentLoanSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'student-loan-40000-at-6-percent-for-10-years-with-100-extra',
+  ),
+  studentLoanSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'student-loan-62500-at-7-percent-for-15-years-with-200-extra',
+  ),
+].filter((record) => record !== undefined);
+
+const studentLoanPayoffRepresentatives = [
+  studentLoanPayoffSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'student-loan-payoff-30000-at-6-percent-with-275-payment-and-75-extra',
+  ),
+  studentLoanPayoffSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'student-loan-payoff-60000-at-7-percent-with-400-payment-and-125-extra',
+  ),
+].filter((record) => record !== undefined);
+
+const helocRepresentatives = [
+  helocSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'heloc-600000-home-value-300000-mortgage-85-cltv-75000-requested-at-7-75-percent',
+  ),
+  helocSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'heloc-1000000-home-value-450000-mortgage-90-cltv-150000-requested-at-8-5-percent',
+  ),
+].filter((record) => record !== undefined);
+
 const retirementWithdrawalRepresentatives = [
   retirementWithdrawalSeoRecords.find(
     (record) =>
@@ -291,6 +502,71 @@ const retirementWithdrawalRepresentatives = [
     (record) =>
       record.slug ===
       'withdraw-100000-per-year-from-2000000-for-30-years-at-7-return-3-inflation',
+  ),
+].filter((record) => record !== undefined);
+
+const retirementIncomeGapRepresentatives = [
+  retirementIncomeGapSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retirement-income-gap-100000-income-with-1500000-portfolio-and-55000-non-portfolio-income-at-4-percent',
+  ),
+  retirementIncomeGapSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retirement-income-gap-75000-income-with-1000000-portfolio-and-18000-non-portfolio-income-at-5-percent',
+  ),
+].filter((record) => record !== undefined);
+
+const retirementTaxDragRepresentatives = [
+  retirementTaxDragSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retirement-tax-drag-75000-withdrawal-20-tax-for-30-years-at-3-inflation',
+  ),
+  retirementTaxDragSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retirement-tax-drag-150000-withdrawal-25-tax-for-30-years-at-4-inflation',
+  ),
+].filter((record) => record !== undefined);
+
+const rothIraRepresentatives = [
+  rothIraSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'roth-ira-25000-starting-500-monthly-at-7-percent-for-20-years',
+  ),
+  rothIraSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'roth-ira-100000-starting-1000-monthly-at-7-percent-for-30-years',
+  ),
+].filter((record) => record !== undefined);
+
+const portfolioWithdrawalSustainabilityRepresentatives = [
+  portfolioWithdrawalSustainabilitySeoRecords.find(
+    (record) =>
+      record.slug ===
+      'portfolio-withdrawal-sustainability-1000000-with-50000-annual-for-30-years-at-7-return-3-inflation',
+  ),
+  portfolioWithdrawalSustainabilitySeoRecords.find(
+    (record) =>
+      record.slug ===
+      'portfolio-withdrawal-sustainability-3000000-with-100000-annual-for-30-years-at-7-return-3-inflation',
+  ),
+].filter((record) => record !== undefined);
+
+const yearsToRetirementRepresentatives = [
+  yearsToRetirementSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retire-by-60-starting-age-40-with-250000-saved-target-2000000-and-1500-monthly-at-7-percent',
+  ),
+  yearsToRetirementSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'retire-by-65-starting-age-50-with-500000-saved-target-2000000-and-2000-monthly-at-7-percent',
   ),
 ].filter((record) => record !== undefined);
 
@@ -542,6 +818,46 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     })),
   },
   {
+    id: 'coast-fire',
+    title: 'Coast FIRE Examples',
+    description:
+      'Compare current ages, retirement ages, invested balances, and spending targets to see when current assets may already do more of the long-term work.',
+    examplesUrl: '/calculators/coast-fire/examples/',
+    calculator: {
+      title: 'Coast FIRE Calculator',
+      url: '/calculators/coast-fire-calculator/',
+    },
+    guide: {
+      title: 'FIRE vs Coast FIRE',
+      url: '/guides/fire-vs-coast-fire/',
+    },
+    pageCount: coastFireSeoRecords.length,
+    representativePages: coastFireRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/coast-fire/${record.slug}/`,
+    })),
+  },
+  {
+    id: '401k',
+    title: '401(k) Examples',
+    description:
+      'Explore workplace-retirement examples across starting balances, employee contributions, employer match, and long-term compounding.',
+    examplesUrl: '/calculators/401k/examples/',
+    calculator: {
+      title: '401(k) Calculator',
+      url: '/calculators/401k-calculator/',
+    },
+    guide: {
+      title: 'Retirement Planning Guide Hub',
+      url: '/guides/retirement/',
+    },
+    pageCount: fourOhOneKSeoRecords.length,
+    representativePages: fourOhOneKRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/401k/${record.slug}/`,
+    })),
+  },
+  {
     id: 'investment-growth',
     title: 'Investment Growth Examples',
     description:
@@ -559,6 +875,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: investmentGrowthRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/investment-growth/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'savings-growth',
+    title: 'Savings Growth Examples',
+    description:
+      'Explore future-value examples across existing balances, recurring monthly savings, high-yield accounts, conservative projections, and retirement-oriented timelines.',
+    examplesUrl: '/calculators/savings-growth/examples/',
+    calculator: {
+      title: 'Savings Growth Calculator',
+      url: '/calculators/savings-growth-calculator/',
+    },
+    guide: {
+      title: 'What Is Compound Interest?',
+      url: '/guides/what-is-compound-interest/',
+    },
+    pageCount: savingsGrowthSeoRecords.length,
+    representativePages: savingsGrowthRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/savings-growth/${record.slug}/`,
     })),
   },
   {
@@ -599,6 +935,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: mortgageRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/mortgage/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'mortgage-payoff',
+    title: 'Mortgage Payoff Examples',
+    description:
+      'Explore extra-principal mortgage scenarios across loan balances, rates, terms, and accelerated payoff strategies.',
+    examplesUrl: '/calculators/mortgage-payoff/examples/',
+    calculator: {
+      title: 'Mortgage Payoff Calculator',
+      url: '/calculators/mortgage-payoff-calculator/',
+    },
+    guide: {
+      title: 'Mortgage and Home Buying Guide Hub',
+      url: '/guides/mortgage/',
+    },
+    pageCount: mortgagePayoffSeoRecords.length,
+    representativePages: mortgagePayoffRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/mortgage-payoff/${record.slug}/`,
     })),
   },
   {
@@ -664,6 +1020,66 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     })),
   },
   {
+    id: 'monthly-savings',
+    title: 'Monthly Savings Examples',
+    description:
+      'Explore worked monthly savings plans across starter funds, milestones, family goals, major purchases, and catch-up scenarios.',
+    examplesUrl: '/calculators/monthly-savings/examples/',
+    calculator: {
+      title: 'Monthly Savings Calculator',
+      url: '/calculators/monthly-savings-calculator/',
+    },
+    guide: {
+      title: 'Savings Planning Guide Hub',
+      url: '/guides/savings/',
+    },
+    pageCount: monthlySavingsSeoRecords.length,
+    representativePages: monthlySavingsRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/monthly-savings/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'vacation-savings',
+    title: 'Vacation Savings Examples',
+    description:
+      'Explore trip-funding examples across weekend getaways, family travel, international trips, luxury vacations, and retirement travel goals.',
+    examplesUrl: '/calculators/vacation-savings/examples/',
+    calculator: {
+      title: 'Vacation Savings Calculator',
+      url: '/calculators/vacation-savings-calculator/',
+    },
+    guide: {
+      title: 'How to Use the Vacation Savings Calculator',
+      url: '/guides/how-to-use-vacation-savings-calculator/',
+    },
+    pageCount: vacationSavingsSeoRecords.length,
+    representativePages: vacationSavingsRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/vacation-savings/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'car-savings',
+    title: 'Car Savings Examples',
+    description:
+      'Explore vehicle-funding examples across down payments, used cars, new cars, family SUVs, and replacement-car savings plans.',
+    examplesUrl: '/calculators/car-savings/examples/',
+    calculator: {
+      title: 'Car Savings Calculator',
+      url: '/calculators/car-savings-calculator/',
+    },
+    guide: {
+      title: 'How to Use the Car Savings Calculator',
+      url: '/guides/how-to-use-car-savings-calculator/',
+    },
+    pageCount: carSavingsSeoRecords.length,
+    representativePages: carSavingsRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/car-savings/${record.slug}/`,
+    })),
+  },
+  {
     id: 'savings-goal',
     title: 'Savings Goal Examples',
     description:
@@ -704,6 +1120,66 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     })),
   },
   {
+    id: 'debt-payoff',
+    title: 'Debt Payoff Examples',
+    description:
+      'Explore single-debt payoff scenarios across balances, APRs, monthly payments, and extra-payment strategies.',
+    examplesUrl: '/calculators/debt-payoff/examples/',
+    calculator: {
+      title: 'Debt Payoff Calculator',
+      url: '/calculators/debt-payoff-calculator/',
+    },
+    guide: {
+      title: 'How to Build a Debt Payoff Plan',
+      url: '/guides/debt-payoff/',
+    },
+    pageCount: debtPayoffSeoRecords.length,
+    representativePages: debtPayoffRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/debt-payoff/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'debt-snowball',
+    title: 'Debt Snowball Examples',
+    description:
+      'Explore smallest-balance-first payoff scenarios across different debt mixes and extra-payment budgets.',
+    examplesUrl: '/calculators/debt-snowball/examples/',
+    calculator: {
+      title: 'Debt Snowball Calculator',
+      url: '/calculators/debt-snowball-calculator/',
+    },
+    guide: {
+      title: 'Debt Snowball vs Debt Avalanche',
+      url: '/guides/debt-snowball-vs-debt-avalanche/',
+    },
+    pageCount: debtSnowballSeoRecords.length,
+    representativePages: debtSnowballRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/debt-snowball/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'debt-avalanche',
+    title: 'Debt Avalanche Examples',
+    description:
+      'Explore highest-interest-first payoff scenarios across different debt mixes and extra-payment budgets.',
+    examplesUrl: '/calculators/debt-avalanche/examples/',
+    calculator: {
+      title: 'Debt Avalanche Calculator',
+      url: '/calculators/debt-avalanche-calculator/',
+    },
+    guide: {
+      title: 'Debt Snowball vs Debt Avalanche',
+      url: '/guides/debt-snowball-vs-debt-avalanche/',
+    },
+    pageCount: debtAvalancheSeoRecords.length,
+    representativePages: debtAvalancheRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/debt-avalanche/${record.slug}/`,
+    })),
+  },
+  {
     id: 'balance-transfer',
     title: 'Balance Transfer Examples',
     description:
@@ -721,6 +1197,107 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: balanceTransferRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/balance-transfer/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'loan-payment',
+    title: 'Loan Payment Examples',
+    description:
+      'Explore fixed-rate loan scenarios across loan amounts, APRs, terms, and extra principal payments.',
+    examplesUrl: '/calculators/loan-payment/examples/',
+    calculator: {
+      title: 'Loan Payment Calculator',
+      url: '/calculators/loan-payment-calculator/',
+    },
+    guide: {
+      title: 'How to Build a Debt Payoff Plan',
+      url: '/guides/debt-payoff/',
+    },
+    pageCount: loanPaymentSeoRecords.length,
+    representativePages: loanPaymentRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/loan-payment/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'auto-loan',
+    title: 'Auto Loan Examples',
+    description:
+      'Explore vehicle financing scenarios across prices, down payments, trade-ins, rates, and loan terms.',
+    examplesUrl: '/calculators/auto-loan/examples/',
+    calculator: {
+      title: 'Auto Loan Calculator',
+      url: '/calculators/auto-loan-calculator/',
+    },
+    guide: {
+      title: 'How to Build a Debt Payoff Plan',
+      url: '/guides/debt-payoff/',
+    },
+    pageCount: autoLoanSeoRecords.length,
+    representativePages: autoLoanRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/auto-loan/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'student-loan',
+    title: 'Student Loan Examples',
+    description:
+      'Explore fixed-term student loan scenarios across balances, interest rates, payoff horizons, and extra monthly payments.',
+    examplesUrl: '/calculators/student-loan/examples/',
+    calculator: {
+      title: 'Student Loan Calculator',
+      url: '/calculators/student-loan-calculator/',
+    },
+    guide: {
+      title: 'How to Build a Debt Payoff Plan',
+      url: '/guides/debt-payoff/',
+    },
+    pageCount: studentLoanSeoRecords.length,
+    representativePages: studentLoanRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/student-loan/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'student-loan-payoff',
+    title: 'Student Loan Payoff Examples',
+    description:
+      'Explore student loan payoff scenarios across balances, rates, current payments, and extra monthly principal.',
+    examplesUrl: '/calculators/student-loan-payoff/examples/',
+    calculator: {
+      title: 'Student Loan Payoff Calculator',
+      url: '/calculators/student-loan-payoff-calculator/',
+    },
+    guide: {
+      title: 'How to Build a Debt Payoff Plan',
+      url: '/guides/debt-payoff/',
+    },
+    pageCount: studentLoanPayoffSeoRecords.length,
+    representativePages:
+      studentLoanPayoffRepresentatives.map((record) => ({
+        title: record.question,
+        url: `/calculators/student-loan-payoff/${record.slug}/`,
+      })),
+  },
+  {
+    id: 'heloc',
+    title: 'HELOC Examples',
+    description:
+      'Explore home equity line scenarios across home values, mortgage balances, CLTV limits, and variable-rate assumptions.',
+    examplesUrl: '/calculators/heloc/examples/',
+    calculator: {
+      title: 'HELOC Calculator',
+      url: '/calculators/heloc-calculator/',
+    },
+    guide: {
+      title: 'Mortgage and Home Buying Guide Hub',
+      url: '/guides/mortgage/',
+    },
+    pageCount: helocSeoRecords.length,
+    representativePages: helocRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/heloc/${record.slug}/`,
     })),
   },
   {
@@ -744,6 +1321,87 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     })),
   },
   {
+    id: 'retirement-income-gap',
+    title: 'Retirement Income Gap Examples',
+    description:
+      'Compare desired retirement income with Social Security, pension, rental income, dividends, passive income, and portfolio support.',
+    examplesUrl: '/calculators/retirement-income-gap/examples/',
+    calculator: {
+      title: 'Retirement Income Gap Calculator',
+      url: '/calculators/retirement-income-gap-calculator/',
+    },
+    guide: {
+      title: 'Retirement Planning Guide Hub',
+      url: '/guides/retirement/',
+    },
+    pageCount: retirementIncomeGapSeoRecords.length,
+    representativePages: retirementIncomeGapRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/retirement-income-gap/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'portfolio-withdrawal-sustainability',
+    title: 'Portfolio Withdrawal Sustainability Examples',
+    description:
+      'Explore withdrawal-durability scenarios across portfolio sizes, annual spending, retirement length, return assumptions, and inflation.',
+    examplesUrl: '/calculators/portfolio-withdrawal-sustainability/examples/',
+    calculator: {
+      title: 'Portfolio Withdrawal Sustainability Calculator',
+      url: '/calculators/portfolio-withdrawal-sustainability-calculator/',
+    },
+    guide: {
+      title: 'Planning Retirement Withdrawals',
+      url: '/guides/retirement-withdrawals/',
+    },
+    pageCount: portfolioWithdrawalSustainabilitySeoRecords.length,
+    representativePages:
+      portfolioWithdrawalSustainabilityRepresentatives.map((record) => ({
+        title: record.question,
+        url: `/calculators/portfolio-withdrawal-sustainability/${record.slug}/`,
+      })),
+  },
+  {
+    id: 'retirement-tax-drag',
+    title: 'Retirement Tax Drag Examples',
+    description:
+      'Explore retirement tax-drag scenarios across annual withdrawals, tax rates, retirement lengths, and inflation assumptions.',
+    examplesUrl: '/calculators/retirement-tax-drag/examples/',
+    calculator: {
+      title: 'Retirement Tax Drag Calculator',
+      url: '/calculators/retirement-tax-drag-calculator/',
+    },
+    guide: {
+      title: 'Roth IRA vs Traditional IRA',
+      url: '/guides/roth-vs-traditional-ira/',
+    },
+    pageCount: retirementTaxDragSeoRecords.length,
+    representativePages: retirementTaxDragRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/retirement-tax-drag/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'roth-ira',
+    title: 'Roth IRA Examples',
+    description:
+      'Explore Roth IRA growth scenarios across starting balances, monthly or annual contributions, return assumptions, and long-term retirement horizons.',
+    examplesUrl: '/calculators/roth-ira/examples/',
+    calculator: {
+      title: 'Roth IRA Calculator',
+      url: '/calculators/roth-ira-calculator/',
+    },
+    guide: {
+      title: 'Roth IRA vs Traditional IRA',
+      url: '/guides/roth-vs-traditional-ira/',
+    },
+    pageCount: rothIraSeoRecords.length,
+    representativePages: rothIraRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/roth-ira/${record.slug}/`,
+    })),
+  },
+  {
     id: 'safe-withdrawal-rate',
     title: 'Safe Withdrawal Rate Examples',
     description:
@@ -761,6 +1419,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: safeWithdrawalRateRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/safe-withdrawal-rate/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'years-to-retirement',
+    title: 'Years to Retirement Examples',
+    description:
+      'Explore timeline examples across current ages, target retirement dates, portfolio goals, monthly contributions, and return assumptions.',
+    examplesUrl: '/calculators/years-to-retirement/examples/',
+    calculator: {
+      title: 'Years to Retirement Calculator',
+      url: '/calculators/years-to-retirement-calculator/',
+    },
+    guide: {
+      title: 'Retirement Planning Guide Hub',
+      url: '/guides/retirement/',
+    },
+    pageCount: yearsToRetirementSeoRecords.length,
+    representativePages: yearsToRetirementRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/years-to-retirement/${record.slug}/`,
     })),
   },
   {

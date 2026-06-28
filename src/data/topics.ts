@@ -81,9 +81,15 @@ export const topics: TopicSection[] = [
       { title: 'Expense Ratio Examples', url: '/calculators/expense-ratio/examples/' },
       { title: 'Investment Growth Examples', url: '/calculators/investment-growth/examples/' },
       { title: 'Dividend Growth Examples', url: '/calculators/dividend-growth/examples/' },
+      { title: '401(k) Examples', url: '/calculators/401k/examples/' },
+      { title: 'Roth IRA Examples', url: '/calculators/roth-ira/examples/' },
+      { title: 'Coast FIRE Examples', url: '/calculators/coast-fire/examples/' },
       { title: 'Retirement Withdrawal Examples', url: '/calculators/retirement-withdrawal/examples/' },
+      { title: 'Retirement Income Gap Examples', url: '/calculators/retirement-income-gap/examples/' },
+      { title: 'Retirement Tax Drag Examples', url: '/calculators/retirement-tax-drag/examples/' },
       { title: 'Safe Withdrawal Rate Examples', url: '/calculators/safe-withdrawal-rate/examples/' },
       { title: '4 Percent Rule Examples', url: '/calculators/4-percent-rule/examples/' },
+      { title: 'Years to Retirement Examples', url: '/calculators/years-to-retirement/examples/' },
     ],
   },
   {
@@ -113,9 +119,11 @@ export const topics: TopicSection[] = [
     ],
     examples: [
       { title: 'FIRE Examples', url: '/calculators/fire/examples/' },
+      { title: 'Coast FIRE Examples', url: '/calculators/coast-fire/examples/' },
       { title: '4 Percent Rule Examples', url: '/calculators/4-percent-rule/examples/' },
       { title: 'Safe Withdrawal Rate Examples', url: '/calculators/safe-withdrawal-rate/examples/' },
       { title: 'Retirement Withdrawal Examples', url: '/calculators/retirement-withdrawal/examples/' },
+      { title: 'Years to Retirement Examples', url: '/calculators/years-to-retirement/examples/' },
     ],
   },
   {
@@ -125,6 +133,7 @@ export const topics: TopicSection[] = [
     calculators: [
       { title: 'Mortgage Payment Calculator', url: '/calculators/mortgage-payment-calculator/' },
       { title: 'Mortgage Payoff Calculator', url: '/calculators/mortgage-payoff-calculator/' },
+      { title: 'HELOC Calculator', url: '/calculators/heloc-calculator/' },
       { title: 'Mortgage Recast Calculator', url: '/calculators/mortgage-recast-calculator/' },
       { title: 'Refinance Calculator', url: '/calculators/refinance-calculator/' },
       { title: 'Rent vs Buy Calculator', url: '/calculators/rent-vs-buy-calculator/' },
@@ -140,6 +149,8 @@ export const topics: TopicSection[] = [
     ],
     examples: [
       { title: 'Mortgage Payment Examples', url: '/calculators/mortgage/examples/' },
+      { title: 'Mortgage Payoff Examples', url: '/calculators/mortgage-payoff/examples/' },
+      { title: 'HELOC Examples', url: '/calculators/heloc/examples/' },
     ],
   },
   {
@@ -154,6 +165,10 @@ export const topics: TopicSection[] = [
       { title: 'Credit Card Interest Calculator', url: '/calculators/credit-card-interest-calculator/' },
       { title: 'Balance Transfer Calculator', url: '/calculators/balance-transfer-calculator/' },
       { title: 'Loan Payment Calculator', url: '/calculators/loan-payment-calculator/' },
+      { title: 'Auto Loan Calculator', url: '/calculators/auto-loan-calculator/' },
+      { title: 'Student Loan Calculator', url: '/calculators/student-loan-calculator/' },
+      { title: 'Student Loan Payoff Calculator', url: '/calculators/student-loan-payoff-calculator/' },
+      { title: 'HELOC Calculator', url: '/calculators/heloc-calculator/' },
     ],
     guides: [
       { title: 'Debt Payoff and Credit Card Planning Hub', url: '/guides/debt/' },
@@ -166,8 +181,16 @@ export const topics: TopicSection[] = [
       { title: 'How Credit Card Interest Works', url: '/guides/how-credit-card-interest-works/' },
     ],
     examples: [
+      { title: 'Debt Payoff Examples', url: '/calculators/debt-payoff/examples/' },
+      { title: 'Debt Snowball Examples', url: '/calculators/debt-snowball/examples/' },
+      { title: 'Debt Avalanche Examples', url: '/calculators/debt-avalanche/examples/' },
       { title: 'Credit Card Payoff Examples', url: '/calculators/credit-card-payoff/examples/' },
       { title: 'Balance Transfer Examples', url: '/calculators/balance-transfer/examples/' },
+      { title: 'Loan Payment Examples', url: '/calculators/loan-payment/examples/' },
+      { title: 'Auto Loan Examples', url: '/calculators/auto-loan/examples/' },
+      { title: 'Student Loan Examples', url: '/calculators/student-loan/examples/' },
+      { title: 'Student Loan Payoff Examples', url: '/calculators/student-loan-payoff/examples/' },
+      { title: 'HELOC Examples', url: '/calculators/heloc/examples/' },
     ],
   },
   {
@@ -223,7 +246,11 @@ export const topics: TopicSection[] = [
     examples: [
       { title: 'APY Examples', url: '/calculators/apy/examples/' },
       { title: 'Savings Goal Examples', url: '/calculators/savings-goal/examples/' },
+      { title: 'Monthly Savings Examples', url: '/calculators/monthly-savings/examples/' },
+      { title: 'Savings Growth Examples', url: '/calculators/savings-growth/examples/' },
       { title: 'Emergency Fund Examples', url: '/calculators/emergency-fund/examples/' },
+      { title: 'Vacation Savings Examples', url: '/calculators/vacation-savings/examples/' },
+      { title: 'Car Savings Examples', url: '/calculators/car-savings/examples/' },
     ],
   },
   {
@@ -242,7 +269,10 @@ export const topics: TopicSection[] = [
     ],
     examples: [
       { title: 'Savings Goal Examples', url: '/calculators/savings-goal/examples/' },
+      { title: 'Monthly Savings Examples', url: '/calculators/monthly-savings/examples/' },
       { title: 'Emergency Fund Examples', url: '/calculators/emergency-fund/examples/' },
+      { title: 'Vacation Savings Examples', url: '/calculators/vacation-savings/examples/' },
+      { title: 'Car Savings Examples', url: '/calculators/car-savings/examples/' },
     ],
   },
   {
@@ -283,6 +313,8 @@ export const topics: TopicSection[] = [
     ],
     examples: [
       { title: 'Investment Growth Examples', url: '/calculators/investment-growth/examples/' },
+      { title: 'Roth IRA Examples', url: '/calculators/roth-ira/examples/' },
+      { title: 'Retirement Tax Drag Examples', url: '/calculators/retirement-tax-drag/examples/' },
       { title: 'Retirement Withdrawal Examples', url: '/calculators/retirement-withdrawal/examples/' },
     ],
   },
@@ -323,6 +355,7 @@ export const topics: TopicSection[] = [
       { title: 'Compound Interest Examples', url: '/calculators/compound-interest/examples/' },
       { title: 'Investment Growth Examples', url: '/calculators/investment-growth/examples/' },
       { title: 'CAGR Examples', url: '/calculators/cagr/examples/' },
+      { title: 'Savings Growth Examples', url: '/calculators/savings-growth/examples/' },
       { title: 'Savings Goal Examples', url: '/calculators/savings-goal/examples/' },
     ],
   },

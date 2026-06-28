@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  carSavingsSeoRecords,
+  EXPECTED_CAR_SAVINGS_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/car-savings';
+import {
+  auditCarSavingsSeoRecords,
+  createCarSavingsSeoPage,
+} from '../../../lib/programmatic-seo/car-savings';
+
+const audit = auditCarSavingsSeoRecords(
+  carSavingsSeoRecords,
+  EXPECTED_CAR_SAVINGS_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return carSavingsSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createCarSavingsSeoPage(record, carSavingsSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

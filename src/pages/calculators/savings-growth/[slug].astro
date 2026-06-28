@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
+  savingsGrowthSeoRecords,
+} from '../../../data/programmatic-seo/savings-growth';
+import {
+  auditSavingsGrowthSeoRecords,
+  createSavingsGrowthSeoPage,
+} from '../../../lib/programmatic-seo/savings-growth';
+
+const audit = auditSavingsGrowthSeoRecords(
+  savingsGrowthSeoRecords,
+  EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return savingsGrowthSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createSavingsGrowthSeoPage(record, savingsGrowthSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

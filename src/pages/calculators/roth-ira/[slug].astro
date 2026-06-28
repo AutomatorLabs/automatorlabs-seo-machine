@@ -1,0 +1,24 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_ROTH_IRA_SEO_PAGE_COUNT,
+  rothIraSeoRecords,
+} from '../../../data/programmatic-seo/roth-ira';
+import {
+  auditRothIraSeoRecords,
+  createRothIraSeoPage,
+} from '../../../lib/programmatic-seo/roth-ira';
+
+auditRothIraSeoRecords(rothIraSeoRecords, EXPECTED_ROTH_IRA_SEO_PAGE_COUNT);
+
+export function getStaticPaths() {
+  return rothIraSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: { page: createRothIraSeoPage(record, rothIraSeoRecords) },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

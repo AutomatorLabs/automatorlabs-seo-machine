@@ -2,11 +2,22 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { retirementTaxDragCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredRetirementTaxDragSeoRecords } from '../../../data/programmatic-seo/retirement-tax-drag';
 
 const relatedItems = retirementTaxDragCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const exampleItems = [
+  {
+    title: 'Browse all 200 retirement tax drag examples',
+    url: '/calculators/retirement-tax-drag/examples/',
+  },
+  ...featuredRetirementTaxDragSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/retirement-tax-drag/${record.slug}/`,
+  })),
+];
 ---
 
 <CalculatorPage
@@ -17,6 +28,7 @@ const relatedItems = retirementTaxDragCalculator.relatedIds.flatMap((id) => {
   outputs={retirementTaxDragCalculator.outputs}
   faq={retirementTaxDragCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

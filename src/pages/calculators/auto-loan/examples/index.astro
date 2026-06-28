@@ -1,0 +1,55 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  autoLoanSeoRecords,
+  EXPECTED_AUTO_LOAN_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/auto-loan';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditAutoLoanSeoRecords } from '../../../../lib/programmatic-seo/auto-loan';
+
+const audit = auditAutoLoanSeoRecords(
+  autoLoanSeoRecords,
+  EXPECTED_AUTO_LOAN_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(autoLoanSeoRecords, [
+  {
+    id: 'budget',
+    title: 'Lower-Priced Vehicle Examples',
+    description: 'Examples for budget and mid-range vehicle financing scenarios.',
+    matches: (record) => record.vehiclePrice <= 40000,
+  },
+  {
+    id: 'premium',
+    title: 'Higher-Priced Vehicle Examples',
+    description: 'Examples for larger financed balances and longer auto terms.',
+    matches: (record) => record.vehiclePrice > 40000,
+  },
+]);
+---
+
+<ProgrammaticExampleIndexPage
+  title="Auto Loan Examples"
+  description={`Browse ${audit.actualCount} auto loan examples across vehicle prices, down payments, trade-ins, APRs, and loan terms.`}
+  eyebrow="Auto financing library"
+  intro={`Browse ${audit.actualCount} worked examples showing how vehicle prices, trade-ins, and financing assumptions change an auto loan payment.`}
+  calculatorTitle="Auto Loan Calculator"
+  calculatorUrl="/calculators/auto-loan-calculator/"
+  examplesUrl="/calculators/auto-loan/examples/"
+  calculatorLinkLabel="Estimate your own auto loan"
+  count={audit.actualCount}
+  searchLabel="Search auto loan examples"
+  searchPlaceholder="Try $30,000, $6,000 down, 5 years, or 5.5%"
+  noResultsText="No auto loan examples found. Try a vehicle price, down payment, rate, or term."
+  prefix="auto-loan"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/auto-loan/${record.slug}/`,
+      subtitle: `$${record.vehiclePrice.toLocaleString('en-US')} price · $${record.downPayment.toLocaleString('en-US')} down · ${record.loanTermYears} years`,
+      searchText: [record.question, record.slug, record.vehiclePrice, record.downPayment, record.tradeInValue, record.annualInterestRatePercent, record.loanTermYears].join(' '),
+    })),
+  }))}/>

@@ -9,10 +9,10 @@ Current release snapshot for Claude handoff.
 
 ## Verified Repo Counts
 
-- Total built pages: `3,636`
+- Total built pages: `7,053`
 - Calculator count: `84`
-- Calculator Playwright test count: `218`
-- Programmatic SEO cluster count: `17`
+- Calculator Playwright test count: `298`
+- Programmatic SEO cluster count: `34`
 - Standard verification command: `npm run verify`
 
 ## Current Release Surface
@@ -28,6 +28,17 @@ Verified from the inspected repo:
 - dividend yield worked examples now live at `/calculators/dividend-yield/examples/`
 - dividend growth worked examples now live at `/calculators/dividend-growth/examples/`
 - expense ratio worked examples now live at `/calculators/expense-ratio/examples/`
+- savings growth worked examples now live at `/calculators/savings-growth/examples/`
+- monthly savings worked examples now live at `/calculators/monthly-savings/examples/`
+- vacation savings worked examples now live at `/calculators/vacation-savings/examples/`
+- car savings worked examples now live at `/calculators/car-savings/examples/`
+- coast FIRE worked examples now live at `/calculators/coast-fire/examples/`
+- years-to-retirement worked examples now live at `/calculators/years-to-retirement/examples/`
+- retirement income gap worked examples now live at `/calculators/retirement-income-gap/examples/`
+- portfolio withdrawal sustainability worked examples now live at `/calculators/portfolio-withdrawal-sustainability/examples/`
+- retirement tax drag worked examples now live at `/calculators/retirement-tax-drag/examples/`
+- 401(k) worked examples now live at `/calculators/401k/examples/`
+- Roth IRA worked examples now live at `/calculators/roth-ira/examples/`
 - build-time SEO audit now validates shared OG/Twitter metadata, canonical-to-`og:url` parity, and shared social image asset resolution
 - build-time SEO audit now validates the manual topics data module structure as well as built topic-link targets
 - related calculator fallback now prioritizes explicit links, reciprocal links, and same-topic/same-family matches before broad site-wide fill
@@ -87,6 +98,12 @@ What still needs confirmation:
 - DRIP examples intentionally reuse the shared portfolio-value DRIP model, so share-price framing is contextual and not an exact share-lot or brokerage-execution simulation.
 - Dividend growth reinvestment and snowball examples intentionally reuse the simple dividend-income growth formula, so they are educational framing pages rather than full DRIP or share-count simulations.
 - Expense ratio examples intentionally reuse the shared one-balance fee-drag calculator, so they do not model contributions, withdrawals, taxes, or changing fee schedules.
+- 401(k) and Roth IRA worked examples intentionally operate as family-level retirement-account clusters, so adjacent account calculators link into the shared collection instead of duplicating nearly identical cluster routes.
+- FIRE-family worked examples now span the original FIRE/withdrawal clusters plus the new coast, retirement timeline, income-gap, tax-drag, and sustainability collections, but lean, fat, and barista variants still rely on shared FIRE-family example coverage rather than standalone cluster routes.
+- Debt-family worked examples now cover single-debt payoff, snowball, avalanche, generic loan payment, auto loan, student loan, student loan payoff, mortgage payoff, and HELOC scenarios, but adjacent credit-card-specific, refinance, and mortgage-recast families still need intentional coverage decisions.
+- Savings growth examples intentionally reuse the shared compound-growth math, so they model future-value growth framing rather than a new savings-goal workflow.
+- Monthly savings examples intentionally stay distinct from the savings-goal cluster by focusing on monthly contribution planning scenarios instead of generic goal pages.
+- Vacation savings and car savings examples intentionally stay purpose-specific so they do not duplicate the broader savings-goal editorial space.
 - The topics page is manually curated and can drift without audits.
 - `astro check` is not wired into the standard workflow because the repo does not yet include the required checker dependencies.
 - Some larger calculator-family abstractions remain intentionally unsimplified to avoid risky refactors in short implementation windows.
@@ -98,8 +115,9 @@ What still needs confirmation:
 1. Decide whether any page families need image overrides beyond the shared default social preview asset.
 2. Confirm and document the real deployment workflow from a primary source.
 3. Review manual topic curation for coverage gaps and stale links.
-4. Decide whether dividend-yield and dividend-growth clusters should later expand into deeper share-count or DRIP-style worked-example families.
-5. Tackle the deferred medium and large architecture refactors only in a longer dedicated window.
+4. Review the remaining missing worked-example candidates such as emergency-fund-adjacent or other savings-family calculators only after confirming they add intent coverage instead of duplicating existing clusters.
+5. Decide whether dividend-yield and dividend-growth clusters should later expand into deeper share-count or DRIP-style worked-example families.
+6. Tackle the deferred medium and large architecture refactors only in a longer dedicated window.
 
 ## What Not To Touch Casually
 

@@ -1,0 +1,32 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_STUDENT_LOAN_PAYOFF_SEO_PAGE_COUNT,
+  studentLoanPayoffSeoRecords,
+} from '../../../data/programmatic-seo/student-loan-payoff';
+import {
+  auditStudentLoanPayoffSeoRecords,
+  createStudentLoanPayoffSeoPage,
+} from '../../../lib/programmatic-seo/student-loan-payoff';
+
+auditStudentLoanPayoffSeoRecords(
+  studentLoanPayoffSeoRecords,
+  EXPECTED_STUDENT_LOAN_PAYOFF_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return studentLoanPayoffSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createStudentLoanPayoffSeoPage(
+        record,
+        studentLoanPayoffSeoRecords,
+      ),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

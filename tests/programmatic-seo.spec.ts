@@ -77,10 +77,45 @@ import {
   auditCreditCardPayoffSeoRecords,
 } from '../src/lib/programmatic-seo/debt';
 import {
+  autoLoanSeoRecords,
+  EXPECTED_AUTO_LOAN_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/auto-loan';
+import { auditAutoLoanSeoRecords } from '../src/lib/programmatic-seo/auto-loan';
+import {
+  debtAvalancheSeoRecords,
+  EXPECTED_DEBT_AVALANCHE_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/debt-avalanche';
+import { auditDebtAvalancheSeoRecords } from '../src/lib/programmatic-seo/debt-avalanche';
+import {
+  debtPayoffSeoRecords,
+  EXPECTED_DEBT_PAYOFF_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/debt-payoff';
+import { auditDebtPayoffSeoRecords } from '../src/lib/programmatic-seo/debt-payoff';
+import {
+  debtSnowballSeoRecords,
+  EXPECTED_DEBT_SNOWBALL_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/debt-snowball';
+import { auditDebtSnowballSeoRecords } from '../src/lib/programmatic-seo/debt-snowball';
+import {
   EXPECTED_FIRE_SEO_PAGE_COUNT,
   fireSeoRecords,
 } from '../src/data/programmatic-seo/fire';
 import { auditFireSeoRecords } from '../src/lib/programmatic-seo/fire';
+import {
+  EXPECTED_HELOC_SEO_PAGE_COUNT,
+  helocSeoRecords,
+} from '../src/data/programmatic-seo/heloc';
+import { auditHelocSeoRecords } from '../src/lib/programmatic-seo/heloc';
+import {
+  coastFireSeoRecords,
+  EXPECTED_COAST_FIRE_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/coast-fire';
+import { auditCoastFireSeoRecords } from '../src/lib/programmatic-seo/coast-fire';
+import {
+  EXPECTED_401K_SEO_PAGE_COUNT,
+  fourOhOneKSeoRecords,
+} from '../src/data/programmatic-seo/401k';
+import { audit401kSeoRecords } from '../src/lib/programmatic-seo/401k';
 import {
   EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT,
   investmentGrowthSeoRecords,
@@ -91,6 +126,11 @@ import {
   lumpSumVsDcaSeoRecords,
 } from '../src/data/programmatic-seo/lump-sum-vs-dca';
 import { auditLumpSumVsDcaSeoRecords } from '../src/lib/programmatic-seo/lump-sum-vs-dca';
+import {
+  EXPECTED_LOAN_PAYMENT_SEO_PAGE_COUNT,
+  loanPaymentSeoRecords,
+} from '../src/data/programmatic-seo/loan-payment';
+import { auditLoanPaymentSeoRecords } from '../src/lib/programmatic-seo/loan-payment';
 import { programmaticSeoClusters } from '../src/data/programmatic-seo/clusters';
 import {
   EXPECTED_MORTGAGE_SEO_PAGE_COUNT,
@@ -98,15 +138,40 @@ import {
 } from '../src/data/programmatic-seo/mortgage';
 import { auditMortgageSeoRecords } from '../src/lib/programmatic-seo/mortgage';
 import {
+  EXPECTED_MORTGAGE_PAYOFF_SEO_PAGE_COUNT,
+  mortgagePayoffSeoRecords,
+} from '../src/data/programmatic-seo/mortgage-payoff';
+import { auditMortgagePayoffSeoRecords } from '../src/lib/programmatic-seo/mortgage-payoff';
+import {
+  EXPECTED_MONTHLY_SAVINGS_SEO_PAGE_COUNT,
+  monthlySavingsSeoRecords,
+} from '../src/data/programmatic-seo/monthly-savings';
+import { auditMonthlySavingsSeoRecords } from '../src/lib/programmatic-seo/monthly-savings';
+import {
   EXPECTED_REAL_RATE_OF_RETURN_SEO_PAGE_COUNT,
   realRateOfReturnSeoRecords,
 } from '../src/data/programmatic-seo/real-rate-of-return';
 import { auditRealRateOfReturnSeoRecords } from '../src/lib/programmatic-seo/real-rate-of-return';
 import {
+  EXPECTED_RETIREMENT_INCOME_GAP_SEO_PAGE_COUNT,
+  retirementIncomeGapSeoRecords,
+} from '../src/data/programmatic-seo/retirement-income-gap';
+import { auditRetirementIncomeGapSeoRecords } from '../src/lib/programmatic-seo/retirement-income-gap';
+import {
+  EXPECTED_RETIREMENT_TAX_DRAG_SEO_PAGE_COUNT,
+  retirementTaxDragSeoRecords,
+} from '../src/data/programmatic-seo/retirement-tax-drag';
+import { auditRetirementTaxDragSeoRecords } from '../src/lib/programmatic-seo/retirement-tax-drag';
+import {
   EXPECTED_RETIREMENT_WITHDRAWAL_SEO_PAGE_COUNT,
   retirementWithdrawalSeoRecords,
 } from '../src/data/programmatic-seo/retirement-withdrawal';
 import { auditRetirementWithdrawalSeoRecords } from '../src/lib/programmatic-seo/retirement-withdrawal';
+import {
+  EXPECTED_ROTH_IRA_SEO_PAGE_COUNT,
+  rothIraSeoRecords,
+} from '../src/data/programmatic-seo/roth-ira';
+import { auditRothIraSeoRecords } from '../src/lib/programmatic-seo/roth-ira';
 import {
   EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT,
   safeWithdrawalRateSeoRecords,
@@ -120,6 +185,41 @@ import {
   auditSavingsGoalSeoRecords,
   calculateRequiredMonthlySavings,
 } from '../src/lib/programmatic-seo/savings-goal';
+import {
+  EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
+  savingsGrowthSeoRecords,
+} from '../src/data/programmatic-seo/savings-growth';
+import { auditSavingsGrowthSeoRecords } from '../src/lib/programmatic-seo/savings-growth';
+import {
+  EXPECTED_STUDENT_LOAN_PAYOFF_SEO_PAGE_COUNT,
+  studentLoanPayoffSeoRecords,
+} from '../src/data/programmatic-seo/student-loan-payoff';
+import { auditStudentLoanPayoffSeoRecords } from '../src/lib/programmatic-seo/student-loan-payoff';
+import {
+  EXPECTED_STUDENT_LOAN_SEO_PAGE_COUNT,
+  studentLoanSeoRecords,
+} from '../src/data/programmatic-seo/student-loan';
+import { auditStudentLoanSeoRecords } from '../src/lib/programmatic-seo/student-loan';
+import {
+  EXPECTED_VACATION_SAVINGS_SEO_PAGE_COUNT,
+  vacationSavingsSeoRecords,
+} from '../src/data/programmatic-seo/vacation-savings';
+import { auditVacationSavingsSeoRecords } from '../src/lib/programmatic-seo/vacation-savings';
+import {
+  EXPECTED_PORTFOLIO_WITHDRAWAL_SUSTAINABILITY_SEO_PAGE_COUNT,
+  portfolioWithdrawalSustainabilitySeoRecords,
+} from '../src/data/programmatic-seo/portfolio-withdrawal-sustainability';
+import { auditPortfolioWithdrawalSustainabilitySeoRecords } from '../src/lib/programmatic-seo/portfolio-withdrawal-sustainability';
+import {
+  carSavingsSeoRecords,
+  EXPECTED_CAR_SAVINGS_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/car-savings';
+import { auditCarSavingsSeoRecords } from '../src/lib/programmatic-seo/car-savings';
+import {
+  EXPECTED_YEARS_TO_RETIREMENT_SEO_PAGE_COUNT,
+  yearsToRetirementSeoRecords,
+} from '../src/data/programmatic-seo/years-to-retirement';
+import { auditYearsToRetirementSeoRecords } from '../src/lib/programmatic-seo/years-to-retirement';
 import { newsletterCta } from './helpers/calculator-test-helpers';
 
 test.describe('compound interest programmatic SEO', () => {
@@ -359,6 +459,72 @@ test.describe('FIRE programmatic SEO', () => {
   });
 });
 
+test.describe('coast FIRE programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    expect(
+      auditCoastFireSeoRecords(
+        coastFireSeoRecords,
+        EXPECTED_COAST_FIRE_SEO_PAGE_COUNT,
+      ),
+    ).toEqual({
+      expectedCount: EXPECTED_COAST_FIRE_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_COAST_FIRE_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_COAST_FIRE_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_COAST_FIRE_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_COAST_FIRE_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_COAST_FIRE_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the Coast FIRE examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/coast-fire-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', { name: 'Browse all 200 Coast FIRE examples' }),
+    ).toHaveAttribute('href', '/calculators/coast-fire/examples/');
+  });
+
+  test('examples index exposes every Coast FIRE page', async ({ page }) => {
+    const response = await page.goto('/calculators/coast-fire/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Coast FIRE Examples' }),
+    ).toBeVisible();
+    await expect(page.locator('[data-example-group]')).toHaveCount(3);
+    await expect(page.locator('[data-example-card]')).toHaveCount(
+      EXPECTED_COAST_FIRE_SEO_PAGE_COUNT,
+    );
+  });
+
+  test('renders a generated Coast FIRE page', async ({ page }) => {
+    const record = coastFireSeoRecords.find(
+      (candidate) =>
+        candidate.slug ===
+        'coast-fire-age-35-retire-60-with-100000-saved-for-40000-spending-at-7-percent',
+    );
+    if (!record) throw new Error('Missing representative Coast FIRE SEO record');
+
+    const url = `/calculators/coast-fire/${record.slug}/`;
+    const response = await page.goto(url, { waitUntil: 'domcontentloaded' });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', { level: 1, name: record.question }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Open the Coast FIRE Calculator' }),
+    ).toHaveAttribute('href', '/calculators/coast-fire-calculator/');
+  });
+});
+
 test.describe('investment growth programmatic SEO', () => {
   test('record audit enforces count and unique metadata', () => {
     const audit = auditInvestmentGrowthSeoRecords(
@@ -511,6 +677,175 @@ test.describe('investment growth programmatic SEO', () => {
       expect(pageErrors).toEqual([]);
     });
   }
+});
+
+test.describe('savings growth programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditSavingsGrowthSeoRecords(
+      savingsGrowthSeoRecords,
+      EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the savings growth examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/savings-growth-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 savings growth examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/savings-growth/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every savings growth page', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/savings-growth/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Savings Growth Examples',
+      }),
+    ).toBeVisible();
+    await expect(
+      page.locator('[data-savings-growth-example-group]'),
+    ).toHaveCount(5);
+    await expect(
+      page.locator('[data-savings-growth-example-card]'),
+    ).toHaveCount(EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/savings-growth/examples/',
+    );
+
+    const hrefs = await page
+      .locator('[data-savings-growth-example-card] a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(hrefs).size).toBe(
+      EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search savings growth examples',
+    });
+    await searchBox.fill('retirement');
+    await expect(
+      page.locator('[data-savings-growth-example-card]:visible'),
+    ).toHaveCount(40);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-savings-growth-example-card]:visible'),
+    ).toHaveCount(EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT);
+    await expect(
+      page.getByRole('link', { name: 'Project your own savings growth' }),
+    ).toHaveAttribute('href', '/calculators/savings-growth-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  for (const slug of [
+    'savings-growth-10000-starting-500-monthly-at-3-5-percent-for-10-years',
+    'high-yield-savings-growth-25000-starting-500-monthly-at-4-25-percent-for-10-years',
+    'retirement-savings-growth-100000-starting-1000-monthly-at-5-5-percent-for-20-years',
+  ]) {
+    test(`renders generated savings growth page ${slug}`, async ({ page }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error.message));
+      const record = savingsGrowthSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) throw new Error(`Missing savings growth record: ${slug}`);
+
+      const url = `/calculators/savings-growth/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://automatorlabs.co${url}`,
+      );
+      await expect(
+        page.getByRole('link', {
+          name: 'Open the Savings Growth Calculator',
+        }),
+      ).toHaveAttribute('href', '/calculators/savings-growth-calculator/');
+      await expect(page.locator('tbody tr')).toHaveCount(record.years);
+      expect(pageErrors).toEqual([]);
+    });
+  }
+});
+
+test.describe('401(k) programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    expect(
+      audit401kSeoRecords(fourOhOneKSeoRecords, EXPECTED_401K_SEO_PAGE_COUNT),
+    ).toEqual({
+      expectedCount: EXPECTED_401K_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_401K_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_401K_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_401K_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_401K_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_401K_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('retirement account pages link to the 401(k) examples cluster', async ({
+    page,
+  }) => {
+    for (const path of [
+      '/calculators/401k-calculator/',
+      '/calculators/401k-growth-calculator/',
+      '/calculators/employer-match-calculator/',
+    ]) {
+      const response = await page.goto(path, { waitUntil: 'domcontentloaded' });
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('link', { name: 'Browse all 200 401(k) examples' }),
+      ).toHaveAttribute('href', '/calculators/401k/examples/');
+    }
+  });
+
+  test('renders a generated 401(k) page', async ({ page }) => {
+    const record = fourOhOneKSeoRecords.find(
+      (candidate) =>
+        candidate.slug ===
+        '401k-growth-75000-starting-1000-employee-250-match-at-7-percent-for-20-years',
+    );
+    if (!record) throw new Error('Missing representative 401(k) SEO record');
+
+    const url = `/calculators/401k/${record.slug}/`;
+    const response = await page.goto(url, { waitUntil: 'domcontentloaded' });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', { name: 'Open the 401(k) Calculator' }),
+    ).toHaveAttribute('href', '/calculators/401k-calculator/');
+  });
 });
 
 test.describe('cagr programmatic SEO', () => {
@@ -1620,6 +1955,39 @@ test.describe('mortgage programmatic SEO', () => {
   });
 });
 
+test.describe('mortgage payoff programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditMortgagePayoffSeoRecords(
+      mortgagePayoffSeoRecords,
+      EXPECTED_MORTGAGE_PAYOFF_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_MORTGAGE_PAYOFF_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_MORTGAGE_PAYOFF_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_MORTGAGE_PAYOFF_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_MORTGAGE_PAYOFF_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_MORTGAGE_PAYOFF_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_MORTGAGE_PAYOFF_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the mortgage payoff examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/mortgage-payoff-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 mortgage payoff examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/mortgage-payoff/examples/');
+  });
+});
+
 test.describe('savings goal programmatic SEO', () => {
   test('record audit enforces count and unique metadata', () => {
     const audit = auditSavingsGoalSeoRecords(
@@ -1749,6 +2117,332 @@ test.describe('savings goal programmatic SEO', () => {
           'a[href="/calculators/investment-growth-calculator/"]',
         ),
       ).toBeVisible();
+      await expect(page.locator('tbody tr')).toHaveCount(record.years);
+      expect(pageErrors).toEqual([]);
+    });
+  }
+});
+
+test.describe('monthly savings programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditMonthlySavingsSeoRecords(
+      monthlySavingsSeoRecords,
+      EXPECTED_MONTHLY_SAVINGS_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_MONTHLY_SAVINGS_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_MONTHLY_SAVINGS_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_MONTHLY_SAVINGS_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_MONTHLY_SAVINGS_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_MONTHLY_SAVINGS_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_MONTHLY_SAVINGS_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the monthly savings examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/monthly-savings-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 monthly savings examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/monthly-savings/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every monthly savings page', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/monthly-savings/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Monthly Savings Examples',
+      }),
+    ).toBeVisible();
+    await expect(
+      page.locator('[data-monthly-savings-example-group]'),
+    ).toHaveCount(5);
+    await expect(
+      page.locator('[data-monthly-savings-example-card]'),
+    ).toHaveCount(EXPECTED_MONTHLY_SAVINGS_SEO_PAGE_COUNT);
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search monthly savings examples',
+    });
+    await searchBox.fill('catch-up');
+    await expect(
+      page.locator('[data-monthly-savings-example-card]:visible'),
+    ).toHaveCount(40);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-monthly-savings-example-card]:visible'),
+    ).toHaveCount(EXPECTED_MONTHLY_SAVINGS_SEO_PAGE_COUNT);
+    await expect(
+      page.getByRole('link', { name: 'Build your own monthly savings plan' }),
+    ).toHaveAttribute('href', '/calculators/monthly-savings-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  for (const slug of [
+    'milestone-monthly-savings-25000-goal-3-years-5000-saved-at-3-25-percent',
+    'family-monthly-savings-15000-goal-3-years-3000-saved-at-2-75-percent',
+    'catch-up-monthly-savings-50000-goal-4-years-15000-saved-at-3-5-percent',
+  ]) {
+    test(`renders generated monthly savings page ${slug}`, async ({ page }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error.message));
+      const record = monthlySavingsSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) throw new Error(`Missing monthly savings record: ${slug}`);
+
+      const url = `/calculators/monthly-savings/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', {
+          name: 'Open the Monthly Savings Calculator',
+        }),
+      ).toHaveAttribute('href', '/calculators/monthly-savings-calculator/');
+      await expect(page.locator('tbody tr')).toHaveCount(record.years);
+      expect(pageErrors).toEqual([]);
+    });
+  }
+});
+
+test.describe('vacation savings programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditVacationSavingsSeoRecords(
+      vacationSavingsSeoRecords,
+      EXPECTED_VACATION_SAVINGS_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_VACATION_SAVINGS_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_VACATION_SAVINGS_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_VACATION_SAVINGS_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_VACATION_SAVINGS_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_VACATION_SAVINGS_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_VACATION_SAVINGS_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the vacation savings examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto(
+      '/calculators/vacation-savings-calculator/',
+      {
+        waitUntil: 'domcontentloaded',
+      },
+    );
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 vacation savings examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/vacation-savings/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every vacation savings page', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto(
+      '/calculators/vacation-savings/examples/',
+      {
+        waitUntil: 'domcontentloaded',
+      },
+    );
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Vacation Savings Examples',
+      }),
+    ).toBeVisible();
+    await expect(
+      page.locator('[data-vacation-savings-example-group]'),
+    ).toHaveCount(5);
+    await expect(
+      page.locator('[data-vacation-savings-example-card]'),
+    ).toHaveCount(EXPECTED_VACATION_SAVINGS_SEO_PAGE_COUNT);
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search vacation savings examples',
+    });
+    await searchBox.fill('family');
+    await expect(
+      page.locator('[data-vacation-savings-example-card]:visible'),
+    ).toHaveCount(40);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-vacation-savings-example-card]:visible'),
+    ).toHaveCount(EXPECTED_VACATION_SAVINGS_SEO_PAGE_COUNT);
+    await expect(
+      page.getByRole('link', { name: 'Plan your own vacation savings goal' }),
+    ).toHaveAttribute('href', '/calculators/vacation-savings-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  for (const slug of [
+    'family-vacation-savings-6000-goal-3-years-3000-saved-at-3-percent',
+    'international-trip-savings-12000-goal-4-years-5000-saved-at-3-25-percent',
+    'luxury-vacation-savings-20000-goal-5-years-10000-saved-at-3-25-percent',
+  ]) {
+    test(`renders generated vacation savings page ${slug}`, async ({
+      page,
+    }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error.message));
+      const record = vacationSavingsSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) throw new Error(`Missing vacation savings record: ${slug}`);
+
+      const url = `/calculators/vacation-savings/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', {
+          name: 'Open the Vacation Savings Calculator',
+        }),
+      ).toHaveAttribute('href', '/calculators/vacation-savings-calculator/');
+      await expect(page.locator('tbody tr')).toHaveCount(record.years);
+      expect(pageErrors).toEqual([]);
+    });
+  }
+});
+
+test.describe('car savings programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditCarSavingsSeoRecords(
+      carSavingsSeoRecords,
+      EXPECTED_CAR_SAVINGS_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_CAR_SAVINGS_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_CAR_SAVINGS_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_CAR_SAVINGS_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_CAR_SAVINGS_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_CAR_SAVINGS_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_CAR_SAVINGS_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the car savings examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/car-savings-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 car savings examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/car-savings/examples/');
+  });
+
+  test('examples index exposes, groups, and searches every car savings page', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/car-savings/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Car Savings Examples',
+      }),
+    ).toBeVisible();
+    await expect(
+      page.locator('[data-car-savings-example-group]'),
+    ).toHaveCount(5);
+    await expect(
+      page.locator('[data-car-savings-example-card]'),
+    ).toHaveCount(EXPECTED_CAR_SAVINGS_SEO_PAGE_COUNT);
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search car savings examples',
+    });
+    await searchBox.fill('new car');
+    await expect(
+      page.locator('[data-car-savings-example-card]:visible'),
+    ).toHaveCount(40);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-car-savings-example-card]:visible'),
+    ).toHaveCount(EXPECTED_CAR_SAVINGS_SEO_PAGE_COUNT);
+    await expect(
+      page.getByRole('link', { name: 'Plan your own car savings goal' }),
+    ).toHaveAttribute('href', '/calculators/car-savings-calculator/');
+    expect(pageErrors).toEqual([]);
+  });
+
+  for (const slug of [
+    'car-down-payment-savings-10000-goal-2-years-2000-saved-at-2-75-percent',
+    'new-car-savings-30000-goal-5-years-10000-saved-at-3-percent',
+    'family-suv-savings-50000-goal-6-years-20000-saved-at-3-25-percent',
+  ]) {
+    test(`renders generated car savings page ${slug}`, async ({ page }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error.message));
+      const record = carSavingsSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) throw new Error(`Missing car savings record: ${slug}`);
+
+      const url = `/calculators/car-savings/${record.slug}/`;
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+      });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', {
+          name: 'Open the Car Savings Calculator',
+        }),
+      ).toHaveAttribute('href', '/calculators/car-savings-calculator/');
       await expect(page.locator('tbody tr')).toHaveCount(record.years);
       expect(pageErrors).toEqual([]);
     });
@@ -2120,6 +2814,82 @@ test.describe('retirement withdrawal programmatic SEO', () => {
   });
 });
 
+test.describe('retirement income gap programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    expect(
+      auditRetirementIncomeGapSeoRecords(
+        retirementIncomeGapSeoRecords,
+        EXPECTED_RETIREMENT_INCOME_GAP_SEO_PAGE_COUNT,
+      ),
+    ).toEqual({
+      expectedCount: EXPECTED_RETIREMENT_INCOME_GAP_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_RETIREMENT_INCOME_GAP_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_RETIREMENT_INCOME_GAP_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_RETIREMENT_INCOME_GAP_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_RETIREMENT_INCOME_GAP_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount:
+        EXPECTED_RETIREMENT_INCOME_GAP_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to retirement income gap examples', async ({
+    page,
+  }) => {
+    const response = await page.goto(
+      '/calculators/retirement-income-gap-calculator/',
+      { waitUntil: 'domcontentloaded' },
+    );
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 retirement income gap examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/retirement-income-gap/examples/');
+  });
+});
+
+test.describe('portfolio withdrawal sustainability programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    expect(
+      auditPortfolioWithdrawalSustainabilitySeoRecords(
+        portfolioWithdrawalSustainabilitySeoRecords,
+        EXPECTED_PORTFOLIO_WITHDRAWAL_SUSTAINABILITY_SEO_PAGE_COUNT,
+      ),
+    ).toEqual({
+      expectedCount:
+        EXPECTED_PORTFOLIO_WITHDRAWAL_SUSTAINABILITY_SEO_PAGE_COUNT,
+      actualCount:
+        EXPECTED_PORTFOLIO_WITHDRAWAL_SUSTAINABILITY_SEO_PAGE_COUNT,
+      uniqueSlugCount:
+        EXPECTED_PORTFOLIO_WITHDRAWAL_SUSTAINABILITY_SEO_PAGE_COUNT,
+      uniqueTitleCount:
+        EXPECTED_PORTFOLIO_WITHDRAWAL_SUSTAINABILITY_SEO_PAGE_COUNT,
+      uniqueDescriptionCount:
+        EXPECTED_PORTFOLIO_WITHDRAWAL_SUSTAINABILITY_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount:
+        EXPECTED_PORTFOLIO_WITHDRAWAL_SUSTAINABILITY_SEO_PAGE_COUNT,
+    });
+  });
+});
+
+test.describe('retirement tax drag programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    expect(
+      auditRetirementTaxDragSeoRecords(
+        retirementTaxDragSeoRecords,
+        EXPECTED_RETIREMENT_TAX_DRAG_SEO_PAGE_COUNT,
+      ),
+    ).toEqual({
+      expectedCount: EXPECTED_RETIREMENT_TAX_DRAG_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_RETIREMENT_TAX_DRAG_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_RETIREMENT_TAX_DRAG_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_RETIREMENT_TAX_DRAG_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_RETIREMENT_TAX_DRAG_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_RETIREMENT_TAX_DRAG_SEO_PAGE_COUNT,
+    });
+  });
+});
+
 test.describe('safe withdrawal rate programmatic SEO', () => {
   test('record audit enforces count and unique metadata', () => {
     const audit = auditSafeWithdrawalRateSeoRecords(
@@ -2244,6 +3014,55 @@ test.describe('safe withdrawal rate programmatic SEO', () => {
     await expect(newsletterCta(page)).toBeVisible();
     await expect(page.locator('tbody tr')).toHaveCount(5);
     expect(pageErrors).toEqual([]);
+  });
+});
+
+test.describe('Roth IRA programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    expect(
+      auditRothIraSeoRecords(rothIraSeoRecords, EXPECTED_ROTH_IRA_SEO_PAGE_COUNT),
+    ).toEqual({
+      expectedCount: EXPECTED_ROTH_IRA_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_ROTH_IRA_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_ROTH_IRA_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_ROTH_IRA_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_ROTH_IRA_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_ROTH_IRA_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('retirement account pages link to the Roth IRA examples cluster', async ({
+    page,
+  }) => {
+    for (const path of [
+      '/calculators/roth-ira-calculator/',
+      '/calculators/roth-ira-growth-calculator/',
+      '/calculators/roth-vs-traditional-ira-calculator/',
+    ]) {
+      const response = await page.goto(path, { waitUntil: 'domcontentloaded' });
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('link', { name: 'Browse all 200 Roth IRA examples' }),
+      ).toHaveAttribute('href', '/calculators/roth-ira/examples/');
+    }
+  });
+});
+
+test.describe('years to retirement programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    expect(
+      auditYearsToRetirementSeoRecords(
+        yearsToRetirementSeoRecords,
+        EXPECTED_YEARS_TO_RETIREMENT_SEO_PAGE_COUNT,
+      ),
+    ).toEqual({
+      expectedCount: EXPECTED_YEARS_TO_RETIREMENT_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_YEARS_TO_RETIREMENT_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_YEARS_TO_RETIREMENT_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_YEARS_TO_RETIREMENT_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_YEARS_TO_RETIREMENT_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_YEARS_TO_RETIREMENT_SEO_PAGE_COUNT,
+    });
   });
 });
 
@@ -2469,6 +3288,273 @@ test.describe('ETF fee drag programmatic SEO', () => {
       await expect(page.locator('tbody tr')).toHaveCount(record.years);
     });
   }
+});
+
+test.describe('debt payoff programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditDebtPayoffSeoRecords(
+      debtPayoffSeoRecords,
+      EXPECTED_DEBT_PAYOFF_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_DEBT_PAYOFF_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_DEBT_PAYOFF_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_DEBT_PAYOFF_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_DEBT_PAYOFF_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_DEBT_PAYOFF_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_DEBT_PAYOFF_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the debt payoff examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/debt-payoff-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 debt payoff examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/debt-payoff/examples/');
+  });
+});
+
+test.describe('debt snowball programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditDebtSnowballSeoRecords(
+      debtSnowballSeoRecords,
+      EXPECTED_DEBT_SNOWBALL_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_DEBT_SNOWBALL_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_DEBT_SNOWBALL_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_DEBT_SNOWBALL_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_DEBT_SNOWBALL_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_DEBT_SNOWBALL_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_DEBT_SNOWBALL_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the debt snowball examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/debt-snowball-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 debt snowball examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/debt-snowball/examples/');
+  });
+});
+
+test.describe('debt avalanche programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditDebtAvalancheSeoRecords(
+      debtAvalancheSeoRecords,
+      EXPECTED_DEBT_AVALANCHE_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_DEBT_AVALANCHE_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_DEBT_AVALANCHE_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_DEBT_AVALANCHE_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_DEBT_AVALANCHE_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_DEBT_AVALANCHE_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_DEBT_AVALANCHE_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the debt avalanche examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/debt-avalanche-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 debt avalanche examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/debt-avalanche/examples/');
+  });
+});
+
+test.describe('loan payment programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditLoanPaymentSeoRecords(
+      loanPaymentSeoRecords,
+      EXPECTED_LOAN_PAYMENT_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_LOAN_PAYMENT_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_LOAN_PAYMENT_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_LOAN_PAYMENT_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_LOAN_PAYMENT_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_LOAN_PAYMENT_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_LOAN_PAYMENT_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the loan payment examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/loan-payment-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 loan payment examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/loan-payment/examples/');
+  });
+});
+
+test.describe('auto loan programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditAutoLoanSeoRecords(
+      autoLoanSeoRecords,
+      EXPECTED_AUTO_LOAN_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_AUTO_LOAN_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_AUTO_LOAN_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_AUTO_LOAN_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_AUTO_LOAN_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_AUTO_LOAN_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_AUTO_LOAN_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the auto loan examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/auto-loan-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 auto loan examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/auto-loan/examples/');
+  });
+});
+
+test.describe('student loan programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditStudentLoanSeoRecords(
+      studentLoanSeoRecords,
+      EXPECTED_STUDENT_LOAN_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_STUDENT_LOAN_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_STUDENT_LOAN_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_STUDENT_LOAN_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_STUDENT_LOAN_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_STUDENT_LOAN_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_STUDENT_LOAN_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the student loan examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/student-loan-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 student loan examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/student-loan/examples/');
+  });
+});
+
+test.describe('student loan payoff programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditStudentLoanPayoffSeoRecords(
+      studentLoanPayoffSeoRecords,
+      EXPECTED_STUDENT_LOAN_PAYOFF_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_STUDENT_LOAN_PAYOFF_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_STUDENT_LOAN_PAYOFF_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_STUDENT_LOAN_PAYOFF_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_STUDENT_LOAN_PAYOFF_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_STUDENT_LOAN_PAYOFF_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_STUDENT_LOAN_PAYOFF_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the student loan payoff examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto(
+      '/calculators/student-loan-payoff-calculator/',
+      {
+        waitUntil: 'domcontentloaded',
+      },
+    );
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 student loan payoff examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/student-loan-payoff/examples/');
+  });
+});
+
+test.describe('heloc programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditHelocSeoRecords(
+      helocSeoRecords,
+      EXPECTED_HELOC_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_HELOC_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_HELOC_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_HELOC_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_HELOC_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_HELOC_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_HELOC_SEO_PAGE_COUNT,
+    });
+  });
+
+  test('calculator page links to the heloc examples cluster', async ({
+    page,
+  }) => {
+    const response = await page.goto('/calculators/heloc-calculator/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('link', {
+        name: 'Browse all 200 HELOC examples',
+      }),
+    ).toHaveAttribute('href', '/calculators/heloc/examples/');
+  });
 });
 
 test.describe('investment fee programmatic SEO', () => {

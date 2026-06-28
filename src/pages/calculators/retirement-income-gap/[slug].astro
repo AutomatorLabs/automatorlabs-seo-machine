@@ -1,0 +1,32 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_RETIREMENT_INCOME_GAP_SEO_PAGE_COUNT,
+  retirementIncomeGapSeoRecords,
+} from '../../../data/programmatic-seo/retirement-income-gap';
+import {
+  auditRetirementIncomeGapSeoRecords,
+  createRetirementIncomeGapSeoPage,
+} from '../../../lib/programmatic-seo/retirement-income-gap';
+
+auditRetirementIncomeGapSeoRecords(
+  retirementIncomeGapSeoRecords,
+  EXPECTED_RETIREMENT_INCOME_GAP_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return retirementIncomeGapSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createRetirementIncomeGapSeoPage(
+        record,
+        retirementIncomeGapSeoRecords,
+      ),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

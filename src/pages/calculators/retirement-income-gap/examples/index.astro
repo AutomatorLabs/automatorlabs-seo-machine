@@ -1,0 +1,55 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  EXPECTED_RETIREMENT_INCOME_GAP_SEO_PAGE_COUNT,
+  retirementIncomeGapSeoRecords,
+} from '../../../../data/programmatic-seo/retirement-income-gap';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditRetirementIncomeGapSeoRecords } from '../../../../lib/programmatic-seo/retirement-income-gap';
+
+const audit = auditRetirementIncomeGapSeoRecords(
+  retirementIncomeGapSeoRecords,
+  EXPECTED_RETIREMENT_INCOME_GAP_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(retirementIncomeGapSeoRecords, [
+  {
+    id: 'moderate-income',
+    title: 'Moderate Retirement Income Examples',
+    description: 'Examples for moderate annual retirement-income targets and smaller portfolio gaps.',
+    matches: (record) => record.desiredAnnualRetirementIncome <= 75000,
+  },
+  {
+    id: 'larger-income',
+    title: 'Larger Retirement Income Examples',
+    description: 'Examples for bigger desired retirement-income targets and higher funding needs.',
+    matches: (record) => record.desiredAnnualRetirementIncome > 75000,
+  },
+]);
+---
+
+<ProgrammaticExampleIndexPage
+  title="Retirement Income Gap Examples"
+  description={`Browse ${audit.actualCount} retirement income-gap examples across target income levels, non-portfolio income, invested balances, and withdrawal assumptions.`}
+  eyebrow="Retirement income planning library"
+  intro={`Browse ${audit.actualCount} worked examples showing how target retirement income can be split between non-portfolio income and portfolio-supported withdrawals.`}
+  calculatorTitle="Retirement Income Gap Calculator"
+  calculatorUrl="/calculators/retirement-income-gap-calculator/"
+  examplesUrl="/calculators/retirement-income-gap/examples/"
+  calculatorLinkLabel="Model your own retirement income gap"
+  count={audit.actualCount}
+  searchLabel="Search retirement income gap examples"
+  searchPlaceholder="Try $100,000 income, $1,500,000 portfolio, or 4%"
+  noResultsText="No retirement income-gap examples found. Try an income target, portfolio amount, or withdrawal rate."
+  prefix="retirement-income-gap"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/retirement-income-gap/${record.slug}/`,
+      subtitle: `$${record.desiredAnnualRetirementIncome.toLocaleString('en-US')} target · $${record.portfolioValue.toLocaleString('en-US')} portfolio · ${record.withdrawalRatePercent}%`,
+      searchText: [record.question, record.slug, record.desiredAnnualRetirementIncome, record.portfolioValue, record.withdrawalRatePercent].join(' '),
+    })),
+  }))}/>

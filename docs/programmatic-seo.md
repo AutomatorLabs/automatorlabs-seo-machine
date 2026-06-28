@@ -15,9 +15,9 @@ Its job is to:
 
 Verified from source:
 
-- 17 live clusters in `src/data/programmatic-seo/clusters.ts`
+- 34 live clusters in `src/data/programmatic-seo/clusters.ts`
 - 200 records per cluster
-- 3,400 generated example pages total
+- 6,800 generated example pages total
 - global examples hub at `/examples/`
 
 Current live clusters:
@@ -28,15 +28,32 @@ Current live clusters:
 - Dividend Yield
 - Dividend Growth
 - Expense Ratio
+- Savings Growth
+- Monthly Savings
+- Vacation Savings
+- Car Savings
 - CAGR
 - Rule of 72
 - FIRE
+- Coast FIRE
 - Investment Growth
+- ETF Fee Drag
+- Investment Fee
+- Lump Sum vs DCA
+- Real Rate of Return
+- Inflation-Adjusted Return
+- Emergency Fund
 - Mortgage
 - Savings Goal
 - Credit Card Payoff
 - Balance Transfer
+- 401(k)
+- Roth IRA
 - Retirement Withdrawal
+- Years to Retirement
+- Retirement Income Gap
+- Portfolio Withdrawal Sustainability
+- Retirement Tax Drag
 - Safe Withdrawal Rate
 - 4 Percent Rule
 
@@ -167,6 +184,131 @@ Required surfaces:
 - reuses `calculateExpenseRatioImpact`
 - intentionally models one starting balance with a constant return and constant expense ratio, with no contributions or withdrawals
 
+### Savings Growth
+
+- calculator: `/calculators/savings-growth-calculator/`
+- examples index: `/calculators/savings-growth/examples/`
+- generated page route: `/calculators/savings-growth/<slug>/`
+- reuses `calculateCompoundInterest`
+- calculator page links are managed through `src/components/CompoundGrowthCalculatorPage.astro`
+
+### Monthly Savings
+
+- calculator: `/calculators/monthly-savings-calculator/`
+- examples index: `/calculators/monthly-savings/examples/`
+- generated page route: `/calculators/monthly-savings/<slug>/`
+- reuses `calculateRequiredPeriodicSavings`
+- calculator page links are managed through `src/components/SavingsTargetCalculatorPage.astro`
+
+### Vacation Savings
+
+- calculator: `/calculators/vacation-savings-calculator/`
+- examples index: `/calculators/vacation-savings/examples/`
+- generated page route: `/calculators/vacation-savings/<slug>/`
+- reuses `calculateRequiredPeriodicSavings`
+- calculator page links are managed through `src/components/SavingsTargetCalculatorPage.astro`
+- intentionally stays purpose-specific instead of duplicating the generic savings-goal cluster
+
+### Car Savings
+
+- calculator: `/calculators/car-savings-calculator/`
+- examples index: `/calculators/car-savings/examples/`
+- generated page route: `/calculators/car-savings/<slug>/`
+- reuses `calculateRequiredPeriodicSavings`
+- calculator page links are managed through `src/components/SavingsTargetCalculatorPage.astro`
+- intentionally stays purpose-specific instead of duplicating the generic savings-goal cluster
+
+### ETF Fee Drag
+
+- calculator: `/calculators/etf-fee-drag-calculator/`
+- examples index: `/calculators/etf-fee-drag/examples/`
+- generated page route: `/calculators/etf-fee-drag/<slug>/`
+- reuses shared fee-drag math helpers
+
+### Investment Fee
+
+- calculator: `/calculators/investment-fee-calculator/`
+- examples index: `/calculators/investment-fee/examples/`
+- generated page route: `/calculators/investment-fee/<slug>/`
+- reuses shared fee-drag math helpers
+
+### Lump Sum vs DCA
+
+- calculator: `/calculators/lump-sum-vs-dca-calculator/`
+- examples index: `/calculators/lump-sum-vs-dca/examples/`
+- generated page route: `/calculators/lump-sum-vs-dca/<slug>/`
+- reuses shared lump-sum versus recurring-investment math helpers
+
+### Real Rate of Return
+
+- calculator: `/calculators/real-rate-of-return-calculator/`
+- examples index: `/calculators/real-rate-of-return/examples/`
+- generated page route: `/calculators/real-rate-of-return/<slug>/`
+- reuses shared real-return math helpers
+
+### Inflation-Adjusted Return
+
+- calculator: `/calculators/inflation-adjusted-return-calculator/`
+- examples index: `/calculators/inflation-adjusted-return/examples/`
+- generated page route: `/calculators/inflation-adjusted-return/<slug>/`
+- reuses shared inflation-adjusted-return math helpers
+
+### Emergency Fund
+
+- calculator: `/calculators/emergency-fund-calculator/`
+- examples index: `/calculators/emergency-fund/examples/`
+- generated page route: `/calculators/emergency-fund/<slug>/`
+- reuses shared emergency-fund target math helpers
+
+### Coast FIRE
+
+- calculator: `/calculators/coast-fire-calculator/`
+- examples index: `/calculators/coast-fire/examples/`
+- generated page route: `/calculators/coast-fire/<slug>/`
+- reuses the existing Coast FIRE calculator assumptions and retirement-family linking
+
+### 401(k)
+
+- calculator: `/calculators/401k-calculator/`
+- examples index: `/calculators/401k/examples/`
+- generated page route: `/calculators/401k/<slug>/`
+- reuses the current 401(k) growth math and serves the wider 401(k) calculator family
+
+### Roth IRA
+
+- calculator: `/calculators/roth-ira-calculator/`
+- examples index: `/calculators/roth-ira/examples/`
+- generated page route: `/calculators/roth-ira/<slug>/`
+- reuses the current Roth IRA growth math and serves the wider Roth IRA calculator family
+
+### Years to Retirement
+
+- calculator: `/calculators/years-to-retirement-calculator/`
+- examples index: `/calculators/years-to-retirement/examples/`
+- generated page route: `/calculators/years-to-retirement/<slug>/`
+- reuses the current retirement timeline and target-portfolio planning assumptions
+
+### Retirement Income Gap
+
+- calculator: `/calculators/retirement-income-gap-calculator/`
+- examples index: `/calculators/retirement-income-gap/examples/`
+- generated page route: `/calculators/retirement-income-gap/<slug>/`
+- reuses the current retirement-income-gap assumptions for portfolio withdrawals and non-portfolio income
+
+### Portfolio Withdrawal Sustainability
+
+- calculator: `/calculators/portfolio-withdrawal-sustainability-calculator/`
+- examples index: `/calculators/portfolio-withdrawal-sustainability/examples/`
+- generated page route: `/calculators/portfolio-withdrawal-sustainability/<slug>/`
+- reuses the current constant-return and inflation-adjusted withdrawal sustainability framing
+
+### Retirement Tax Drag
+
+- calculator: `/calculators/retirement-tax-drag-calculator/`
+- examples index: `/calculators/retirement-tax-drag/examples/`
+- generated page route: `/calculators/retirement-tax-drag/<slug>/`
+- reuses the current retirement tax drag calculator assumptions
+
 ### APY
 
 - calculator: `/calculators/apy-calculator/`
@@ -205,6 +347,22 @@ Required surfaces:
 - Balance Transfer
 
 That shared module supports two public cluster families.
+
+### Dedicated Debt And Loan Modules
+
+Standalone debt-family modules now also exist for:
+
+- `loan-payment`
+- `mortgage-payoff`
+- `debt-payoff`
+- `debt-snowball`
+- `debt-avalanche`
+- `auto-loan`
+- `student-loan`
+- `student-loan-payoff`
+- `heloc`
+
+These follow the same typed-record plus builder pattern as the original clusters, but keep debt-family intent separated instead of overloading the older `debt.ts` module.
 
 ## Test Coverage
 

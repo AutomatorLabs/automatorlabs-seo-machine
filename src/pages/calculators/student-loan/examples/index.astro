@@ -1,0 +1,55 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  EXPECTED_STUDENT_LOAN_SEO_PAGE_COUNT,
+  studentLoanSeoRecords,
+} from '../../../../data/programmatic-seo/student-loan';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditStudentLoanSeoRecords } from '../../../../lib/programmatic-seo/student-loan';
+
+const audit = auditStudentLoanSeoRecords(
+  studentLoanSeoRecords,
+  EXPECTED_STUDENT_LOAN_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(studentLoanSeoRecords, [
+  {
+    id: 'shorter-term',
+    title: 'Shorter-Term Student Loan Examples',
+    description: 'Examples with faster repayment schedules and smaller balances.',
+    matches: (record) => record.loanTermYears <= 10,
+  },
+  {
+    id: 'longer-term',
+    title: 'Longer-Term Student Loan Examples',
+    description: 'Examples showing how longer terms and extra payments interact.',
+    matches: (record) => record.loanTermYears > 10,
+  },
+]);
+---
+
+<ProgrammaticExampleIndexPage
+  title="Student Loan Examples"
+  description={`Browse ${audit.actualCount} student loan examples across balances, rates, terms, and extra monthly payments.`}
+  eyebrow="Student debt library"
+  intro={`Browse ${audit.actualCount} worked student loan examples covering required payments, payoff timelines, and extra-payment scenarios.`}
+  calculatorTitle="Student Loan Calculator"
+  calculatorUrl="/calculators/student-loan-calculator/"
+  examplesUrl="/calculators/student-loan/examples/"
+  calculatorLinkLabel="Estimate your own student loan plan"
+  count={audit.actualCount}
+  searchLabel="Search student loan examples"
+  searchPlaceholder="Try $35,000, 10 years, 6%, or $100 extra"
+  noResultsText="No student loan examples found. Try a balance, rate, term, or extra payment."
+  prefix="student-loan"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/student-loan/${record.slug}/`,
+      subtitle: `$${record.studentLoanBalance.toLocaleString('en-US')} balance · ${record.annualInterestRatePercent}% rate · ${record.loanTermYears} years`,
+      searchText: [record.question, record.slug, record.studentLoanBalance, record.annualInterestRatePercent, record.loanTermYears, record.monthlyExtraPayment].join(' '),
+    })),
+  }))}/>

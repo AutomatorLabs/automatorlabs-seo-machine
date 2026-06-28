@@ -1,0 +1,261 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  EXPECTED_MONTHLY_SAVINGS_SEO_PAGE_COUNT,
+  monthlySavingsSeoRecords,
+} from '../../../../data/programmatic-seo/monthly-savings';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditMonthlySavingsSeoRecords } from '../../../../lib/programmatic-seo/monthly-savings';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditMonthlySavingsSeoRecords(
+  monthlySavingsSeoRecords,
+  EXPECTED_MONTHLY_SAVINGS_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Monthly Savings Calculator',
+        url: '/calculators/monthly-savings-calculator/',
+      },
+      { name: 'Examples', url: '/calculators/monthly-savings/examples/' },
+    ],
+    site,
+  ),
+);
+
+const groups = createProgrammaticExampleGroups(monthlySavingsSeoRecords, [
+  {
+    id: 'starter',
+    title: 'Starter Monthly Savings Examples',
+    description:
+      'Examples for smaller starter funds and early-stage monthly savings plans.',
+    matches: (record) => record.intent === 'starter-fund',
+  },
+  {
+    id: 'milestone',
+    title: 'Milestone Monthly Savings Examples',
+    description:
+      'Examples for mid-sized goals that need a clear monthly savings pace.',
+    matches: (record) => record.intent === 'milestone-fund',
+  },
+  {
+    id: 'major-purchase',
+    title: 'Major Purchase Monthly Savings Examples',
+    description:
+      'Examples for larger recurring savings plans tied to major purchases.',
+    matches: (record) => record.intent === 'major-purchase',
+  },
+  {
+    id: 'family',
+    title: 'Family Monthly Savings Examples',
+    description:
+      'Examples for family-oriented savings plans and shared household targets.',
+    matches: (record) => record.intent === 'family-goal',
+  },
+  {
+    id: 'catch-up',
+    title: 'Catch-Up Monthly Savings Examples',
+    description:
+      'Examples for more aggressive timelines where the target needs faster monthly progress.',
+    matches: (record) => record.intent === 'catch-up-plan',
+  },
+]);
+---
+
+<Layout
+  title="Monthly Savings Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} monthly savings examples across starter funds, milestones, family targets, major purchases, and catch-up savings plans.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/monthly-savings-calculator/">
+            Monthly Savings Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Monthly savings library</p>
+      <h1>Monthly Savings Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering starter funds,
+        larger milestones, family savings targets, major purchases, and
+        catch-up monthly savings plans.
+      </p>
+      <a class="primary-link" href="/calculators/monthly-savings-calculator/">
+        Build your own monthly savings plan
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section
+      class="example-search"
+      aria-label="Search monthly savings examples"
+    >
+      <label for="monthly-savings-example-search">
+        Search monthly savings examples
+      </label>
+      <div class="search-row">
+        <input
+          id="monthly-savings-example-search"
+          type="search"
+          placeholder="Try family, catch-up, $25,000, or 3 years"
+          autocomplete="off"
+          aria-controls="monthly-savings-example-groups"
+          aria-describedby="monthly-savings-example-count"
+        />
+        <button id="clear-monthly-savings-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="monthly-savings-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="monthly-savings-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-monthly-savings-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-monthly-savings-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.scenarioLabel,
+                  record.purposeLabel,
+                  record.goalAmount,
+                  record.currentSavings,
+                  `${record.years} years`,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/monthly-savings/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    ${record.goalAmount.toLocaleString('en-US')}
+                    goal
+                    {' · '}
+                    ${record.currentSavings.toLocaleString('en-US')}
+                    saved
+                    {' · '}
+                    {record.years} years
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p
+      id="no-monthly-savings-examples"
+      class="no-results"
+      role="status"
+      hidden
+    >
+      No monthly savings examples found. Try a target amount, timeline, or
+      scenario type.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#monthly-savings-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-monthly-savings-example-search',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-monthly-savings-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-monthly-savings-example-group]',
+    ),
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#monthly-savings-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-monthly-savings-examples',
+  );
+
+  function updateSearch() {
+    const query = input?.value.trim().toLocaleLowerCase() ?? '';
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query.length === 0 ||
+        (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      const hasVisibleCard = Array.from(
+        group.querySelectorAll<HTMLElement>(
+          '[data-monthly-savings-example-card]',
+        ),
+      ).some((card) => !card.hidden);
+      group.hidden = !hasVisibleCard;
+    });
+
+    if (count) {
+      count.textContent = `Showing ${visibleCount} example${visibleCount === 1 ? '' : 's'}`;
+    }
+    if (noResults) noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query.length === 0;
+  }
+
+  input?.addEventListener('input', updateSearch);
+  clearButton?.addEventListener('click', () => {
+    if (input) {
+      input.value = '';
+      input.focus();
+    }
+    updateSearch();
+  });
+</script>
+
+<style>
+  @import '../../../../styles/programmatic-examples.css';
+</style>

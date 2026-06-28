@@ -1,0 +1,55 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  EXPECTED_LOAN_PAYMENT_SEO_PAGE_COUNT,
+  loanPaymentSeoRecords,
+} from '../../../../data/programmatic-seo/loan-payment';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditLoanPaymentSeoRecords } from '../../../../lib/programmatic-seo/loan-payment';
+
+const audit = auditLoanPaymentSeoRecords(
+  loanPaymentSeoRecords,
+  EXPECTED_LOAN_PAYMENT_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(loanPaymentSeoRecords, [
+  {
+    id: 'short-term',
+    title: 'Shorter-Term Loan Examples',
+    description: 'Examples focused on shorter payoff windows and lower principal balances.',
+    matches: (record) => record.loanTermYears <= 5,
+  },
+  {
+    id: 'longer-term',
+    title: 'Longer-Term Loan Examples',
+    description: 'Examples for larger balances and longer repayment timelines.',
+    matches: (record) => record.loanTermYears > 5,
+  },
+]);
+---
+
+<ProgrammaticExampleIndexPage
+  title="Loan Payment Examples"
+  description={`Browse ${audit.actualCount} fixed-rate loan payment examples across balances, APRs, loan terms, and extra monthly payments.`}
+  eyebrow="Loan payoff library"
+  intro={`Browse ${audit.actualCount} worked examples showing how fixed-rate loan payments, extra principal, and payoff timelines interact.`}
+  calculatorTitle="Loan Payment Calculator"
+  calculatorUrl="/calculators/loan-payment-calculator/"
+  examplesUrl="/calculators/loan-payment/examples/"
+  calculatorLinkLabel="Estimate your own loan payment"
+  count={audit.actualCount}
+  searchLabel="Search loan payment examples"
+  searchPlaceholder="Try $25,000, 7 years, 8.5%, or $100 extra"
+  noResultsText="No loan payment examples found. Try a balance, rate, term, or extra payment."
+  prefix="loan-payment"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/loan-payment/${record.slug}/`,
+      subtitle: `$${record.loanAmount.toLocaleString('en-US')} loan · ${record.annualInterestRatePercent}% APR · ${record.loanTermYears} years`,
+      searchText: [record.question, record.slug, record.loanAmount, record.annualInterestRatePercent, record.loanTermYears, record.extraMonthlyPayment].join(' '),
+    })),
+  }))}/>

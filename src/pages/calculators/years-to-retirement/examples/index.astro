@@ -1,0 +1,55 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  EXPECTED_YEARS_TO_RETIREMENT_SEO_PAGE_COUNT,
+  yearsToRetirementSeoRecords,
+} from '../../../../data/programmatic-seo/years-to-retirement';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditYearsToRetirementSeoRecords } from '../../../../lib/programmatic-seo/years-to-retirement';
+
+const audit = auditYearsToRetirementSeoRecords(
+  yearsToRetirementSeoRecords,
+  EXPECTED_YEARS_TO_RETIREMENT_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(yearsToRetirementSeoRecords, [
+  {
+    id: 'earlier-target',
+    title: 'Earlier Retirement Target Examples',
+    description: 'Examples aimed at retirement targets in the 50s or early 60s.',
+    matches: (record) => record.targetRetirementAge <= 60,
+  },
+  {
+    id: 'later-target',
+    title: 'Later Retirement Target Examples',
+    description: 'Examples for retirement targets in the mid-60s and beyond.',
+    matches: (record) => record.targetRetirementAge > 60,
+  },
+]);
+---
+
+<ProgrammaticExampleIndexPage
+  title="Years to Retirement Examples"
+  description={`Browse ${audit.actualCount} retirement-timeline examples across ages, target retirement dates, portfolio goals, monthly contributions, and return assumptions.`}
+  eyebrow="Retirement timeline library"
+  intro={`Browse ${audit.actualCount} worked examples comparing a target retirement age with a target portfolio and ongoing monthly contributions.`}
+  calculatorTitle="Years to Retirement Calculator"
+  calculatorUrl="/calculators/years-to-retirement-calculator/"
+  examplesUrl="/calculators/years-to-retirement/examples/"
+  calculatorLinkLabel="Estimate your own retirement timeline"
+  count={audit.actualCount}
+  searchLabel="Search years to retirement examples"
+  searchPlaceholder="Try age 40, retire by 60, $2,000,000, or $1,500 monthly"
+  noResultsText="No retirement-timeline examples found. Try an age, target date, or portfolio amount."
+  prefix="years-to-retirement"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/years-to-retirement/${record.slug}/`,
+      subtitle: `Age ${record.currentAge} now · retire at ${record.targetRetirementAge} · $${record.targetRetirementPortfolio.toLocaleString('en-US')} goal`,
+      searchText: [record.question, record.slug, record.currentAge, record.targetRetirementAge, record.targetRetirementPortfolio, record.monthlyContribution].join(' '),
+    })),
+  }))}/>

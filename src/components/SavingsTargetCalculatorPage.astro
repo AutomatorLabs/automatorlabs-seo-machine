@@ -1,6 +1,9 @@
 ---
 import type { CalculatorConfig } from '../data/calculators';
 import { contentItems } from '../data/content';
+import { featuredCarSavingsSeoRecords } from '../data/programmatic-seo/car-savings';
+import { featuredMonthlySavingsSeoRecords } from '../data/programmatic-seo/monthly-savings';
+import { featuredVacationSavingsSeoRecords } from '../data/programmatic-seo/vacation-savings';
 import CalculatorPage from './CalculatorPage.astro';
 
 interface Props {
@@ -28,16 +31,62 @@ const guideItems = [
     url: '/guides/apr-vs-apy/',
   },
 ];
-const exampleItems = [
-  {
-    title: 'Browse Savings Goal Examples',
-    url: '/calculators/savings-goal/examples/',
-  },
-  {
-    title: 'Save $100,000 in 5 Years',
-    url: '/calculators/savings-goal/save-100000-in-5-years/',
-  },
-];
+const exampleConfig =
+  calculator.id === 'monthly-savings'
+    ? {
+        heading: 'Monthly Savings Examples',
+        items: [
+          {
+            title: 'Browse all 200 monthly savings examples',
+            url: '/calculators/monthly-savings/examples/',
+          },
+          ...featuredMonthlySavingsSeoRecords.map((record) => ({
+            title: record.question,
+            url: `/calculators/monthly-savings/${record.slug}/`,
+          })),
+        ],
+      }
+    : calculator.id === 'vacation-savings'
+      ? {
+          heading: 'Vacation Savings Examples',
+          items: [
+            {
+              title: 'Browse all 200 vacation savings examples',
+              url: '/calculators/vacation-savings/examples/',
+            },
+            ...featuredVacationSavingsSeoRecords.map((record) => ({
+              title: record.question,
+              url: `/calculators/vacation-savings/${record.slug}/`,
+            })),
+          ],
+        }
+      : calculator.id === 'car-savings'
+        ? {
+            heading: 'Car Savings Examples',
+            items: [
+              {
+                title: 'Browse all 200 car savings examples',
+                url: '/calculators/car-savings/examples/',
+              },
+              ...featuredCarSavingsSeoRecords.map((record) => ({
+                title: record.question,
+                url: `/calculators/car-savings/${record.slug}/`,
+              })),
+            ],
+          }
+        : {
+            heading: 'Savings Goal Examples',
+            items: [
+              {
+                title: 'Browse Savings Goal Examples',
+                url: '/calculators/savings-goal/examples/',
+              },
+              {
+                title: 'Save $100,000 in 5 Years',
+                url: '/calculators/savings-goal/save-100000-in-5-years/',
+              },
+            ],
+          };
 ---
 
 <CalculatorPage
@@ -49,8 +98,8 @@ const exampleItems = [
   faq={calculator.faq}
   relatedItems={relatedItems}
   guideItems={guideItems}
-  exampleItems={exampleItems}
-  exampleHeading="Savings Goal Examples"
+  exampleItems={exampleConfig.items}
+  exampleHeading={exampleConfig.heading}
   calculatorData={{
     'periods-per-year': periodsPerYear,
     'period-label': periodLabel,

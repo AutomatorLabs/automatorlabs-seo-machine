@@ -1,0 +1,55 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  debtSnowballSeoRecords,
+  EXPECTED_DEBT_SNOWBALL_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/debt-snowball';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditDebtSnowballSeoRecords } from '../../../../lib/programmatic-seo/debt-snowball';
+
+const audit = auditDebtSnowballSeoRecords(
+  debtSnowballSeoRecords,
+  EXPECTED_DEBT_SNOWBALL_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(debtSnowballSeoRecords, [
+  {
+    id: 'lighter',
+    title: 'Smaller Debt Stack Snowball Examples',
+    description: 'Examples focused on lower total balances and smaller extra monthly payments.',
+    matches: (record) => record.debt1Balance + record.debt2Balance + record.debt3Balance < 15000,
+  },
+  {
+    id: 'heavier',
+    title: 'Larger Debt Stack Snowball Examples',
+    description: 'Examples showing how snowball momentum behaves on larger three-debt stacks.',
+    matches: (record) => record.debt1Balance + record.debt2Balance + record.debt3Balance >= 15000,
+  },
+]);
+---
+
+<ProgrammaticExampleIndexPage
+  title="Debt Snowball Examples"
+  description={`Browse ${audit.actualCount} debt snowball examples across different three-debt mixes, total balances, and extra monthly payments.`}
+  eyebrow="Snowball strategy library"
+  intro={`Browse ${audit.actualCount} worked debt snowball examples showing how smallest-balance-first repayment can behave across different debt stacks.`}
+  calculatorTitle="Debt Snowball Calculator"
+  calculatorUrl="/calculators/debt-snowball-calculator/"
+  examplesUrl="/calculators/debt-snowball/examples/"
+  calculatorLinkLabel="Build your own debt snowball"
+  count={audit.actualCount}
+  searchLabel="Search debt snowball examples"
+  searchPlaceholder="Try rebuild, $200 extra, starter, or family"
+  noResultsText="No debt snowball examples found. Try a profile name, balance size, or extra payment."
+  prefix="debt-snowball"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/debt-snowball/${record.slug}/`,
+      subtitle: `${record.profileLabel} profile · $${record.extraMonthlyPayment.toLocaleString('en-US')} extra each month`,
+      searchText: [record.question, record.slug, record.profileLabel, record.extraMonthlyPayment, record.debt1Name, record.debt2Name, record.debt3Name].join(' '),
+    })),
+  }))}/>

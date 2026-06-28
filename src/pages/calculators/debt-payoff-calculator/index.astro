@@ -7,6 +7,13 @@ const relatedItems = debtPayoffCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+
+const exampleItems = [
+  {
+    title: 'Browse all 200 debt payoff examples',
+    url: '/calculators/debt-payoff/examples/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +24,7 @@ const relatedItems = debtPayoffCalculator.relatedIds.flatMap((id) => {
   outputs={debtPayoffCalculator.outputs}
   faq={debtPayoffCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

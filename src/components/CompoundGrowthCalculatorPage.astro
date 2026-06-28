@@ -2,6 +2,7 @@
 import type { CalculatorConfig } from '../data/calculators';
 import { contentItems } from '../data/content';
 import { featuredInvestmentGrowthSeoRecords } from '../data/programmatic-seo/investment-growth';
+import { featuredSavingsGrowthSeoRecords } from '../data/programmatic-seo/savings-growth';
 import CalculatorPage from './CalculatorPage.astro';
 
 interface Props {
@@ -36,19 +37,39 @@ const guideItems = [
     url: '/guides/effective-annual-rate/',
   },
 ];
-const exampleItems =
+const exampleConfig =
   calculator.id === 'investment-growth'
-    ? [
-        {
-          title: 'Browse all 200 investment growth examples',
-          url: '/calculators/investment-growth/examples/',
-        },
-        ...featuredInvestmentGrowthSeoRecords.map((record) => ({
-          title: record.question,
-          url: `/calculators/investment-growth/${record.slug}/`,
-        })),
-      ]
-    : [];
+    ? {
+        heading: 'Investment Growth Examples',
+        items: [
+          {
+            title: 'Browse all 200 investment growth examples',
+            url: '/calculators/investment-growth/examples/',
+          },
+          ...featuredInvestmentGrowthSeoRecords.map((record) => ({
+            title: record.question,
+            url: `/calculators/investment-growth/${record.slug}/`,
+          })),
+        ],
+      }
+    : calculator.id === 'savings-growth'
+      ? {
+          heading: 'Savings Growth Examples',
+          items: [
+            {
+              title: 'Browse all 200 savings growth examples',
+              url: '/calculators/savings-growth/examples/',
+            },
+            ...featuredSavingsGrowthSeoRecords.map((record) => ({
+              title: record.question,
+              url: `/calculators/savings-growth/${record.slug}/`,
+            })),
+          ],
+        }
+      : {
+          heading: 'Investment Growth Examples',
+          items: [],
+        };
 ---
 
 <CalculatorPage
@@ -60,8 +81,8 @@ const exampleItems =
   faq={calculator.faq}
   relatedItems={relatedItems}
   guideItems={guideItems}
-  exampleItems={exampleItems}
-  exampleHeading="Investment Growth Examples"
+  exampleItems={exampleConfig.items}
+  exampleHeading={exampleConfig.heading}
   calculatorData={{
     'periods-per-year': periodsPerYear,
     'tracking-id': calculator.id,

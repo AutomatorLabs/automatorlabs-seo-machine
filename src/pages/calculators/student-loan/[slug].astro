@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_STUDENT_LOAN_SEO_PAGE_COUNT,
+  studentLoanSeoRecords,
+} from '../../../data/programmatic-seo/student-loan';
+import {
+  auditStudentLoanSeoRecords,
+  createStudentLoanSeoPage,
+} from '../../../lib/programmatic-seo/student-loan';
+
+auditStudentLoanSeoRecords(
+  studentLoanSeoRecords,
+  EXPECTED_STUDENT_LOAN_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return studentLoanSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createStudentLoanSeoPage(record, studentLoanSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

@@ -1,0 +1,254 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  carSavingsSeoRecords,
+  EXPECTED_CAR_SAVINGS_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/car-savings';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditCarSavingsSeoRecords } from '../../../../lib/programmatic-seo/car-savings';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditCarSavingsSeoRecords(
+  carSavingsSeoRecords,
+  EXPECTED_CAR_SAVINGS_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Car Savings Calculator',
+        url: '/calculators/car-savings-calculator/',
+      },
+      { name: 'Examples', url: '/calculators/car-savings/examples/' },
+    ],
+    site,
+  ),
+);
+
+const groups = createProgrammaticExampleGroups(carSavingsSeoRecords, [
+  {
+    id: 'down-payment',
+    title: 'Car Down Payment Savings Examples',
+    description:
+      'Examples for building a vehicle down payment over short and medium timelines.',
+    matches: (record) => record.intent === 'down-payment',
+  },
+  {
+    id: 'used-car',
+    title: 'Used Car Savings Examples',
+    description:
+      'Examples focused on lower purchase targets and recurring monthly saving for a used car.',
+    matches: (record) => record.intent === 'used-car',
+  },
+  {
+    id: 'new-car',
+    title: 'New Car Savings Examples',
+    description:
+      'Examples for larger new-car budgets and multi-year savings plans.',
+    matches: (record) => record.intent === 'new-car',
+  },
+  {
+    id: 'family-suv',
+    title: 'Family SUV Savings Examples',
+    description:
+      'Examples for bigger household vehicle budgets and longer savings runways.',
+    matches: (record) => record.intent === 'family-suv',
+  },
+  {
+    id: 'replacement',
+    title: 'Replacement Car Savings Examples',
+    description:
+      'Examples for future replacement-vehicle funds and later-life purchase planning.',
+    matches: (record) => record.intent === 'retirement-replacement',
+  },
+]);
+---
+
+<Layout
+  title="Car Savings Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} car savings examples across down payments, used cars, new cars, family SUVs, and replacement-vehicle scenarios.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/car-savings-calculator/">
+            Car Savings Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Car savings library</p>
+      <h1>Car Savings Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering car down payments,
+        used cars, new cars, family SUVs, and replacement-vehicle savings
+        plans.
+      </p>
+      <a class="primary-link" href="/calculators/car-savings-calculator/">
+        Plan your own car savings goal
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section
+      class="example-search"
+      aria-label="Search car savings examples"
+    >
+      <label for="car-savings-example-search">
+        Search car savings examples
+      </label>
+      <div class="search-row">
+        <input
+          id="car-savings-example-search"
+          type="search"
+          placeholder="Try new car, down payment, $30,000, or 5 years"
+          autocomplete="off"
+          aria-controls="car-savings-example-groups"
+          aria-describedby="car-savings-example-count"
+        />
+        <button id="clear-car-savings-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="car-savings-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="car-savings-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-car-savings-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-car-savings-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.scenarioLabel,
+                  record.purposeLabel,
+                  record.goalAmount,
+                  record.currentSavings,
+                  `${record.years} years`,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/car-savings/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    ${record.goalAmount.toLocaleString('en-US')}
+                    vehicle target
+                    {' · '}
+                    ${record.currentSavings.toLocaleString('en-US')}
+                    saved
+                    {' · '}
+                    {record.years} years
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p id="no-car-savings-examples" class="no-results" role="status" hidden>
+      No car savings examples found. Try a vehicle type, budget, or time
+      horizon.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#car-savings-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-car-savings-example-search',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-car-savings-example-card]'),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-car-savings-example-group]',
+    ),
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#car-savings-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-car-savings-examples',
+  );
+
+  function updateSearch() {
+    const query = input?.value.trim().toLocaleLowerCase() ?? '';
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query.length === 0 ||
+        (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      const hasVisibleCard = Array.from(
+        group.querySelectorAll<HTMLElement>(
+          '[data-car-savings-example-card]',
+        ),
+      ).some((card) => !card.hidden);
+      group.hidden = !hasVisibleCard;
+    });
+
+    if (count) {
+      count.textContent = `Showing ${visibleCount} example${visibleCount === 1 ? '' : 's'}`;
+    }
+    if (noResults) noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query.length === 0;
+  }
+
+  input?.addEventListener('input', updateSearch);
+  clearButton?.addEventListener('click', () => {
+    if (input) {
+      input.value = '';
+      input.focus();
+    }
+    updateSearch();
+  });
+</script>
+
+<style>
+  @import '../../../../styles/programmatic-examples.css';
+</style>

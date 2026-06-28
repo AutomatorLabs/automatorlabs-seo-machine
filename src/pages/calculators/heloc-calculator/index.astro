@@ -7,6 +7,13 @@ const relatedItems = helocCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+
+const exampleItems = [
+  {
+    title: 'Browse all 200 HELOC examples',
+    url: '/calculators/heloc/examples/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +24,7 @@ const relatedItems = helocCalculator.relatedIds.flatMap((id) => {
   outputs={helocCalculator.outputs}
   faq={helocCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

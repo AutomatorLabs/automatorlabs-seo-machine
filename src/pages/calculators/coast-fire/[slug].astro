@@ -1,0 +1,27 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  coastFireSeoRecords,
+  EXPECTED_COAST_FIRE_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/coast-fire';
+import {
+  auditCoastFireSeoRecords,
+  createCoastFireSeoPage,
+} from '../../../lib/programmatic-seo/coast-fire';
+
+auditCoastFireSeoRecords(
+  coastFireSeoRecords,
+  EXPECTED_COAST_FIRE_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return coastFireSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: { page: createCoastFireSeoPage(record, coastFireSeoRecords) },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

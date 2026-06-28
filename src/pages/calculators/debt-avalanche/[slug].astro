@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  debtAvalancheSeoRecords,
+  EXPECTED_DEBT_AVALANCHE_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/debt-avalanche';
+import {
+  auditDebtAvalancheSeoRecords,
+  createDebtAvalancheSeoPage,
+} from '../../../lib/programmatic-seo/debt-avalanche';
+
+auditDebtAvalancheSeoRecords(
+  debtAvalancheSeoRecords,
+  EXPECTED_DEBT_AVALANCHE_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return debtAvalancheSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createDebtAvalancheSeoPage(record, debtAvalancheSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

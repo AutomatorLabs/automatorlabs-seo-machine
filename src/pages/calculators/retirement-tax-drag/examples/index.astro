@@ -1,0 +1,55 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  EXPECTED_RETIREMENT_TAX_DRAG_SEO_PAGE_COUNT,
+  retirementTaxDragSeoRecords,
+} from '../../../../data/programmatic-seo/retirement-tax-drag';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditRetirementTaxDragSeoRecords } from '../../../../lib/programmatic-seo/retirement-tax-drag';
+
+const audit = auditRetirementTaxDragSeoRecords(
+  retirementTaxDragSeoRecords,
+  EXPECTED_RETIREMENT_TAX_DRAG_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(retirementTaxDragSeoRecords, [
+  {
+    id: 'lower-withdrawal',
+    title: 'Lower Withdrawal Tax-Drag Examples',
+    description: 'Examples for smaller annual retirement withdrawals and more modest tax bills.',
+    matches: (record) => record.annualRetirementWithdrawal <= 50000,
+  },
+  {
+    id: 'higher-withdrawal',
+    title: 'Higher Withdrawal Tax-Drag Examples',
+    description: 'Examples for larger retirement withdrawals and more pronounced annual tax costs.',
+    matches: (record) => record.annualRetirementWithdrawal > 50000,
+  },
+]);
+---
+
+<ProgrammaticExampleIndexPage
+  title="Retirement Tax Drag Examples"
+  description={`Browse ${audit.actualCount} retirement tax-drag examples across withdrawal amounts, tax rates, retirement lengths, and inflation assumptions.`}
+  eyebrow="Retirement tax planning library"
+  intro={`Browse ${audit.actualCount} worked retirement tax-drag examples showing how annual withdrawals can translate into yearly and lifetime tax costs.`}
+  calculatorTitle="Retirement Tax Drag Calculator"
+  calculatorUrl="/calculators/retirement-tax-drag-calculator/"
+  examplesUrl="/calculators/retirement-tax-drag/examples/"
+  calculatorLinkLabel="Estimate your own retirement tax drag"
+  count={audit.actualCount}
+  searchLabel="Search retirement tax drag examples"
+  searchPlaceholder="Try $75,000 withdrawal, 20% tax, 30 years, or 3% inflation"
+  noResultsText="No retirement tax-drag examples found. Try a withdrawal amount, tax rate, or retirement length."
+  prefix="retirement-tax-drag"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/retirement-tax-drag/${record.slug}/`,
+      subtitle: `$${record.annualRetirementWithdrawal.toLocaleString('en-US')} yearly · ${record.estimatedTaxRatePercent}% tax · ${record.yearsInRetirement} years`,
+      searchText: [record.question, record.slug, record.annualRetirementWithdrawal, record.estimatedTaxRatePercent, record.yearsInRetirement].join(' '),
+    })),
+  }))}/>

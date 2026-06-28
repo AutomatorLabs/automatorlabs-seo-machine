@@ -1,0 +1,29 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  debtSnowballSeoRecords,
+  EXPECTED_DEBT_SNOWBALL_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/debt-snowball';
+import {
+  auditDebtSnowballSeoRecords,
+  createDebtSnowballSeoPage,
+} from '../../../lib/programmatic-seo/debt-snowball';
+
+auditDebtSnowballSeoRecords(
+  debtSnowballSeoRecords,
+  EXPECTED_DEBT_SNOWBALL_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return debtSnowballSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createDebtSnowballSeoPage(record, debtSnowballSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

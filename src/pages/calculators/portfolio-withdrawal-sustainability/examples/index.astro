@@ -1,0 +1,58 @@
+---
+import ProgrammaticExampleIndexPage from '../../../../components/programmatic-seo/ProgrammaticExampleIndexPage.astro';
+import {
+  EXPECTED_PORTFOLIO_WITHDRAWAL_SUSTAINABILITY_SEO_PAGE_COUNT,
+  portfolioWithdrawalSustainabilitySeoRecords,
+} from '../../../../data/programmatic-seo/portfolio-withdrawal-sustainability';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditPortfolioWithdrawalSustainabilitySeoRecords } from '../../../../lib/programmatic-seo/portfolio-withdrawal-sustainability';
+
+const audit = auditPortfolioWithdrawalSustainabilitySeoRecords(
+  portfolioWithdrawalSustainabilitySeoRecords,
+  EXPECTED_PORTFOLIO_WITHDRAWAL_SUSTAINABILITY_SEO_PAGE_COUNT,
+);
+
+const groups = createProgrammaticExampleGroups(
+  portfolioWithdrawalSustainabilitySeoRecords,
+  [
+    {
+      id: 'shorter-retirement',
+      title: 'Shorter Retirement Examples',
+      description: 'Examples for 20-year retirement periods.',
+      matches: (record) => record.years === 20,
+    },
+    {
+      id: 'longer-retirement',
+      title: 'Longer Retirement Examples',
+      description: 'Examples for 30-year retirement periods.',
+      matches: (record) => record.years === 30,
+    },
+  ],
+);
+---
+
+<ProgrammaticExampleIndexPage
+  title="Portfolio Withdrawal Sustainability Examples"
+  description={`Browse ${audit.actualCount} withdrawal-sustainability examples across portfolio sizes, annual withdrawals, retirement lengths, return assumptions, and inflation.`}
+  eyebrow="Withdrawal durability library"
+  intro={`Browse ${audit.actualCount} worked examples testing whether a portfolio may stay above zero while funding repeated retirement withdrawals.`}
+  calculatorTitle="Portfolio Withdrawal Sustainability Calculator"
+  calculatorUrl="/calculators/portfolio-withdrawal-sustainability-calculator/"
+  examplesUrl="/calculators/portfolio-withdrawal-sustainability/examples/"
+  calculatorLinkLabel="Test your own withdrawal durability"
+  count={audit.actualCount}
+  searchLabel="Search portfolio withdrawal sustainability examples"
+  searchPlaceholder="Try $1,000,000, $50,000 withdrawal, 30 years, or 7%"
+  noResultsText="No sustainability examples found. Try a portfolio size, withdrawal amount, or time horizon."
+  prefix="portfolio-withdrawal-sustainability"
+  groups={groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    description: group.description,
+    records: group.records.map((record) => ({
+      title: record.question,
+      url: `/calculators/portfolio-withdrawal-sustainability/${record.slug}/`,
+      subtitle: `$${record.portfolioValue.toLocaleString('en-US')} portfolio · $${record.annualWithdrawalAmount.toLocaleString('en-US')} yearly · ${record.years} years`,
+      searchText: [record.question, record.slug, record.portfolioValue, record.annualWithdrawalAmount, record.years].join(' '),
+    })),
+  }))}/>

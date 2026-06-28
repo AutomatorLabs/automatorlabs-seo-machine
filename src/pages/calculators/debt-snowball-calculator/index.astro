@@ -13,6 +13,13 @@ const guideItems = [
     url: '/guides/debt-snowball-vs-debt-avalanche/',
   },
 ];
+
+const exampleItems = [
+  {
+    title: 'Browse all 200 debt snowball examples',
+    url: '/calculators/debt-snowball/examples/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -24,6 +31,7 @@ const guideItems = [
   faq={debtSnowballCalculator.faq}
   relatedItems={relatedItems}
   guideItems={guideItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

@@ -2,11 +2,22 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { retirementIncomeGapCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredRetirementIncomeGapSeoRecords } from '../../../data/programmatic-seo/retirement-income-gap';
 
 const relatedItems = retirementIncomeGapCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const exampleItems = [
+  {
+    title: 'Browse all 200 retirement income gap examples',
+    url: '/calculators/retirement-income-gap/examples/',
+  },
+  ...featuredRetirementIncomeGapSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/retirement-income-gap/${record.slug}/`,
+  })),
+];
 ---
 
 <CalculatorPage
@@ -17,6 +28,7 @@ const relatedItems = retirementIncomeGapCalculator.relatedIds.flatMap((id) => {
   outputs={retirementIncomeGapCalculator.outputs}
   faq={retirementIncomeGapCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';
