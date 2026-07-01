@@ -227,7 +227,10 @@ import {
   EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
   savingsGrowthSeoRecords,
 } from '../src/data/programmatic-seo/savings-growth';
-import { auditSavingsGrowthSeoRecords } from '../src/lib/programmatic-seo/savings-growth';
+import {
+  auditSavingsGrowthSeoRecords,
+  createSavingsGrowthSeoPage,
+} from '../src/lib/programmatic-seo/savings-growth';
 import {
   EXPECTED_STUDENT_LOAN_PAYOFF_SEO_PAGE_COUNT,
   studentLoanPayoffSeoRecords,
@@ -867,6 +870,31 @@ test.describe('savings growth programmatic SEO', () => {
       uniqueDescriptionCount: EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
       uniqueCanonicalPathCount: EXPECTED_SAVINGS_GROWTH_SEO_PAGE_COUNT,
     });
+  });
+
+  test('relatedCalculators alternates daily/weekly savings by years % 2', () => {
+    const buildRecord = (years: number) => ({
+      slug: `test-savings-growth-${years}`,
+      question: 'Test question?',
+      intent: 'existing-savings-growth' as const,
+      startingSavings: 10000,
+      monthlyContribution: 500,
+      annualReturnPercent: 4,
+      years,
+      scenarioLabel: 'test scenario',
+    });
+
+    const evenRecord = buildRecord(10);
+    const evenPage = createSavingsGrowthSeoPage(evenRecord, [evenRecord]);
+    expect(evenPage.relatedCalculators.map((link) => link.url)).toContain(
+      '/calculators/daily-savings-calculator/',
+    );
+
+    const oddRecord = buildRecord(11);
+    const oddPage = createSavingsGrowthSeoPage(oddRecord, [oddRecord]);
+    expect(oddPage.relatedCalculators.map((link) => link.url)).toContain(
+      '/calculators/weekly-savings-calculator/',
+    );
   });
 
   test('calculator page links to the savings growth examples cluster', async ({

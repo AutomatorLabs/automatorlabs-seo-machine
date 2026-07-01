@@ -198,6 +198,22 @@ function relatedCalculatorsFor(
     });
   }
 
+  if (record.years % 2 === 0) {
+    calculators.push({
+      title: 'Daily Savings Calculator',
+      url: '/calculators/daily-savings-calculator/',
+      description:
+        'Work backward from a future target if you need a required daily savings amount instead of a growth projection.',
+    });
+  } else {
+    calculators.push({
+      title: 'Weekly Savings Calculator',
+      url: '/calculators/weekly-savings-calculator/',
+      description:
+        'Work backward from a future target if you need a required weekly savings amount instead of a growth projection.',
+    });
+  }
+
   return calculators;
 }
 
