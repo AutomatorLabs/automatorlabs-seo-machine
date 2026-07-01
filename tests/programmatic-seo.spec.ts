@@ -198,6 +198,11 @@ import {
 } from '../src/data/programmatic-seo/roth-ira';
 import { auditRothIraSeoRecords } from '../src/lib/programmatic-seo/roth-ira';
 import {
+  EXPECTED_ROTH_EARLY_WITHDRAWAL_SEO_PAGE_COUNT,
+  rothEarlyWithdrawalSeoRecords,
+} from '../src/data/programmatic-seo/roth-ira-early-withdrawal';
+import { auditRothEarlyWithdrawalSeoRecords } from '../src/lib/programmatic-seo/roth-ira-early-withdrawal';
+import {
   EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT,
   safeWithdrawalRateSeoRecords,
 } from '../src/data/programmatic-seo/safe-withdrawal-rate';
@@ -330,6 +335,19 @@ const safeBatchProgrammaticConfigs = [
       'starter-home-350000-price-35000-down-2-closing-3500-fixed-4000-prepaids-0-credits',
     pagePrefix: '/calculators/closing-cost/',
     ctaName: 'Open the Closing Cost Calculator',
+  },
+  {
+    label: 'roth ira early withdrawal',
+    records: rothEarlyWithdrawalSeoRecords,
+    expectedCount: EXPECTED_ROTH_EARLY_WITHDRAWAL_SEO_PAGE_COUNT,
+    audit: auditRothEarlyWithdrawalSeoRecords,
+    calculatorPath: '/calculators/roth-ira-early-withdrawal-calculator/',
+    examplesPath: '/calculators/roth-ira-early-withdrawal/examples/',
+    exampleLinkName: 'Browse all 200 Roth IRA Early Withdrawal examples',
+    representativeSlug:
+      'contributions-only-withdraw-6000-with-12000-basis-1800-earnings-22-tax-10-penalty',
+    pagePrefix: '/calculators/roth-ira-early-withdrawal/',
+    ctaName: 'Open the Roth IRA Early Withdrawal Calculator',
   },
 ] as const;
 

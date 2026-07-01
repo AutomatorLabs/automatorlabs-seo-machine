@@ -610,6 +610,11 @@ export const comparisonGuides: ComparisonGuide[] = [
         description: 'Estimate account growth from a balance and annual contributions.',
       },
       {
+        title: 'Roth IRA Early Withdrawal Examples',
+        url: '/calculators/roth-ira-early-withdrawal/examples/',
+        description: 'Browse worked examples of contribution-basis withdrawals, earnings exposure, and penalty exceptions.',
+      },
+      {
         title: 'Investing Basics Guide',
         url: '/guides/investing/',
         description: 'Review compounding, fees, risk, and long-term assumptions.',

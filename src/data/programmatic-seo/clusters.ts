@@ -37,6 +37,7 @@ import { retirementIncomeGapSeoRecords } from './retirement-income-gap';
 import { retirementTaxDragSeoRecords } from './retirement-tax-drag';
 import { retirementWithdrawalSeoRecords } from './retirement-withdrawal';
 import { rothIraSeoRecords } from './roth-ira';
+import { rothEarlyWithdrawalSeoRecords } from './roth-ira-early-withdrawal';
 import { safeWithdrawalRateSeoRecords } from './safe-withdrawal-rate';
 import { autoLoanSeoRecords } from './auto-loan';
 import { carSavingsSeoRecords } from './car-savings';
@@ -625,6 +626,19 @@ const rothIraRepresentatives = [
     (record) =>
       record.slug ===
       'roth-ira-100000-starting-1000-monthly-at-7-percent-for-30-years',
+  ),
+].filter((record) => record !== undefined);
+
+const rothEarlyWithdrawalRepresentatives = [
+  rothEarlyWithdrawalSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'contributions-only-withdraw-6000-with-12000-basis-1800-earnings-22-tax-10-penalty',
+  ),
+  rothEarlyWithdrawalSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'dips-into-earnings-withdraw-20000-with-10000-basis-10000-earnings-22-tax-10-penalty',
   ),
 ].filter((record) => record !== undefined);
 
@@ -1607,6 +1621,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: rothIraRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/roth-ira/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'roth-ira-early-withdrawal',
+    title: 'Roth IRA Early Withdrawal Examples',
+    description:
+      'Explore contribution-basis withdrawals, earnings exposure, penalty exceptions, and larger hardship withdrawal scenarios.',
+    examplesUrl: '/calculators/roth-ira-early-withdrawal/examples/',
+    calculator: {
+      title: 'Roth IRA Early Withdrawal Calculator',
+      url: '/calculators/roth-ira-early-withdrawal-calculator/',
+    },
+    guide: {
+      title: 'Roth IRA vs Traditional IRA',
+      url: '/guides/roth-vs-traditional-ira/',
+    },
+    pageCount: rothEarlyWithdrawalSeoRecords.length,
+    representativePages: rothEarlyWithdrawalRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/roth-ira-early-withdrawal/${record.slug}/`,
     })),
   },
   {

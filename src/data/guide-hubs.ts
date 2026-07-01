@@ -114,6 +114,12 @@ export const guideHubs: GuideHub[] = [
         description:
           'Browse Roth IRA growth scenarios across starting balances, contribution schedules, and long-term compounding.',
       },
+      {
+        title: 'Roth IRA Early Withdrawal Examples',
+        url: '/calculators/roth-ira-early-withdrawal/examples/',
+        description:
+          'Browse contribution-basis withdrawals, earnings exposure, penalty exceptions, and larger hardship withdrawal scenarios.',
+      },
     ],
     comparisonGuideLinks: [
       {

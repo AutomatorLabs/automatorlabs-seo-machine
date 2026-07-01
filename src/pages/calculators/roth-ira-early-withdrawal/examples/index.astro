@@ -1,0 +1,260 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  EXPECTED_ROTH_EARLY_WITHDRAWAL_SEO_PAGE_COUNT,
+  rothEarlyWithdrawalSeoRecords,
+} from '../../../../data/programmatic-seo/roth-ira-early-withdrawal';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditRothEarlyWithdrawalSeoRecords } from '../../../../lib/programmatic-seo/roth-ira-early-withdrawal';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditRothEarlyWithdrawalSeoRecords(
+  rothEarlyWithdrawalSeoRecords,
+  EXPECTED_ROTH_EARLY_WITHDRAWAL_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Roth IRA Early Withdrawal Calculator',
+        url: '/calculators/roth-ira-early-withdrawal-calculator/',
+      },
+      {
+        name: 'Examples',
+        url: '/calculators/roth-ira-early-withdrawal/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(rothEarlyWithdrawalSeoRecords, [
+  {
+    id: 'contributions-only',
+    title: 'Contributions-Only Examples',
+    description:
+      'Examples where the withdrawal stays within contribution basis, so tax and penalty are both zero.',
+    matches: (record) => record.intent === 'contributions-only',
+  },
+  {
+    id: 'dips-into-earnings',
+    title: 'Dips-Into-Earnings Examples',
+    description:
+      'Examples where the withdrawal exceeds basis and the excess is taxed and penalized at the standard rate.',
+    matches: (record) => record.intent === 'dips-into-earnings',
+  },
+  {
+    id: 'penalty-exception',
+    title: 'Penalty-Exception Examples',
+    description:
+      'Examples where a qualifying exception removes the penalty while tax may still apply to the earnings portion.',
+    matches: (record) => record.intent === 'penalty-exception',
+  },
+  {
+    id: 'large-balance-hardship',
+    title: 'Large-Balance Hardship Examples',
+    description:
+      'Examples focused on larger withdrawal amounts and higher assumed tax brackets.',
+    matches: (record) => record.intent === 'large-balance-hardship',
+  },
+  {
+    id: 'small-emergency',
+    title: 'Small Emergency Examples',
+    description:
+      'Examples focused on modest withdrawal amounts that only slightly dip into earnings.',
+    matches: (record) => record.intent === 'small-emergency',
+  },
+]);
+---
+
+<Layout
+  title="Roth IRA Early Withdrawal Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} Roth IRA early withdrawal examples covering contributions-only withdrawals, earnings exposure, penalty exceptions, and larger hardship scenarios.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/roth-ira-early-withdrawal-calculator/">
+            Roth IRA Early Withdrawal Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Roth IRA early withdrawal scenario library</p>
+      <h1>Roth IRA Early Withdrawal Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering contribution-basis
+        withdrawals, earnings exposure, penalty exceptions, and larger
+        hardship scenarios.
+      </p>
+      <a
+        class="primary-link"
+        href="/calculators/roth-ira-early-withdrawal-calculator/"
+      >
+        Model your own withdrawal scenario
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section
+      class="example-search"
+      aria-label="Search Roth IRA early withdrawal examples"
+    >
+      <label for="roth-early-withdrawal-example-search">
+        Search Roth IRA early withdrawal examples
+      </label>
+      <div class="search-row">
+        <input
+          id="roth-early-withdrawal-example-search"
+          type="search"
+          placeholder="Try 20000, penalty exception, or 22% tax"
+          autocomplete="off"
+          aria-controls="roth-early-withdrawal-example-groups"
+          aria-describedby="roth-early-withdrawal-example-count"
+        />
+        <button
+          id="clear-roth-early-withdrawal-example-search"
+          type="button"
+          hidden
+        >
+          Clear search
+        </button>
+      </div>
+      <p id="roth-early-withdrawal-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="roth-early-withdrawal-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-roth-early-withdrawal-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-roth-early-withdrawal-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.withdrawalAmount,
+                  record.contributionBasisAvailable,
+                  record.assumedTaxRatePercent,
+                  record.assumedPenaltyRatePercent,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/roth-ira-early-withdrawal/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.withdrawalAmount)} withdrawal {' · '}
+                    {currency.format(record.contributionBasisAvailable)} basis {' · '}
+                    {record.assumedTaxRatePercent}% tax
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p
+      id="no-roth-early-withdrawal-examples"
+      class="no-results"
+      role="status"
+      hidden
+    >
+      No Roth IRA early withdrawal examples found. Try a withdrawal amount, tax rate, or intent.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#roth-early-withdrawal-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-roth-early-withdrawal-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#roth-early-withdrawal-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-roth-early-withdrawal-examples',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-roth-early-withdrawal-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-roth-early-withdrawal-example-group]',
+    ),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      group.hidden = !group.querySelector(
+        '[data-roth-early-withdrawal-example-card]:not([hidden])',
+      );
+    });
+
+    count.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'example' : 'examples'}`;
+    noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query === '';
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateExamples();
+    input.focus();
+  });
+</script>

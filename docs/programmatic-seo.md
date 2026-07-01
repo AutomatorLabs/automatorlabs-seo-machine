@@ -15,9 +15,9 @@ Its job is to:
 
 Verified from source on 2026-07-01:
 
-- 49 live clusters in `src/data/programmatic-seo/clusters.ts`
+- 50 live clusters in `src/data/programmatic-seo/clusters.ts`
 - 200 records per cluster
-- 9,800 generated example pages total
+- 10,000 generated example pages total
 - global examples hub at `/examples/`
 
 Current live clusters:
@@ -68,6 +68,7 @@ Current live clusters:
 - Portfolio Withdrawal Sustainability
 - Retirement Tax Drag
 - Roth IRA
+- Roth IRA Early Withdrawal
 - Safe Withdrawal Rate
 - Years to Retirement
 - 4 Percent Rule
@@ -361,6 +362,16 @@ Required surfaces:
 - generated page route: `/calculators/investment-growth/<slug>/`
 - reuses `calculateCompoundInterest`
 - calculator page links are managed through `src/components/CompoundGrowthCalculatorPage.astro`
+
+### Roth IRA Early Withdrawal
+
+- calculator: `/calculators/roth-ira-early-withdrawal-calculator/`
+- examples index: `/calculators/roth-ira-early-withdrawal/examples/`
+- generated page route: `/calculators/roth-ira-early-withdrawal/<slug>/`
+- reuses `calculateRothEarlyWithdrawal`
+- single-shot scenario (no time series): uses `showChart: false` and a static "Scenario Summary" table, following the same pattern as the Closing Cost cluster
+- five intents: contributions-only (withdrawal stays within basis, so tax and penalty are always $0), dips-into-earnings (standard 10% penalty), penalty-exception (0% penalty for a qualifying exception, tax may still apply), large-balance-hardship, and small-emergency
+- calculator page examples link is wired through `src/components/RetirementAccountCalculatorPage.astro`, which special-cases this calculator id ahead of the general Roth IRA family branch so it links to its own cluster instead of the Roth IRA growth cluster
 
 ### Debt Cluster Module
 

@@ -3,6 +3,7 @@ import type { CalculatorConfig } from '../data/calculators';
 import { contentItems } from '../data/content';
 import { featuredFourOhOneKSeoRecords } from '../data/programmatic-seo/401k';
 import { featuredRothIraSeoRecords } from '../data/programmatic-seo/roth-ira';
+import { featuredRothEarlyWithdrawalSeoRecords } from '../data/programmatic-seo/roth-ira-early-withdrawal';
 import CalculatorPage from './CalculatorPage.astro';
 
 interface Props {
@@ -12,8 +13,10 @@ interface Props {
 
 const { calculator, periodsPerYear = 1 } = Astro.props;
 const isFourOhOneK = calculator.id.includes('401k') || calculator.id === 'employer-match';
+const isRothEarlyWithdrawal = calculator.id === 'roth-ira-early-withdrawal';
 const isRothFamily =
-  calculator.id.startsWith('roth-ira') || calculator.id === 'roth-vs-traditional-ira';
+  !isRothEarlyWithdrawal &&
+  (calculator.id.startsWith('roth-ira') || calculator.id === 'roth-vs-traditional-ira');
 const relatedItems = calculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((candidate) => candidate.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
@@ -43,27 +46,38 @@ const retirementToolItems = isFourOhOneK
         url: `/calculators/401k/${record.slug}/`,
       })),
     ]
-  : isRothFamily
+  : isRothEarlyWithdrawal
     ? [
         {
-          title: 'Browse all 200 Roth IRA examples',
-          url: '/calculators/roth-ira/examples/',
+          title: 'Browse all 200 Roth IRA Early Withdrawal examples',
+          url: '/calculators/roth-ira-early-withdrawal/examples/',
         },
-        ...featuredRothIraSeoRecords.map((record) => ({
+        ...featuredRothEarlyWithdrawalSeoRecords.map((record) => ({
           title: record.question,
-          url: `/calculators/roth-ira/${record.slug}/`,
+          url: `/calculators/roth-ira-early-withdrawal/${record.slug}/`,
         })),
       ]
-    : [
-        {
-          title: 'FIRE Calculator',
-          url: '/calculators/fire-calculator/',
-        },
-        {
-          title: 'Retirement Withdrawal Calculator',
-          url: '/calculators/retirement-withdrawal-calculator/',
-        },
-      ];
+    : isRothFamily
+      ? [
+          {
+            title: 'Browse all 200 Roth IRA examples',
+            url: '/calculators/roth-ira/examples/',
+          },
+          ...featuredRothIraSeoRecords.map((record) => ({
+            title: record.question,
+            url: `/calculators/roth-ira/${record.slug}/`,
+          })),
+        ]
+      : [
+          {
+            title: 'FIRE Calculator',
+            url: '/calculators/fire-calculator/',
+          },
+          {
+            title: 'Retirement Withdrawal Calculator',
+            url: '/calculators/retirement-withdrawal-calculator/',
+          },
+        ];
 ---
 
 <CalculatorPage

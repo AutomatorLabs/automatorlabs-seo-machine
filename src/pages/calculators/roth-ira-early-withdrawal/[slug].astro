@@ -1,0 +1,32 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_ROTH_EARLY_WITHDRAWAL_SEO_PAGE_COUNT,
+  rothEarlyWithdrawalSeoRecords,
+} from '../../../data/programmatic-seo/roth-ira-early-withdrawal';
+import {
+  auditRothEarlyWithdrawalSeoRecords,
+  createRothEarlyWithdrawalSeoPage,
+} from '../../../lib/programmatic-seo/roth-ira-early-withdrawal';
+
+auditRothEarlyWithdrawalSeoRecords(
+  rothEarlyWithdrawalSeoRecords,
+  EXPECTED_ROTH_EARLY_WITHDRAWAL_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return rothEarlyWithdrawalSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createRothEarlyWithdrawalSeoPage(
+        record,
+        rothEarlyWithdrawalSeoRecords,
+      ),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />
