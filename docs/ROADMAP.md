@@ -8,7 +8,7 @@
 
 ## Near-Term Opportunities
 
-- [ ] Add Open Graph and Twitter card metadata if social sharing becomes important.
+- [x] Add Open Graph and Twitter card metadata if social sharing becomes important. (Shipped — audited by `npm run audit:seo`.)
 - [ ] Audit the manually curated topics page for completeness and staleness.
 - [ ] Review guide coverage for newer calculator families and variants.
 - [ ] Decide whether some route families should remain intentionally hidden from the public calculator index.

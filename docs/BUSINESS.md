@@ -50,9 +50,9 @@ Retention and audience capture come from:
 
 ## Monetization
 
-`Needs confirmation`.
+Stated intent (from project owner, not yet implemented in source): newsletter growth, affiliate products, sponsorships, future premium tools, and future SaaS products.
 
-The inspected repo does not show:
+The inspected repo does not yet show any of these in code:
 
 - subscriptions
 - checkout
@@ -60,7 +60,7 @@ The inspected repo does not show:
 - affiliate systems
 - lead forms beyond newsletter signup
 
-The likely current model is audience growth first, monetization later.
+Current model is audience growth first, monetization later. Build decisions should keep long-term SEO durability and authority ahead of short-term monetization hacks.
 
 ## Product Philosophy
 

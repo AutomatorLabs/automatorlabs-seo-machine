@@ -13,54 +13,63 @@ Its job is to:
 
 ## Current Scope
 
-Verified from source:
+Verified from source on 2026-07-01:
 
-- 48 live clusters in `src/data/programmatic-seo/clusters.ts`
+- 49 live clusters in `src/data/programmatic-seo/clusters.ts`
 - 200 records per cluster
-- 9,600 generated example pages total
+- 9,800 generated example pages total
 - global examples hub at `/examples/`
 
 Current live clusters:
 
 - Compound Interest
 - APY
-- DRIP
 - Dividend Yield
+- DRIP
 - Dividend Growth
 - Expense Ratio
-- Credit Card Interest
-- Credit Card Minimum Payment
-- Credit Card Extra Payment
-- Mortgage Recast
-- Property Tax
-- Closing Cost
-- Savings Growth
-- Monthly Savings
-- Vacation Savings
-- Car Savings
+- ETF Fee Drag
+- Investment Fee
 - CAGR
 - Rule of 72
 - FIRE
 - Coast FIRE
+- 401(k)
 - Investment Growth
-- ETF Fee Drag
-- Investment Fee
+- Savings Growth
 - Lump Sum vs DCA
+- Mortgage Payment
+- Mortgage Payoff
+- Mortgage Recast
+- Property Tax
+- Closing Cost
 - Real Rate of Return
 - Inflation-Adjusted Return
 - Emergency Fund
-- Mortgage
+- Monthly Savings
+- Vacation Savings
+- Car Savings
 - Savings Goal
 - Credit Card Payoff
+- Credit Card Interest
+- Credit Card Minimum Payment
+- Credit Card Extra Payment
+- Debt Payoff
+- Debt Snowball
+- Debt Avalanche
 - Balance Transfer
-- 401(k)
-- Roth IRA
+- Loan Payment
+- Auto Loan
+- Student Loan
+- Student Loan Payoff
+- HELOC
 - Retirement Withdrawal
-- Years to Retirement
 - Retirement Income Gap
 - Portfolio Withdrawal Sustainability
 - Retirement Tax Drag
+- Roth IRA
 - Safe Withdrawal Rate
+- Years to Retirement
 - 4 Percent Rule
 
 ## Standard Route Pattern
