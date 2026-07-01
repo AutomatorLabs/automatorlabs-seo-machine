@@ -84,6 +84,8 @@ const socialImageAlt =
 		)}
 	</head>
 	<body>
+		<a class="skip-link" href="#main-content">Skip to content</a>
+
 		<header class="site-header">
 			<nav class="site-nav" aria-label="Main navigation">
 				<a class="brand" href="/">AutomatorLabs</a>
@@ -265,6 +267,25 @@ const socialImageAlt =
 
 	:global(body > main) {
 		flex: 1;
+	}
+
+	.skip-link {
+		position: absolute;
+		top: -100%;
+		left: 0.75rem;
+		z-index: 100;
+		border-radius: 0 0 8px 8px;
+		background: var(--button-background);
+		color: var(--button-text);
+		font-weight: 700;
+		padding: 0.6rem 1rem;
+		text-decoration: none;
+	}
+
+	.skip-link:focus-visible {
+		top: 0;
+		outline: 3px solid var(--focus-ring);
+		outline-offset: 2px;
 	}
 
 	.site-header,
