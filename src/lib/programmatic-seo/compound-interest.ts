@@ -194,6 +194,41 @@ function createRelatedPages(
     }));
 }
 
+function frequencyVariantCalculatorFor(
+  record: CompoundInterestSeoRecord,
+): ProgrammaticSeoLink {
+  switch (record.years % 4) {
+    case 1:
+      return {
+        title: 'Daily Compound Interest Calculator',
+        url: '/calculators/daily-compound-interest-calculator/',
+        description:
+          'Run the same balance and rate with interest compounding daily instead of once a year.',
+      };
+    case 2:
+      return {
+        title: 'Monthly Compound Interest Calculator',
+        url: '/calculators/monthly-compound-interest-calculator/',
+        description:
+          'Run the same balance and rate with interest compounding monthly instead of once a year.',
+      };
+    case 3:
+      return {
+        title: 'Quarterly Compound Interest Calculator',
+        url: '/calculators/quarterly-compound-interest-calculator/',
+        description:
+          'Run the same balance and rate with interest compounding quarterly instead of once a year.',
+      };
+    default:
+      return {
+        title: 'Annual Compound Interest Calculator',
+        url: '/calculators/annual-compound-interest-calculator/',
+        description:
+          "Use a calculator locked to annual compounding if you don't need to change the frequency.",
+      };
+  }
+}
+
 export function createCompoundInterestSeoPage(
   record: CompoundInterestSeoRecord,
   records: CompoundInterestSeoRecord[],
@@ -320,6 +355,7 @@ export function createCompoundInterestSeoPage(
         url: '/calculators/cagr-calculator/',
         description: 'Measure the annualized growth between a starting and ending value.',
       },
+      frequencyVariantCalculatorFor(record),
     ],
     relatedGuides: [
       {

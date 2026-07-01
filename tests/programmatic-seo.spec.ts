@@ -10,7 +10,10 @@ import {
   expandedCompoundInterestSeoRecords,
   originalCompoundInterestSeoRecords,
 } from '../src/data/programmatic-seo/compound-interest';
-import { auditCompoundInterestSeoRecords } from '../src/lib/programmatic-seo/compound-interest';
+import {
+  auditCompoundInterestSeoRecords,
+  createCompoundInterestSeoPage,
+} from '../src/lib/programmatic-seo/compound-interest';
 import {
   apySeoRecords,
   EXPECTED_APY_SEO_PAGE_COUNT,
@@ -383,6 +386,30 @@ test.describe('compound interest programmatic SEO', () => {
       uniqueDescriptionCount: EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
       uniqueCanonicalPathCount: EXPECTED_COMPOUND_INTEREST_SEO_PAGE_COUNT,
     });
+  });
+
+  test('relatedCalculators links the frequency variant matching years % 4', () => {
+    const expectedByRemainder: Record<number, string> = {
+      0: '/calculators/annual-compound-interest-calculator/',
+      1: '/calculators/daily-compound-interest-calculator/',
+      2: '/calculators/monthly-compound-interest-calculator/',
+      3: '/calculators/quarterly-compound-interest-calculator/',
+    };
+
+    for (const years of [8, 9, 10, 11]) {
+      const record = {
+        slug: `test-compound-interest-${years}`,
+        question: 'Test question?',
+        principal: 10000,
+        annualRatePercent: 7,
+        years,
+        monthlyContribution: 0,
+        periodsPerYear: 1,
+      };
+      const page = createCompoundInterestSeoPage(record, [record]);
+      const urls = page.relatedCalculators.map((link) => link.url);
+      expect(urls).toContain(expectedByRemainder[years % 4]);
+    }
   });
 
   test('examples index groups, exposes, and searches every page', async ({
