@@ -203,6 +203,11 @@ import {
 } from '../src/data/programmatic-seo/roth-ira-early-withdrawal';
 import { auditRothEarlyWithdrawalSeoRecords } from '../src/lib/programmatic-seo/roth-ira-early-withdrawal';
 import {
+  EXPECTED_RENT_VS_BUY_SEO_PAGE_COUNT,
+  rentVsBuySeoRecords,
+} from '../src/data/programmatic-seo/rent-vs-buy';
+import { auditRentVsBuySeoRecords } from '../src/lib/programmatic-seo/rent-vs-buy';
+import {
   EXPECTED_SAFE_WITHDRAWAL_RATE_SEO_PAGE_COUNT,
   safeWithdrawalRateSeoRecords,
 } from '../src/data/programmatic-seo/safe-withdrawal-rate';
@@ -348,6 +353,18 @@ const safeBatchProgrammaticConfigs = [
       'contributions-only-withdraw-6000-with-12000-basis-1800-earnings-22-tax-10-penalty',
     pagePrefix: '/calculators/roth-ira-early-withdrawal/',
     ctaName: 'Open the Roth IRA Early Withdrawal Calculator',
+  },
+  {
+    label: 'rent vs buy',
+    records: rentVsBuySeoRecords,
+    expectedCount: EXPECTED_RENT_VS_BUY_SEO_PAGE_COUNT,
+    audit: auditRentVsBuySeoRecords,
+    calculatorPath: '/calculators/rent-vs-buy-calculator/',
+    examplesPath: '/calculators/rent-vs-buy/examples/',
+    exampleLinkName: 'Browse all 200 rent vs buy examples',
+    representativeSlug: 'short-hold-375000-home-2000-rent-6-5-rate-3-years',
+    pagePrefix: '/calculators/rent-vs-buy/',
+    ctaName: 'Open the Rent vs Buy Calculator',
   },
 ] as const;
 

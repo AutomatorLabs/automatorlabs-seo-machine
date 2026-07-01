@@ -15,9 +15,9 @@ Its job is to:
 
 Verified from source on 2026-07-01:
 
-- 50 live clusters in `src/data/programmatic-seo/clusters.ts`
+- 51 live clusters in `src/data/programmatic-seo/clusters.ts`
 - 200 records per cluster
-- 10,000 generated example pages total
+- 10,200 generated example pages total
 - global examples hub at `/examples/`
 
 Current live clusters:
@@ -43,6 +43,7 @@ Current live clusters:
 - Mortgage Recast
 - Property Tax
 - Closing Cost
+- Rent vs Buy
 - Real Rate of Return
 - Inflation-Adjusted Return
 - Emergency Fund
@@ -262,6 +263,17 @@ Required surfaces:
 - generated page route: `/calculators/mortgage/<slug>/`
 - models a plain fixed-rate principal-and-interest payment (no extra-payment field), so it links to the payment calculator, not the payoff calculator
 - distinct from the separate "Mortgage Payoff" cluster below, which models extra-principal payoff acceleration and links to `/calculators/mortgage-payoff-calculator/`
+
+### Rent vs Buy
+
+- calculator: `/calculators/rent-vs-buy-calculator/`
+- examples index: `/calculators/rent-vs-buy/examples/`
+- generated page route: `/calculators/rent-vs-buy/<slug>/`
+- reuses `calculateRentVsBuy`
+- five intents: starter-home, high-cost-metro, short-hold (isolates a short comparison horizon), long-hold (isolates a long comparison horizon), and high-rent-market (rent high relative to price)
+- of the 11 calculator inputs, only home price and monthly rent vary per record pair and 4 decision levers (mortgage rate, appreciation, investment return, comparison years) vary per scenario bundle; loan term, tax rate, insurance, HOA, and maintenance rate are fixed per intent as a household-cost profile, following the same headline-plus-bundle pattern as other multi-input clusters (e.g. Closing Cost) rather than varying every input independently
+- has a genuine year-by-year time series: builds `projectionRows` by calling `calculateRentVsBuy` once per year from 1 through the record's comparison-year count, then also supplies a `table` with clearer column labels (cumulative rent cost, cumulative buy cost net of equity, buy advantage) built from the same rows
+- the categorical `betterOption` ('rent' | 'buy' | 'equal') output follows the same tie-aware phrasing pattern used by the Lump Sum vs DCA cluster
 
 ### Real Rate of Return
 

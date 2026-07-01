@@ -50,6 +50,7 @@ import { studentLoanSeoRecords } from './student-loan';
 import { vacationSavingsSeoRecords } from './vacation-savings';
 import { yearsToRetirementSeoRecords } from './years-to-retirement';
 import { closingCostSeoRecords } from './closing-cost';
+import { rentVsBuySeoRecords } from './rent-vs-buy';
 
 export interface ProgrammaticSeoClusterSummary {
   id: string;
@@ -629,6 +630,15 @@ const rothIraRepresentatives = [
   ),
 ].filter((record) => record !== undefined);
 
+const rentVsBuyRepresentatives = [
+  rentVsBuySeoRecords.find(
+    (record) => record.slug === 'short-hold-375000-home-2000-rent-6-5-rate-3-years',
+  ),
+  rentVsBuySeoRecords.find(
+    (record) => record.slug === 'long-hold-550000-home-2700-rent-6-5-rate-20-years',
+  ),
+].filter((record) => record !== undefined);
+
 const rothEarlyWithdrawalRepresentatives = [
   rothEarlyWithdrawalSeoRecords.find(
     (record) =>
@@ -1113,6 +1123,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: closingCostRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/closing-cost/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'rent-vs-buy',
+    title: 'Rent vs Buy Examples',
+    description:
+      'Explore worked comparisons of renting and buying across starter homes, high-cost metros, short and long time horizons, and high-rent markets.',
+    examplesUrl: '/calculators/rent-vs-buy/examples/',
+    calculator: {
+      title: 'Rent vs Buy Calculator',
+      url: '/calculators/rent-vs-buy-calculator/',
+    },
+    guide: {
+      title: 'Rent vs Buy: How to Compare the Real Cost',
+      url: '/guides/rent-vs-buy/',
+    },
+    pageCount: rentVsBuySeoRecords.length,
+    representativePages: rentVsBuyRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/rent-vs-buy/${record.slug}/`,
     })),
   },
   {

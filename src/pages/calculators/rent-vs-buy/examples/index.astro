@@ -1,0 +1,239 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  EXPECTED_RENT_VS_BUY_SEO_PAGE_COUNT,
+  rentVsBuySeoRecords,
+} from '../../../../data/programmatic-seo/rent-vs-buy';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditRentVsBuySeoRecords } from '../../../../lib/programmatic-seo/rent-vs-buy';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditRentVsBuySeoRecords(
+  rentVsBuySeoRecords,
+  EXPECTED_RENT_VS_BUY_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Rent vs Buy Calculator',
+        url: '/calculators/rent-vs-buy-calculator/',
+      },
+      {
+        name: 'Examples',
+        url: '/calculators/rent-vs-buy/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(rentVsBuySeoRecords, [
+  {
+    id: 'starter-home',
+    title: 'Starter-Home Examples',
+    description:
+      'Examples focused on smaller purchases, modest down payments, and typical ownership costs.',
+    matches: (record) => record.intent === 'starter-home',
+  },
+  {
+    id: 'high-cost-metro',
+    title: 'High-Cost-Metro Examples',
+    description:
+      'Examples focused on higher-priced markets with larger property tax, insurance, and HOA costs.',
+    matches: (record) => record.intent === 'high-cost-metro',
+  },
+  {
+    id: 'short-hold',
+    title: 'Short-Hold Examples',
+    description:
+      'Examples focused on shorter time horizons, where renting often has an edge.',
+    matches: (record) => record.intent === 'short-hold',
+  },
+  {
+    id: 'long-hold',
+    title: 'Long-Hold Examples',
+    description:
+      'Examples focused on longer time horizons, where buying often has an edge.',
+    matches: (record) => record.intent === 'long-hold',
+  },
+  {
+    id: 'high-rent-market',
+    title: 'High-Rent-Market Examples',
+    description:
+      'Examples focused on markets where rent is high relative to the home price.',
+    matches: (record) => record.intent === 'high-rent-market',
+  },
+]);
+---
+
+<Layout
+  title="Rent vs Buy Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} rent vs buy examples covering starter homes, high-cost metros, short and long time horizons, and high-rent markets.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/rent-vs-buy-calculator/">
+            Rent vs Buy Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Rent vs buy scenario library</p>
+      <h1>Rent vs Buy Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples comparing the estimated
+        cost of renting with the net cost of buying across different home
+        prices, rents, and time horizons.
+      </p>
+      <a class="primary-link" href="/calculators/rent-vs-buy-calculator/">
+        Model your own rent vs buy scenario
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section class="example-search" aria-label="Search rent vs buy examples">
+      <label for="rent-vs-buy-example-search">Search rent vs buy examples</label>
+      <div class="search-row">
+        <input
+          id="rent-vs-buy-example-search"
+          type="search"
+          placeholder="Try 400000, short-hold, or 20 years"
+          autocomplete="off"
+          aria-controls="rent-vs-buy-example-groups"
+          aria-describedby="rent-vs-buy-example-count"
+        />
+        <button id="clear-rent-vs-buy-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="rent-vs-buy-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="rent-vs-buy-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-rent-vs-buy-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-rent-vs-buy-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.homePurchasePrice,
+                  record.monthlyRent,
+                  record.mortgageInterestRatePercent,
+                  record.comparisonYears,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/rent-vs-buy/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.homePurchasePrice)} home {' · '}
+                    {currency.format(record.monthlyRent)}/mo rent {' · '}
+                    {record.comparisonYears} years
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p id="no-rent-vs-buy-examples" class="no-results" role="status" hidden>
+      No rent vs buy examples found. Try a home price, rent amount, or time horizon.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#rent-vs-buy-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-rent-vs-buy-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#rent-vs-buy-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-rent-vs-buy-examples',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-rent-vs-buy-example-card]'),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-rent-vs-buy-example-group]'),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      group.hidden = !group.querySelector(
+        '[data-rent-vs-buy-example-card]:not([hidden])',
+      );
+    });
+
+    count.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'example' : 'examples'}`;
+    noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query === '';
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateExamples();
+    input.focus();
+  });
+</script>

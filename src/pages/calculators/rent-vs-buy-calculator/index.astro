@@ -10,6 +10,13 @@ const relatedItems = rentVsBuyCalculator.relatedIds.flatMap((id) => {
 const guideItems = [
   { title: 'Rent vs Buy Guide', url: '/guides/rent-vs-buy/' },
 ];
+
+const exampleItems = [
+  {
+    title: 'Browse all 200 rent vs buy examples',
+    url: '/calculators/rent-vs-buy/examples/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -21,6 +28,7 @@ const guideItems = [
   faq={rentVsBuyCalculator.faq}
   relatedItems={relatedItems}
   guideItems={guideItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

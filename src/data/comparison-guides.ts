@@ -1076,6 +1076,11 @@ export const comparisonGuides: ComparisonGuide[] = [
         description: 'Compare net renting and buying costs over a selected period.',
       },
       {
+        title: 'Rent vs Buy Examples',
+        url: '/calculators/rent-vs-buy/examples/',
+        description: 'Browse worked comparisons across starter homes, high-cost metros, and short and long time horizons.',
+      },
+      {
         title: 'Home Affordability Calculator',
         url: '/calculators/home-affordability-calculator/',
         description: 'Estimate a price based on income, debt, and housing costs.',

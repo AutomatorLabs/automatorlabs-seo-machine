@@ -1170,6 +1170,12 @@ export const guideHubs: GuideHub[] = [
         description:
           'Browse cash-to-close scenarios across down payments, lender credits, prepaids, and higher-priced purchases.',
       },
+      {
+        title: 'Rent vs Buy Examples',
+        url: '/calculators/rent-vs-buy/examples/',
+        description:
+          'Browse worked comparisons of renting and buying across starter homes, high-cost metros, short and long time horizons, and high-rent markets.',
+      },
     ],
     comparisonGuideLinks: [
       {

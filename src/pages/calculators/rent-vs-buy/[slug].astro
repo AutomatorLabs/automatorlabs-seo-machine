@@ -1,0 +1,26 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_RENT_VS_BUY_SEO_PAGE_COUNT,
+  rentVsBuySeoRecords,
+} from '../../../data/programmatic-seo/rent-vs-buy';
+import {
+  auditRentVsBuySeoRecords,
+  createRentVsBuySeoPage,
+} from '../../../lib/programmatic-seo/rent-vs-buy';
+
+auditRentVsBuySeoRecords(rentVsBuySeoRecords, EXPECTED_RENT_VS_BUY_SEO_PAGE_COUNT);
+
+export function getStaticPaths() {
+  return rentVsBuySeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createRentVsBuySeoPage(record, rentVsBuySeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />
