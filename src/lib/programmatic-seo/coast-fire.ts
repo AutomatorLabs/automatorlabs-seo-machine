@@ -195,6 +195,16 @@ export function createCoastFireSeoPage(
         url: '/calculators/years-to-retirement-calculator/',
         description: 'Compare a retirement-age target with a specific portfolio goal and contribution plan.',
       },
+      {
+        title: 'Barista FIRE Calculator',
+        url: '/calculators/barista-fire-calculator/',
+        description: 'Estimate the portfolio and timeline needed when part-time income covers some annual expenses.',
+      },
+      {
+        title: 'Financial Independence Date Calculator',
+        url: '/calculators/financial-independence-date-calculator/',
+        description: 'Estimate a FIRE number, remaining target, and potential financial independence date.',
+      },
     ],
     relatedGuides: [
       {

@@ -254,6 +254,14 @@ Required surfaces:
 - generated page route: `/calculators/lump-sum-vs-dca/<slug>/`
 - reuses shared lump-sum versus recurring-investment math helpers
 
+### Mortgage Payment
+
+- calculator: `/calculators/mortgage-payment-calculator/`
+- examples index: `/calculators/mortgage/examples/`
+- generated page route: `/calculators/mortgage/<slug>/`
+- models a plain fixed-rate principal-and-interest payment (no extra-payment field), so it links to the payment calculator, not the payoff calculator
+- distinct from the separate "Mortgage Payoff" cluster below, which models extra-principal payoff acceleration and links to `/calculators/mortgage-payoff-calculator/`
+
 ### Real Rate of Return
 
 - calculator: `/calculators/real-rate-of-return-calculator/`

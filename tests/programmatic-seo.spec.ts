@@ -2003,7 +2003,7 @@ test.describe('mortgage programmatic SEO', () => {
     );
     await expect(
       page.getByRole('link', { name: 'Calculate your mortgage payment' }),
-    ).toHaveAttribute('href', '/calculators/mortgage-payoff-calculator/');
+    ).toHaveAttribute('href', '/calculators/mortgage-payment-calculator/');
 
     const hrefs = await page
       .locator('[data-mortgage-example-card] a')
@@ -2053,8 +2053,8 @@ test.describe('mortgage programmatic SEO', () => {
       `https://automatorlabs.co${url}`,
     );
     await expect(
-      page.getByRole('link', { name: 'Open the Mortgage Calculator' }),
-    ).toHaveAttribute('href', '/calculators/mortgage-payoff-calculator/');
+      page.getByRole('link', { name: 'Open the Mortgage Payment Calculator' }),
+    ).toHaveAttribute('href', '/calculators/mortgage-payment-calculator/');
     await expect(
       page.getByRole('heading', {
         level: 2,

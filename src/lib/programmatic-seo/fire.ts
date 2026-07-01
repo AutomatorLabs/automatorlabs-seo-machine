@@ -300,6 +300,18 @@ export function createFireSeoPage(
         description:
           'Estimate whether current investments could grow toward a later FIRE target.',
       },
+      {
+        title: 'Lean FIRE Calculator',
+        url: '/calculators/lean-fire-calculator/',
+        description:
+          'Estimate a lean-spending FIRE portfolio target, remaining amount, and potential date.',
+      },
+      {
+        title: 'Fat FIRE Calculator',
+        url: '/calculators/fat-fire-calculator/',
+        description:
+          'Estimate a higher-spending FIRE portfolio target, remaining amount, and potential date.',
+      },
     ],
     relatedGuides: [
       {

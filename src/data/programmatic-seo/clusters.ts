@@ -1008,8 +1008,8 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
       'Compare fixed-rate monthly payments, total interest, and repayment across realistic loan amounts, rates, and terms.',
     examplesUrl: '/calculators/mortgage/examples/',
     calculator: {
-      title: 'Mortgage Payoff Calculator',
-      url: '/calculators/mortgage-payoff-calculator/',
+      title: 'Mortgage Payment Calculator',
+      url: '/calculators/mortgage-payment-calculator/',
     },
     guide: {
       title: 'A Practical Guide to Buying a Home',

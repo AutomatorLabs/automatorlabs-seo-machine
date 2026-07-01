@@ -239,8 +239,8 @@ export function createMortgageSeoPage(
       { name: 'Home', url: '/' },
       { name: 'Calculators', url: '/calculators/' },
       {
-        name: 'Mortgage Calculator',
-        url: '/calculators/mortgage-payoff-calculator/',
+        name: 'Mortgage Payment Calculator',
+        url: '/calculators/mortgage-payment-calculator/',
       },
       { name: 'Mortgage Examples', url: '/calculators/mortgage/examples/' },
       { name: title, url: createMortgageCanonicalPath(record.slug) },
@@ -249,10 +249,16 @@ export function createMortgageSeoPage(
     relatedPagesHeading: 'Related Mortgage Payment Examples',
     relatedCalculators: [
       {
+        title: 'Mortgage Payment Calculator',
+        url: '/calculators/mortgage-payment-calculator/',
+        description:
+          'Add property taxes, homeowners insurance, HOA dues, and mortgage insurance to estimate the full monthly payment.',
+      },
+      {
         title: 'Mortgage Payoff Calculator',
         url: '/calculators/mortgage-payoff-calculator/',
         description:
-          'Change the loan balance, rate, term, and extra monthly payment.',
+          'Add an extra monthly payment to see the payoff timeline and interest savings.',
       },
       {
         title: 'Home Affordability Calculator',
@@ -275,10 +281,10 @@ export function createMortgageSeoPage(
           'Connect mortgage costs with affordability, reserves, and ownership expenses.',
       },
       {
-        title: 'How to Use the Mortgage Payoff Calculator',
-        url: '/guides/how-to-use-mortgage-payoff-calculator/',
+        title: 'How to Use the Mortgage Payment Calculator',
+        url: '/guides/how-to-use-mortgage-payment-calculator/',
         description:
-          'Review mortgage inputs, outputs, assumptions, and payoff considerations.',
+          'Review mortgage payment inputs, outputs, and assumptions.',
       },
       {
         title: 'Rent vs Buy',
@@ -290,9 +296,9 @@ export function createMortgageSeoPage(
     calculatorCta: {
       heading: 'Calculate Your Own Mortgage Payment',
       description:
-        'Use the full calculator to change the loan amount, interest rate, term, and optional extra principal payment.',
-      url: '/calculators/mortgage-payoff-calculator/',
-      label: 'Open the Mortgage Calculator',
+        'Use the full calculator to change the loan amount, interest rate, term, property taxes, insurance, HOA dues, and mortgage insurance.',
+      url: '/calculators/mortgage-payment-calculator/',
+      label: 'Open the Mortgage Payment Calculator',
       examplesUrl: '/calculators/mortgage/examples/',
       examplesLabel: 'Browse All Mortgage Examples',
     },
