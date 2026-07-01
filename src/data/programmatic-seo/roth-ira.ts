@@ -13,6 +13,8 @@ export const EXPECTED_ROTH_IRA_SEO_PAGE_COUNT = 200;
 
 const rateSlug = (value: number) => value.toString().replace('.', '-');
 const yearsMoney = (value: number) => `$${value.toLocaleString('en-US')}`;
+const capitalizeWords = (value: string) =>
+  value.replace(/\b\w/g, (char) => char.toUpperCase());
 
 function rothIraRecord(
   currentBalance: number,
@@ -29,7 +31,7 @@ function rothIraRecord(
 
   return {
     slug: `roth-ira-${currentBalance}-starting-${contributionPerPeriod}-${periodsPerYear === 12 ? 'monthly' : 'yearly'}-at-${rateSlug(expectedAnnualReturnPercent)}-percent-for-${years}-years`,
-    question: `How Could a Roth IRA Grow From ${yearsMoney(currentBalance)} With ${contributionLabel} for ${years} Years?`,
+    question: `How Could a Roth IRA Grow From ${yearsMoney(currentBalance)} With ${capitalizeWords(contributionLabel)} for ${years} Years?`,
     currentBalance,
     contributionPerPeriod,
     periodsPerYear,

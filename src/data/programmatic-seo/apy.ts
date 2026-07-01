@@ -26,6 +26,8 @@ const money = (amount: number) => `$${amount.toLocaleString('en-US')}`;
 const formatRate = (rate: number) => rate.toLocaleString('en-US');
 const rateSlug = (rate: number) =>
   rate.toString().replace('.', '-').replace(/-0$/, '');
+const capitalizeWords = (value: string) =>
+  value.replace(/\b\w/g, (char) => char.toUpperCase());
 
 function frequencySlug(periodsPerYear: number): string {
   switch (periodsPerYear) {
@@ -65,7 +67,7 @@ function createSavingsAccountRecord(
 ): ApySeoRecord {
   return {
     slug: `savings-apy-${startingBalance}-at-${rateSlug(nominalRatePercent)}-percent-${frequencySlug(periodsPerYear)}`,
-    question: `What APY Does a Savings Account Paying ${formatRate(nominalRatePercent)}% With ${frequencyLabel(periodsPerYear)} Produce on ${money(startingBalance)}?`,
+    question: `What APY Does a Savings Account Paying ${formatRate(nominalRatePercent)}% With ${capitalizeWords(frequencyLabel(periodsPerYear))} Produce on ${money(startingBalance)}?`,
     intent: 'savings-account',
     nominalRatePercent,
     periodsPerYear,
@@ -84,7 +86,7 @@ function createHighYieldSavingsRecord(
 ): ApySeoRecord {
   return {
     slug: `high-yield-savings-apy-${startingBalance}-at-${rateSlug(nominalRatePercent)}-percent-${frequencySlug(periodsPerYear)}`,
-    question: `What APY Does a High-Yield Savings Account Paying ${formatRate(nominalRatePercent)}% With ${frequencyLabel(periodsPerYear)} Produce on ${money(startingBalance)}?`,
+    question: `What APY Does a High-Yield Savings Account Paying ${formatRate(nominalRatePercent)}% With ${capitalizeWords(frequencyLabel(periodsPerYear))} Produce on ${money(startingBalance)}?`,
     intent: 'high-yield-savings',
     nominalRatePercent,
     periodsPerYear,
@@ -103,7 +105,7 @@ function createCdRecord(
 ): ApySeoRecord {
   return {
     slug: `cd-apy-${startingBalance}-at-${rateSlug(nominalRatePercent)}-percent-${frequencySlug(periodsPerYear)}`,
-    question: `What APY Does a CD Paying ${formatRate(nominalRatePercent)}% With ${frequencyLabel(periodsPerYear)} Produce on ${money(startingBalance)}?`,
+    question: `What APY Does a CD Paying ${formatRate(nominalRatePercent)}% With ${capitalizeWords(frequencyLabel(periodsPerYear))} Produce on ${money(startingBalance)}?`,
     intent: 'certificate-of-deposit',
     nominalRatePercent,
     periodsPerYear,
@@ -122,7 +124,7 @@ function createMoneyMarketRecord(
 ): ApySeoRecord {
   return {
     slug: `money-market-apy-${startingBalance}-at-${rateSlug(nominalRatePercent)}-percent-${frequencySlug(periodsPerYear)}`,
-    question: `What APY Does a Money Market Account Paying ${formatRate(nominalRatePercent)}% With ${frequencyLabel(periodsPerYear)} Produce on ${money(startingBalance)}?`,
+    question: `What APY Does a Money Market Account Paying ${formatRate(nominalRatePercent)}% With ${capitalizeWords(frequencyLabel(periodsPerYear))} Produce on ${money(startingBalance)}?`,
     intent: 'money-market',
     nominalRatePercent,
     periodsPerYear,
@@ -141,7 +143,7 @@ function createCheckingRecord(
 ): ApySeoRecord {
   return {
     slug: `checking-apy-${startingBalance}-at-${rateSlug(nominalRatePercent)}-percent-${frequencySlug(periodsPerYear)}`,
-    question: `What APY Does an Interest Checking Account Paying ${formatRate(nominalRatePercent)}% With ${frequencyLabel(periodsPerYear)} Produce on ${money(startingBalance)}?`,
+    question: `What APY Does an Interest Checking Account Paying ${formatRate(nominalRatePercent)}% With ${capitalizeWords(frequencyLabel(periodsPerYear))} Produce on ${money(startingBalance)}?`,
     intent: 'checking-account',
     nominalRatePercent,
     periodsPerYear,
@@ -196,7 +198,7 @@ function createStatedRateComparisonRecord(
 ): ApySeoRecord {
   return {
     slug: `stated-rate-vs-apy-${startingBalance}-at-${rateSlug(nominalRatePercent)}-percent-${frequencySlug(periodsPerYear)}`,
-    question: `If a Bank States ${formatRate(nominalRatePercent)}% Annual Interest With ${frequencyLabel(periodsPerYear)}, What APY Does ${money(startingBalance)} Actually Earn?`,
+    question: `If a Bank States ${formatRate(nominalRatePercent)}% Annual Interest With ${capitalizeWords(frequencyLabel(periodsPerYear))}, What APY Does ${money(startingBalance)} Actually Earn?`,
     intent: 'stated-rate-comparison',
     nominalRatePercent,
     periodsPerYear,

@@ -18,6 +18,8 @@ export interface DebtSnowballSeoRecord {
 export const EXPECTED_DEBT_SNOWBALL_SEO_PAGE_COUNT = 200;
 
 const money = (value: number) => `$${value.toLocaleString('en-US')}`;
+const capitalizeWords = (value: string) =>
+  value.replace(/\b\w/g, (char) => char.toUpperCase());
 
 function debtSnowballRecord(
   profileLabel: string,
@@ -43,7 +45,7 @@ function debtSnowballRecord(
 
   return {
     slug: `debt-snowball-${profileLabel}-${Math.round(scale * 100)}-scale-with-${extraMonthlyPayment}-extra`,
-    question: `What Debt Snowball Timeline Fits the ${profileLabel} Profile With ${money(totalDebt)} Total Debt and ${money(extraMonthlyPayment)} Extra Each Month?`,
+    question: `What Debt Snowball Timeline Fits the ${capitalizeWords(profileLabel)} Profile With ${money(totalDebt)} Total Debt and ${money(extraMonthlyPayment)} Extra Each Month?`,
     profileLabel,
     debt1Name: profile[0],
     debt1Balance,

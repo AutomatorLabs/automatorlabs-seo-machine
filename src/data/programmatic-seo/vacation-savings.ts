@@ -24,6 +24,8 @@ const money = (amount: number) => `$${amount.toLocaleString('en-US')}`;
 const formatRate = (rate: number) => rate.toLocaleString('en-US');
 const rateSlug = (rate: number) =>
   rate.toString().replace('.', '-').replace(/-0$/, '');
+const capitalizeWords = (value: string) =>
+  value.replace(/\b\w/g, (char) => char.toUpperCase());
 
 function createRecord(
   intent: VacationSavingsSeoIntent,
@@ -38,7 +40,7 @@ function createRecord(
 ): VacationSavingsSeoRecord {
   return {
     slug: `${slugPrefix}-${goalAmount}-goal-${years}-years-${currentSavings}-saved-at-${rateSlug(annualReturnPercent)}-percent`,
-    question: `Monthly Vacation Savings for ${money(goalAmount)} ${purposeLabel} in ${years} ${years === 1 ? 'Year' : 'Years'} With ${money(currentSavings)} Already Saved at ${formatRate(annualReturnPercent)}%`,
+    question: `Monthly Vacation Savings for ${money(goalAmount)} ${capitalizeWords(purposeLabel)} in ${years} ${years === 1 ? 'Year' : 'Years'} With ${money(currentSavings)} Already Saved at ${formatRate(annualReturnPercent)}%`,
     intent,
     goalAmount,
     currentSavings,

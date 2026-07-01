@@ -21,6 +21,8 @@ export interface DebtAvalancheSeoRecord {
 export const EXPECTED_DEBT_AVALANCHE_SEO_PAGE_COUNT = 200;
 
 const avalancheMoney = (value: number) => `$${value.toLocaleString('en-US')}`;
+const capitalizeWords = (value: string) =>
+  value.replace(/\b\w/g, (char) => char.toUpperCase());
 
 function debtAvalancheRecord(
   profileLabel: string,
@@ -46,7 +48,7 @@ function debtAvalancheRecord(
 
   return {
     slug: `debt-avalanche-${profileLabel}-${Math.round(scale * 100)}-scale-with-${extraMonthlyPayment}-extra`,
-    question: `What Debt Avalanche Timeline Fits the ${profileLabel} Profile With ${avalancheMoney(totalDebt)} Total Debt and ${avalancheMoney(extraMonthlyPayment)} Extra Each Month?`,
+    question: `What Debt Avalanche Timeline Fits the ${capitalizeWords(profileLabel)} Profile With ${avalancheMoney(totalDebt)} Total Debt and ${avalancheMoney(extraMonthlyPayment)} Extra Each Month?`,
     profileLabel,
     debt1Name: profile[0],
     debt1Balance,
