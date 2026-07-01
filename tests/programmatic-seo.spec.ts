@@ -212,6 +212,11 @@ import {
 } from '../src/data/programmatic-seo/roth-ira-early-withdrawal';
 import { auditRothEarlyWithdrawalSeoRecords } from '../src/lib/programmatic-seo/roth-ira-early-withdrawal';
 import {
+  EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+  traditionalVsRoth401kSeoRecords,
+} from '../src/data/programmatic-seo/traditional-vs-roth-401k';
+import { auditTraditionalVsRoth401kSeoRecords } from '../src/lib/programmatic-seo/traditional-vs-roth-401k';
+import {
   EXPECTED_RENT_VS_BUY_SEO_PAGE_COUNT,
   rentVsBuySeoRecords,
 } from '../src/data/programmatic-seo/rent-vs-buy';
@@ -4476,5 +4481,23 @@ test.describe('global programmatic examples hub', () => {
     }
 
     expect(pageErrors).toEqual([]);
+  });
+});
+
+test.describe('traditional vs roth 401k programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditTraditionalVsRoth401kSeoRecords(
+      traditionalVsRoth401kSeoRecords,
+      EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+    });
   });
 });
