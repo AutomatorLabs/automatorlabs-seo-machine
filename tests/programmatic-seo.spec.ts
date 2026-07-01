@@ -133,7 +133,10 @@ import {
   EXPECTED_401K_SEO_PAGE_COUNT,
   fourOhOneKSeoRecords,
 } from '../src/data/programmatic-seo/401k';
-import { audit401kSeoRecords } from '../src/lib/programmatic-seo/401k';
+import {
+  audit401kSeoRecords,
+  create401kSeoPage,
+} from '../src/lib/programmatic-seo/401k';
 import {
   EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT,
   investmentGrowthSeoRecords,
@@ -1013,6 +1016,22 @@ test.describe('401(k) programmatic SEO', () => {
       uniqueDescriptionCount: EXPECTED_401K_SEO_PAGE_COUNT,
       uniqueCanonicalPathCount: EXPECTED_401K_SEO_PAGE_COUNT,
     });
+  });
+
+  test('relatedCalculators links the 401(k) Growth Calculator', () => {
+    const record = {
+      slug: 'test-401k-growth',
+      question: 'Test question?',
+      currentBalance: 50000,
+      employeeMonthlyContribution: 500,
+      employerMonthlyMatch: 100,
+      expectedAnnualReturnPercent: 7,
+      years: 20,
+    };
+    const page = create401kSeoPage(record, [record]);
+    expect(page.relatedCalculators.map((link) => link.url)).toContain(
+      '/calculators/401k-growth-calculator/',
+    );
   });
 
   test('retirement account pages link to the 401(k) examples cluster', async ({

@@ -191,6 +191,11 @@ export function create401kSeoPage(
         url: '/calculators/employer-match-calculator/',
         description: 'Estimate how much employer match a contribution strategy could unlock.',
       },
+      {
+        title: '401(k) Growth Calculator',
+        url: '/calculators/401k-growth-calculator/',
+        description: 'Model the same starting balance, contributions, and employer match with this dedicated growth-focused calculator.',
+      },
     ],
     relatedGuides: [
       {
