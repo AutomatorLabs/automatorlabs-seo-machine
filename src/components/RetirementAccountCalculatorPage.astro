@@ -4,6 +4,7 @@ import { contentItems } from '../data/content';
 import { featuredFourOhOneKSeoRecords } from '../data/programmatic-seo/401k';
 import { featuredRothIraSeoRecords } from '../data/programmatic-seo/roth-ira';
 import { featuredRothEarlyWithdrawalSeoRecords } from '../data/programmatic-seo/roth-ira-early-withdrawal';
+import { featuredTraditionalVsRoth401kSeoRecords } from '../data/programmatic-seo/traditional-vs-roth-401k';
 import CalculatorPage from './CalculatorPage.astro';
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 
 const { calculator, periodsPerYear = 1 } = Astro.props;
 const isFourOhOneK = calculator.id.includes('401k') || calculator.id === 'employer-match';
+const isTraditionalVsRoth401k = calculator.id === 'traditional-vs-roth-401k';
 const isRothEarlyWithdrawal = calculator.id === 'roth-ira-early-withdrawal';
 const isRothFamily =
   !isRothEarlyWithdrawal &&
@@ -35,49 +37,60 @@ const guideItems = [
     url: '/guides/fire/',
   },
 ];
-const retirementToolItems = isFourOhOneK
+const retirementToolItems = isTraditionalVsRoth401k
   ? [
       {
-        title: 'Browse all 200 401(k) examples',
-        url: '/calculators/401k/examples/',
+        title: 'Browse all 200 Traditional vs Roth 401(k) examples',
+        url: '/calculators/traditional-vs-roth-401k/examples/',
       },
-      ...featuredFourOhOneKSeoRecords.map((record) => ({
+      ...featuredTraditionalVsRoth401kSeoRecords.map((record) => ({
         title: record.question,
-        url: `/calculators/401k/${record.slug}/`,
+        url: `/calculators/traditional-vs-roth-401k/${record.slug}/`,
       })),
     ]
-  : isRothEarlyWithdrawal
+  : isFourOhOneK
     ? [
         {
-          title: 'Browse all 200 Roth IRA Early Withdrawal examples',
-          url: '/calculators/roth-ira-early-withdrawal/examples/',
+          title: 'Browse all 200 401(k) examples',
+          url: '/calculators/401k/examples/',
         },
-        ...featuredRothEarlyWithdrawalSeoRecords.map((record) => ({
+        ...featuredFourOhOneKSeoRecords.map((record) => ({
           title: record.question,
-          url: `/calculators/roth-ira-early-withdrawal/${record.slug}/`,
+          url: `/calculators/401k/${record.slug}/`,
         })),
       ]
-    : isRothFamily
+    : isRothEarlyWithdrawal
       ? [
           {
-            title: 'Browse all 200 Roth IRA examples',
-            url: '/calculators/roth-ira/examples/',
+            title: 'Browse all 200 Roth IRA Early Withdrawal examples',
+            url: '/calculators/roth-ira-early-withdrawal/examples/',
           },
-          ...featuredRothIraSeoRecords.map((record) => ({
+          ...featuredRothEarlyWithdrawalSeoRecords.map((record) => ({
             title: record.question,
-            url: `/calculators/roth-ira/${record.slug}/`,
+            url: `/calculators/roth-ira-early-withdrawal/${record.slug}/`,
           })),
         ]
-      : [
-          {
-            title: 'FIRE Calculator',
-            url: '/calculators/fire-calculator/',
-          },
-          {
-            title: 'Retirement Withdrawal Calculator',
-            url: '/calculators/retirement-withdrawal-calculator/',
-          },
-        ];
+      : isRothFamily
+        ? [
+            {
+              title: 'Browse all 200 Roth IRA examples',
+              url: '/calculators/roth-ira/examples/',
+            },
+            ...featuredRothIraSeoRecords.map((record) => ({
+              title: record.question,
+              url: `/calculators/roth-ira/${record.slug}/`,
+            })),
+          ]
+        : [
+            {
+              title: 'FIRE Calculator',
+              url: '/calculators/fire-calculator/',
+            },
+            {
+              title: 'Retirement Withdrawal Calculator',
+              url: '/calculators/retirement-withdrawal-calculator/',
+            },
+          ];
 ---
 
 <CalculatorPage

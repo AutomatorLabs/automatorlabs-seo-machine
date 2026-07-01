@@ -372,6 +372,19 @@ const safeBatchProgrammaticConfigs = [
     ctaName: 'Open the Roth IRA Early Withdrawal Calculator',
   },
   {
+    label: 'traditional vs roth 401k',
+    records: traditionalVsRoth401kSeoRecords,
+    expectedCount: EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+    audit: auditTraditionalVsRoth401kSeoRecords,
+    calculatorPath: '/calculators/traditional-vs-roth-401k-calculator/',
+    examplesPath: '/calculators/traditional-vs-roth-401k/examples/',
+    exampleLinkName: 'Browse all 200 Traditional vs Roth 401(k) examples',
+    representativeSlug:
+      'equal-bracket-contribute-10000-current-22-retirement-22-return-6-years-15',
+    pagePrefix: '/calculators/traditional-vs-roth-401k/',
+    ctaName: 'Open the Traditional vs Roth 401(k) Calculator',
+  },
+  {
     label: 'rent vs buy',
     records: rentVsBuySeoRecords,
     expectedCount: EXPECTED_RENT_VS_BUY_SEO_PAGE_COUNT,
@@ -4484,20 +4497,106 @@ test.describe('global programmatic examples hub', () => {
   });
 });
 
-test.describe('traditional vs roth 401k programmatic SEO', () => {
-  test('record audit enforces count and unique metadata', () => {
-    const audit = auditTraditionalVsRoth401kSeoRecords(
-      traditionalVsRoth401kSeoRecords,
-      EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+test.describe('traditional vs roth 401k programmatic SEO extra coverage', () => {
+  test('examples index exposes and searches all traditional vs roth 401k pages', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto(
+      '/calculators/traditional-vs-roth-401k/examples/',
+      { waitUntil: 'domcontentloaded' },
     );
 
-    expect(audit).toEqual({
-      expectedCount: EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
-      actualCount: EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
-      uniqueSlugCount: EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
-      uniqueTitleCount: EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
-      uniqueDescriptionCount: EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
-      uniqueCanonicalPathCount: EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'Traditional vs Roth 401(k) Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(
+      page.locator('[data-traditional-vs-roth-401k-example-group]'),
+    ).toHaveCount(5);
+    await expect(
+      page.locator('[data-traditional-vs-roth-401k-example-card]'),
+    ).toHaveCount(EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/traditional-vs-roth-401k/examples/',
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search Traditional vs Roth 401(k) examples',
     });
+    await searchBox.fill('peak-earner');
+    const visibleCount = await page
+      .locator('[data-traditional-vs-roth-401k-example-card]:visible')
+      .count();
+    expect(visibleCount).toBeGreaterThan(0);
+    expect(visibleCount).toBeLessThan(
+      EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+    );
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-traditional-vs-roth-401k-example-card]:visible'),
+    ).toHaveCount(EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT);
+    expect(pageErrors).toEqual([]);
   });
+
+  const oneSlugPerIntent = [
+    {
+      intent: 'rising-earner',
+      slug: 'rising-earner-contribute-9000-current-12-retirement-22-return-6-years-20',
+    },
+    {
+      intent: 'peak-earner',
+      slug: 'peak-earner-contribute-16000-current-32-retirement-22-return-6-years-15',
+    },
+    {
+      intent: 'equal-bracket',
+      slug: 'equal-bracket-contribute-10000-current-22-retirement-22-return-6-years-15',
+    },
+    {
+      intent: 'long-horizon-compounding',
+      slug: 'long-horizon-compounding-contribute-14000-current-12-retirement-24-return-7-years-25',
+    },
+    {
+      intent: 'catch-up-contributor',
+      slug: 'catch-up-contributor-contribute-27000-current-32-retirement-22-return-6-years-10',
+    },
+  ] as const;
+
+  for (const { intent, slug } of oneSlugPerIntent) {
+    test(`renders the ${intent} representative page`, async ({ page }) => {
+      const record = traditionalVsRoth401kSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) {
+        throw new Error(`Missing traditional vs roth 401k record: ${slug}`);
+      }
+
+      const url = `/calculators/traditional-vs-roth-401k/${record.slug}/`;
+      const response = await page.goto(url, { waitUntil: 'domcontentloaded' });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      expect(await page.locator('tbody tr').count()).toBeGreaterThan(0);
+
+      if (intent === 'equal-bracket') {
+        await expect(
+          page.getByRole('heading', {
+            level: 2,
+            name: 'Equivalent under these assumptions',
+          }),
+        ).toBeVisible();
+      }
+    });
+  }
 });

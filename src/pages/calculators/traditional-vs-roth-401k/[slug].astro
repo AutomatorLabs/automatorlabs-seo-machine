@@ -1,0 +1,32 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+  traditionalVsRoth401kSeoRecords,
+} from '../../../data/programmatic-seo/traditional-vs-roth-401k';
+import {
+  auditTraditionalVsRoth401kSeoRecords,
+  createTraditionalVsRoth401kSeoPage,
+} from '../../../lib/programmatic-seo/traditional-vs-roth-401k';
+
+auditTraditionalVsRoth401kSeoRecords(
+  traditionalVsRoth401kSeoRecords,
+  EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return traditionalVsRoth401kSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createTraditionalVsRoth401kSeoPage(
+        record,
+        traditionalVsRoth401kSeoRecords,
+      ),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

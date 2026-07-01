@@ -51,6 +51,7 @@ import { vacationSavingsSeoRecords } from './vacation-savings';
 import { yearsToRetirementSeoRecords } from './years-to-retirement';
 import { closingCostSeoRecords } from './closing-cost';
 import { rentVsBuySeoRecords } from './rent-vs-buy';
+import { traditionalVsRoth401kSeoRecords } from './traditional-vs-roth-401k';
 
 export interface ProgrammaticSeoClusterSummary {
   id: string;
@@ -649,6 +650,19 @@ const rothEarlyWithdrawalRepresentatives = [
     (record) =>
       record.slug ===
       'dips-into-earnings-withdraw-20000-with-10000-basis-10000-earnings-22-tax-10-penalty',
+  ),
+].filter((record) => record !== undefined);
+
+const traditionalVsRoth401kRepresentatives = [
+  traditionalVsRoth401kSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'rising-earner-contribute-9000-current-12-retirement-22-return-6-years-20',
+  ),
+  traditionalVsRoth401kSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'peak-earner-contribute-16000-current-32-retirement-22-return-6-years-15',
   ),
 ].filter((record) => record !== undefined);
 
@@ -1671,6 +1685,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: rothEarlyWithdrawalRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/roth-ira-early-withdrawal/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'traditional-vs-roth-401k',
+    title: 'Traditional vs Roth 401(k) Examples',
+    description:
+      'Explore rising-earner, peak-earner, equal-bracket, long-horizon, and catch-up-contribution scenarios comparing Traditional and Roth 401(k) outcomes.',
+    examplesUrl: '/calculators/traditional-vs-roth-401k/examples/',
+    calculator: {
+      title: 'Traditional vs Roth 401(k) Calculator',
+      url: '/calculators/traditional-vs-roth-401k-calculator/',
+    },
+    guide: {
+      title: 'Roth IRA vs Traditional IRA',
+      url: '/guides/roth-vs-traditional-ira/',
+    },
+    pageCount: traditionalVsRoth401kSeoRecords.length,
+    representativePages: traditionalVsRoth401kRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/traditional-vs-roth-401k/${record.slug}/`,
     })),
   },
   {

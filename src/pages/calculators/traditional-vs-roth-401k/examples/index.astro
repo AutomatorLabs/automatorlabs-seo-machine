@@ -1,0 +1,259 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+  traditionalVsRoth401kSeoRecords,
+} from '../../../../data/programmatic-seo/traditional-vs-roth-401k';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditTraditionalVsRoth401kSeoRecords } from '../../../../lib/programmatic-seo/traditional-vs-roth-401k';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditTraditionalVsRoth401kSeoRecords(
+  traditionalVsRoth401kSeoRecords,
+  EXPECTED_TRADITIONAL_VS_ROTH_401K_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Traditional vs Roth 401(k) Calculator',
+        url: '/calculators/traditional-vs-roth-401k-calculator/',
+      },
+      {
+        name: 'Examples',
+        url: '/calculators/traditional-vs-roth-401k/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(traditionalVsRoth401kSeoRecords, [
+  {
+    id: 'rising-earner',
+    title: 'Rising Earner Examples',
+    description:
+      'Examples where the current tax rate is below the assumed retirement tax rate, so Roth wins under these assumptions.',
+    matches: (record) => record.intent === 'rising-earner',
+  },
+  {
+    id: 'peak-earner',
+    title: 'Peak-Earner Examples',
+    description:
+      'Examples where the current tax rate is above the assumed retirement tax rate, so Traditional wins under these assumptions.',
+    matches: (record) => record.intent === 'peak-earner',
+  },
+  {
+    id: 'equal-bracket',
+    title: 'Equal Tax Bracket Examples',
+    description:
+      'Examples where the current and assumed retirement tax rates match, so the modeled comparison is a tie.',
+    matches: (record) => record.intent === 'equal-bracket',
+  },
+  {
+    id: 'long-horizon-compounding',
+    title: 'Long-Horizon Compounding Examples',
+    description:
+      'Examples with a fixed Roth-favorable tax-rate gap across a wide range of years, showing how the gap widens over time.',
+    matches: (record) => record.intent === 'long-horizon-compounding',
+  },
+  {
+    id: 'catch-up-contributor',
+    title: 'Catch-Up Contributor Examples',
+    description:
+      'Examples with a fixed Traditional-favorable tax-rate gap, larger contributions, and a short years-to-retirement horizon.',
+    matches: (record) => record.intent === 'catch-up-contributor',
+  },
+]);
+---
+
+<Layout
+  title="Traditional vs Roth 401(k) Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} Traditional vs Roth 401(k) examples covering rising earners, peak earners, equal tax brackets, long time horizons, and catch-up contributions.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/traditional-vs-roth-401k-calculator/">
+            Traditional vs Roth 401(k) Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Traditional vs Roth 401(k) scenario library</p>
+      <h1>Traditional vs Roth 401(k) Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering rising earners,
+        peak earners, equal tax brackets, long time horizons, and catch-up
+        contributions.
+      </p>
+      <a
+        class="primary-link"
+        href="/calculators/traditional-vs-roth-401k-calculator/"
+      >
+        Model your own comparison
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section
+      class="example-search"
+      aria-label="Search Traditional vs Roth 401(k) examples"
+    >
+      <label for="traditional-vs-roth-401k-example-search">
+        Search Traditional vs Roth 401(k) examples
+      </label>
+      <div class="search-row">
+        <input
+          id="traditional-vs-roth-401k-example-search"
+          type="search"
+          placeholder="Try 12000, peak earner, or 22% tax"
+          autocomplete="off"
+          aria-controls="traditional-vs-roth-401k-example-groups"
+          aria-describedby="traditional-vs-roth-401k-example-count"
+        />
+        <button
+          id="clear-traditional-vs-roth-401k-example-search"
+          type="button"
+          hidden
+        >
+          Clear search
+        </button>
+      </div>
+      <p id="traditional-vs-roth-401k-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="traditional-vs-roth-401k-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-traditional-vs-roth-401k-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-traditional-vs-roth-401k-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.annualContribution,
+                  record.currentTaxRatePercent,
+                  record.retirementTaxRatePercent,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/traditional-vs-roth-401k/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.annualContribution)}/year {' · '}
+                    {record.currentTaxRatePercent}% now {' · '}
+                    {record.retirementTaxRatePercent}% retirement
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p
+      id="no-traditional-vs-roth-401k-examples"
+      class="no-results"
+      role="status"
+      hidden
+    >
+      No Traditional vs Roth 401(k) examples found. Try a contribution amount, tax rate, or intent.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#traditional-vs-roth-401k-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-traditional-vs-roth-401k-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#traditional-vs-roth-401k-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-traditional-vs-roth-401k-examples',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-traditional-vs-roth-401k-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-traditional-vs-roth-401k-example-group]',
+    ),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      group.hidden = !group.querySelector(
+        '[data-traditional-vs-roth-401k-example-card]:not([hidden])',
+      );
+    });
+
+    count.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'example' : 'examples'}`;
+    noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query === '';
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateExamples();
+    input.focus();
+  });
+</script>

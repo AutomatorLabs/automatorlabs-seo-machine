@@ -15,9 +15,9 @@ Its job is to:
 
 Verified from source on 2026-07-01:
 
-- 51 live clusters in `src/data/programmatic-seo/clusters.ts`
+- 52 live clusters in `src/data/programmatic-seo/clusters.ts`
 - 200 records per cluster
-- 10,200 generated example pages total
+- 10,400 generated example pages total
 - global examples hub at `/examples/`
 
 Current live clusters:
@@ -70,6 +70,7 @@ Current live clusters:
 - Retirement Tax Drag
 - Roth IRA
 - Roth IRA Early Withdrawal
+- Traditional vs Roth 401(k)
 - Safe Withdrawal Rate
 - Years to Retirement
 - 4 Percent Rule
@@ -384,6 +385,16 @@ Required surfaces:
 - single-shot scenario (no time series): uses `showChart: false` and a static "Scenario Summary" table, following the same pattern as the Closing Cost cluster
 - five intents: contributions-only (withdrawal stays within basis, so tax and penalty are always $0), dips-into-earnings (standard 10% penalty), penalty-exception (0% penalty for a qualifying exception, tax may still apply), large-balance-hardship, and small-emergency
 - calculator page examples link is wired through `src/components/RetirementAccountCalculatorPage.astro`, which special-cases this calculator id ahead of the general Roth IRA family branch so it links to its own cluster instead of the Roth IRA growth cluster
+
+### Traditional vs Roth 401(k)
+
+- calculator: `/calculators/traditional-vs-roth-401k-calculator/`
+- examples index: `/calculators/traditional-vs-roth-401k/examples/`
+- generated page route: `/calculators/traditional-vs-roth-401k/<slug>/`
+- reuses `calculateRothVsTraditionalIra`
+- single-shot scenario (no time series): uses `showChart: false` and a static "Scenario Summary" table, following the same pattern as the Roth IRA Early Withdrawal and Closing Cost clusters
+- five intents, each fixing the qualitative direction of the categorical `betterOption` result: rising-earner (current tax rate below retirement rate, Roth always wins), peak-earner (current rate above retirement rate, Traditional always wins), equal-bracket (rates equal, always a tie), long-horizon-compounding (fixed Roth-favorable gap across a wide years range), and catch-up-contributor (fixed Traditional-favorable gap, larger contributions, short horizon)
+- the calculator's id contains `"401k"`, so `RetirementAccountCalculatorPage.astro` special-cases `traditional-vs-roth-401k` ahead of the general 401(k) branch so it links to its own cluster instead of the 401(k) growth cluster
 
 ### Debt Cluster Module
 
