@@ -141,7 +141,10 @@ import {
   EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT,
   investmentGrowthSeoRecords,
 } from '../src/data/programmatic-seo/investment-growth';
-import { auditInvestmentGrowthSeoRecords } from '../src/lib/programmatic-seo/investment-growth';
+import {
+  auditInvestmentGrowthSeoRecords,
+  createInvestmentGrowthSeoPage,
+} from '../src/lib/programmatic-seo/investment-growth';
 import {
   EXPECTED_LUMP_SUM_VS_DCA_SEO_PAGE_COUNT,
   lumpSumVsDcaSeoRecords,
@@ -719,6 +722,54 @@ test.describe('investment growth programmatic SEO', () => {
       uniqueDescriptionCount: EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT,
       uniqueCanonicalPathCount: EXPECTED_INVESTMENT_GROWTH_SEO_PAGE_COUNT,
     });
+  });
+
+  test('relatedCalculators links matching compound-interest frequency variant for monthly/annual investing intents', () => {
+    const monthlyRecord = {
+      slug: 'test-investment-growth-monthly',
+      question: 'Test question?',
+      intent: 'monthly-investing' as const,
+      initialInvestment: 10000,
+      monthlyContribution: 500,
+      annualReturnPercent: 7,
+      years: 20,
+      accountLabel: 'monthly investing plan',
+    };
+    const monthlyPage = createInvestmentGrowthSeoPage(monthlyRecord, [monthlyRecord]);
+    expect(monthlyPage.relatedCalculators.map((link) => link.url)).toContain(
+      '/calculators/monthly-compound-interest-calculator/',
+    );
+
+    const annualRecord = {
+      slug: 'test-investment-growth-annual',
+      question: 'Test question?',
+      intent: 'annual-investing' as const,
+      initialInvestment: 10000,
+      monthlyContribution: 500,
+      annualReturnPercent: 7,
+      years: 20,
+      accountLabel: 'annual investing plan',
+      annualContribution: 6000,
+    };
+    const annualPage = createInvestmentGrowthSeoPage(annualRecord, [annualRecord]);
+    expect(annualPage.relatedCalculators.map((link) => link.url)).toContain(
+      '/calculators/annual-compound-interest-calculator/',
+    );
+
+    const lumpSumRecord = {
+      slug: 'test-investment-growth-lump-sum',
+      question: 'Test question?',
+      intent: 'lump-sum' as const,
+      initialInvestment: 10000,
+      monthlyContribution: 0,
+      annualReturnPercent: 7,
+      years: 20,
+      accountLabel: 'lump-sum investment',
+    };
+    const lumpSumPage = createInvestmentGrowthSeoPage(lumpSumRecord, [lumpSumRecord]);
+    expect(lumpSumPage.relatedCalculators.map((link) => link.url)).toContain(
+      '/calculators/lump-sum-vs-dca-calculator/',
+    );
   });
 
   test('calculator page links to the investment growth examples cluster', async ({

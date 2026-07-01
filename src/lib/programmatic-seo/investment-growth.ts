@@ -275,6 +275,22 @@ function relatedCalculatorsFor(record: InvestmentGrowthSeoRecord): ProgrammaticS
     });
   }
 
+  if (record.intent === 'monthly-investing') {
+    calculators.push({
+      title: 'Monthly Compound Interest Calculator',
+      url: '/calculators/monthly-compound-interest-calculator/',
+      description:
+        'Compare this contribution plan against a dedicated monthly-compounding calculator.',
+    });
+  } else if (record.intent === 'annual-investing') {
+    calculators.push({
+      title: 'Annual Compound Interest Calculator',
+      url: '/calculators/annual-compound-interest-calculator/',
+      description:
+        'Compare this contribution plan against a dedicated annual-compounding calculator.',
+    });
+  }
+
   return calculators;
 }
 
