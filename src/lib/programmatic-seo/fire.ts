@@ -33,6 +33,36 @@ export function createFireCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(fireClusterPath, slug);
 }
 
+type FireStyle = 'lean' | 'regular' | 'fat';
+
+function fireStyleFor(annualSpending: number): FireStyle {
+  if (annualSpending <= 50000) return 'lean';
+  if (annualSpending >= 125000) return 'fat';
+  return 'regular';
+}
+
+function fireStyleFraming(style: FireStyle): string {
+  switch (style) {
+    case 'lean':
+      return 'This spending level is on the leaner end of FIRE planning, which usually means a smaller required portfolio but less cushion for discretionary spending or unexpected costs.';
+    case 'regular':
+      return 'This spending level sits in a common middle range for FIRE planning, balancing portfolio size against day-to-day flexibility.';
+    case 'fat':
+      return 'This spending level is on the higher end of FIRE planning, which requires a larger portfolio but leaves more room for discretionary spending.';
+  }
+}
+
+function fireStyleFaqFraming(style: FireStyle): string {
+  switch (style) {
+    case 'lean':
+      return 'This example falls on the leaner end of the spending levels modeled in this cluster of examples.';
+    case 'regular':
+      return 'This example falls in the middle of the spending levels modeled in this cluster of examples.';
+    case 'fat':
+      return 'This example falls on the higher end of the spending levels modeled in this cluster of examples.';
+  }
+}
+
 function relatedPages(
   record: FireSeoRecord,
   records: FireSeoRecord[],
@@ -111,6 +141,7 @@ function createSensitivityTable(record: FireSeoRecord): ProgrammaticSeoTable {
 function createFaq(record: FireSeoRecord, fireNumber: number) {
   const spending = currency.format(record.annualSpending);
   const rate = `${percentage.format(record.withdrawalRatePercent)}%`;
+  const style = fireStyleFor(record.annualSpending);
 
   return [
     {
@@ -135,6 +166,10 @@ function createFaq(record: FireSeoRecord, fireNumber: number) {
       question: 'What happens if I use a lower withdrawal rate?',
       answer:
         'A lower withdrawal rate produces a larger FIRE number for the same spending. It may create more planning margin, but no rate eliminates investment or longevity risk.',
+    },
+    {
+      question: `Is ${spending} a lean, regular, or fat FIRE spending level?`,
+      answer: fireStyleFaqFraming(style),
     },
   ];
 }
@@ -166,6 +201,7 @@ export function createFireSeoPage(
         ).annualWithdrawal
       : 0;
   const isFunded = plan !== null && plan.portfolioGap >= 0;
+  const style = fireStyleFor(record.annualSpending);
   const title = record.question;
   const metaDescription =
     record.intent === 'portfolio-check'
@@ -184,9 +220,10 @@ export function createFireSeoPage(
     metaDescription: metadata.metaDescription,
     eyebrow: 'FIRE planning example',
     intro:
-      record.intent === 'portfolio-check'
+      (record.intent === 'portfolio-check'
         ? `This example compares a ${currency.format(portfolio)} invested portfolio with ${spending} of annual retirement spending using a ${rate} planning withdrawal rate.`
-        : `This example estimates the invested portfolio associated with ${spending} of annual retirement spending using a ${rate} planning withdrawal rate.`,
+        : `This example estimates the invested portfolio associated with ${spending} of annual retirement spending using a ${rate} planning withdrawal rate.`) +
+      ` ${fireStyleFraming(style)}`,
     summary:
       record.intent === 'portfolio-check'
         ? `At ${rate}, ${currency.format(portfolio)} supports about ${currency.format(supportedIncome)} per year before taxes and fees. The simple FIRE target for ${spending} of spending is ${currency.format(fireNumber)}, so this scenario is ${isFunded ? `above the target by ${currency.format(plan?.portfolioGap ?? 0)}` : `below the target by ${currency.format(Math.abs(plan?.portfolioGap ?? 0))}`}.`

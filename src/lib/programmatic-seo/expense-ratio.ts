@@ -102,6 +102,20 @@ function costStyleLabel(expenseRatioPercent: number): string {
   return 'moderate-fee';
 }
 
+function costStyleFraming(expenseRatioPercent: number): string {
+  const style = costStyleLabel(expenseRatioPercent);
+  switch (style) {
+    case 'very low-cost':
+      return 'This is one of the lowest expense ratios modeled in this cluster of examples, so the long-run fee drag stays comparatively small.';
+    case 'low-cost':
+      return 'This is a relatively low expense ratio, typical of many broad-market index funds.';
+    case 'high-fee':
+      return 'This is a relatively high expense ratio, which noticeably widens the long-run fee drag compared with a low-cost fund.';
+    default:
+      return 'This expense ratio sits in a common middle range for actively managed or specialized funds.';
+  }
+}
+
 function createRelatedPages(
   record: ExpenseRatioSeoRecord,
   records: ExpenseRatioSeoRecord[],
@@ -290,7 +304,7 @@ export function createExpenseRatioSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: intentLabel(record),
-    intro: `This worked example starts with ${wholeCurrency.format(record.investmentAmount)} invested, a ${percentage.format(record.expenseRatioPercent)}% expense ratio, a ${percentage.format(record.expectedAnnualReturnPercent)}% expected annual return before fees, and a ${record.years}-year holding period.`,
+    intro: `This worked example starts with ${wholeCurrency.format(record.investmentAmount)} invested, a ${percentage.format(record.expenseRatioPercent)}% expense ratio, a ${percentage.format(record.expectedAnnualReturnPercent)}% expected annual return before fees, and a ${record.years}-year holding period. ${costStyleFraming(record.expenseRatioPercent)}`,
     summary: `Under these assumptions, the portfolio ends with about ${currency.format(result.endingBalanceAfterFees)} after fees instead of ${currency.format(result.endingBalanceWithoutFees)} without fees, creating roughly ${currency.format(result.differenceCausedByFees)} of long-term fee drag.`,
     results: [
       {

@@ -31,6 +31,36 @@ export function createPropertyTaxCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(clusterPath, slug);
 }
 
+function intentFraming(record: PropertyTaxSeoRecord): string {
+  switch (record.intent) {
+    case 'starter-home':
+      return 'A starter-home price range like this one usually carries a lower absolute tax bill, but the same percentage assumptions still apply.';
+    case 'move-up-home':
+      return 'A move-up home price range like this one raises the absolute tax bill even if the local rate and assessment ratio stay similar to a smaller home.';
+    case 'high-tax-area':
+      return 'A higher local tax rate like this one means property taxes make up a larger share of the total cost of owning the home.';
+    case 'assessment-growth':
+      return 'The assessment growth rate is the main driver of how much this tax bill rises over time, more so than the starting rate itself.';
+    case 'long-horizon':
+      return 'Over a longer time horizon like this one, even a modest annual assessment growth rate compounds into a substantially higher tax bill by the final year.';
+  }
+}
+
+function intentFaqFraming(record: PropertyTaxSeoRecord): string {
+  switch (record.intent) {
+    case 'starter-home':
+      return 'This example models a starter-home price range, one of the lower absolute tax bills in this cluster of examples.';
+    case 'move-up-home':
+      return 'This example models a move-up home price range, which raises the absolute tax bill compared with a starter-home scenario.';
+    case 'high-tax-area':
+      return 'This example models a higher local tax rate than most of this cluster of examples.';
+    case 'assessment-growth':
+      return 'This example emphasizes how the assessment growth rate compounds the tax bill over time.';
+    case 'long-horizon':
+      return 'This example uses a longer time horizon than most of this cluster of examples, so compounding assessment growth has more time to raise the bill.';
+  }
+}
+
 function createProjectionRows(
   record: PropertyTaxSeoRecord,
 ): ProgrammaticSeoProjectionRow[] {
@@ -111,7 +141,7 @@ export function createPropertyTaxSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: 'Property tax example',
-    intro: `This worked example estimates property taxes for a ${wholeCurrency.format(record.homeValue)} home using a ${record.propertyTaxRatePercent}% local tax rate, ${record.assessedValuePercent}% assessed value, and ${record.annualAssessmentGrowthPercent}% annual assessment growth over ${record.years} years.`,
+    intro: `This worked example estimates property taxes for a ${wholeCurrency.format(record.homeValue)} home using a ${record.propertyTaxRatePercent}% local tax rate, ${record.assessedValuePercent}% assessed value, and ${record.annualAssessmentGrowthPercent}% annual assessment growth over ${record.years} years. ${intentFraming(record)}`,
     summary: `The first-year property tax is about ${currency.format(result.firstYearPropertyTax)}, which implies a monthly escrow estimate near ${currency.format(result.monthlyEscrowEstimate)}. Over ${record.years} years, the total projected property tax is about ${currency.format(result.totalPropertyTax)} under fixed assumptions.`,
     results: [
       {
@@ -188,6 +218,10 @@ export function createPropertyTaxSeoPage(
         question: 'Does this include homeowners insurance or HOA dues?',
         answer:
           'No. This page focuses on property taxes only.',
+      },
+      {
+        question: `What does this ${record.scenarioLabel} scenario emphasize?`,
+        answer: intentFaqFraming(record),
       },
     ],
     breadcrumbs: [

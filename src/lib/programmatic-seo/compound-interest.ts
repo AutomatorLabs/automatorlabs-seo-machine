@@ -64,6 +64,65 @@ function frequencyLabel(periodsPerYear: number): string {
   return 'annually';
 }
 
+type CompoundRateProfile = 'modest' | 'moderate' | 'strong';
+type CompoundHorizonProfile = 'short' | 'medium' | 'long';
+
+function compoundRateProfile(record: CompoundInterestSeoRecord): CompoundRateProfile {
+  if (record.annualRatePercent <= 6) return 'modest';
+  if (record.annualRatePercent <= 10) return 'moderate';
+  return 'strong';
+}
+
+function compoundHorizonProfile(record: CompoundInterestSeoRecord): CompoundHorizonProfile {
+  if (record.years <= 15) return 'short';
+  if (record.years <= 25) return 'medium';
+  return 'long';
+}
+
+function compoundRateFraming(profile: CompoundRateProfile): string {
+  switch (profile) {
+    case 'modest':
+      return 'A more modest assumed rate keeps the projection closer to what conservative, lower-volatility holdings have historically produced.';
+    case 'moderate':
+      return 'A moderate assumed rate lands in a range often associated with diversified long-term equity portfolios.';
+    case 'strong':
+      return 'A stronger assumed rate produces a noticeably larger projection, but it is also less conservative than typical long-run historical averages.';
+  }
+}
+
+function compoundHorizonFraming(profile: CompoundHorizonProfile): string {
+  switch (profile) {
+    case 'short':
+      return 'Over a shorter horizon like this one, the ending balance is driven more by the starting principal than by compounding.';
+    case 'medium':
+      return 'Over a medium horizon like this one, compounding starts to contribute a substantial share of the ending balance.';
+    case 'long':
+      return 'Over a longer horizon like this one, compounding usually accounts for the majority of the ending balance rather than the original principal.';
+  }
+}
+
+function compoundRateSectionFraming(profile: CompoundRateProfile): string {
+  switch (profile) {
+    case 'modest':
+      return 'A more modest rate assumption is a reasonable choice when stress-testing a plan against a more conservative future, rather than assuming the best case holds.';
+    case 'moderate':
+      return 'A moderate rate assumption is a common middle-ground choice for long-term diversified portfolio projections.';
+    case 'strong':
+      return 'A stronger rate assumption should be treated as an optimistic case rather than a typical expectation, since sustained high returns are less common over long periods.';
+  }
+}
+
+function compoundHorizonFaqFraming(profile: CompoundHorizonProfile): string {
+  switch (profile) {
+    case 'short':
+      return 'This time horizon is on the shorter end of what this cluster of examples models, so the principal itself plays a bigger role than compounding.';
+    case 'medium':
+      return 'This time horizon sits in the middle of what this cluster of examples models.';
+    case 'long':
+      return 'This time horizon is on the longer end of what this cluster of examples models, so compounding plays a bigger role than the original principal.';
+  }
+}
+
 function resultSummary(
   record: CompoundInterestSeoRecord,
   result: CompoundInterestResult,
@@ -104,6 +163,10 @@ function createFaq(
     {
       question: 'What happens if the rate or time period changes?',
       answer: `A higher rate or longer period generally increases the result because growth has more opportunities to compound. Use the main Compound Interest Calculator to test different assumptions.`,
+    },
+    {
+      question: `Is ${record.years} years a short or long horizon for this example?`,
+      answer: compoundHorizonFaqFraming(compoundHorizonProfile(record)),
     },
   ];
 }
@@ -156,6 +219,8 @@ export function createCompoundInterestSeoPage(
     record.monthlyContribution > 0
       ? `${wholeCurrency.format(record.monthlyContribution)} is added at the end of each month.`
       : 'No additional deposits or withdrawals are included.';
+  const rateProfile = compoundRateProfile(record);
+  const horizonProfile = compoundHorizonProfile(record);
 
   return {
     slug: record.slug,
@@ -164,7 +229,7 @@ export function createCompoundInterestSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: 'Compound interest example',
-    intro: `This worked example estimates the future value of ${principal} earning a constant ${rate}% annual return for ${record.years} years. It compounds ${frequency} and shows how the balance develops one year at a time.`,
+    intro: `This worked example estimates the future value of ${principal} earning a constant ${rate}% annual return for ${record.years} years. It compounds ${frequency} and shows how the balance develops one year at a time. ${compoundRateFraming(rateProfile)} ${compoundHorizonFraming(horizonProfile)}`,
     summary: resultSummary(record, result),
     results: [
       {
@@ -206,6 +271,7 @@ export function createCompoundInterestSeoPage(
         paragraphs: [
           `The account begins with ${principal} and ends at an estimated ${currency.format(result.finalBalance)}. The difference is not created all at once. Early growth is relatively modest, while later years benefit from a larger balance earning the same assumed rate.`,
           `The projection uses a smooth ${rate}% rate to make the compounding relationship easy to inspect. A real investment would usually follow an uneven path, and the actual ending value could be higher or lower.`,
+          compoundRateSectionFraming(rateProfile),
         ],
       },
       {

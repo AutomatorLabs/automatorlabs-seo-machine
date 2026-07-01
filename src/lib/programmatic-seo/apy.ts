@@ -219,6 +219,27 @@ function relatedGuidesFor(record: ApySeoRecord): ProgrammaticSeoLink[] {
   return guides;
 }
 
+function intentFaqFraming(record: ApySeoRecord): string {
+  switch (record.intent) {
+    case 'savings-account':
+      return 'This example is framed around a standard savings account rather than a promotional or specialty product.';
+    case 'high-yield-savings':
+      return 'This example is framed around a high-yield savings account, which typically carries a variable rate rather than a locked-in return.';
+    case 'certificate-of-deposit':
+      return 'This example is framed around a CD, which typically locks in the rate for a fixed term rather than allowing it to change.';
+    case 'money-market':
+      return 'This example is framed around a money market account, which can carry tiered rates depending on balance.';
+    case 'checking-account':
+      return 'This example is framed around an interest checking account, which often pays a lower rate than dedicated savings products.';
+    case 'monthly-compounding':
+      return 'This example emphasizes monthly compounding specifically, rather than daily or annual compounding.';
+    case 'daily-compounding':
+      return 'This example emphasizes daily compounding specifically, which usually produces a slightly higher effective yield than monthly compounding at the same nominal rate.';
+    case 'stated-rate-comparison':
+      return 'This example emphasizes the gap between the stated nominal rate and the effective annual yield.';
+  }
+}
+
 function createFaq(record: ApySeoRecord, apyPercent: number) {
   return [
     {
@@ -244,6 +265,10 @@ function createFaq(record: ApySeoRecord, apyPercent: number) {
       question: 'Is APY the same thing as an investment return?',
       answer:
         'No. APY usually describes a quoted or contractual interest yield under stated assumptions. Investments can rise or fall in value and are affected by market risk, fees, taxes, and uncertain returns.',
+    },
+    {
+      question: `What does this ${intentLabel(record).toLowerCase()} emphasize?`,
+      answer: intentFaqFraming(record),
     },
   ];
 }

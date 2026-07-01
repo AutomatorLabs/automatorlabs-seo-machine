@@ -134,6 +134,21 @@ function scenarioDescription(record: EtfFeeDragSeoRecord): string {
   }
 }
 
+function intentFaqFraming(record: EtfFeeDragSeoRecord): string {
+  switch (record.intent) {
+    case 'low-cost-etf':
+      return 'This example compares two already low-cost ETFs, so the dollar gap is smaller than a comparison against a high-fee fund.';
+    case 'index-fund-comparison':
+      return 'This example is framed around two broad index ETFs with similar exposure but different costs.';
+    case 'retirement-etf':
+      return 'This example is framed around a retirement-length holding period, where fee drag has more years to compound.';
+    case 'taxable-etf':
+      return 'This example is framed around a taxable account, though it still only models fund-expense drag, not taxes.';
+    case 'high-fee-etf':
+      return 'This example uses a wider expense-ratio gap than a low-cost-to-low-cost comparison, producing a larger dollar difference.';
+  }
+}
+
 function createRelatedPages(
   record: EtfFeeDragSeoRecord,
   records: EtfFeeDragSeoRecord[],
@@ -289,6 +304,10 @@ export function createEtfFeeDragSeoPage(
         question: 'Should fee drag decide between two ETFs by itself?',
         answer:
           'No. Fees matter, but so do index exposure, tracking, liquidity, fund structure, taxes, and portfolio fit.',
+      },
+      {
+        question: `What does this ${intentLabel(record).toLowerCase()} emphasize?`,
+        answer: intentFaqFraming(record),
       },
     ],
     breadcrumbs: [

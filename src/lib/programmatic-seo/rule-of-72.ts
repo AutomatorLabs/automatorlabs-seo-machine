@@ -81,6 +81,27 @@ function intentLabel(record: RuleOf72SeoRecord): string {
   }
 }
 
+function intentFaqFraming(record: RuleOf72SeoRecord): string {
+  switch (record.intent) {
+    case 'doubling-money':
+      return 'This example is framed as a simple doubling-money estimate rather than tied to one specific account type.';
+    case 'investment-growth':
+      return 'This example is framed as a quick sanity check on an investment-growth rate assumption.';
+    case 'savings-growth':
+      return 'This example is framed around a savings-account style rate rather than a market-return assumption.';
+    case 'inflation':
+      return 'This example is framed around how quickly prices could double, which is the same math applied to a shrinking-purchasing-power scenario.';
+    case 'portfolio-growth':
+      return 'This example is framed around a broader portfolio return rather than one single account.';
+    case 'retirement-planning':
+      return 'This example is framed as a retirement-planning benchmark for a long-term growth assumption.';
+    case 'index-fund':
+      return 'This example is framed around a typical index-fund return assumption.';
+    case 'high-yield-savings':
+      return 'This example is framed around a high-yield savings rate, which is usually variable rather than fixed.';
+  }
+}
+
 function contextDescription(record: RuleOf72SeoRecord): string {
   switch (record.intent) {
     case 'doubling-money':
@@ -255,6 +276,10 @@ function createFaq(
       question: 'Does this example include fees, taxes, or contributions?',
       answer:
         'No. The shortcut isolates a steady annual rate. It does not include fees, taxes, added contributions, withdrawals, or uneven returns.',
+    },
+    {
+      question: `What does this ${intentLabel(record).toLowerCase()} emphasize?`,
+      answer: intentFaqFraming(record),
     },
   ];
 }

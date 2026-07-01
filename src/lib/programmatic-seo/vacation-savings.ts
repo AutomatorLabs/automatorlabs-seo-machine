@@ -34,6 +34,36 @@ export function createVacationSavingsCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(vacationSavingsClusterPath, slug);
 }
 
+function intentFraming(record: VacationSavingsSeoRecord): string {
+  switch (record.intent) {
+    case 'weekend-getaway':
+      return 'A shorter, lower-budget trip like this one is usually reachable in under a year, so the required monthly amount tends to be modest.';
+    case 'family-vacation':
+      return 'A family trip like this one often carries a larger budget than a solo or couples trip, since it needs to cover more travelers.';
+    case 'international-trip':
+      return 'International travel like this one often has a longer lead time for booking flights and lodging, which lines up well with a multi-year savings plan.';
+    case 'luxury-vacation':
+      return 'A larger, bucket-list-style budget like this one usually benefits from a longer timeline to keep the required monthly amount manageable.';
+    case 'retirement-travel':
+      return 'Retirement-era travel like this one is often planned years in advance, which gives more time for a lower monthly contribution to reach a larger target.';
+  }
+}
+
+function intentFaqFraming(record: VacationSavingsSeoRecord): string {
+  switch (record.intent) {
+    case 'weekend-getaway':
+      return 'This example models a shorter, lower-budget trip, one of the fastest goals to reach in this cluster of examples.';
+    case 'family-vacation':
+      return 'This example models a family trip budget, which is typically larger than a solo or couples trip in this cluster of examples.';
+    case 'international-trip':
+      return 'This example models international travel, which often benefits from the longer lead time modeled here.';
+    case 'luxury-vacation':
+      return 'This example models a larger, bucket-list-style budget, one of the bigger targets in this cluster of examples.';
+    case 'retirement-travel':
+      return 'This example models retirement-era travel, planned over one of the longer timelines in this cluster of examples.';
+  }
+}
+
 export function calculateRequiredVacationSavings(
   record: Pick<
     VacationSavingsSeoRecord,
@@ -183,6 +213,10 @@ function createFaq(
       answer:
         'Extending the deadline, trimming the trip budget, applying existing travel rewards, or adding one-time deposits can reduce the required monthly savings target.',
     },
+    {
+      question: `How does this ${record.scenarioLabel} compare with other travel goals?`,
+      answer: intentFaqFraming(record),
+    },
   ];
 }
 
@@ -216,7 +250,7 @@ export function createVacationSavingsSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: record.scenarioLabel,
-    intro: `This worked example estimates the monthly savings needed for a ${wholeCurrency.format(record.goalAmount)} ${record.purposeLabel} over ${record.years} years, starting with ${wholeCurrency.format(record.currentSavings)} already saved and assuming a constant ${rate} annual return.`,
+    intro: `This worked example estimates the monthly savings needed for a ${wholeCurrency.format(record.goalAmount)} ${record.purposeLabel} over ${record.years} years, starting with ${wholeCurrency.format(record.currentSavings)} already saved and assuming a constant ${rate} annual return. ${intentFraming(record)}`,
     summary: `The projected travel savings requirement is about ${currency.format(monthlySavings)} per month. If that amount is saved consistently, the ending balance reaches approximately ${currency.format(finalRow?.endingBalance ?? record.goalAmount)} by the end of the timeline.`,
     results: [
       {

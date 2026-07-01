@@ -99,6 +99,31 @@ function intentSummary(record: InvestmentFeeSeoRecord): string {
   }
 }
 
+function feeTierFraming(annualFeePercent: number): string {
+  if (annualFeePercent <= 0.25) {
+    return 'This is a relatively low fee for a recurring annual charge, typical of low-cost index funds.';
+  }
+  if (annualFeePercent >= 1) {
+    return 'This is a relatively high fee for a recurring annual charge, more typical of actively managed funds or advisory arrangements.';
+  }
+  return 'This fee sits in a common middle range for actively managed funds or bundled advisory services.';
+}
+
+function intentFaqFraming(record: InvestmentFeeSeoRecord): string {
+  switch (record.intent) {
+    case 'general-investing-fees':
+      return 'This example is framed around a general investing plan rather than a specific account type.';
+    case 'retirement-fees':
+      return 'This example is framed around a retirement investing plan, where fee drag has a longer horizon to compound.';
+    case 'advisor-fee-impact':
+      return 'This example is framed around an advisor fee, which is often layered on top of underlying fund expenses.';
+    case 'taxable-fees':
+      return 'This example is framed around a taxable account, though it still only models the recurring fee, not taxes.';
+    case 'fund-fee-drag':
+      return 'This example is framed around a specific fund-level fee rather than a bundled advisory charge.';
+  }
+}
+
 function createRelatedPages(
   record: InvestmentFeeSeoRecord,
   records: InvestmentFeeSeoRecord[],
@@ -148,7 +173,7 @@ export function createInvestmentFeeSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: intentLabel(record),
-    intro: `This worked example starts with ${wholeCurrency.format(record.startingInvestment)}, adds ${wholeCurrency.format(record.monthlyContribution)} per month, assumes a ${percentage.format(record.expectedAnnualReturnPercent)}% annual return before fees, and applies a recurring ${percentage.format(record.annualFeePercent)}% annual fee over ${record.years} years.`,
+    intro: `This worked example starts with ${wholeCurrency.format(record.startingInvestment)}, adds ${wholeCurrency.format(record.monthlyContribution)} per month, assumes a ${percentage.format(record.expectedAnnualReturnPercent)}% annual return before fees, and applies a recurring ${percentage.format(record.annualFeePercent)}% annual fee over ${record.years} years. ${feeTierFraming(record.annualFeePercent)}`,
     summary: `Under these assumptions, the portfolio ends near ${currency.format(result.endingBalanceAfterFees)} after fees instead of ${currency.format(result.endingBalanceBeforeFees)} before fees, creating about ${currency.format(result.totalCostOfFees)} of fee drag.`,
     results: [
       {
@@ -236,6 +261,10 @@ export function createInvestmentFeeSeoPage(
         question: 'Should I only choose investments based on fees?',
         answer:
           'No. Fees are important, but fund exposure, taxes, diversification, account type, liquidity, and suitability still matter.',
+      },
+      {
+        question: `What does this ${intentLabel(record).toLowerCase()} emphasize?`,
+        answer: intentFaqFraming(record),
       },
     ],
     breadcrumbs: [

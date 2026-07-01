@@ -28,6 +28,55 @@ export function createYearsToRetirementCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(clusterPath, slug);
 }
 
+type YearsToRetirementStatus = ReturnType<
+  typeof calculateYearsToRetirement
+>['status'];
+
+function paceFraming(status: YearsToRetirementStatus): string {
+  switch (status) {
+    case 'funded':
+      return 'The target portfolio is already reached in this example, so the age-based timeline is what remains to plan around rather than a savings gap.';
+    case 'before-target':
+      return 'The projected savings pace in this example reaches the portfolio target sooner than the chosen retirement age requires, which leaves room for a larger goal, an earlier date, or a lower contribution.';
+    case 'by-target':
+      return 'The projected savings pace in this example lines up almost exactly with the chosen retirement age, leaving little cushion if returns or contributions fall short.';
+    case 'after-target':
+      return 'The projected savings pace in this example is slower than the chosen retirement age requires, which points to a gap that a larger contribution, later date, or smaller target could help close.';
+    case 'unreachable':
+      return 'Under these assumptions, the portfolio target is not reached at all, which signals that the contribution, return assumption, or target likely needs to change.';
+  }
+}
+
+function paceSectionFraming(status: YearsToRetirementStatus): string {
+  switch (status) {
+    case 'funded':
+      return 'Because the portfolio goal is already met, the more useful question here is what to do with the current invested assets between now and the target retirement age, not whether to keep contributing at the same pace.';
+    case 'before-target':
+      return 'Being ahead of the age-based deadline is a comfortable position, but it is worth stress-testing with a lower return assumption before treating the surplus as guaranteed.';
+    case 'by-target':
+      return 'Landing almost exactly on the age-based deadline means there is little margin for a market downturn, a paused contribution, or a lower-than-expected return.';
+    case 'after-target':
+      return 'Falling behind the age-based deadline does not have to mean giving up on the target; it usually means one or more of contribution rate, return assumption, timeline, or target size needs a second look.';
+    case 'unreachable':
+      return 'An unreachable result under fixed assumptions is a signal to revisit the inputs, not a verdict on the underlying goal, since a higher contribution or longer timeline can turn an unreachable scenario into a reachable one.';
+  }
+}
+
+function paceFaqFraming(status: YearsToRetirementStatus): string {
+  switch (status) {
+    case 'funded':
+      return 'The target portfolio is already funded in this example, so the age-based timeline is the binding constraint rather than the savings pace.';
+    case 'before-target':
+      return 'No. In this example, the projected pace actually reaches the target before the chosen retirement age, so the current assumptions are ahead of schedule rather than behind.';
+    case 'by-target':
+      return 'Not by much. In this example, the projected pace lines up closely with the chosen retirement age, so there is little slack if assumptions change.';
+    case 'after-target':
+      return 'Yes. In this example specifically, the projected pace is slower than the age-based timeline, which is the gap referenced above.';
+    case 'unreachable':
+      return 'In this example, the target is not reached under the current assumptions at all, which is a larger gap than a simple pacing difference.';
+  }
+}
+
 function createRelatedPages(
   record: YearsToRetirementSeoRecord,
   records: YearsToRetirementSeoRecord[],
@@ -98,7 +147,7 @@ export function createYearsToRetirementSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: 'Retirement timing example',
-    intro: `This worked example compares a target retirement age of ${record.targetRetirementAge} with a portfolio goal of ${currency.format(record.targetRetirementPortfolio)} starting from ${currency.format(record.currentInvestedAssets)} invested at age ${record.currentAge}.`,
+    intro: `This worked example compares a target retirement age of ${record.targetRetirementAge} with a portfolio goal of ${currency.format(record.targetRetirementPortfolio)} starting from ${currency.format(record.currentInvestedAssets)} invested at age ${record.currentAge}. ${paceFraming(result.status)}`,
     summary: `The age-based timeline allows ${result.yearsByAgeTarget} years until retirement. Under the example assumption of ${currency.format(record.monthlyContribution)} saved monthly and ${percentage.format(record.expectedAnnualReturnPercent)}% annual growth, the estimated time to reach the portfolio target is ${result.estimatedYearsToTargetPortfolio == null ? 'not available with the current assumptions' : `${result.estimatedYearsToTargetPortfolio.toFixed(1)} years`}.`,
     results: [
       { label: 'Years until target age', value: `${result.yearsByAgeTarget} years`, primary: true },
@@ -136,6 +185,7 @@ export function createYearsToRetirementSeoPage(
         paragraphs: [
           `This example compares an age clock and a portfolio clock. One says retirement is planned for age ${record.targetRetirementAge}; the other asks when the invested balance could realistically reach ${currency.format(record.targetRetirementPortfolio)}.`,
           'The gap between those two clocks helps show whether contribution rate, return assumptions, or the target itself may need to change.',
+          paceSectionFraming(result.status),
         ],
       },
       {
@@ -148,9 +198,8 @@ export function createYearsToRetirementSeoPage(
     ],
     faq: [
       {
-        question: 'What if the estimated years to target is longer than the age-based timeline?',
-        answer:
-          'That means the example is not on pace for the chosen retirement age under the current assumptions. A larger contribution, smaller target, later retirement age, or different return assumption would change the result.',
+        question: 'Is this example behind pace for its chosen retirement age?',
+        answer: `${paceFaqFraming(result.status)} A larger contribution, smaller target, later retirement age, or different return assumption would change the result.`,
       },
       {
         question: 'Does this example guarantee a retirement date?',

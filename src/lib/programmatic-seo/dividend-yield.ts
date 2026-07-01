@@ -123,6 +123,10 @@ function createFaq(
 
   return [
     {
+      question: `How does this ${record.scenarioLabel} compare with other dividend framings on this site?`,
+      answer: intentFaqNote(record),
+    },
+    {
       question: `${record.question.replace(/\?$/, '')} under these assumptions?`,
       answer: `Using a ${currency.format(record.annualDividendPerShare)} annual dividend per share, a ${currency.format(record.sharePrice)} share price, and ${record.numberOfShares.toLocaleString('en-US')} shares, the yield is ${yieldLabel} and the annual dividend income is about ${currency.format(annualDividendIncome)}.`,
     },
@@ -229,6 +233,36 @@ function relatedGuidesFor(record: DividendYieldSeoRecord): ProgrammaticSeoLink[]
   );
 
   return guides;
+}
+
+function intentComparisonNote(record: DividendYieldSeoRecord): string {
+  switch (record.intent) {
+    case 'stock-dividend-yield':
+      return 'Compared with a fund-level yield, a single-stock yield can move more sharply around earnings, guidance changes, or a dividend cut announcement.';
+    case 'etf-dividend-yield':
+      return 'Compared with a single stock, an ETF yield tends to move more gradually since it blends payouts across many underlying holdings.';
+    case 'portfolio-dividend-yield':
+      return 'Framing the position at the portfolio level makes it easier to compare total dividend cash flow against total spending needs rather than a single yield percentage.';
+    case 'monthly-income-dividend-yield':
+      return 'Restating annual income on a monthly basis makes it easier to compare against recurring bills, even though dividends are not always paid on a perfectly even monthly schedule.';
+    case 'retirement-income-dividend-yield':
+      return 'In a retirement context, this income figure is only one input alongside Social Security, pensions, and portfolio withdrawals, not a full replacement for a withdrawal plan.';
+  }
+}
+
+function intentFaqNote(record: DividendYieldSeoRecord): string {
+  switch (record.intent) {
+    case 'stock-dividend-yield':
+      return 'This example models a single stock position, which is the most direct way to read yield off a quote screen.';
+    case 'etf-dividend-yield':
+      return 'This example models an ETF position, where the yield reflects a blend of many underlying holdings rather than one company.';
+    case 'portfolio-dividend-yield':
+      return 'This example models the position at the portfolio level, which is more useful when comparing total dividend cash flow than a single share-level yield.';
+    case 'monthly-income-dividend-yield':
+      return 'This example is framed around monthly income, which is useful for comparing dividend cash flow against recurring bills.';
+    case 'retirement-income-dividend-yield':
+      return 'This example is framed around retirement income support, so it should be read alongside withdrawals, Social Security, and other income sources, not on its own.';
+  }
 }
 
 function scenarioInterpretation(record: DividendYieldSeoRecord): string {
@@ -359,6 +393,7 @@ export function createDividendYieldSeoPage(
         paragraphs: [
           `A yield of ${percentage.format(result.dividendYield)}% means the annual dividend amount is ${percentage.format(result.dividendYield)}% of the current share price under the stated assumptions. With ${record.numberOfShares.toLocaleString('en-US')} shares, that works out to about ${currency.format(result.annualDividendIncome)} per year or ${currency.format(result.monthlyDividendIncome)} per month.`,
           'Yield is a snapshot, not a promise. It can change quickly when the price changes, even if the underlying dividend amount has not moved yet.',
+          intentComparisonNote(record),
         ],
       },
       {

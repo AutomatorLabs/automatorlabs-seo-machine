@@ -34,6 +34,54 @@ export function createMortgageCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(mortgageClusterPath, slug);
 }
 
+type MortgageRateProfile = 'low' | 'moderate' | 'high';
+type MortgageTermProfile = 'short' | 'mid' | 'long';
+
+function mortgageRateProfile(record: MortgageSeoRecord): MortgageRateProfile {
+  if (record.annualInterestRatePercent < 5.5) return 'low';
+  if (record.annualInterestRatePercent <= 6.5) return 'moderate';
+  return 'high';
+}
+
+function mortgageTermProfile(record: MortgageSeoRecord): MortgageTermProfile {
+  if (record.loanTermYears <= 15) return 'short';
+  if (record.loanTermYears === 20) return 'mid';
+  return 'long';
+}
+
+function mortgageRateFraming(profile: MortgageRateProfile): string {
+  switch (profile) {
+    case 'low':
+      return 'A comparatively low rate keeps more of each payment going toward principal, which reduces the total interest paid over the life of the loan.';
+    case 'moderate':
+      return 'A moderate rate splits each payment fairly evenly between principal and interest for much of the early amortization schedule.';
+    case 'high':
+      return 'A comparatively high rate pushes more of each early payment toward interest, which raises the total cost of the loan.';
+  }
+}
+
+function mortgageTermFraming(profile: MortgageTermProfile): string {
+  switch (profile) {
+    case 'short':
+      return 'A shorter loan term raises the required monthly payment but sharply reduces total interest compared with a longer amortization schedule.';
+    case 'mid':
+      return 'A mid-length loan term produces a payment and total interest cost between the extremes of a 15-year and a 30-year mortgage.';
+    case 'long':
+      return 'A longer loan term keeps the required monthly payment lower, but interest accrues over more years and raises the total repayment amount.';
+  }
+}
+
+function mortgageTermFaqFraming(profile: MortgageTermProfile): string {
+  switch (profile) {
+    case 'short':
+      return 'In this example specifically, the shorter term keeps total interest well below what the same balance and rate would cost over a longer term.';
+    case 'mid':
+      return 'In this example specifically, the mid-length term lands between the interest cost of a 15-year and a 30-year schedule.';
+    case 'long':
+      return 'In this example specifically, the longer term keeps the required payment lower but adds meaningfully to total interest.';
+  }
+}
+
 function createPaymentTable(
   record: MortgageSeoRecord,
   monthlyPayment: number,
@@ -83,6 +131,8 @@ function createFaq(
 ) {
   const amount = wholeCurrency.format(record.loanAmount);
   const rate = `${percentage.format(record.annualInterestRatePercent)}%`;
+  const termProfile = mortgageTermProfile(record);
+  const rateProfile = mortgageRateProfile(record);
 
   return [
     {
@@ -107,6 +157,10 @@ function createFaq(
       question: 'Can extra payments reduce the total mortgage interest?',
       answer:
         'Usually, when the lender applies extra amounts directly to principal. Extra principal lowers the balance used for future interest and may shorten the payoff period. Check lender rules and prepayment terms.',
+    },
+    {
+      question: `How do the ${rate} rate and ${record.loanTermYears}-year term affect this example?`,
+      answer: `${mortgageRateFraming(rateProfile)} ${mortgageTermFaqFraming(termProfile)}`,
     },
   ];
 }
@@ -156,6 +210,8 @@ export function createMortgageSeoPage(
     title,
     description: metaDescription,
   });
+  const rateProfile = mortgageRateProfile(record);
+  const termProfile = mortgageTermProfile(record);
 
   return {
     slug: record.slug,
@@ -164,7 +220,7 @@ export function createMortgageSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: 'Mortgage payment example',
-    intro: `This worked example estimates the scheduled principal-and-interest payment for a ${amount} fixed-rate mortgage at ${rate} over ${record.loanTermYears} years.`,
+    intro: `This worked example estimates the scheduled principal-and-interest payment for a ${amount} fixed-rate mortgage at ${rate} over ${record.loanTermYears} years. ${mortgageRateFraming(rateProfile)} ${mortgageTermFraming(termProfile)}`,
     summary: `The estimated monthly principal-and-interest payment is ${currency.format(result.requiredMonthlyPayment)}. Over ${record.loanTermYears * 12} scheduled payments, the borrower would repay approximately ${currency.format(result.totalAmountPaid)}, including ${currency.format(result.totalInterestPaid)} of interest, if the rate and payment schedule remain unchanged.`,
     results: [
       {
@@ -220,6 +276,12 @@ export function createMortgageSeoPage(
         paragraphs: [
           `Each scheduled payment is the same in this fixed-rate example, but its composition changes. Early payments contain more interest because interest is charged against a larger outstanding balance. As principal falls, the interest portion generally declines and more of the payment reduces principal.`,
           `Keeping the mortgage for the full term produces the estimated ${currency.format(result.totalInterestPaid)} of total interest shown here. Selling, refinancing, recasting, or making extra principal payments would change the actual schedule and total cost.`,
+        ],
+      },
+      {
+        heading: 'How the rate and term shape this example',
+        paragraphs: [
+          `This example uses a ${rate} rate over a ${record.loanTermYears}-year term. ${mortgageTermFraming(termProfile)}`,
         ],
       },
       {

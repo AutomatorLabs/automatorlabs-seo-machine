@@ -34,6 +34,36 @@ export function createCarSavingsCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(carSavingsClusterPath, slug);
 }
 
+function intentFraming(record: CarSavingsSeoRecord): string {
+  switch (record.intent) {
+    case 'down-payment':
+      return 'Saving toward a down payment rather than the full price means the remaining balance would still need to be financed, so it helps to plan both pieces together.';
+    case 'used-car':
+      return 'A used-vehicle target like this one is usually more reachable on a shorter timeline than a comparable new-vehicle goal.';
+    case 'new-car':
+      return 'A new-vehicle target like this one typically requires a larger fund than a comparable used vehicle, which raises the monthly savings amount.';
+    case 'family-suv':
+      return 'A family-vehicle target like this one often carries a higher price point than a smaller commuter car, which raises the monthly savings amount.';
+    case 'retirement-replacement':
+      return 'Planning a vehicle replacement around retirement often benefits from a longer runway, since the purchase date is more flexible than an urgent replacement.';
+  }
+}
+
+function intentFaqFraming(record: CarSavingsSeoRecord): string {
+  switch (record.intent) {
+    case 'down-payment':
+      return 'This example models a down payment rather than the full purchase price, so the remaining balance would typically be financed separately.';
+    case 'used-car':
+      return 'This example models a used-vehicle budget, generally one of the more reachable targets in this cluster of examples.';
+    case 'new-car':
+      return 'This example models a new-vehicle budget, generally a larger target than a comparable used-vehicle scenario.';
+    case 'family-suv':
+      return 'This example models a family-vehicle budget, generally larger than a smaller commuter-car scenario.';
+    case 'retirement-replacement':
+      return 'This example models a retirement-era vehicle replacement, often planned over a longer timeline than an urgent replacement need.';
+  }
+}
+
 export function calculateRequiredCarSavings(
   record: Pick<
     CarSavingsSeoRecord,
@@ -183,6 +213,10 @@ function createFaq(
       answer:
         'You can lower the savings target to model a down payment instead of the full purchase price, then compare the remaining financed amount in an auto loan calculator.',
     },
+    {
+      question: `How does this ${record.scenarioLabel} compare with other vehicle goals?`,
+      answer: intentFaqFraming(record),
+    },
   ];
 }
 
@@ -213,7 +247,7 @@ export function createCarSavingsSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: record.scenarioLabel,
-    intro: `This worked example estimates the monthly savings needed for a ${wholeCurrency.format(record.goalAmount)} ${record.purposeLabel} over ${record.years} years, starting with ${wholeCurrency.format(record.currentSavings)} already saved and assuming a constant ${rate} annual return.`,
+    intro: `This worked example estimates the monthly savings needed for a ${wholeCurrency.format(record.goalAmount)} ${record.purposeLabel} over ${record.years} years, starting with ${wholeCurrency.format(record.currentSavings)} already saved and assuming a constant ${rate} annual return. ${intentFraming(record)}`,
     summary: `The projected car savings requirement is about ${currency.format(monthlySavings)} per month. If that amount is saved consistently, the ending balance reaches approximately ${currency.format(finalRow?.endingBalance ?? record.goalAmount)} by the end of the timeline.`,
     results: [
       {

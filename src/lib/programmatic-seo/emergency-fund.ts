@@ -32,6 +32,36 @@ export function createEmergencyFundCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(emergencyFundClusterPath, slug);
 }
 
+function intentFraming(record: EmergencyFundSeoRecord): string {
+  switch (record.intent) {
+    case 'starter-emergency-fund':
+      return 'A starter fund like this one is meant to cover a smaller, immediate cash gap rather than a full multi-month buffer, so it is usually the fastest milestone to reach.';
+    case 'three-month-buffer':
+      return 'A three-month buffer is a common baseline recommendation for households with reasonably stable income and modest job-loss risk.';
+    case 'six-month-buffer':
+      return 'A six-month buffer is often recommended for less predictable income, single-income households, or higher replacement costs if something goes wrong.';
+    case 'job-transition-buffer':
+      return 'A job-transition buffer is sized around how long a realistic job search might take in this field, not just a generic rule of thumb.';
+    case 'family-emergency-fund':
+      return 'A family-sized fund usually needs to cover more dependents and higher fixed costs, which raises both the target and the monthly savings needed to reach it.';
+  }
+}
+
+function intentFaqFraming(record: EmergencyFundSeoRecord): string {
+  switch (record.intent) {
+    case 'starter-emergency-fund':
+      return 'This example models a starter-sized fund, which is one of the smaller and faster-to-reach targets in this cluster of examples.';
+    case 'three-month-buffer':
+      return 'This example models a three-month buffer, a common general-purpose target in this cluster of examples.';
+    case 'six-month-buffer':
+      return 'This example models a six-month buffer, a larger target than the general three-month baseline in this cluster of examples.';
+    case 'job-transition-buffer':
+      return 'This example models a job-transition scenario, which is sized around a realistic job-search timeline rather than a fixed rule of thumb.';
+    case 'family-emergency-fund':
+      return 'This example models a family-sized fund, one of the larger targets in this cluster of examples due to higher household expenses.';
+  }
+}
+
 function createEmergencyFundProjection(
   record: EmergencyFundSeoRecord,
   estimatedMonthsToTarget: number,
@@ -239,6 +269,10 @@ function createFaq(
       answer:
         'Lowering the monthly expense target, starting with a smaller coverage goal, or improving cash flow through budgeting can make the plan more sustainable.',
     },
+    {
+      question: `Why use a ${record.scenarioLabel} instead of a generic emergency fund target?`,
+      answer: intentFaqFraming(record),
+    },
   ];
 }
 
@@ -323,6 +357,7 @@ export function createEmergencyFundSeoPage(
         paragraphs: [
           `A ${record.targetMonths}-month reserve against ${currency.format(record.monthlyEssentialExpenses)} of essential expenses produces a target of ${currency.format(result.targetEmergencyFund)}. The current balance and monthly savings rate determine how quickly that gap can close.`,
           'This kind of scenario is useful when choosing between a starter fund and a fuller multi-month cash buffer.',
+          intentFraming(record),
         ],
       },
       {

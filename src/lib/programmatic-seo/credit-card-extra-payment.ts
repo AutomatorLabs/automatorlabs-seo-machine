@@ -39,6 +39,51 @@ export function createCreditCardExtraPaymentCanonicalPath(slug: string): string 
   return createProgrammaticCanonicalPath(clusterPath, slug);
 }
 
+function intentFraming(record: CreditCardExtraPaymentSeoRecord): string {
+  switch (record.intent) {
+    case 'starter-balance':
+      return 'This is a smaller starter balance, so an extra payment can pay it off in a relatively short window even without a large recurring amount.';
+    case 'average-balance':
+      return 'This balance sits in a common middle range, where a modest recurring extra payment can still noticeably change the payoff timeline.';
+    case 'high-apr':
+      return 'A high APR like this one means interest compounds quickly, so extra principal payments have an outsized effect on the total interest paid.';
+    case 'aggressive-extra':
+      return 'The extra payment here is large relative to the base payment, which prioritizes a fast payoff over keeping cash available for other goals.';
+    case 'large-balance':
+      return 'A larger balance like this one carries substantial total interest at stake, so even a modest extra payment strategy is worth comparing against other financial priorities.';
+  }
+}
+
+function intentSectionFraming(record: CreditCardExtraPaymentSeoRecord): string {
+  switch (record.intent) {
+    case 'starter-balance':
+      return 'Because the balance here is on the smaller side, the case for an extra payment often comes down to building good habits early rather than urgent interest savings.';
+    case 'average-balance':
+      return 'For a balance in this range, extra payments tend to shave a meaningful chunk of time and interest without requiring a dramatic budget change.';
+    case 'high-apr':
+      return 'At an APR this high, prioritizing this balance ahead of lower-rate debt is usually the more efficient use of extra cash.';
+    case 'aggressive-extra':
+      return 'An aggressive extra payment strategy like this one is worth weighing against building an emergency fund or contributing to tax-advantaged retirement accounts.';
+    case 'large-balance':
+      return 'For a balance this large, it can help to combine an extra-payment plan with a look at whether a lower-rate balance transfer or consolidation loan is available.';
+  }
+}
+
+function intentFaqFraming(record: CreditCardExtraPaymentSeoRecord): string {
+  switch (record.intent) {
+    case 'starter-balance':
+      return 'This example models a smaller starter balance, which is one of the faster-paying-off cases in this cluster of examples.';
+    case 'average-balance':
+      return 'This example models a balance in the common middle range covered by this cluster of examples.';
+    case 'high-apr':
+      return "This example models a higher APR than most of this cluster's other scenarios, which increases how much extra payments matter.";
+    case 'aggressive-extra':
+      return "This example models a larger extra payment relative to the base payment than most of this cluster's other scenarios.";
+    case 'large-balance':
+      return 'This example models one of the larger balances in this cluster of examples, where total interest at stake is highest.';
+  }
+}
+
 function createRelatedPages(
   record: CreditCardExtraPaymentSeoRecord,
   records: CreditCardExtraPaymentSeoRecord[],
@@ -85,7 +130,7 @@ export function createCreditCardExtraPaymentSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: 'Credit card extra payment example',
-    intro: `This worked example shows how a recurring extra payment changes payoff timing on a ${wholeCurrency.format(record.balance)} balance at ${record.aprPercent}% APR when the base monthly payment is ${currency.format(record.monthlyPayment)}.`,
+    intro: `This worked example shows how a recurring extra payment changes payoff timing on a ${wholeCurrency.format(record.balance)} balance at ${record.aprPercent}% APR when the base monthly payment is ${currency.format(record.monthlyPayment)}. ${intentFraming(record)}`,
     summary: `Adding ${currency.format(record.extraMonthlyPayment)} extra each month changes the total payment to ${currency.format(record.monthlyPayment + record.extraMonthlyPayment)} and is estimated to pay the balance off in ${formatMonths(result.accelerated.payoffTimeMonths)}. That is about ${formatMonths(result.timeSavedMonths)} faster than the base-payment path.`,
     results: [
       {
@@ -157,6 +202,7 @@ export function createCreditCardExtraPaymentSeoPage(
         paragraphs: [
           'Extra payments reduce the principal balance sooner, which means later interest charges have a smaller base to compound against.',
           'That is why even modest recurring extras can change both the payoff timeline and the final interest total more than a one-time glance at the statement suggests.',
+          intentSectionFraming(record),
         ],
       },
       {
@@ -187,6 +233,10 @@ export function createCreditCardExtraPaymentSeoPage(
         question: 'Does this include late fees, annual fees, or new purchases?',
         answer:
           'No. It assumes a fixed balance payoff path with no new charges and no added fees.',
+      },
+      {
+        question: `How does this ${record.scenarioLabel} scenario compare with other examples in this cluster?`,
+        answer: intentFaqFraming(record),
       },
     ],
     breadcrumbs: [

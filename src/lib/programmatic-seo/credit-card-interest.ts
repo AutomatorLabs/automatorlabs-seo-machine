@@ -39,6 +39,36 @@ export function createCreditCardInterestCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(clusterPath, slug);
 }
 
+function intentFraming(record: CreditCardInterestSeoRecord): string {
+  switch (record.intent) {
+    case 'monthly-interest':
+      return 'The focus here is the first-month interest charge, which is the clearest single number for understanding how APR turns into a real dollar cost.';
+    case 'payoff-timeline':
+      return 'The focus here is the payoff timeline, since two balances with the same APR can take very different amounts of time to clear depending on the payment size.';
+    case 'extra-payment':
+      return 'The focus here is the effect of the extra payment, which reduces principal faster and lowers both the payoff time and total interest.';
+    case 'high-apr':
+      return 'A high APR like this one means interest compounds quickly against the balance, so the payment size matters even more than on a lower-rate card.';
+    case 'large-balance':
+      return 'A larger balance like this one means even a modest percentage-point difference in APR translates into a meaningful dollar difference in total interest.';
+  }
+}
+
+function intentFaqFraming(record: CreditCardInterestSeoRecord): string {
+  switch (record.intent) {
+    case 'monthly-interest':
+      return 'This example emphasizes the first-month interest charge over the full payoff timeline.';
+    case 'payoff-timeline':
+      return 'This example emphasizes how long the balance takes to clear under the stated payment.';
+    case 'extra-payment':
+      return 'This example emphasizes the difference an extra monthly payment makes versus the scheduled payment alone.';
+    case 'high-apr':
+      return "This example uses a higher APR than most of this cluster's other scenarios.";
+    case 'large-balance':
+      return 'This example uses one of the larger balances in this cluster of examples.';
+  }
+}
+
 function createRelatedPages(
   record: CreditCardInterestSeoRecord,
   records: CreditCardInterestSeoRecord[],
@@ -87,7 +117,7 @@ export function createCreditCardInterestSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: 'Credit card interest example',
-    intro: `This worked example uses the live Credit Card Interest Calculator assumptions for a ${wholeCurrency.format(record.balance)} balance at ${record.aprPercent}% APR with ${currency.format(record.monthlyPayment)} in scheduled monthly payments and ${currency.format(record.extraMonthlyPayment)} in extra payments.`,
+    intro: `This worked example uses the live Credit Card Interest Calculator assumptions for a ${wholeCurrency.format(record.balance)} balance at ${record.aprPercent}% APR with ${currency.format(record.monthlyPayment)} in scheduled monthly payments and ${currency.format(record.extraMonthlyPayment)} in extra payments. ${intentFraming(record)}`,
     summary: `The first month of interest is about ${currency.format(result.monthlyInterest)}. At a total monthly payment of ${currency.format(totalPayment)}, the balance is estimated to pay off in ${formatMonths(result.accelerated.payoffTimeMonths)} with about ${currency.format(result.accelerated.totalInterestPaid ?? 0)} in total interest.`,
     results: [
       {
@@ -196,6 +226,10 @@ export function createCreditCardInterestSeoPage(
         question: 'Does this include fees or penalty APRs?',
         answer:
           'No. It focuses on the balance, APR, monthly payment, and extra payment only.',
+      },
+      {
+        question: `What does this ${record.scenarioLabel} scenario emphasize?`,
+        answer: intentFaqFraming(record),
       },
     ],
     breadcrumbs: [

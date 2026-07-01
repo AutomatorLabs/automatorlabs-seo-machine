@@ -92,6 +92,18 @@ function growthStyleLabel(rate: number): string {
   return 'moderate';
 }
 
+function growthStyleSectionNote(rate: number): string {
+  const style = growthStyleLabel(rate);
+  switch (style) {
+    case 'conservative':
+      return 'A conservative growth rate like this one is easier to sustain across many years, though it also produces a smaller long-run income figure than a faster-growing scenario.';
+    case 'aggressive':
+      return 'An aggressive growth rate like this one compounds into a much larger long-run income figure, but sustaining that pace for the full horizon is less common in practice.';
+    default:
+      return 'A moderate growth rate like this one sits between conservative and aggressive cases, which is a common planning middle ground.';
+  }
+}
+
 function createRelatedPages(
   record: DividendGrowthSeoRecord,
   records: DividendGrowthSeoRecord[],
@@ -367,6 +379,7 @@ export function createDividendGrowthSeoPage(
         paragraphs: [
           `An ending annual income of ${currency.format(result.futureAnnualDividendIncome)} means the income stream would be about ${currency.format(result.monthlyEquivalentIncome)} per month if the same annual run rate continued. That can be useful for portfolio income goals, retirement planning, or checking whether a dividend strategy is on pace.`,
           `The same math can look very different under conservative and aggressive growth assumptions. Small changes to the annual growth rate become much more important over longer time horizons.`,
+          growthStyleSectionNote(record.annualDividendGrowthRatePercent),
         ],
       },
       {

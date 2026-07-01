@@ -20,6 +20,49 @@ export function createDebtSnowballCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(clusterPath, slug);
 }
 
+function profileFraming(record: DebtSnowballSeoRecord): string {
+  switch (record.profileLabel) {
+    case 'starter':
+      return 'This starter-sized debt mix is common earlier in a payoff journey, with smaller balances than a fuller household debt load.';
+    case 'family':
+      return 'This family-sized debt mix combines a card, an auto repair loan, and a furniture loan, a common household combination.';
+    case 'rebuild':
+      return 'This rebuild-focused debt mix concentrates on multiple cards and an installment loan, common when consolidating after a period of higher borrowing.';
+    case 'catchup':
+      return 'This catch-up debt mix reflects a period of higher balances across a travel card, a personal loan, and an auto loan.';
+    case 'mixed':
+      return 'This mixed debt profile spans medical debt, a credit card, and a student loan, a common blend of unplanned and planned borrowing.';
+    default:
+      return 'This debt mix reflects one of several common household debt combinations modeled in this cluster of examples.';
+  }
+}
+
+function extraPaymentTierFraming(extraMonthlyPayment: number): string {
+  if (extraMonthlyPayment === 0) {
+    return 'With no extra payment in this example, only the required minimums are covering the debt budget, which is the slowest version of this payoff plan.';
+  }
+  if (extraMonthlyPayment <= 150) {
+    return 'A modest extra payment like this one still creates an early win by clearing the smallest balance sooner.';
+  }
+  if (extraMonthlyPayment <= 300) {
+    return 'A moderate extra payment like this one can noticeably speed up how quickly the first balance disappears.';
+  }
+  return 'An aggressive extra payment like this one can clear the smallest balance relatively quickly, then roll forward to the next target.';
+}
+
+function extraPaymentFaqFraming(extraMonthlyPayment: number): string {
+  if (extraMonthlyPayment === 0) {
+    return 'This example uses no extra payment, the slowest pace modeled in this cluster of examples.';
+  }
+  if (extraMonthlyPayment <= 150) {
+    return 'This extra payment is on the smaller end of what this cluster of examples models.';
+  }
+  if (extraMonthlyPayment <= 300) {
+    return 'This extra payment sits in the middle of what this cluster of examples models.';
+  }
+  return 'This extra payment is on the larger end of what this cluster of examples models.';
+}
+
 function createTable(record: DebtSnowballSeoRecord): ProgrammaticSeoTable {
   return {
     heading: 'Debt Lineup in This Snowball Example',
@@ -77,7 +120,7 @@ export function createDebtSnowballSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: 'Debt snowball example',
-    intro: `This worked example uses a three-debt lineup to show how a smallest-balance-first payoff plan may behave when ${currency.format(record.extraMonthlyPayment)} of extra cash is added each month.`,
+    intro: `This worked example uses a three-debt lineup to show how a smallest-balance-first payoff plan may behave when ${currency.format(record.extraMonthlyPayment)} of extra cash is added each month. ${profileFraming(record)} ${extraPaymentTierFraming(record.extraMonthlyPayment)}`,
     summary: `The example debt stack totals ${currency.format(result.totalDebt)} with ${currency.format(result.totalMinimumPayments)} in required minimum payments. Under the debt snowball method, the estimated payoff time is ${result.estimatedPayoffMonths} months and the suggested payoff order is ${result.suggestedPayoffOrder.join(' -> ')}.`,
     results: [
       { label: 'Total debt', value: currency.format(result.totalDebt), primary: true },
@@ -122,6 +165,10 @@ export function createDebtSnowballSeoPage(
         question: 'Does this prove snowball is cheaper than avalanche?',
         answer:
           'No. Avalanche often reduces interest more efficiently, while snowball may be easier for some people to stick with consistently.',
+      },
+      {
+        question: `Is ${currency.format(record.extraMonthlyPayment)} extra a small or large payment in this example?`,
+        answer: extraPaymentFaqFraming(record.extraMonthlyPayment),
       },
     ],
     breadcrumbs: [

@@ -150,6 +150,36 @@ function intentSummary(record: InflationAdjustedReturnSeoRecord): string {
   }
 }
 
+function intentConsiderationNote(record: InflationAdjustedReturnSeoRecord): string {
+  switch (record.intent) {
+    case 'conservative-portfolio':
+      return 'A conservative portfolio assumption keeps the nominal return closer to inflation, so the inflation adjustment removes a larger share of the apparent gain.';
+    case 'balanced-portfolio':
+      return 'A balanced portfolio assumption sits between conservative and growth-oriented cases, giving a moderate cushion above inflation.';
+    case 'growth-portfolio':
+      return 'A growth portfolio assumption gives more cushion above inflation, but it also typically carries more year-to-year volatility than this smooth projection shows.';
+    case 'retirement-portfolio':
+      return 'In a retirement context, the inflation-adjusted figure is usually the more relevant one, since future spending needs are also affected by rising prices.';
+    case 'taxable-brokerage':
+      return 'In a taxable account, realized gains and dividends could also owe tax along the way, which this projection does not separately subtract.';
+  }
+}
+
+function intentFaqFraming(record: InflationAdjustedReturnSeoRecord): string {
+  switch (record.intent) {
+    case 'conservative-portfolio':
+      return 'This example models a conservative portfolio, where inflation typically erodes a larger share of the nominal gain.';
+    case 'balanced-portfolio':
+      return 'This example models a balanced portfolio, a middle-ground case between conservative and growth-oriented assumptions.';
+    case 'growth-portfolio':
+      return 'This example models a growth portfolio, where the nominal return has more cushion above inflation than a conservative case.';
+    case 'retirement-portfolio':
+      return 'This example is framed around retirement planning, where the inflation-adjusted figure is usually the more actionable number.';
+    case 'taxable-brokerage':
+      return 'This example is framed around a taxable brokerage account, which would realistically owe some tax along the way.';
+  }
+}
+
 function relatedCalculatorsFor(
   record: InflationAdjustedReturnSeoRecord,
 ): ProgrammaticSeoLink[] {
@@ -246,6 +276,10 @@ function createFaq(
       answer:
         'Because inflation compounds too. Over longer time horizons, even moderate inflation can create a meaningful difference between future dollars and today’s purchasing power.',
     },
+    {
+      question: `How does this ${intentSummary(record)} compare with other portfolio framings?`,
+      answer: intentFaqFraming(record),
+    },
   ];
 }
 
@@ -321,6 +355,7 @@ export function createInflationAdjustedReturnSeoPage(
         paragraphs: [
           `A nominal balance can look much larger than the real outcome because inflation compounds every year. In this scenario, ${wholeCurrency.format(record.startingInvestment)} grows in nominal terms, but the purchasing-power result is closer to ${currency.format(finalResult.inflationAdjustedEndingBalance)}.`,
           'This makes the example useful for long-term goals where future living costs matter more than the raw account statement.',
+          intentConsiderationNote(record),
         ],
       },
       {

@@ -129,6 +129,21 @@ function createRelatedPages(
     }));
 }
 
+function intentFaqFraming(record: DripSeoRecord): string {
+  switch (record.intent) {
+    case 'stock-drip':
+      return 'This example is framed around a single dividend-paying stock rather than a diversified fund.';
+    case 'etf-drip':
+      return 'This example is framed around a diversified ETF rather than one individual stock.';
+    case 'portfolio-growth-drip':
+      return 'This example is framed around account-level portfolio growth rather than share-level detail.';
+    case 'dividend-snowball-drip':
+      return 'This example is framed around building reinvestment momentum over a longer holding period.';
+    case 'retirement-income-drip':
+      return 'This example is framed around future retirement income rather than accumulation alone.';
+  }
+}
+
 function createFaq(
   record: DripSeoRecord,
   finalPortfolioValue: number,
@@ -158,6 +173,10 @@ function createFaq(
       question: 'Does the scenario include taxes, fees, or payout cuts?',
       answer:
         'No. The projection does not include taxes, fund expenses, brokerage costs, dividend suspensions, or changes in reinvestment availability. Use it as an educational planning scenario rather than a forecast.',
+    },
+    {
+      question: `What does this ${intentLabel(record).toLowerCase()} emphasize?`,
+      answer: intentFaqFraming(record),
     },
   ];
 }

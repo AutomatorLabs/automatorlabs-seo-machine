@@ -28,6 +28,51 @@ export function createCoastFireCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(clusterPath, slug);
 }
 
+type CoastGapProfile = 'ahead' | 'close' | 'behind';
+type SpendingTierProfile = 'modest' | 'higher';
+
+function coastGapProfile(gap: number, coastFireNumber: number): CoastGapProfile {
+  const ratio = coastFireNumber > 0 ? gap / coastFireNumber : 0;
+  if (ratio > 0.15) return 'ahead';
+  if (ratio < -0.15) return 'behind';
+  return 'close';
+}
+
+function spendingTierProfile(record: CoastFireSeoRecord): SpendingTierProfile {
+  return record.annualExpenses <= 40000 ? 'modest' : 'higher';
+}
+
+function coastGapFraming(profile: CoastGapProfile): string {
+  switch (profile) {
+    case 'ahead':
+      return 'Current invested assets already clear the coast target by a meaningful margin in this example, which leaves room for a lower future return, higher spending, or an earlier retirement age.';
+    case 'close':
+      return 'Current invested assets sit close to the coast target in this example, which leaves little cushion if returns come in lower than assumed.';
+    case 'behind':
+      return 'Current invested assets fall short of the coast target in this example, which means continued contributions are likely still needed to stay on track.';
+  }
+}
+
+function spendingTierFraming(profile: SpendingTierProfile): string {
+  switch (profile) {
+    case 'modest':
+      return 'A more modest annual spending target keeps the underlying FIRE number, and therefore the coast threshold, lower than a higher-spending version of the same scenario.';
+    case 'higher':
+      return 'A higher annual spending target raises the underlying FIRE number, and therefore the coast threshold, compared with a lower-spending version of the same scenario.';
+  }
+}
+
+function coastGapFaqFraming(profile: CoastGapProfile): string {
+  switch (profile) {
+    case 'ahead':
+      return 'In this example specifically, current assets are already ahead of the coast target, so the scenario has a cushion built in.';
+    case 'close':
+      return 'In this example specifically, current assets land close to the coast target, so there is not much of a cushion either way.';
+    case 'behind':
+      return 'In this example specifically, current assets are behind the coast target, so the gap shown above would need to close through further contributions or a longer timeline.';
+  }
+}
+
 function createRelatedPages(
   record: CoastFireSeoRecord,
   records: CoastFireSeoRecord[],
@@ -104,6 +149,8 @@ export function createCoastFireSeoPage(
     title,
     description: `${currency.format(record.currentInvestedAssets)} saved at age ${record.currentAge} is compared with a ${currency.format(coastFireNumber)} coast FIRE number for age ${record.retirementAge}, ${currency.format(record.annualExpenses)} spending, and ${percentage.format(record.expectedAnnualReturnPercent)}% growth.`,
   });
+  const gapProfile = coastGapProfile(gap, coastFireNumber);
+  const spendingProfile = spendingTierProfile(record);
 
   return {
     slug: record.slug,
@@ -112,7 +159,7 @@ export function createCoastFireSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: 'Coast FIRE example',
-    intro: `This worked example checks whether ${currency.format(record.currentInvestedAssets)} invested at age ${record.currentAge} could grow toward a retirement target by age ${record.retirementAge} without additional required contributions.`,
+    intro: `This worked example checks whether ${currency.format(record.currentInvestedAssets)} invested at age ${record.currentAge} could grow toward a retirement target by age ${record.retirementAge} without additional required contributions. ${coastGapFraming(gapProfile)}`,
     summary: `At ${percentage.format(record.withdrawalRatePercent)}% spending support, ${currency.format(record.annualExpenses)} of annual retirement expenses points to a simple FIRE number of ${currency.format(fireNumber)}. Discounted back ${yearsUntilRetirement} years at ${percentage.format(record.expectedAnnualReturnPercent)}%, the coast FIRE threshold is ${currency.format(coastFireNumber)}, so this scenario is ${gap >= 0 ? `${currency.format(gap)} ahead` : `${currency.format(Math.abs(gap))} short`} of the coast target.`,
     results: [
       { label: 'Coast FIRE number', value: currency.format(coastFireNumber), primary: true },
@@ -151,6 +198,7 @@ export function createCoastFireSeoPage(
         paragraphs: [
           `Annual retirement spending of ${currency.format(record.annualExpenses)} is the main driver of the future FIRE number. Higher spending raises the target and usually makes coast FIRE harder to reach.`,
           'Small changes in the withdrawal rate or retirement age can also change the coast threshold materially because the invested balance has more or less time to compound.',
+          spendingTierFraming(spendingProfile),
         ],
       },
     ],
@@ -169,6 +217,10 @@ export function createCoastFireSeoPage(
         question: 'Does this example include taxes or employer retirement plans?',
         answer:
           'No. It uses a simple growth and withdrawal-rate framework. Account type, taxes, employer matches, and asset allocation are not modeled directly here.',
+      },
+      {
+        question: 'Is this example ahead of or behind its coast FIRE target?',
+        answer: coastGapFaqFraming(gapProfile),
       },
     ],
     breadcrumbs: [

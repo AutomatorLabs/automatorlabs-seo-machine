@@ -34,6 +34,36 @@ export function createMonthlySavingsCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(monthlySavingsClusterPath, slug);
 }
 
+function intentFraming(record: MonthlySavingsSeoRecord): string {
+  switch (record.intent) {
+    case 'starter-fund':
+      return 'A starter-sized goal like this one is usually reachable on a shorter timeline, so the required monthly amount tends to stay modest.';
+    case 'milestone-fund':
+      return 'A milestone-sized goal like this one often marks a specific life event, which can make the deadline less flexible than an open-ended target.';
+    case 'major-purchase':
+      return 'A major-purchase goal like this one usually carries a larger target, which raises the monthly requirement unless the timeline is extended.';
+    case 'family-goal':
+      return 'A family goal like this one often has less flexibility on timing, since it may be tied to a shared decision or a fixed household deadline.';
+    case 'catch-up-plan':
+      return 'A catch-up plan like this one usually starts later relative to the deadline, which raises the required monthly amount compared with starting earlier.';
+  }
+}
+
+function intentFaqFraming(record: MonthlySavingsSeoRecord): string {
+  switch (record.intent) {
+    case 'starter-fund':
+      return 'This example models a starter-sized goal, generally one of the more reachable targets in this cluster of examples.';
+    case 'milestone-fund':
+      return 'This example models a milestone-sized goal, often tied to a specific event rather than an open-ended target.';
+    case 'major-purchase':
+      return 'This example models a major-purchase goal, generally one of the larger targets in this cluster of examples.';
+    case 'family-goal':
+      return 'This example models a family goal, which may carry less flexibility on timing than an individual target.';
+    case 'catch-up-plan':
+      return 'This example models a catch-up plan, generally a shorter runway than starting the same goal earlier.';
+  }
+}
+
 export function calculateRequiredMonthlySavings(
   record: Pick<
     MonthlySavingsSeoRecord,
@@ -183,6 +213,10 @@ function createFaq(
       answer:
         'A longer timeline, a larger starting balance, a smaller goal, or occasional lump-sum contributions can reduce the required monthly amount.',
     },
+    {
+      question: `How does this ${record.scenarioLabel} compare with other savings goals?`,
+      answer: intentFaqFraming(record),
+    },
   ];
 }
 
@@ -213,7 +247,7 @@ export function createMonthlySavingsSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: record.scenarioLabel,
-    intro: `This worked example estimates the monthly savings needed to build a ${wholeCurrency.format(record.goalAmount)} ${record.purposeLabel} over ${record.years} years, starting with ${wholeCurrency.format(record.currentSavings)} and assuming a constant ${rate} annual return.`,
+    intro: `This worked example estimates the monthly savings needed to build a ${wholeCurrency.format(record.goalAmount)} ${record.purposeLabel} over ${record.years} years, starting with ${wholeCurrency.format(record.currentSavings)} and assuming a constant ${rate} annual return. ${intentFraming(record)}`,
     summary: `The projected monthly savings requirement is about ${currency.format(monthlySavings)}. If that amount is saved at the end of each month, the ending balance reaches approximately ${currency.format(finalRow?.endingBalance ?? record.goalAmount)} after ${record.years * 12} months.`,
     results: [
       {

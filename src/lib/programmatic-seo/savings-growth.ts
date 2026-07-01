@@ -72,6 +72,36 @@ function strategyDescription(record: SavingsGrowthSeoRecord): string {
   }
 }
 
+function intentConsiderationNote(record: SavingsGrowthSeoRecord): string {
+  switch (record.intent) {
+    case 'existing-savings-growth':
+      return 'With most of the growth driven by an existing balance, the assumed rate matters more here than the size of any new deposits.';
+    case 'monthly-contribution-growth':
+      return 'With deposits playing a bigger role here, staying consistent with the monthly contribution matters as much as the assumed rate.';
+    case 'high-yield-savings-growth':
+      return 'A high-yield savings rate like this one can still change over time, since most high-yield accounts offer a variable rate rather than a locked-in return.';
+    case 'conservative-savings-growth':
+      return 'A conservative rate assumption like this one is a reasonable choice for money that needs to stay stable and accessible rather than chase higher returns.';
+    case 'retirement-savings-growth':
+      return 'A retirement-focused horizon like this one usually spans many years, which gives compounding more time to work but also raises the stakes of the rate assumption.';
+  }
+}
+
+function intentFaqFraming(record: SavingsGrowthSeoRecord): string {
+  switch (record.intent) {
+    case 'existing-savings-growth':
+      return 'This example emphasizes the growth of an existing balance over new monthly deposits.';
+    case 'monthly-contribution-growth':
+      return 'This example emphasizes a recurring monthly contribution plan.';
+    case 'high-yield-savings-growth':
+      return 'This example models a high-yield savings rate, which is usually variable rather than fixed.';
+    case 'conservative-savings-growth':
+      return 'This example models a conservative rate assumption, prioritizing stability over higher potential growth.';
+    case 'retirement-savings-growth':
+      return 'This example is framed around a longer retirement-savings horizon.';
+  }
+}
+
 export function createSavingsGrowthProjection(
   record: SavingsGrowthSeoRecord,
 ): ProgrammaticSeoProjectionRow[] {
@@ -243,6 +273,10 @@ function createFaq(
       answer:
         'No. The result is nominal and excludes taxes, account fees, inflation, withdrawals, and changes to contribution levels or interest rates.',
     },
+    {
+      question: `What does this ${strategyDescription(record)} emphasize?`,
+      answer: intentFaqFraming(record),
+    },
   ];
 }
 
@@ -324,6 +358,7 @@ export function createSavingsGrowthSeoPage(
         paragraphs: [
           `This example is a future-value scenario, not a guarantee. It assumes the balance starts at ${currency.format(record.startingSavings)}, receives ${currency.format(record.monthlyContribution)} at the end of each month, and compounds monthly at a steady ${rate}.`,
           'Small changes to the return assumption, contribution level, or time horizon can materially change the ending balance, especially on longer projections.',
+          intentConsiderationNote(record),
         ],
       },
       {

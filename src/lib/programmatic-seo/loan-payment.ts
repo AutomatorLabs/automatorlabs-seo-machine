@@ -24,6 +24,70 @@ export function createLoanPaymentCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(clusterPath, slug);
 }
 
+type LoanExtraPaymentProfile = 'none' | 'modest' | 'moderate' | 'aggressive';
+type LoanTermProfile = 'short' | 'mid' | 'long';
+
+function loanExtraPaymentProfile(record: LoanPaymentSeoRecord): LoanExtraPaymentProfile {
+  if (record.extraMonthlyPayment === 0) return 'none';
+  if (record.extraMonthlyPayment <= 50) return 'modest';
+  if (record.extraMonthlyPayment <= 100) return 'moderate';
+  return 'aggressive';
+}
+
+function loanTermProfile(record: LoanPaymentSeoRecord): LoanTermProfile {
+  if (record.loanTermYears <= 3) return 'short';
+  if (record.loanTermYears <= 6) return 'mid';
+  return 'long';
+}
+
+function loanExtraPaymentFraming(profile: LoanExtraPaymentProfile): string {
+  switch (profile) {
+    case 'none':
+      return 'This example uses the standard schedule with no extra principal, so it shows the baseline payoff timeline before any acceleration strategy.';
+    case 'modest':
+      return 'A modest extra payment like this one produces a gradual but real reduction in payoff time and total interest.';
+    case 'moderate':
+      return 'A moderate extra payment like this one is usually large enough to noticeably shorten the payoff timeline.';
+    case 'aggressive':
+      return 'An aggressive extra payment like this one can substantially cut both the payoff time and the total interest paid.';
+  }
+}
+
+function loanTermFraming(profile: LoanTermProfile): string {
+  switch (profile) {
+    case 'short':
+      return 'A shorter original term already limits how much interest accrues, so extra payments here move the payoff date by less than they would on a longer loan.';
+    case 'mid':
+      return 'A mid-length original term leaves a moderate amount of interest for extra payments to work against.';
+    case 'long':
+      return 'A longer original term carries more total interest, so extra payments made against it tend to produce larger savings in dollar terms.';
+  }
+}
+
+function loanExtraPaymentFaqFraming(profile: LoanExtraPaymentProfile): string {
+  switch (profile) {
+    case 'none':
+      return 'No extra payment is applied in this example, so it reflects the standard scheduled repayment only.';
+    case 'modest':
+      return "It's on the smaller end of the extra payments modeled across this cluster of examples, but it still compounds into real savings over the loan term.";
+    case 'moderate':
+      return 'It falls in the middle of the extra payments modeled across this cluster of examples.';
+    case 'aggressive':
+      return "It's on the larger end of the extra payments modeled across this cluster of examples, so it is worth weighing against other financial priorities.";
+  }
+}
+
+function loanTermFaqFraming(profile: LoanTermProfile): string {
+  switch (profile) {
+    case 'short':
+      return 'This term is on the shorter end of what this cluster of examples models, which limits how much total interest is available for extra payments to save.';
+    case 'mid':
+      return 'This term sits in the middle of what this cluster of examples models.';
+    case 'long':
+      return 'This term is on the longer end of what this cluster of examples models, which gives extra payments more total interest to work against.';
+  }
+}
+
 function createProjectionRows(record: LoanPaymentSeoRecord): ProgrammaticSeoProjectionRow[] {
   return Array.from({ length: Math.min(record.loanTermYears, 10) }, (_, index) => {
     const years = index + 1;
@@ -80,6 +144,8 @@ export function createLoanPaymentSeoPage(
     title: record.question,
     description: `${currency.format(record.loanAmount)} borrowed at ${record.annualInterestRatePercent}% over ${record.loanTermYears} years with ${currency.format(record.extraMonthlyPayment)} extra monthly.`,
   });
+  const extraProfile = loanExtraPaymentProfile(record);
+  const termProfile = loanTermProfile(record);
 
   return {
     slug: record.slug,
@@ -88,7 +154,7 @@ export function createLoanPaymentSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: 'Loan payment example',
-    intro: `This worked example shows how a ${currency.format(record.loanAmount)} fixed-rate loan changes when the repayment plan includes ${currency.format(record.extraMonthlyPayment)} in extra principal each month.`,
+    intro: `This worked example shows how a ${currency.format(record.loanAmount)} fixed-rate loan changes when the repayment plan includes ${currency.format(record.extraMonthlyPayment)} in extra principal each month. ${loanExtraPaymentFraming(extraProfile)} ${loanTermFraming(termProfile)}`,
     summary: `At ${record.annualInterestRatePercent}% APR over ${record.loanTermYears} years, the required payment starts near ${currency.format(result.requiredMonthlyPayment)} per month. Adding ${currency.format(record.extraMonthlyPayment)} extra each month produces an estimated payoff time of ${result.payoffTimeMonths} months and about ${currency.format(result.interestSaved)} in interest savings versus the baseline schedule.`,
     results: [
       { label: 'Required monthly payment', value: currency.format(result.requiredMonthlyPayment), primary: true },
@@ -119,6 +185,7 @@ export function createLoanPaymentSeoPage(
         paragraphs: [
           'Fixed-rate loans accrue interest on the remaining balance, so even modest extra payments can shorten the term and lower the total interest paid.',
           'That makes worked examples useful when comparing whether a smaller monthly payment or a faster payoff better matches your budget.',
+          loanTermFaqFraming(termProfile),
         ],
       },
     ],
@@ -132,6 +199,10 @@ export function createLoanPaymentSeoPage(
         question: 'Does this include late fees or origination fees?',
         answer:
           'No. It focuses on the financed amount, APR, term, and extra monthly payment only.',
+      },
+      {
+        question: `Is ${currency.format(record.extraMonthlyPayment)} extra a small or large payment in this example?`,
+        answer: loanExtraPaymentFaqFraming(extraProfile),
       },
     ],
     breadcrumbs: [

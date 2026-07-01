@@ -28,6 +28,72 @@ export function createRetirementTaxDragCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(clusterPath, slug);
 }
 
+type TaxRateProfile = 'low' | 'moderate' | 'high';
+type RetirementLengthProfile = 'standard' | 'extended';
+
+function taxRateProfile(record: RetirementTaxDragSeoRecord): TaxRateProfile {
+  if (record.estimatedTaxRatePercent <= 10) return 'low';
+  if (record.estimatedTaxRatePercent <= 20) return 'moderate';
+  return 'high';
+}
+
+function retirementLengthProfile(
+  record: RetirementTaxDragSeoRecord,
+): RetirementLengthProfile {
+  return record.yearsInRetirement <= 20 ? 'standard' : 'extended';
+}
+
+function taxRateFraming(profile: TaxRateProfile): string {
+  switch (profile) {
+    case 'low':
+      return 'A relatively low assumed tax rate keeps more of each withdrawal spendable, so the gap between pre-tax and after-tax income stays fairly narrow.';
+    case 'moderate':
+      return 'A moderate assumed tax rate takes a noticeable but not overwhelming share of each withdrawal.';
+    case 'high':
+      return 'A relatively high assumed tax rate takes a large share of each withdrawal, widening the gap between pre-tax and after-tax income.';
+  }
+}
+
+function retirementLengthFraming(profile: RetirementLengthProfile): string {
+  switch (profile) {
+    case 'standard':
+      return 'Over this retirement length, the annual tax bill has fewer years to compound into a large lifetime total than a longer retirement would produce.';
+    case 'extended':
+      return 'Over this longer retirement length, even a modest annual tax bill compounds into a substantially larger lifetime total.';
+  }
+}
+
+function taxRateSectionFraming(profile: TaxRateProfile): string {
+  switch (profile) {
+    case 'low':
+      return 'A tax rate in this range is typical of a retiree whose taxable income sits in a lower bracket, whether from a smaller withdrawal, tax-advantaged account mix, or lower non-retirement income.';
+    case 'moderate':
+      return 'A tax rate in this range is common for a retiree with a mix of taxable and tax-advantaged withdrawals landing in a middle bracket.';
+    case 'high':
+      return 'A tax rate in this range often reflects a larger taxable withdrawal, significant non-retirement income, or a less tax-efficient account mix.';
+  }
+}
+
+function retirementLengthSectionFraming(profile: RetirementLengthProfile): string {
+  switch (profile) {
+    case 'standard':
+      return 'A shorter retirement horizon still deserves a tax-aware plan, since even modest annual taxes reduce the portfolio available for spending each year.';
+    case 'extended':
+      return 'A longer retirement horizon raises the stakes of tax-aware planning, since small differences in the effective tax rate compound across many more years of withdrawals.';
+  }
+}
+
+function taxRateFaqFraming(profile: TaxRateProfile): string {
+  switch (profile) {
+    case 'low':
+      return "It's on the lower end of the tax rates modeled across this cluster of examples, which keeps more of each withdrawal spendable.";
+    case 'moderate':
+      return "It sits in the middle of the tax rates modeled across this cluster of examples.";
+    case 'high':
+      return "It's on the higher end of the tax rates modeled across this cluster of examples, which shrinks after-tax income by more than a lower-rate scenario would.";
+  }
+}
+
 function createRelatedPages(
   record: RetirementTaxDragSeoRecord,
   records: RetirementTaxDragSeoRecord[],
@@ -83,6 +149,8 @@ export function createRetirementTaxDragSeoPage(
     title,
     description: `${currency.format(record.annualRetirementWithdrawal)} of annual retirement withdrawals at ${percentage.format(record.estimatedTaxRatePercent)}% tax are modeled for ${record.yearsInRetirement} years with ${percentage.format(record.inflationRatePercent)}% inflation.`,
   });
+  const taxProfile = taxRateProfile(record);
+  const lengthProfile = retirementLengthProfile(record);
 
   return {
     slug: record.slug,
@@ -91,7 +159,7 @@ export function createRetirementTaxDragSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: 'Retirement tax drag example',
-    intro: `This worked example estimates how taxes can reduce spendable retirement income and add up over ${record.yearsInRetirement} years.`,
+    intro: `This worked example estimates how taxes can reduce spendable retirement income and add up over ${record.yearsInRetirement} years. ${taxRateFraming(taxProfile)} ${retirementLengthFraming(lengthProfile)}`,
     summary: `On ${currency.format(record.annualRetirementWithdrawal)} of annual retirement withdrawals at ${percentage.format(record.estimatedTaxRatePercent)}% tax, the modeled annual tax bill is ${currency.format(result.annualTaxesPaid)} and after-tax income is ${currency.format(result.afterTaxAnnualIncome)}. Across ${record.yearsInRetirement} years, total taxes reach ${currency.format(result.totalTaxes)} before inflation adjustment.`,
     results: [
       { label: 'Annual taxes paid', value: currency.format(result.annualTaxesPaid), primary: true },
@@ -122,7 +190,8 @@ export function createRetirementTaxDragSeoPage(
         heading: 'Why tax drag deserves attention',
         paragraphs: [
           'A retirement spending plan that looks comfortable before taxes can feel much tighter once income taxes are considered. Tax drag can also change how large a portfolio really needs to be.',
-          'Examples like this help turn an abstract tax percentage into a yearly and lifetime cash-flow figure.',
+          taxRateSectionFraming(taxProfile),
+          retirementLengthSectionFraming(lengthProfile),
         ],
       },
       {
@@ -148,6 +217,10 @@ export function createRetirementTaxDragSeoPage(
         question: 'How can I reduce retirement tax drag?',
         answer:
           'Common levers include withdrawal sequencing, Roth and traditional account mix, taxable account use, spending flexibility, and tax-aware planning over multiple years.',
+      },
+      {
+        question: `Is a ${percentage.format(record.estimatedTaxRatePercent)}% tax rate high or low for this example?`,
+        answer: taxRateFaqFraming(taxProfile),
       },
     ],
     breadcrumbs: [

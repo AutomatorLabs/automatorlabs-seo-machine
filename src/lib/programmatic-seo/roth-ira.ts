@@ -28,6 +28,65 @@ export function createRothIraCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(clusterPath, slug);
 }
 
+type RothBalanceProfile = 'starting-fresh' | 'small-balance' | 'established';
+type RothContributionProfile = 'modest' | 'moderate' | 'strong';
+
+function rothBalanceProfile(record: RothIraSeoRecord): RothBalanceProfile {
+  if (record.currentBalance === 0) return 'starting-fresh';
+  if (record.currentBalance <= 25000) return 'small-balance';
+  return 'established';
+}
+
+function rothContributionProfile(record: RothIraSeoRecord): RothContributionProfile {
+  if (record.contributionPerPeriod <= 250) return 'modest';
+  if (record.contributionPerPeriod <= 750) return 'moderate';
+  return 'strong';
+}
+
+function rothBalanceFraming(profile: RothBalanceProfile): string {
+  switch (profile) {
+    case 'starting-fresh':
+      return 'Starting from zero means the entire projected balance comes from contributions and compound growth rather than an existing nest egg.';
+    case 'small-balance':
+      return 'A smaller existing balance means contributions and compound growth still do most of the work in building the projected total.';
+    case 'established':
+      return 'An already-established balance gives compound growth more of a head start, so a smaller share of the ending total comes from new contributions.';
+  }
+}
+
+function rothContributionFraming(profile: RothContributionProfile): string {
+  switch (profile) {
+    case 'modest':
+      return 'A more modest contribution amount still adds up meaningfully over a long enough time horizon.';
+    case 'moderate':
+      return 'A moderate contribution amount balances meaningful long-term growth against a manageable ongoing commitment.';
+    case 'strong':
+      return 'A stronger contribution amount accelerates the projected balance well beyond what compounding alone would produce.';
+  }
+}
+
+function rothBalanceSectionFraming(profile: RothBalanceProfile): string {
+  switch (profile) {
+    case 'starting-fresh':
+      return 'Because there is no existing balance in this example, the contribution schedule and time horizon are the only levers driving the projection.';
+    case 'small-balance':
+      return 'A smaller existing balance in this example still leaves plenty of room for consistent contributions to shape the long-term outcome.';
+    case 'established':
+      return 'An already-established balance in this example means market timing and sequence-of-returns risk on that existing balance matter alongside new contributions.';
+  }
+}
+
+function rothBalanceFaqFraming(profile: RothBalanceProfile): string {
+  switch (profile) {
+    case 'starting-fresh':
+      return 'This example starts from a zero balance, which is the earliest starting point modeled across this cluster of examples.';
+    case 'small-balance':
+      return 'This example starts from a smaller existing balance relative to the largest starting balances modeled across this cluster of examples.';
+    case 'established':
+      return 'This example starts from a larger existing balance relative to the smallest starting balances modeled across this cluster of examples.';
+  }
+}
+
 function createProjectionRows(record: RothIraSeoRecord): ProgrammaticSeoProjectionRow[] {
   return Array.from({ length: record.years }, (_, index) => {
     const years = index + 1;
@@ -97,6 +156,8 @@ export function createRothIraSeoPage(
     title,
     description: `${currency.format(record.currentBalance)} in a Roth IRA with ${contributionLabel} contributions is projected for ${record.years} years at ${percentage.format(record.expectedAnnualReturnPercent)}% growth.`,
   });
+  const balanceProfile = rothBalanceProfile(record);
+  const contributionProfile = rothContributionProfile(record);
 
   return {
     slug: record.slug,
@@ -105,7 +166,7 @@ export function createRothIraSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: 'Roth IRA growth example',
-    intro: `This worked example projects how a Roth IRA balance could grow from ${currency.format(record.currentBalance)} with ${contributionLabel} contributions over ${record.years} years.`,
+    intro: `This worked example projects how a Roth IRA balance could grow from ${currency.format(record.currentBalance)} with ${contributionLabel} contributions over ${record.years} years. ${rothBalanceFraming(balanceProfile)} ${rothContributionFraming(contributionProfile)}`,
     summary: `At ${percentage.format(record.expectedAnnualReturnPercent)}% annual growth, the projected Roth IRA balance reaches about ${currency.format(result.endingBalance)}. Future contributions total ${currency.format(result.futureContributions)} and modeled investment growth adds ${currency.format(result.investmentGrowth)}.`,
     results: [
       { label: 'Projected Roth IRA balance', value: currency.format(result.endingBalance), primary: true },
@@ -136,6 +197,7 @@ export function createRothIraSeoPage(
         paragraphs: [
           'Roth IRA pages are often used for long-horizon planning because contribution timing and consistent saving habits can matter as much as return assumptions.',
           'Examples make it easier to compare how a starting balance and recurring contributions interact over a decade or more.',
+          rothBalanceSectionFraming(balanceProfile),
         ],
       },
       {
@@ -163,6 +225,10 @@ export function createRothIraSeoPage(
         question: 'Can I use this examples cluster for the Roth IRA growth and contribution calculators too?',
         answer:
           'Yes. This family-level worked-example cluster is intended to support the broader Roth IRA calculator set.',
+      },
+      {
+        question: `Is ${currency.format(record.currentBalance)} a typical starting balance for this cluster of examples?`,
+        answer: rothBalanceFaqFraming(balanceProfile),
       },
     ],
     breadcrumbs: [

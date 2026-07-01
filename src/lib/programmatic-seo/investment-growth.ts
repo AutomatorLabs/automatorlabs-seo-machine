@@ -110,6 +110,48 @@ function strategyDescription(record: InvestmentGrowthSeoRecord): string {
   }
 }
 
+function intentConsiderationNote(record: InvestmentGrowthSeoRecord): string {
+  switch (record.intent) {
+    case 'lump-sum':
+      return 'Because the full amount is invested immediately, this scenario carries more sequence-of-returns risk than a plan that phases money in over time.';
+    case 'monthly-investing':
+      return 'Because contributions arrive gradually, this scenario spreads market entry points across the full time horizon rather than concentrating risk on one starting date.';
+    case 'annual-investing':
+      return 'Because the yearly amount is modeled as equal monthly deposits, the actual experience of investing a lump sum once a year could look somewhat different in practice.';
+    case 'retirement-investing':
+      return 'A retirement-focused horizon like this one usually spans decades, which gives compounding more time to work but also means the assumed return matters more for the final outcome.';
+    case 'taxable-investing':
+      return 'A taxable account like this one would realistically owe some tax on dividends, interest, or realized gains along the way, which this nominal projection does not subtract.';
+    case 'index-fund-investing':
+      return 'An index fund strategy like this one typically carries a lower expense ratio than actively managed funds, though this projection does not separately model fee drag.';
+    case 'etf-investing':
+      return 'An ETF strategy like this one usually trades with intraday liquidity, but the underlying growth math here is the same as any other pooled-fund investment.';
+    case 'wealth-accumulation':
+      return 'A general wealth-accumulation goal like this one is often less tied to one specific use of the money, which can make it easier to stay invested through market swings.';
+  }
+}
+
+function intentFaqNote(record: InvestmentGrowthSeoRecord): string {
+  switch (record.intent) {
+    case 'lump-sum':
+      return 'This example models a one-time lump-sum investment rather than recurring contributions.';
+    case 'monthly-investing':
+      return 'This example models recurring monthly contributions rather than a single lump sum.';
+    case 'annual-investing':
+      return 'This example models a yearly contribution pattern translated into equal monthly deposits.';
+    case 'retirement-investing':
+      return 'This example is framed around a long retirement-accumulation horizon.';
+    case 'taxable-investing':
+      return 'This example is framed around a taxable brokerage account rather than a tax-advantaged one.';
+    case 'index-fund-investing':
+      return 'This example is framed around a low-cost index fund strategy.';
+    case 'etf-investing':
+      return 'This example is framed around an ETF-based strategy.';
+    case 'wealth-accumulation':
+      return 'This example is framed around general long-term wealth accumulation rather than one specific account type.';
+  }
+}
+
 function createRelatedPages(
   record: InvestmentGrowthSeoRecord,
   records: InvestmentGrowthSeoRecord[],
@@ -170,6 +212,10 @@ function createFaq(
         record.intent === 'annual-investing'
           ? 'The shared calculator models recurring monthly investing, so annual savings examples translate the yearly amount into equal monthly deposits. That keeps the example aligned with the existing formula and interface.'
           : 'The shared calculator uses a monthly investing cadence, so recurring contributions on this page follow the same assumption as the main Investment Growth Calculator.',
+    },
+    {
+      question: `What does this ${intentLabel(record).toLowerCase()} emphasize?`,
+      answer: intentFaqNote(record),
     },
   ];
 }
@@ -352,6 +398,7 @@ export function createInvestmentGrowthSeoPage(
         paragraphs: [
           `This scenario isolates the math behind ${strategyDescription(record)}. The ending balance reflects both money contributed and the compounding effect of leaving prior gains invested.`,
           `Because the same assumed return is applied every month, the path is smoother than real markets. The point of the example is to show sensitivity to contribution size, starting balance, return assumptions, and time horizon.`,
+          intentConsiderationNote(record),
         ],
       },
       {

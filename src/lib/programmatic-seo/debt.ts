@@ -42,8 +42,106 @@ export function createCreditCardPayoffCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(creditCardPayoffClusterPath, slug);
 }
 
+type PayoffAprTier = 'low' | 'moderate' | 'high';
+
+function payoffAprTier(aprPercent: number): PayoffAprTier {
+  if (aprPercent <= 15) return 'low';
+  if (aprPercent <= 25) return 'moderate';
+  return 'high';
+}
+
+function payoffAprFraming(tier: PayoffAprTier): string {
+  switch (tier) {
+    case 'low':
+      return 'A comparatively low APR like this one keeps more of each payment going toward principal, which speeds up payoff and limits total interest.';
+    case 'moderate':
+      return 'A moderate APR like this one is common among general-purpose credit cards, splitting each payment between interest and principal.';
+    case 'high':
+      return 'A comparatively high APR like this one means a larger share of each early payment goes toward interest rather than reducing the balance.';
+  }
+}
+
+function payoffExtraFraming(record: CreditCardPayoffSeoRecord): string {
+  return record.extraMonthlyPayment > 0
+    ? 'This scenario includes a recurring extra payment on top of the entered monthly payment, which shortens the payoff timeline shown here.'
+    : 'This scenario uses only the entered monthly payment with no additional extra payment applied.';
+}
+
+function payoffAprFaqFraming(tier: PayoffAprTier): string {
+  switch (tier) {
+    case 'low':
+      return 'This APR is on the lower end of what this cluster of examples models.';
+    case 'moderate':
+      return 'This APR sits in the middle of what this cluster of examples models.';
+    case 'high':
+      return 'This APR is on the higher end of what this cluster of examples models.';
+  }
+}
+
 export function createBalanceTransferCanonicalPath(slug: string): string {
   return createProgrammaticCanonicalPath(balanceTransferClusterPath, slug);
+}
+
+type TransferSavingsProfile = 'strong' | 'modest' | 'weak-or-negative';
+type PromoLengthProfile = 'short' | 'standard' | 'long';
+
+function transferSavingsProfile(
+  savings: number | null,
+  balance: number,
+): TransferSavingsProfile {
+  if (savings == null || savings <= 0) return 'weak-or-negative';
+  const ratio = savings / Math.max(balance, 1);
+  return ratio > 0.05 ? 'strong' : 'modest';
+}
+
+function promoLengthProfile(promotionalMonths: number): PromoLengthProfile {
+  if (promotionalMonths <= 12) return 'short';
+  if (promotionalMonths <= 18) return 'standard';
+  return 'long';
+}
+
+function transferSavingsFraming(profile: TransferSavingsProfile): string {
+  switch (profile) {
+    case 'strong':
+      return 'The estimated savings here are large relative to the balance, which is the clearest case for making a transfer worthwhile.';
+    case 'modest':
+      return 'The estimated savings here are positive but modest, so it is worth checking whether the transfer fee and paperwork are worth the effort.';
+    case 'weak-or-negative':
+      return 'The estimated savings here are weak or negative, which usually means the transfer fee and post-promotion APR outweigh the promotional-rate benefit under these assumptions.';
+  }
+}
+
+function promoLengthFraming(profile: PromoLengthProfile): string {
+  switch (profile) {
+    case 'short':
+      return 'A shorter promotional window leaves less time to pay down the balance before the post-promotion APR applies.';
+    case 'standard':
+      return 'A mid-length promotional window gives a reasonable amount of time to pay down the balance at the promotional rate.';
+    case 'long':
+      return 'A longer promotional window gives more time to pay down the balance before the post-promotion APR applies, which usually favors the transfer.';
+  }
+}
+
+function promoLengthSectionFraming(profile: PromoLengthProfile): string {
+  switch (profile) {
+    case 'short':
+      return 'With a shorter promotional window like this one, it often helps to pay more aggressively than the entered payment during the promo period to avoid carrying a balance into the post-promotion rate.';
+    case 'standard':
+      return 'A promotional window in this range is common among balance transfer offers and usually gives enough time to make real progress at the promotional rate.';
+    case 'long':
+      return 'A longer promotional window like this one is relatively generous, but it is still worth confirming the exact expiration date rather than assuming it renews automatically.';
+  }
+}
+
+function transferSavingsFaqFraming(profile: TransferSavingsProfile): string {
+  switch (profile) {
+    case 'strong':
+      return 'In this example, the fee is worth it: the modeled savings are strongly positive relative to the balance.';
+    case 'modest':
+      return 'In this example, the fee is only modestly worth it, so a shorter promotional period or lower payment could tip the math the other way.';
+    case 'weak-or-negative':
+      return 'In this example, the fee is not clearly worth it, since the modeled savings are weak or negative under these assumptions.';
+  }
 }
 
 function monthsLabel(months: number | null): string {
@@ -164,6 +262,10 @@ function creditCardFaq(
       answer:
         'If a payment does not exceed the monthly interest charge, the balance may not decline. Increase the payment, lower the APR, or use a different payoff strategy.',
     },
+    {
+      question: `Is ${percentage.format(record.aprPercent)}% a high or low APR for this example?`,
+      answer: payoffAprFaqFraming(payoffAprTier(record.aprPercent)),
+    },
   ];
 }
 
@@ -176,7 +278,7 @@ function balanceTransferFaq(
   return [
     {
       question: `Is a ${percentage.format(record.transferFeePercent)}% balance transfer fee worth it on ${balance}?`,
-      answer: `In this example, the estimated savings is ${safeMoney(savings)} after modeling the transfer fee, promotional APR period, post-promotion APR, and the same monthly payment.`,
+      answer: `In this example, the estimated savings is ${safeMoney(savings)} after modeling the transfer fee, promotional APR period, post-promotion APR, and the same monthly payment. ${transferSavingsFaqFraming(transferSavingsProfile(savings, record.balance))}`,
     },
     {
       question: 'Does the balance transfer example assume a 0% intro APR?',
@@ -327,7 +429,7 @@ export function createCreditCardPayoffSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: 'Credit card payoff example',
-    intro: `This worked example estimates how long it may take to pay off ${balance} in credit card debt at ${rate} APR with ${payment} per month.`,
+    intro: `This worked example estimates how long it may take to pay off ${balance} in credit card debt at ${rate} APR with ${payment} per month. ${payoffAprFraming(payoffAprTier(record.aprPercent))} ${payoffExtraFraming(record)}`,
     summary: `The modeled payoff time is ${monthsLabel(scenario.payoffTimeMonths)}, with estimated interest of ${safeMoney(scenario.totalInterestPaid)} and total payments of ${safeMoney(scenario.totalAmountPaid)}.`,
     results: [
       {
@@ -431,6 +533,11 @@ export function createBalanceTransferSeoPage(
     title,
     description: `${balance} at ${percentage.format(record.currentAprPercent)}% APR with a ${percentage.format(record.transferFeePercent)}% balance transfer fee has estimated savings of ${safeMoney(result.estimatedSavings)}. See payoff time, fees, and assumptions.`,
   });
+  const savingsProfile = transferSavingsProfile(
+    result.estimatedSavings,
+    record.balance,
+  );
+  const lengthProfile = promoLengthProfile(record.promotionalMonths);
 
   return {
     slug: record.slug,
@@ -439,7 +546,7 @@ export function createBalanceTransferSeoPage(
     seoTitle: metadata.seoTitle,
     metaDescription: metadata.metaDescription,
     eyebrow: 'Balance transfer example',
-    intro: `This worked example compares keeping ${balance} on a card at ${percentage.format(record.currentAprPercent)}% APR with moving it to a ${percentage.format(record.transferAprPercent)}% promotional balance transfer offer.`,
+    intro: `This worked example compares keeping ${balance} on a card at ${percentage.format(record.currentAprPercent)}% APR with moving it to a ${percentage.format(record.transferAprPercent)}% promotional balance transfer offer. ${transferSavingsFraming(savingsProfile)} ${promoLengthFraming(lengthProfile)}`,
     summary: `After modeling the ${percentage.format(record.transferFeePercent)}% transfer fee, ${record.promotionalMonths}-month promotional period, and ${currency.format(record.monthlyPayment)} monthly payment, estimated savings are ${safeMoney(result.estimatedSavings)}.`,
     results: [
       {
@@ -495,6 +602,7 @@ export function createBalanceTransferSeoPage(
         paragraphs: [
           'A positive savings estimate means the transfer costs less under these assumptions. A negative number would mean the fee and remaining interest outweigh the promotional-rate benefit.',
           'Real card offers may include approval limits, transfer deadlines, minimum payments, annual fees, late fees, and purchase APR rules that are not modeled here.',
+          promoLengthSectionFraming(lengthProfile),
         ],
       },
     ],
