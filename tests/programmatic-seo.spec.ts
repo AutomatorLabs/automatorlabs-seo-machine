@@ -390,6 +390,19 @@ const safeBatchProgrammaticConfigs = [
     ctaName: 'Open the Traditional vs Roth 401(k) Calculator',
   },
   {
+    label: 'college savings 529',
+    records: collegeSavings529SeoRecords,
+    expectedCount: EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+    audit: auditCollegeSavings529SeoRecords,
+    calculatorPath: '/calculators/529-college-savings-calculator/',
+    examplesPath: '/calculators/529-college-savings/examples/',
+    exampleLinkName: 'Browse all 200 529 college savings examples',
+    representativeSlug:
+      'catch-up-late-start-balance-8000-contribute-1100-return-7-years-5-target-140000',
+    pagePrefix: '/calculators/529-college-savings/',
+    ctaName: 'Open the 529 College Savings Calculator',
+  },
+  {
     label: 'rent vs buy',
     records: rentVsBuySeoRecords,
     expectedCount: EXPECTED_RENT_VS_BUY_SEO_PAGE_COUNT,
@@ -4606,20 +4619,99 @@ test.describe('traditional vs roth 401k programmatic SEO extra coverage', () => 
   }
 });
 
-test.describe('college savings 529 programmatic SEO', () => {
-  test('record audit enforces count and unique metadata', () => {
-    const audit = auditCollegeSavings529SeoRecords(
-      collegeSavings529SeoRecords,
-      EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+test.describe('college savings 529 programmatic SEO extra coverage', () => {
+  test('examples index exposes and searches all college savings 529 pages', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto(
+      '/calculators/529-college-savings/examples/',
+      { waitUntil: 'domcontentloaded' },
     );
 
-    expect(audit).toEqual({
-      expectedCount: EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
-      actualCount: EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
-      uniqueSlugCount: EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
-      uniqueTitleCount: EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
-      uniqueDescriptionCount: EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
-      uniqueCanonicalPathCount: EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: '529 College Savings Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(
+      page.locator('[data-college-savings-529-example-group]'),
+    ).toHaveCount(5);
+    await expect(
+      page.locator('[data-college-savings-529-example-card]'),
+    ).toHaveCount(EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/529-college-savings/examples/',
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search 529 college savings examples',
     });
+    await searchBox.fill('catch-up');
+    const visibleCount = await page
+      .locator('[data-college-savings-529-example-card]:visible')
+      .count();
+    expect(visibleCount).toBeGreaterThan(0);
+    expect(visibleCount).toBeLessThan(
+      EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+    );
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-college-savings-529-example-card]:visible'),
+    ).toHaveCount(EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT);
+    expect(pageErrors).toEqual([]);
   });
+
+  const oneSlugPerIntent = [
+    {
+      intent: 'newborn-saver',
+      slug: 'newborn-saver-balance-0-contribute-300-return-6-years-18-target-80000',
+    },
+    {
+      intent: 'early-childhood-saver',
+      slug: 'early-childhood-saver-balance-4000-contribute-350-return-7-years-13-target-120000',
+    },
+    {
+      intent: 'tween-steady-saver',
+      slug: 'tween-steady-saver-balance-12000-contribute-500-return-7-years-7-target-130000',
+    },
+    {
+      intent: 'high-school-final-stretch',
+      slug: 'high-school-final-stretch-balance-20000-contribute-1000-return-5-years-5-target-130000',
+    },
+    {
+      intent: 'catch-up-late-start',
+      slug: 'catch-up-late-start-balance-8000-contribute-1100-return-7-years-5-target-140000',
+    },
+  ] as const;
+
+  for (const { intent, slug } of oneSlugPerIntent) {
+    test(`renders the ${intent} representative page`, async ({ page }) => {
+      const record = collegeSavings529SeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) {
+        throw new Error(`Missing college savings 529 record: ${slug}`);
+      }
+
+      const url = `/calculators/529-college-savings/${record.slug}/`;
+      const response = await page.goto(url, { waitUntil: 'domcontentloaded' });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      expect(await page.locator('tbody tr, .chart').count()).toBeGreaterThan(
+        0,
+      );
+    });
+  }
 });

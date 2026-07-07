@@ -15,9 +15,9 @@ Its job is to:
 
 Verified from source on 2026-07-01:
 
-- 52 live clusters in `src/data/programmatic-seo/clusters.ts`
+- 53 live clusters in `src/data/programmatic-seo/clusters.ts`
 - 200 records per cluster
-- 10,400 generated example pages total
+- 10,600 generated example pages total
 - global examples hub at `/examples/`
 
 Current live clusters:
@@ -71,6 +71,7 @@ Current live clusters:
 - Roth IRA
 - Roth IRA Early Withdrawal
 - Traditional vs Roth 401(k)
+- 529 College Savings
 - Safe Withdrawal Rate
 - Years to Retirement
 - 4 Percent Rule
@@ -395,6 +396,17 @@ Required surfaces:
 - single-shot scenario (no time series): uses `showChart: false` and a static "Scenario Summary" table, following the same pattern as the Roth IRA Early Withdrawal and Closing Cost clusters
 - five intents, each fixing the qualitative direction of the categorical `betterOption` result: rising-earner (current tax rate below retirement rate, Roth always wins), peak-earner (current rate above retirement rate, Traditional always wins), equal-bracket (rates equal, always a tie), long-horizon-compounding (fixed Roth-favorable gap across a wide years range), and catch-up-contributor (fixed Traditional-favorable gap, larger contributions, short horizon)
 - the calculator's id contains `"401k"`, so `RetirementAccountCalculatorPage.astro` special-cases `traditional-vs-roth-401k` ahead of the general 401(k) branch so it links to its own cluster instead of the 401(k) growth cluster
+
+### 529 College Savings
+
+- calculator: `/calculators/529-college-savings-calculator/`
+- examples index: `/calculators/529-college-savings/examples/`
+- generated page route: `/calculators/529-college-savings/<slug>/`
+- reuses `calculate529CollegeSavings`
+- genuine year-by-year time series (like Investment Growth): builds `projectionRows` by calling `calculate529CollegeSavings` once per year from 1 through the record's `yearsUntilCollege`, using each call's `projectedBalance` as that year's point — no new math, repeated application of the existing function
+- five intents framed by child's age / saving urgency: newborn-saver, early-childhood-saver, tween-steady-saver, high-school-final-stretch, catch-up-late-start — no surplus/shortfall invariant is enforced per intent (unlike Traditional vs Roth 401(k)'s categorical `betterOption`), since the outcome depends on all 5 inputs interacting
+- calculator page examples link is wired directly in `src/pages/calculators/529-college-savings-calculator/index.astro` via `exampleItems` (this calculator uses the generic `CalculatorPage.astro` directly, not a specialized wrapper, so there is no routing-precedence concern like the 401(k) family's)
+- paired with the College Cost Inflation cluster (shipped separately) via calculator-level cross-links in `relatedCalculators`, not example-to-example matching
 
 ### Debt Cluster Module
 

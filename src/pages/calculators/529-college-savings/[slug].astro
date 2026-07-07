@@ -1,0 +1,32 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  collegeSavings529SeoRecords,
+  EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/529-college-savings';
+import {
+  auditCollegeSavings529SeoRecords,
+  createCollegeSavings529SeoPage,
+} from '../../../lib/programmatic-seo/529-college-savings';
+
+auditCollegeSavings529SeoRecords(
+  collegeSavings529SeoRecords,
+  EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return collegeSavings529SeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createCollegeSavings529SeoPage(
+        record,
+        collegeSavings529SeoRecords,
+      ),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

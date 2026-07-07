@@ -1,0 +1,260 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  collegeSavings529SeoRecords,
+  EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/529-college-savings';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditCollegeSavings529SeoRecords } from '../../../../lib/programmatic-seo/529-college-savings';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditCollegeSavings529SeoRecords(
+  collegeSavings529SeoRecords,
+  EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: '529 College Savings Calculator',
+        url: '/calculators/529-college-savings-calculator/',
+      },
+      {
+        name: 'Examples',
+        url: '/calculators/529-college-savings/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(collegeSavings529SeoRecords, [
+  {
+    id: 'newborn-saver',
+    title: 'Newborn Saver Examples',
+    description:
+      'Long-horizon examples (16-18 years) starting from a near-zero balance.',
+    matches: (record) => record.intent === 'newborn-saver',
+  },
+  {
+    id: 'early-childhood-saver',
+    title: 'Early Childhood Saver Examples',
+    description:
+      'Examples with 10-14 years to go and a small existing balance.',
+    matches: (record) => record.intent === 'early-childhood-saver',
+  },
+  {
+    id: 'tween-steady-saver',
+    title: 'Tween Steady Saver Examples',
+    description:
+      'Examples with 6-9 years to go and a meaningful existing balance.',
+    matches: (record) => record.intent === 'tween-steady-saver',
+  },
+  {
+    id: 'high-school-final-stretch',
+    title: 'High School Final Stretch Examples',
+    description:
+      'Short-horizon examples (2-5 years) with larger balances and higher contributions.',
+    matches: (record) => record.intent === 'high-school-final-stretch',
+  },
+  {
+    id: 'catch-up-late-start',
+    title: 'Catch-Up Late Start Examples',
+    description:
+      'Examples with 3-7 years to go and a deliberately boosted monthly contribution.',
+    matches: (record) => record.intent === 'catch-up-late-start',
+  },
+]);
+---
+
+<Layout
+  title="529 College Savings Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} 529 college savings examples covering newborn savers, early childhood savers, tween steady savers, high school final-stretch savers, and late-start catch-up savers.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/529-college-savings-calculator/">
+            529 College Savings Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">529 college savings scenario library</p>
+      <h1>529 College Savings Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering newborn savers,
+        early childhood savers, tween steady savers, high school
+        final-stretch savers, and late-start catch-up savers.
+      </p>
+      <a
+        class="primary-link"
+        href="/calculators/529-college-savings-calculator/"
+      >
+        Model your own savings plan
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section
+      class="example-search"
+      aria-label="Search 529 college savings examples"
+    >
+      <label for="college-savings-529-example-search">
+        Search 529 college savings examples
+      </label>
+      <div class="search-row">
+        <input
+          id="college-savings-529-example-search"
+          type="search"
+          placeholder="Try 300, catch-up, or 18 years"
+          autocomplete="off"
+          aria-controls="college-savings-529-example-groups"
+          aria-describedby="college-savings-529-example-count"
+        />
+        <button
+          id="clear-college-savings-529-example-search"
+          type="button"
+          hidden
+        >
+          Clear search
+        </button>
+      </div>
+      <p id="college-savings-529-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="college-savings-529-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-college-savings-529-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-college-savings-529-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.currentBalance,
+                  record.monthlyContribution,
+                  record.yearsUntilCollege,
+                  record.targetCollegeCost,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/529-college-savings/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.currentBalance)} balance {' · '}
+                    {currency.format(record.monthlyContribution)}/month {' · '}
+                    {record.yearsUntilCollege} years
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p
+      id="no-college-savings-529-examples"
+      class="no-results"
+      role="status"
+      hidden
+    >
+      No 529 college savings examples found. Try a balance, contribution amount, or intent.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#college-savings-529-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-college-savings-529-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#college-savings-529-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-college-savings-529-examples',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-college-savings-529-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-college-savings-529-example-group]',
+    ),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      group.hidden = !group.querySelector(
+        '[data-college-savings-529-example-card]:not([hidden])',
+      );
+    });
+
+    count.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'example' : 'examples'}`;
+    noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query === '';
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateExamples();
+    input.focus();
+  });
+</script>

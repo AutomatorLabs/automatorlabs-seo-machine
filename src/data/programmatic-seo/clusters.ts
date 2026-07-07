@@ -52,6 +52,7 @@ import { yearsToRetirementSeoRecords } from './years-to-retirement';
 import { closingCostSeoRecords } from './closing-cost';
 import { rentVsBuySeoRecords } from './rent-vs-buy';
 import { traditionalVsRoth401kSeoRecords } from './traditional-vs-roth-401k';
+import { collegeSavings529SeoRecords } from './529-college-savings';
 
 export interface ProgrammaticSeoClusterSummary {
   id: string;
@@ -663,6 +664,19 @@ const traditionalVsRoth401kRepresentatives = [
     (record) =>
       record.slug ===
       'peak-earner-contribute-16000-current-32-retirement-22-return-6-years-15',
+  ),
+].filter((record) => record !== undefined);
+
+const collegeSavings529Representatives = [
+  collegeSavings529SeoRecords.find(
+    (record) =>
+      record.slug ===
+      'newborn-saver-balance-0-contribute-300-return-6-years-18-target-80000',
+  ),
+  collegeSavings529SeoRecords.find(
+    (record) =>
+      record.slug ===
+      'high-school-final-stretch-balance-20000-contribute-1000-return-5-years-5-target-130000',
   ),
 ].filter((record) => record !== undefined);
 
@@ -1705,6 +1719,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: traditionalVsRoth401kRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/traditional-vs-roth-401k/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'college-savings-529',
+    title: '529 College Savings Examples',
+    description:
+      'Explore newborn-saver, early-childhood, tween, high-school-final-stretch, and catch-up-late-start 529 savings scenarios against a target college cost.',
+    examplesUrl: '/calculators/529-college-savings/examples/',
+    calculator: {
+      title: '529 College Savings Calculator',
+      url: '/calculators/529-college-savings-calculator/',
+    },
+    guide: {
+      title: 'Savings Planning Guide Hub',
+      url: '/guides/savings/',
+    },
+    pageCount: collegeSavings529SeoRecords.length,
+    representativePages: collegeSavings529Representatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/529-college-savings/${record.slug}/`,
     })),
   },
   {
