@@ -1,0 +1,254 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  collegeCostInflationSeoRecords,
+  EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT,
+} from '../../../../data/programmatic-seo/college-cost-inflation';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditCollegeCostInflationSeoRecords } from '../../../../lib/programmatic-seo/college-cost-inflation';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditCollegeCostInflationSeoRecords(
+  collegeCostInflationSeoRecords,
+  EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'College Cost Inflation Calculator',
+        url: '/calculators/college-cost-inflation-calculator/',
+      },
+      {
+        name: 'Examples',
+        url: '/calculators/college-cost-inflation/examples/',
+      },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(collegeCostInflationSeoRecords, [
+  {
+    id: 'community-college',
+    title: 'Community College Examples',
+    description: 'Low current-cost examples across a range of inflation rates and horizons.',
+    matches: (record) => record.intent === 'community-college',
+  },
+  {
+    id: 'in-state-public',
+    title: 'In-State Public College Examples',
+    description: 'Moderate current-cost examples for four-year in-state public tuition.',
+    matches: (record) => record.intent === 'in-state-public',
+  },
+  {
+    id: 'out-of-state-public',
+    title: 'Out-of-State Public College Examples',
+    description: 'Higher current-cost examples for four-year out-of-state public tuition.',
+    matches: (record) => record.intent === 'out-of-state-public',
+  },
+  {
+    id: 'private-university',
+    title: 'Private University Examples',
+    description: 'High current-cost examples for four-year private university tuition.',
+    matches: (record) => record.intent === 'private-university',
+  },
+  {
+    id: 'high-inflation-scenario',
+    title: 'High-Inflation Scenario Examples',
+    description: 'Examples with a fixed elevated education inflation rate to isolate rate sensitivity.',
+    matches: (record) => record.intent === 'high-inflation-scenario',
+  },
+]);
+---
+
+<Layout
+  title="College Cost Inflation Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} college cost inflation examples covering community college, in-state public, out-of-state public, private university, and high-inflation scenarios.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/college-cost-inflation-calculator/">
+            College Cost Inflation Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">College cost inflation scenario library</p>
+      <h1>College Cost Inflation Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering community
+        college, in-state public, out-of-state public, private university,
+        and high-inflation scenarios.
+      </p>
+      <a
+        class="primary-link"
+        href="/calculators/college-cost-inflation-calculator/"
+      >
+        Project your own college cost
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section
+      class="example-search"
+      aria-label="Search college cost inflation examples"
+    >
+      <label for="college-cost-inflation-example-search">
+        Search college cost inflation examples
+      </label>
+      <div class="search-row">
+        <input
+          id="college-cost-inflation-example-search"
+          type="search"
+          placeholder="Try 18000, private, or 7% inflation"
+          autocomplete="off"
+          aria-controls="college-cost-inflation-example-groups"
+          aria-describedby="college-cost-inflation-example-count"
+        />
+        <button
+          id="clear-college-cost-inflation-example-search"
+          type="button"
+          hidden
+        >
+          Clear search
+        </button>
+      </div>
+      <p id="college-cost-inflation-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="college-cost-inflation-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-college-cost-inflation-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-college-cost-inflation-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.currentAnnualCollegeCost,
+                  record.educationInflationRatePercent,
+                  record.yearsUntilCollege,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/college-cost-inflation/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.currentAnnualCollegeCost)}/year today {' · '}
+                    {record.educationInflationRatePercent}% inflation {' · '}
+                    {record.yearsUntilCollege} years
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p
+      id="no-college-cost-inflation-examples"
+      class="no-results"
+      role="status"
+      hidden
+    >
+      No college cost inflation examples found. Try a cost amount, inflation rate, or intent.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#college-cost-inflation-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-college-cost-inflation-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#college-cost-inflation-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-college-cost-inflation-examples',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-college-cost-inflation-example-card]',
+    ),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '[data-college-cost-inflation-example-group]',
+    ),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      group.hidden = !group.querySelector(
+        '[data-college-cost-inflation-example-card]:not([hidden])',
+      );
+    });
+
+    count.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'example' : 'examples'}`;
+    noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query === '';
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateExamples();
+    input.focus();
+  });
+</script>

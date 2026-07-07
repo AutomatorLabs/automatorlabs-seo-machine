@@ -15,9 +15,9 @@ Its job is to:
 
 Verified from source on 2026-07-01:
 
-- 53 live clusters in `src/data/programmatic-seo/clusters.ts`
+- 54 live clusters in `src/data/programmatic-seo/clusters.ts`
 - 200 records per cluster
-- 10,600 generated example pages total
+- 10,800 generated example pages total
 - global examples hub at `/examples/`
 
 Current live clusters:
@@ -72,6 +72,7 @@ Current live clusters:
 - Roth IRA Early Withdrawal
 - Traditional vs Roth 401(k)
 - 529 College Savings
+- College Cost Inflation
 - Safe Withdrawal Rate
 - Years to Retirement
 - 4 Percent Rule
@@ -407,6 +408,17 @@ Required surfaces:
 - five intents framed by child's age / saving urgency: newborn-saver, early-childhood-saver, tween-steady-saver, high-school-final-stretch, catch-up-late-start — no surplus/shortfall invariant is enforced per intent (unlike Traditional vs Roth 401(k)'s categorical `betterOption`), since the outcome depends on all 5 inputs interacting
 - calculator page examples link is wired directly in `src/pages/calculators/529-college-savings-calculator/index.astro` via `exampleItems` (this calculator uses the generic `CalculatorPage.astro` directly, not a specialized wrapper, so there is no routing-precedence concern like the 401(k) family's)
 - paired with the College Cost Inflation cluster (shipped separately) via calculator-level cross-links in `relatedCalculators`, not example-to-example matching
+
+### College Cost Inflation
+
+- calculator: `/calculators/college-cost-inflation-calculator/`
+- examples index: `/calculators/college-cost-inflation/examples/`
+- generated page route: `/calculators/college-cost-inflation/<slug>/`
+- reuses `calculateCollegeCostInflation`
+- single-shot scenario (no time series): uses `showChart: false` and a static "Scenario Summary" table, following the same pattern as Roth IRA Early Withdrawal and Traditional vs Roth 401(k) — `calculateCollegeCostInflation` only returns final totals, and this cluster does not re-derive a synthetic per-attendance-year breakdown
+- five intents: four cost-tier intents (community-college, in-state-public, out-of-state-public, private-university) plus one rate-sensitivity intent (high-inflation-scenario) that fixes the education inflation rate at 7% while varying years and duration
+- calculator page examples link is wired directly in `src/pages/calculators/college-cost-inflation-calculator/index.astro` via `exampleItems`
+- paired with the 529 College Savings cluster via calculator-level cross-links in `relatedCalculators` (both directions — this cluster's builder links to the 529 calculator, and Plan 2 added a reciprocal entry to the 529 cluster's builder)
 
 ### Debt Cluster Module
 
