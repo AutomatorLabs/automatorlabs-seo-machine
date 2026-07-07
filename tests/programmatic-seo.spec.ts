@@ -222,6 +222,11 @@ import {
 } from '../src/data/programmatic-seo/529-college-savings';
 import { auditCollegeSavings529SeoRecords } from '../src/lib/programmatic-seo/529-college-savings';
 import {
+  collegeCostInflationSeoRecords,
+  EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/college-cost-inflation';
+import { auditCollegeCostInflationSeoRecords } from '../src/lib/programmatic-seo/college-cost-inflation';
+import {
   EXPECTED_RENT_VS_BUY_SEO_PAGE_COUNT,
   rentVsBuySeoRecords,
 } from '../src/data/programmatic-seo/rent-vs-buy';
@@ -4714,4 +4719,22 @@ test.describe('college savings 529 programmatic SEO extra coverage', () => {
       );
     });
   }
+});
+
+test.describe('college cost inflation programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditCollegeCostInflationSeoRecords(
+      collegeCostInflationSeoRecords,
+      EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT,
+    });
+  });
 });
