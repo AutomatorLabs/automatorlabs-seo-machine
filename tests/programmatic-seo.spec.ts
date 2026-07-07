@@ -217,6 +217,11 @@ import {
 } from '../src/data/programmatic-seo/traditional-vs-roth-401k';
 import { auditTraditionalVsRoth401kSeoRecords } from '../src/lib/programmatic-seo/traditional-vs-roth-401k';
 import {
+  collegeSavings529SeoRecords,
+  EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/529-college-savings';
+import { auditCollegeSavings529SeoRecords } from '../src/lib/programmatic-seo/529-college-savings';
+import {
   EXPECTED_RENT_VS_BUY_SEO_PAGE_COUNT,
   rentVsBuySeoRecords,
 } from '../src/data/programmatic-seo/rent-vs-buy';
@@ -4599,4 +4604,22 @@ test.describe('traditional vs roth 401k programmatic SEO extra coverage', () => 
       }
     });
   }
+});
+
+test.describe('college savings 529 programmatic SEO', () => {
+  test('record audit enforces count and unique metadata', () => {
+    const audit = auditCollegeSavings529SeoRecords(
+      collegeSavings529SeoRecords,
+      EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_COLLEGE_SAVINGS_529_SEO_PAGE_COUNT,
+    });
+  });
 });
