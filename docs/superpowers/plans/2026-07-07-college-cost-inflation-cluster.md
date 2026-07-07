@@ -361,7 +361,7 @@ export function createCollegeCostInflationSeoPage(
   const title = record.question;
   const metadata = createProgrammaticMetadata({
     title,
-    description: `${currency.format(record.currentAnnualCollegeCost)}/year today at an assumed ${record.educationInflationRatePercent}% education inflation rate grows to about ${currency.format(result.firstYearCollegeCost)} in the first year, for an estimated total of ${currency.format(result.totalCollegeCost)} across ${record.numberOfCollegeYears} years starting ${record.yearsUntilCollege} years from now.`,
+    description: `A ${record.scenarioLabel} scenario: ${currency.format(record.currentAnnualCollegeCost)}/year today at an assumed ${record.educationInflationRatePercent}% education inflation rate grows to about ${currency.format(result.firstYearCollegeCost)} in the first year, for an estimated total of ${currency.format(result.totalCollegeCost)} across ${record.numberOfCollegeYears} years starting ${record.yearsUntilCollege} years from now.`,
   });
 
   return {
