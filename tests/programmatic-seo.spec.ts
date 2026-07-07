@@ -227,6 +227,11 @@ import {
 } from '../src/data/programmatic-seo/college-cost-inflation';
 import { auditCollegeCostInflationSeoRecords } from '../src/lib/programmatic-seo/college-cost-inflation';
 import {
+  EXPECTED_NET_WORTH_SEO_PAGE_COUNT,
+  netWorthSeoRecords,
+} from '../src/data/programmatic-seo/net-worth';
+import { auditNetWorthSeoRecords } from '../src/lib/programmatic-seo/net-worth';
+import {
   EXPECTED_RENT_VS_BUY_SEO_PAGE_COUNT,
   rentVsBuySeoRecords,
 } from '../src/data/programmatic-seo/rent-vs-buy';
@@ -4827,4 +4832,22 @@ test.describe('college cost inflation programmatic SEO extra coverage', () => {
       expect(await page.locator('tbody tr').count()).toBeGreaterThan(0);
     });
   }
+});
+
+test.describe('net worth programmatic SEO', () => {
+  test('record audit enforces count, unique metadata, and sign invariants', () => {
+    const audit = auditNetWorthSeoRecords(
+      netWorthSeoRecords,
+      EXPECTED_NET_WORTH_SEO_PAGE_COUNT,
+    );
+
+    expect(audit).toEqual({
+      expectedCount: EXPECTED_NET_WORTH_SEO_PAGE_COUNT,
+      actualCount: EXPECTED_NET_WORTH_SEO_PAGE_COUNT,
+      uniqueSlugCount: EXPECTED_NET_WORTH_SEO_PAGE_COUNT,
+      uniqueTitleCount: EXPECTED_NET_WORTH_SEO_PAGE_COUNT,
+      uniqueDescriptionCount: EXPECTED_NET_WORTH_SEO_PAGE_COUNT,
+      uniqueCanonicalPathCount: EXPECTED_NET_WORTH_SEO_PAGE_COUNT,
+    });
+  });
 });
