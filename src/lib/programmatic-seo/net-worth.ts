@@ -239,7 +239,7 @@ export function createNetWorthSeoPage(
     ],
     relatedGuides: [
       {
-        title: "A Beginner's Guide to FIRE",
+        title: 'A Beginner’s Guide to FIRE',
         url: '/guides/fire/',
         description: 'See how tracking net worth over time fits into a broader financial independence plan.',
       },
