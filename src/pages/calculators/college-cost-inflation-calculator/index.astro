@@ -7,6 +7,12 @@ const relatedItems = collegeCostInflationCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const exampleItems = [
+  {
+    title: 'Browse all 200 college cost inflation examples',
+    url: '/calculators/college-cost-inflation/examples/',
+  },
+];
 ---
 
 <CalculatorPage
@@ -17,6 +23,7 @@ const relatedItems = collegeCostInflationCalculator.relatedIds.flatMap((id) => {
   outputs={collegeCostInflationCalculator.outputs}
   faq={collegeCostInflationCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

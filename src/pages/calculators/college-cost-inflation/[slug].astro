@@ -1,0 +1,32 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  collegeCostInflationSeoRecords,
+  EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT,
+} from '../../../data/programmatic-seo/college-cost-inflation';
+import {
+  auditCollegeCostInflationSeoRecords,
+  createCollegeCostInflationSeoPage,
+} from '../../../lib/programmatic-seo/college-cost-inflation';
+
+auditCollegeCostInflationSeoRecords(
+  collegeCostInflationSeoRecords,
+  EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT,
+);
+
+export function getStaticPaths() {
+  return collegeCostInflationSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createCollegeCostInflationSeoPage(
+        record,
+        collegeCostInflationSeoRecords,
+      ),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

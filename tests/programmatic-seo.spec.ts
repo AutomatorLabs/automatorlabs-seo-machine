@@ -222,6 +222,11 @@ import {
 } from '../src/data/programmatic-seo/529-college-savings';
 import { auditCollegeSavings529SeoRecords } from '../src/lib/programmatic-seo/529-college-savings';
 import {
+  collegeCostInflationSeoRecords,
+  EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT,
+} from '../src/data/programmatic-seo/college-cost-inflation';
+import { auditCollegeCostInflationSeoRecords } from '../src/lib/programmatic-seo/college-cost-inflation';
+import {
   EXPECTED_RENT_VS_BUY_SEO_PAGE_COUNT,
   rentVsBuySeoRecords,
 } from '../src/data/programmatic-seo/rent-vs-buy';
@@ -401,6 +406,19 @@ const safeBatchProgrammaticConfigs = [
       'catch-up-late-start-balance-8000-contribute-1100-return-7-years-5-target-140000',
     pagePrefix: '/calculators/529-college-savings/',
     ctaName: 'Open the 529 College Savings Calculator',
+  },
+  {
+    label: 'college cost inflation',
+    records: collegeCostInflationSeoRecords,
+    expectedCount: EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT,
+    audit: auditCollegeCostInflationSeoRecords,
+    calculatorPath: '/calculators/college-cost-inflation-calculator/',
+    examplesPath: '/calculators/college-cost-inflation/examples/',
+    exampleLinkName: 'Browse all 200 college cost inflation examples',
+    representativeSlug:
+      'high-inflation-scenario-cost-18000-inflation-7-years-10-duration-4',
+    pagePrefix: '/calculators/college-cost-inflation/',
+    ctaName: 'Open the College Cost Inflation Calculator',
   },
   {
     label: 'rent vs buy',
@@ -4712,6 +4730,101 @@ test.describe('college savings 529 programmatic SEO extra coverage', () => {
       expect(await page.locator('tbody tr, .chart').count()).toBeGreaterThan(
         0,
       );
+    });
+  }
+});
+
+test.describe('college cost inflation programmatic SEO extra coverage', () => {
+  test('examples index exposes and searches all college cost inflation pages', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto(
+      '/calculators/college-cost-inflation/examples/',
+      { waitUntil: 'domcontentloaded' },
+    );
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'College Cost Inflation Examples',
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(
+      page.locator('[data-college-cost-inflation-example-group]'),
+    ).toHaveCount(5);
+    await expect(
+      page.locator('[data-college-cost-inflation-example-card]'),
+    ).toHaveCount(EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/college-cost-inflation/examples/',
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search college cost inflation examples',
+    });
+    await searchBox.fill('private');
+    const visibleCount = await page
+      .locator('[data-college-cost-inflation-example-card]:visible')
+      .count();
+    expect(visibleCount).toBeGreaterThan(0);
+    expect(visibleCount).toBeLessThan(
+      EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT,
+    );
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-college-cost-inflation-example-card]:visible'),
+    ).toHaveCount(EXPECTED_COLLEGE_COST_INFLATION_SEO_PAGE_COUNT);
+    expect(pageErrors).toEqual([]);
+  });
+
+  const oneSlugPerIntent = [
+    {
+      intent: 'community-college',
+      slug: 'community-college-cost-6000-inflation-4-years-10-duration-2',
+    },
+    {
+      intent: 'in-state-public',
+      slug: 'in-state-public-cost-18000-inflation-4-years-8-duration-4',
+    },
+    {
+      intent: 'out-of-state-public',
+      slug: 'out-of-state-public-cost-30000-inflation-4-years-7-duration-4',
+    },
+    {
+      intent: 'private-university',
+      slug: 'private-university-cost-55000-inflation-5-years-8-duration-4',
+    },
+    {
+      intent: 'high-inflation-scenario',
+      slug: 'high-inflation-scenario-cost-18000-inflation-7-years-10-duration-4',
+    },
+  ] as const;
+
+  for (const { intent, slug } of oneSlugPerIntent) {
+    test(`renders the ${intent} representative page`, async ({ page }) => {
+      const record = collegeCostInflationSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) {
+        throw new Error(`Missing college cost inflation record: ${slug}`);
+      }
+
+      const url = `/calculators/college-cost-inflation/${record.slug}/`;
+      const response = await page.goto(url, { waitUntil: 'domcontentloaded' });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      expect(await page.locator('tbody tr').count()).toBeGreaterThan(0);
     });
   }
 });

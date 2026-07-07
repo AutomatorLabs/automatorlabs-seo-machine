@@ -251,6 +251,12 @@ export function createCollegeSavings529SeoPage(
         url: '/calculators/investment-fee-calculator/',
         description: 'See how fees can affect long-term account growth.',
       },
+      {
+        title: 'College Cost Inflation Calculator',
+        url: '/calculators/college-cost-inflation-calculator/',
+        description:
+          'Estimate how your target college cost could itself grow with education inflation before you need it.',
+      },
     ],
     relatedGuides: [
       {

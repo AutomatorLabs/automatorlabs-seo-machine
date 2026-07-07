@@ -53,6 +53,7 @@ import { closingCostSeoRecords } from './closing-cost';
 import { rentVsBuySeoRecords } from './rent-vs-buy';
 import { traditionalVsRoth401kSeoRecords } from './traditional-vs-roth-401k';
 import { collegeSavings529SeoRecords } from './529-college-savings';
+import { collegeCostInflationSeoRecords } from './college-cost-inflation';
 
 export interface ProgrammaticSeoClusterSummary {
   id: string;
@@ -677,6 +678,19 @@ const collegeSavings529Representatives = [
     (record) =>
       record.slug ===
       'high-school-final-stretch-balance-20000-contribute-1000-return-5-years-5-target-130000',
+  ),
+].filter((record) => record !== undefined);
+
+const collegeCostInflationRepresentatives = [
+  collegeCostInflationSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'community-college-cost-6000-inflation-4-years-10-duration-2',
+  ),
+  collegeCostInflationSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'private-university-cost-55000-inflation-5-years-8-duration-4',
   ),
 ].filter((record) => record !== undefined);
 
@@ -1739,6 +1753,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: collegeSavings529Representatives.map((record) => ({
       title: record.question,
       url: `/calculators/529-college-savings/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'college-cost-inflation',
+    title: 'College Cost Inflation Examples',
+    description:
+      'Explore community-college, in-state-public, out-of-state-public, private-university, and high-inflation-scenario projections of future college costs.',
+    examplesUrl: '/calculators/college-cost-inflation/examples/',
+    calculator: {
+      title: 'College Cost Inflation Calculator',
+      url: '/calculators/college-cost-inflation-calculator/',
+    },
+    guide: {
+      title: 'How Inflation Affects Compound Interest',
+      url: '/guides/inflation-and-compound-interest/',
+    },
+    pageCount: collegeCostInflationSeoRecords.length,
+    representativePages: collegeCostInflationRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/college-cost-inflation/${record.slug}/`,
     })),
   },
   {
