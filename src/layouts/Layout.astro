@@ -388,8 +388,11 @@ const socialImageAlt =
 	}
 
 	.footer-newsletter-embed {
-		width: min(1120px, calc(100% - 2rem));
+		max-width: min(420px, calc(100% - 2rem));
 		margin: 0 auto 1.5rem;
+		overflow: hidden;
+		border-radius: 8px;
+		background: var(--footer-background);
 	}
 
 	@media (max-width: 620px) {
