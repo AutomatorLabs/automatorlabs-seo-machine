@@ -54,6 +54,7 @@ import { rentVsBuySeoRecords } from './rent-vs-buy';
 import { traditionalVsRoth401kSeoRecords } from './traditional-vs-roth-401k';
 import { collegeSavings529SeoRecords } from './529-college-savings';
 import { collegeCostInflationSeoRecords } from './college-cost-inflation';
+import { netWorthSeoRecords } from './net-worth';
 
 export interface ProgrammaticSeoClusterSummary {
   id: string;
@@ -691,6 +692,19 @@ const collegeCostInflationRepresentatives = [
     (record) =>
       record.slug ===
       'private-university-cost-55000-inflation-5-years-8-duration-4',
+  ),
+].filter((record) => record !== undefined);
+
+const netWorthRepresentatives = [
+  netWorthSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'debt-free-saver-cash-20000-investments-100000-realestate-0-crypto-3000-creditcarddebt-0-loans-0-mortgage-0',
+  ),
+  netWorthSeoRecords.find(
+    (record) =>
+      record.slug ===
+      'underwater-household-cash-1000-investments-500-realestate-150000-crypto-0-creditcarddebt-6000-loans-15000-mortgage-160000',
   ),
 ].filter((record) => record !== undefined);
 
@@ -1773,6 +1787,26 @@ export const programmaticSeoClusters: ProgrammaticSeoClusterSummary[] = [
     representativePages: collegeCostInflationRepresentatives.map((record) => ({
       title: record.question,
       url: `/calculators/college-cost-inflation/${record.slug}/`,
+    })),
+  },
+  {
+    id: 'net-worth',
+    title: 'Net Worth Examples',
+    description:
+      'Explore young-professional, new-homeowner, debt-free-saver, high-net-worth-investor, and underwater-household net worth scenarios.',
+    examplesUrl: '/calculators/net-worth/examples/',
+    calculator: {
+      title: 'Net Worth Calculator',
+      url: '/calculators/net-worth-calculator/',
+    },
+    guide: {
+      title: 'A Beginner’s Guide to FIRE',
+      url: '/guides/fire/',
+    },
+    pageCount: netWorthSeoRecords.length,
+    representativePages: netWorthRepresentatives.map((record) => ({
+      title: record.question,
+      url: `/calculators/net-worth/${record.slug}/`,
     })),
   },
   {
