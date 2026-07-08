@@ -227,6 +227,11 @@ import {
 } from '../src/data/programmatic-seo/college-cost-inflation';
 import { auditCollegeCostInflationSeoRecords } from '../src/lib/programmatic-seo/college-cost-inflation';
 import {
+  EXPECTED_NET_WORTH_SEO_PAGE_COUNT,
+  netWorthSeoRecords,
+} from '../src/data/programmatic-seo/net-worth';
+import { auditNetWorthSeoRecords } from '../src/lib/programmatic-seo/net-worth';
+import {
   EXPECTED_RENT_VS_BUY_SEO_PAGE_COUNT,
   rentVsBuySeoRecords,
 } from '../src/data/programmatic-seo/rent-vs-buy';
@@ -419,6 +424,19 @@ const safeBatchProgrammaticConfigs = [
       'high-inflation-scenario-cost-18000-inflation-7-years-10-duration-4',
     pagePrefix: '/calculators/college-cost-inflation/',
     ctaName: 'Open the College Cost Inflation Calculator',
+  },
+  {
+    label: 'net worth',
+    records: netWorthSeoRecords,
+    expectedCount: EXPECTED_NET_WORTH_SEO_PAGE_COUNT,
+    audit: auditNetWorthSeoRecords,
+    calculatorPath: '/calculators/net-worth-calculator/',
+    examplesPath: '/calculators/net-worth/examples/',
+    exampleLinkName: 'Browse all 200 net worth examples',
+    representativeSlug:
+      'underwater-household-cash-1000-investments-500-realestate-150000-crypto-0-creditcarddebt-6000-loans-15000-mortgage-160000',
+    pagePrefix: '/calculators/net-worth/',
+    ctaName: 'Open the Net Worth Calculator',
   },
   {
     label: 'rent vs buy',
@@ -4825,6 +4843,101 @@ test.describe('college cost inflation programmatic SEO extra coverage', () => {
         page.getByRole('heading', { level: 1, name: record.question }),
       ).toBeVisible();
       expect(await page.locator('tbody tr').count()).toBeGreaterThan(0);
+    });
+  }
+});
+
+test.describe('net worth programmatic SEO extra coverage', () => {
+  test('examples index exposes and searches all net worth pages', async ({
+    page,
+  }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    const response = await page.goto('/calculators/net-worth/examples/', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    expect(response?.ok()).toBe(true);
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Net Worth Examples' }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.querySelectorAll('h1').length),
+    ).toBe(1);
+    await expect(
+      page.locator('[data-net-worth-example-group]'),
+    ).toHaveCount(5);
+    await expect(
+      page.locator('[data-net-worth-example-card]'),
+    ).toHaveCount(EXPECTED_NET_WORTH_SEO_PAGE_COUNT);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://automatorlabs.co/calculators/net-worth/examples/',
+    );
+
+    const searchBox = page.getByRole('searchbox', {
+      name: 'Search net worth examples',
+    });
+    await searchBox.fill('underwater');
+    const visibleCount = await page
+      .locator('[data-net-worth-example-card]:visible')
+      .count();
+    expect(visibleCount).toBeGreaterThan(0);
+    expect(visibleCount).toBeLessThan(EXPECTED_NET_WORTH_SEO_PAGE_COUNT);
+    await page.getByRole('button', { name: 'Clear search' }).click();
+    await expect(
+      page.locator('[data-net-worth-example-card]:visible'),
+    ).toHaveCount(EXPECTED_NET_WORTH_SEO_PAGE_COUNT);
+    expect(pageErrors).toEqual([]);
+  });
+
+  const oneSlugPerIntent = [
+    {
+      intent: 'young-professional',
+      slug: 'young-professional-cash-3000-investments-2000-realestate-0-crypto-0-creditcarddebt-1500-loans-12000-mortgage-0',
+    },
+    {
+      intent: 'new-homeowner',
+      slug: 'new-homeowner-cash-6000-investments-10000-realestate-300000-crypto-0-creditcarddebt-0-loans-5000-mortgage-240000',
+    },
+    {
+      intent: 'debt-free-saver',
+      slug: 'debt-free-saver-cash-20000-investments-100000-realestate-0-crypto-3000-creditcarddebt-0-loans-0-mortgage-0',
+    },
+    {
+      intent: 'high-net-worth-investor',
+      slug: 'high-net-worth-investor-cash-40000-investments-350000-realestate-450000-crypto-15000-creditcarddebt-1500-loans-0-mortgage-250000',
+    },
+    {
+      intent: 'underwater-household',
+      slug: 'underwater-household-cash-1000-investments-500-realestate-150000-crypto-0-creditcarddebt-6000-loans-15000-mortgage-160000',
+    },
+  ] as const;
+
+  for (const { intent, slug } of oneSlugPerIntent) {
+    test(`renders the ${intent} representative page`, async ({ page }) => {
+      const record = netWorthSeoRecords.find(
+        (candidate) => candidate.slug === slug,
+      );
+      if (!record) {
+        throw new Error(`Missing net worth record: ${slug}`);
+      }
+
+      const url = `/calculators/net-worth/${record.slug}/`;
+      const response = await page.goto(url, { waitUntil: 'domcontentloaded' });
+
+      expect(response?.ok()).toBe(true);
+      await expect(
+        page.getByRole('heading', { level: 1, name: record.question }),
+      ).toBeVisible();
+      expect(await page.locator('tbody tr').count()).toBeGreaterThan(0);
+
+      if (intent === 'underwater-household') {
+        await expect(
+          page.getByRole('heading', { level: 2 }).filter({ hasText: '-$' }),
+        ).toBeVisible();
+      }
     });
   }
 });

@@ -1,0 +1,235 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  EXPECTED_NET_WORTH_SEO_PAGE_COUNT,
+  netWorthSeoRecords,
+} from '../../../../data/programmatic-seo/net-worth';
+import { createProgrammaticExampleGroups } from '../../../../lib/programmatic-seo/examples';
+import { auditNetWorthSeoRecords } from '../../../../lib/programmatic-seo/net-worth';
+import {
+  createBreadcrumbSchema,
+  serializeJsonLd,
+} from '../../../../lib/programmatic-seo/schema';
+
+const audit = auditNetWorthSeoRecords(
+  netWorthSeoRecords,
+  EXPECTED_NET_WORTH_SEO_PAGE_COUNT,
+);
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = serializeJsonLd(
+  createBreadcrumbSchema(
+    [
+      { name: 'Home', url: '/' },
+      { name: 'Calculators', url: '/calculators/' },
+      {
+        name: 'Net Worth Calculator',
+        url: '/calculators/net-worth-calculator/',
+      },
+      { name: 'Examples', url: '/calculators/net-worth/examples/' },
+    ],
+    site,
+  ),
+);
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+const groups = createProgrammaticExampleGroups(netWorthSeoRecords, [
+  {
+    id: 'young-professional',
+    title: 'Young Professional Examples',
+    description:
+      'Examples with no real estate, small investments, and student loan or credit card debt.',
+    matches: (record) => record.intent === 'young-professional',
+  },
+  {
+    id: 'new-homeowner',
+    title: 'New Homeowner Examples',
+    description:
+      'Examples where real estate and a mortgage dominate the balance sheet.',
+    matches: (record) => record.intent === 'new-homeowner',
+  },
+  {
+    id: 'debt-free-saver',
+    title: 'Debt-Free Saver Examples',
+    description: 'Examples with solid assets and zero liabilities.',
+    matches: (record) => record.intent === 'debt-free-saver',
+  },
+  {
+    id: 'high-net-worth-investor',
+    title: 'High-Net-Worth Investor Examples',
+    description: 'Examples with large investment and real estate holdings and moderate leverage.',
+    matches: (record) => record.intent === 'high-net-worth-investor',
+  },
+  {
+    id: 'underwater-household',
+    title: 'Underwater Household Examples',
+    description: 'Examples where liabilities exceed assets, producing a negative net worth.',
+    matches: (record) => record.intent === 'underwater-household',
+  },
+]);
+---
+
+<Layout
+  title="Net Worth Examples | AutomatorLabs"
+  description={`Browse ${audit.actualCount} net worth examples covering young professionals, new homeowners, debt-free savers, high-net-worth investors, and underwater households.`}
+>
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/calculators/">Calculators</a></li>
+        <li>
+          <a href="/calculators/net-worth-calculator/">
+            Net Worth Calculator
+          </a>
+        </li>
+        <li aria-current="page">Examples</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Net worth scenario library</p>
+      <h1>Net Worth Examples</h1>
+      <p class="intro">
+        Browse {audit.actualCount} worked examples covering young
+        professionals, new homeowners, debt-free savers, high-net-worth
+        investors, and underwater households.
+      </p>
+      <a class="primary-link" href="/calculators/net-worth-calculator/">
+        Calculate your own net worth
+      </a>
+      <a class="secondary-link" href="/examples/">
+        Browse all financial examples
+      </a>
+    </header>
+
+    <section class="example-search" aria-label="Search net worth examples">
+      <label for="net-worth-example-search">
+        Search net worth examples
+      </label>
+      <div class="search-row">
+        <input
+          id="net-worth-example-search"
+          type="search"
+          placeholder="Try 3000, underwater, or mortgage"
+          autocomplete="off"
+          aria-controls="net-worth-example-groups"
+          aria-describedby="net-worth-example-count"
+        />
+        <button id="clear-net-worth-example-search" type="button" hidden>
+          Clear search
+        </button>
+      </div>
+      <p id="net-worth-example-count" aria-live="polite">
+        Showing {audit.actualCount} examples
+      </p>
+    </section>
+
+    <div id="net-worth-example-groups" class="example-groups">
+      {groups.map((group) => (
+        <section
+          class="example-group"
+          aria-labelledby={`${group.id}-heading`}
+          data-net-worth-example-group
+        >
+          <header>
+            <div>
+              <h2 id={`${group.id}-heading`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <span>{group.records.length} examples</span>
+          </header>
+
+          <ul>
+            {group.records.map((record) => (
+              <li
+                data-net-worth-example-card
+                data-search-text={[
+                  record.question,
+                  record.slug,
+                  record.intent,
+                  record.cash,
+                  record.investments,
+                  record.realEstate,
+                  record.mortgage,
+                ]
+                  .join(' ')
+                  .toLocaleLowerCase()}
+              >
+                <a href={`/calculators/net-worth/${record.slug}/`}>
+                  <strong>{record.question}</strong>
+                  <span>
+                    {currency.format(record.cash)} cash {' · '}
+                    {currency.format(record.investments)} investments {' · '}
+                    {currency.format(record.realEstate)} real estate
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <p id="no-net-worth-examples" class="no-results" role="status" hidden>
+      No net worth examples found. Try a dollar amount, intent, or asset/liability type.
+    </p>
+  </main>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    '#net-worth-example-search',
+  );
+  const clearButton = document.querySelector<HTMLButtonElement>(
+    '#clear-net-worth-example-search',
+  );
+  const count = document.querySelector<HTMLElement>(
+    '#net-worth-example-count',
+  );
+  const noResults = document.querySelector<HTMLElement>(
+    '#no-net-worth-examples',
+  );
+  const cards = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-net-worth-example-card]'),
+  );
+  const groups = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-net-worth-example-group]'),
+  );
+
+  function updateExamples() {
+    if (!input || !count || !noResults) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matches =
+        query === '' || (card.dataset.searchText ?? '').includes(query);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    });
+
+    groups.forEach((group) => {
+      group.hidden = !group.querySelector(
+        '[data-net-worth-example-card]:not([hidden])',
+      );
+    });
+
+    count.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'example' : 'examples'}`;
+    noResults.hidden = visibleCount !== 0;
+    if (clearButton) clearButton.hidden = query === '';
+  }
+
+  input?.addEventListener('input', updateExamples);
+  clearButton?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    updateExamples();
+    input.focus();
+  });
+</script>

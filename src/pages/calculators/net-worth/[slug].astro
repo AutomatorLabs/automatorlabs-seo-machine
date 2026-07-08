@@ -1,0 +1,26 @@
+---
+import ProgrammaticSeoPage from '../../../components/programmatic-seo/ProgrammaticSeoPage.astro';
+import {
+  EXPECTED_NET_WORTH_SEO_PAGE_COUNT,
+  netWorthSeoRecords,
+} from '../../../data/programmatic-seo/net-worth';
+import {
+  auditNetWorthSeoRecords,
+  createNetWorthSeoPage,
+} from '../../../lib/programmatic-seo/net-worth';
+
+auditNetWorthSeoRecords(netWorthSeoRecords, EXPECTED_NET_WORTH_SEO_PAGE_COUNT);
+
+export function getStaticPaths() {
+  return netWorthSeoRecords.map((record) => ({
+    params: { slug: record.slug },
+    props: {
+      page: createNetWorthSeoPage(record, netWorthSeoRecords),
+    },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<ProgrammaticSeoPage page={page} />

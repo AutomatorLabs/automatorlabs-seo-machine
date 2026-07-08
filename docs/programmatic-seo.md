@@ -15,9 +15,9 @@ Its job is to:
 
 Verified from source on 2026-07-01:
 
-- 54 live clusters in `src/data/programmatic-seo/clusters.ts`
+- 55 live clusters in `src/data/programmatic-seo/clusters.ts`
 - 200 records per cluster
-- 10,800 generated example pages total
+- 11,000 generated example pages total
 - global examples hub at `/examples/`
 
 Current live clusters:
@@ -73,6 +73,7 @@ Current live clusters:
 - Traditional vs Roth 401(k)
 - 529 College Savings
 - College Cost Inflation
+- Net Worth
 - Safe Withdrawal Rate
 - Years to Retirement
 - 4 Percent Rule
@@ -419,6 +420,18 @@ Required surfaces:
 - five intents: four cost-tier intents (community-college, in-state-public, out-of-state-public, private-university) plus one rate-sensitivity intent (high-inflation-scenario) that fixes the education inflation rate at 7% while varying years and duration
 - calculator page examples link is wired directly in `src/pages/calculators/college-cost-inflation-calculator/index.astro` via `exampleItems`
 - paired with the 529 College Savings cluster via calculator-level cross-links in `relatedCalculators` (both directions — this cluster's builder links to the 529 calculator, and Plan 2 added a reciprocal entry to the 529 cluster's builder)
+
+### Net Worth
+
+- calculator: `/calculators/net-worth-calculator/`
+- examples index: `/calculators/net-worth/examples/`
+- generated page route: `/calculators/net-worth/<slug>/`
+- reuses `calculateNetWorth`
+- first cluster with no time/rate dimension at all: `calculateNetWorth` is a pure point-in-time snapshot sum, so this is necessarily single-shot (`showChart: false`, static "Scenario Summary" table)
+- `otherAssets` and `otherLiabilities` are fixed at `$0` for every record (not varying record fields) to keep the 9-input data model manageable — 7 fields vary: `cash` (headline) plus a 6-field bundle of `investments`/`realEstate`/`crypto`/`creditCardDebt`/`loans`/`mortgage`
+- five intents: young-professional, new-homeowner, debt-free-saver, high-net-worth-investor, underwater-household
+- first cluster with a domain-specific sign-invariant audit check (in addition to the standard uniqueness checks): `auditNetWorthSeoRecords` asserts every `underwater-household` record has negative net worth and every `debt-free-saver` record has positive net worth, throwing a build-time error if violated
+- calculator page examples link is wired directly in `src/pages/calculators/net-worth-calculator/index.astro` via `exampleItems` (this calculator uses the generic `CalculatorPage.astro` directly, no specialized wrapper)
 
 ### Debt Cluster Module
 
