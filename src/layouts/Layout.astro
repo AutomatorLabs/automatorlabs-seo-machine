@@ -61,6 +61,13 @@ const socialImageAlt =
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={socialImageUrl} />
 
+		<script
+			type="text/javascript"
+			async
+			src="https://subscribe-forms.beehiiv.com/attribution.js"
+			is:inline
+		></script>
+
 				{import.meta.env.PROD && (
 			<>
 				<script
@@ -127,6 +134,14 @@ const socialImageAlt =
 						GitHub
 					</a>
 				</nav>
+			</div>
+			<div class="footer-newsletter-embed" aria-label="Newsletter signup">
+				<script
+					async
+					src="https://subscribe-forms.beehiiv.com/v3/loader.js"
+					data-beehiiv-form="9b538caf-9b60-4c06-b888-1354870f6cde"
+					is:inline
+				></script>
 			</div>
 		</footer>
 
@@ -370,6 +385,11 @@ const socialImageAlt =
 
 	.footer-inner {
 		min-height: 92px;
+	}
+
+	.footer-newsletter-embed {
+		width: min(1120px, calc(100% - 2rem));
+		margin: 0 auto 1.5rem;
 	}
 
 	@media (max-width: 620px) {
