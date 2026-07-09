@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { rentVsBuyCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredRentVsBuySeoRecords } from '../../../data/programmatic-seo/rent-vs-buy';
 
 const relatedItems = rentVsBuyCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -16,6 +17,10 @@ const exampleItems = [
     title: 'Browse all 200 rent vs buy examples',
     url: '/calculators/rent-vs-buy/examples/',
   },
+  ...featuredRentVsBuySeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/rent-vs-buy/${record.slug}/`,
+  })),
 ];
 ---
 

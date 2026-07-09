@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { netWorthCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredNetWorthSeoRecords } from '../../../data/programmatic-seo/net-worth';
 
 const relatedItems = netWorthCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -12,6 +13,10 @@ const exampleItems = [
     title: 'Browse all 200 net worth examples',
     url: '/calculators/net-worth/examples/',
   },
+  ...featuredNetWorthSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/net-worth/${record.slug}/`,
+  })),
 ];
 ---
 

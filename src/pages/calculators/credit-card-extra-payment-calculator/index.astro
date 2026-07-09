@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { creditCardExtraPaymentCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredCreditCardExtraPaymentSeoRecords } from '../../../data/programmatic-seo/credit-card-extra-payment';
 
 const relatedItems = creditCardExtraPaymentCalculator.relatedIds.flatMap(
   (id) => {
@@ -15,6 +16,10 @@ const exampleItems = [
     title: 'Browse all 200 credit card extra payment examples',
     url: '/calculators/credit-card-extra-payment/examples/',
   },
+  ...featuredCreditCardExtraPaymentSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/credit-card-extra-payment/${record.slug}/`,
+  })),
 ];
 ---
 

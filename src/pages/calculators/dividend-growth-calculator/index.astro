@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { dividendGrowthCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredDividendGrowthSeoRecords } from '../../../data/programmatic-seo/dividend-growth';
 
 const relatedItems = dividendGrowthCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -13,6 +14,10 @@ const exampleItems = [
     title: 'Browse all 200 dividend growth examples',
     url: '/calculators/dividend-growth/examples/',
   },
+  ...featuredDividendGrowthSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/dividend-growth/${record.slug}/`,
+  })),
 ];
 ---
 

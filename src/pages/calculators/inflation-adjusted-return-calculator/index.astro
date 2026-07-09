@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { inflationAdjustedReturnCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredInflationAdjustedReturnSeoRecords } from '../../../data/programmatic-seo/inflation-adjusted-return';
 
 const relatedItems = inflationAdjustedReturnCalculator.relatedIds.flatMap(
   (id) => {
@@ -14,6 +15,10 @@ const exampleItems = [
     title: 'Browse all 200 inflation-adjusted return examples',
     url: '/calculators/inflation-adjusted-return/examples/',
   },
+  ...featuredInflationAdjustedReturnSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/inflation-adjusted-return/${record.slug}/`,
+  })),
 ];
 ---
 

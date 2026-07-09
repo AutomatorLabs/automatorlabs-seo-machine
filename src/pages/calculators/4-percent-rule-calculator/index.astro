@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { fourPercentRuleCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredFourPercentRuleSeoRecords } from '../../../data/programmatic-seo/four-percent-rule';
 
 const relatedItems = fourPercentRuleCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -11,6 +12,16 @@ const guideItems = [
   { title: 'Planning Retirement Withdrawals', url: '/guides/retirement-withdrawals/' },
   { title: 'A Beginner’s Guide to FIRE', url: '/guides/fire/' },
   { title: 'FIRE vs Coast FIRE', url: '/guides/fire-vs-coast-fire/' },
+];
+const exampleItems = [
+  {
+    title: 'Browse all 200 4% rule examples',
+    url: '/calculators/4-percent-rule/examples/',
+  },
+  ...featuredFourPercentRuleSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/4-percent-rule/${record.slug}/`,
+  })),
 ];
 ---
 
@@ -23,6 +34,7 @@ const guideItems = [
   faq={fourPercentRuleCalculator.faq}
   relatedItems={relatedItems}
   guideItems={guideItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

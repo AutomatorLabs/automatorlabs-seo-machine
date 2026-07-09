@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { studentLoanCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredStudentLoanSeoRecords } from '../../../data/programmatic-seo/student-loan';
 
 const relatedItems = studentLoanCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -13,6 +14,10 @@ const exampleItems = [
     title: 'Browse all 200 student loan examples',
     url: '/calculators/student-loan/examples/',
   },
+  ...featuredStudentLoanSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/student-loan/${record.slug}/`,
+  })),
 ];
 ---
 

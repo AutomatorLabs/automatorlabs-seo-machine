@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { helocCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredHelocSeoRecords } from '../../../data/programmatic-seo/heloc';
 
 const relatedItems = helocCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -13,6 +14,10 @@ const exampleItems = [
     title: 'Browse all 200 HELOC examples',
     url: '/calculators/heloc/examples/',
   },
+  ...featuredHelocSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/heloc/${record.slug}/`,
+  })),
 ];
 ---
 

@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { retirementWithdrawalCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredRetirementWithdrawalSeoRecords } from '../../../data/programmatic-seo/retirement-withdrawal';
 
 const relatedItems = retirementWithdrawalCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -11,6 +12,16 @@ const guideItems = [
   { title: 'Planning Retirement Withdrawals', url: '/guides/retirement-withdrawals/' },
   { title: 'A Beginner’s Guide to FIRE', url: '/guides/fire/' },
   { title: 'Roth IRA vs Traditional IRA', url: '/guides/roth-vs-traditional-ira/' },
+];
+const exampleItems = [
+  {
+    title: 'Browse all 200 retirement withdrawal examples',
+    url: '/calculators/retirement-withdrawal/examples/',
+  },
+  ...featuredRetirementWithdrawalSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/retirement-withdrawal/${record.slug}/`,
+  })),
 ];
 ---
 
@@ -23,6 +34,7 @@ const guideItems = [
   faq={retirementWithdrawalCalculator.faq}
   relatedItems={relatedItems}
   guideItems={guideItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

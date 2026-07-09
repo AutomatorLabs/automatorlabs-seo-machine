@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { lumpSumVsDcaCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredLumpSumVsDcaSeoRecords } from '../../../data/programmatic-seo/lump-sum-vs-dca';
 
 const relatedItems = lumpSumVsDcaCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -18,6 +19,10 @@ const exampleItems = [
     title: 'Browse all 200 lump sum vs DCA examples',
     url: '/calculators/lump-sum-vs-dca/examples/',
   },
+  ...featuredLumpSumVsDcaSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/lump-sum-vs-dca/${record.slug}/`,
+  })),
 ];
 ---
 

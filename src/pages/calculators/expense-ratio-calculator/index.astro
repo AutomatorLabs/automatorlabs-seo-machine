@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { expenseRatioCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredExpenseRatioSeoRecords } from '../../../data/programmatic-seo/expense-ratio';
 
 const relatedItems = expenseRatioCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -13,6 +14,10 @@ const exampleItems = [
     title: 'Browse all 200 expense ratio examples',
     url: '/calculators/expense-ratio/examples/',
   },
+  ...featuredExpenseRatioSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/expense-ratio/${record.slug}/`,
+  })),
 ];
 ---
 

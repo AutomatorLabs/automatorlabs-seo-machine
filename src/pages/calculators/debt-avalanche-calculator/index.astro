@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { debtAvalancheCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredDebtAvalancheSeoRecords } from '../../../data/programmatic-seo/debt-avalanche';
 
 const relatedItems = debtAvalancheCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -19,6 +20,10 @@ const exampleItems = [
     title: 'Browse all 200 debt avalanche examples',
     url: '/calculators/debt-avalanche/examples/',
   },
+  ...featuredDebtAvalancheSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/debt-avalanche/${record.slug}/`,
+  })),
 ];
 ---
 

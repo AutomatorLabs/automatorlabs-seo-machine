@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { investmentFeeCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredInvestmentFeeSeoRecords } from '../../../data/programmatic-seo/investment-fee';
 
 const relatedItems = investmentFeeCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -12,6 +13,10 @@ const exampleItems = [
     title: 'Browse all 200 investment fee examples',
     url: '/calculators/investment-fee/examples/',
   },
+  ...featuredInvestmentFeeSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/investment-fee/${record.slug}/`,
+  })),
 ];
 ---
 

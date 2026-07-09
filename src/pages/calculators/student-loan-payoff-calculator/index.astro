@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { studentLoanPayoffCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredStudentLoanPayoffSeoRecords } from '../../../data/programmatic-seo/student-loan-payoff';
 
 const relatedItems = studentLoanPayoffCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -13,6 +14,10 @@ const exampleItems = [
     title: 'Browse all 200 student loan payoff examples',
     url: '/calculators/student-loan-payoff/examples/',
   },
+  ...featuredStudentLoanPayoffSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/student-loan-payoff/${record.slug}/`,
+  })),
 ];
 ---
 

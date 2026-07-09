@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { closingCostCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredClosingCostSeoRecords } from '../../../data/programmatic-seo/closing-cost';
 
 const relatedItems = closingCostCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -13,6 +14,10 @@ const exampleItems = [
     title: 'Browse all 200 closing cost examples',
     url: '/calculators/closing-cost/examples/',
   },
+  ...featuredClosingCostSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/closing-cost/${record.slug}/`,
+  })),
 ];
 ---
 

@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { emergencyFundCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredEmergencyFundSeoRecords } from '../../../data/programmatic-seo/emergency-fund';
 
 const relatedItems = emergencyFundCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -17,6 +18,10 @@ const exampleItems = [
     title: 'Browse all 200 emergency fund examples',
     url: '/calculators/emergency-fund/examples/',
   },
+  ...featuredEmergencyFundSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/emergency-fund/${record.slug}/`,
+  })),
 ];
 ---
 

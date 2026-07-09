@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { collegeCostInflationCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredCollegeCostInflationSeoRecords } from '../../../data/programmatic-seo/college-cost-inflation';
 
 const relatedItems = collegeCostInflationCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -12,6 +13,10 @@ const exampleItems = [
     title: 'Browse all 200 college cost inflation examples',
     url: '/calculators/college-cost-inflation/examples/',
   },
+  ...featuredCollegeCostInflationSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/college-cost-inflation/${record.slug}/`,
+  })),
 ];
 ---
 

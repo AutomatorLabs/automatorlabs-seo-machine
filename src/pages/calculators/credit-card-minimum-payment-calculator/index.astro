@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { creditCardMinimumPaymentCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredCreditCardMinimumPaymentSeoRecords } from '../../../data/programmatic-seo/credit-card-minimum-payment';
 
 const relatedItems = creditCardMinimumPaymentCalculator.relatedIds.flatMap(
   (id) => {
@@ -15,6 +16,10 @@ const exampleItems = [
     title: 'Browse all 200 credit card minimum payment examples',
     url: '/calculators/credit-card-minimum-payment/examples/',
   },
+  ...featuredCreditCardMinimumPaymentSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/credit-card-minimum-payment/${record.slug}/`,
+  })),
 ];
 ---
 

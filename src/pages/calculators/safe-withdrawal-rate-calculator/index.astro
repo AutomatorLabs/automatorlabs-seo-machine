@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { safeWithdrawalRateCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredSafeWithdrawalRateSeoRecords } from '../../../data/programmatic-seo/safe-withdrawal-rate';
 
 const relatedItems = safeWithdrawalRateCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -11,6 +12,16 @@ const guideItems = [
   { title: 'Planning Retirement Withdrawals', url: '/guides/retirement-withdrawals/' },
   { title: 'A Beginner’s Guide to FIRE', url: '/guides/fire/' },
   { title: 'FIRE vs Coast FIRE', url: '/guides/fire-vs-coast-fire/' },
+];
+const exampleItems = [
+  {
+    title: 'Browse all 200 safe withdrawal rate examples',
+    url: '/calculators/safe-withdrawal-rate/examples/',
+  },
+  ...featuredSafeWithdrawalRateSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/safe-withdrawal-rate/${record.slug}/`,
+  })),
 ];
 ---
 
@@ -23,6 +34,7 @@ const guideItems = [
   faq={safeWithdrawalRateCalculator.faq}
   relatedItems={relatedItems}
   guideItems={guideItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

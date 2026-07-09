@@ -2,15 +2,22 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { fireCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredFireSeoRecords } from '../../../data/programmatic-seo/fire';
 
 const relatedItems = fireCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
 const guideItems = [
-  { title: 'Browse 30 FIRE Examples', url: '/calculators/fire/examples/' },
   { title: 'FIRE vs Coast FIRE', url: '/guides/fire-vs-coast-fire/' },
   { title: 'Lean FIRE vs Fat FIRE', url: '/guides/lean-fire-vs-fat-fire/' },
+];
+const exampleItems = [
+  { title: 'Browse all 200 FIRE examples', url: '/calculators/fire/examples/' },
+  ...featuredFireSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/fire/${record.slug}/`,
+  })),
 ];
 ---
 
@@ -23,6 +30,7 @@ const guideItems = [
   faq={fireCalculator.faq}
   relatedItems={relatedItems}
   guideItems={guideItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

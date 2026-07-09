@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { creditCardInterestCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredCreditCardInterestSeoRecords } from '../../../data/programmatic-seo/credit-card-interest';
 
 const relatedItems = creditCardInterestCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -13,6 +14,10 @@ const exampleItems = [
     title: 'Browse all 200 credit card interest examples',
     url: '/calculators/credit-card-interest/examples/',
   },
+  ...featuredCreditCardInterestSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/credit-card-interest/${record.slug}/`,
+  })),
 ];
 ---
 

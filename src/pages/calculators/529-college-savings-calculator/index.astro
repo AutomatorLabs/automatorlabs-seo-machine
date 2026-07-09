@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { collegeSavings529Calculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredCollegeSavings529SeoRecords } from '../../../data/programmatic-seo/529-college-savings';
 
 const relatedItems = collegeSavings529Calculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -12,6 +13,10 @@ const exampleItems = [
     title: 'Browse all 200 529 college savings examples',
     url: '/calculators/529-college-savings/examples/',
   },
+  ...featuredCollegeSavings529SeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/529-college-savings/${record.slug}/`,
+  })),
 ];
 ---
 

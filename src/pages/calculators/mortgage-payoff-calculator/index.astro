@@ -2,11 +2,31 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { mortgagePayoffCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredMortgagePayoffSeoRecords } from '../../../data/programmatic-seo/mortgage-payoff';
 
 const relatedItems = mortgagePayoffCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+
+const exampleItems = [
+  {
+    title: 'Browse all 200 mortgage payoff examples',
+    url: '/calculators/mortgage-payoff/examples/',
+  },
+  {
+    title: 'Pay off a $250,000 mortgage at 6% for 30 years with $500 extra',
+    url: '/calculators/mortgage-payoff/mortgage-payoff-250000-at-6-percent-for-30-years-with-500-extra/',
+  },
+  {
+    title: 'Pay off a $500,000 mortgage at 6.5% for 30 years with $500 extra',
+    url: '/calculators/mortgage-payoff/mortgage-payoff-500000-at-6-5-percent-for-30-years-with-500-extra/',
+  },
+  ...featuredMortgagePayoffSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/mortgage-payoff/${record.slug}/`,
+  })),
+];
 ---
 
 <CalculatorPage
@@ -18,20 +38,7 @@ const relatedItems = mortgagePayoffCalculator.relatedIds.flatMap((id) => {
   faq={mortgagePayoffCalculator.faq}
   relatedItems={relatedItems}
   exampleHeading="Mortgage Payoff Examples"
-  exampleItems={[
-    {
-      title: 'Browse all 200 mortgage payoff examples',
-      url: '/calculators/mortgage-payoff/examples/',
-    },
-    {
-      title: 'Pay off a $250,000 mortgage at 6% for 30 years with $500 extra',
-      url: '/calculators/mortgage-payoff/mortgage-payoff-250000-at-6-percent-for-30-years-with-500-extra/',
-    },
-    {
-      title: 'Pay off a $500,000 mortgage at 6.5% for 30 years with $500 extra',
-      url: '/calculators/mortgage-payoff/mortgage-payoff-500000-at-6-5-percent-for-30-years-with-500-extra/',
-    },
-  ]}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

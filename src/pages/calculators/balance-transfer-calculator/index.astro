@@ -2,11 +2,22 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { balanceTransferCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredBalanceTransferSeoRecords } from '../../../data/programmatic-seo/debt';
 
 const relatedItems = balanceTransferCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
+const exampleItems = [
+  {
+    title: 'Browse all 200 balance transfer examples',
+    url: '/calculators/balance-transfer/examples/',
+  },
+  ...featuredBalanceTransferSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/balance-transfer/${record.slug}/`,
+  })),
+];
 ---
 
 <CalculatorPage
@@ -17,6 +28,7 @@ const relatedItems = balanceTransferCalculator.relatedIds.flatMap((id) => {
   outputs={balanceTransferCalculator.outputs}
   faq={balanceTransferCalculator.faq}
   relatedItems={relatedItems}
+  exampleItems={exampleItems}
 >
   <script>
     import { trackSuccessfulCalculation } from '../../../lib/analytics';

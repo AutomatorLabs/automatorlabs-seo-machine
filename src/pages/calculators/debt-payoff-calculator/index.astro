@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { debtPayoffCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredDebtPayoffSeoRecords } from '../../../data/programmatic-seo/debt-payoff';
 
 const relatedItems = debtPayoffCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -13,6 +14,10 @@ const exampleItems = [
     title: 'Browse all 200 debt payoff examples',
     url: '/calculators/debt-payoff/examples/',
   },
+  ...featuredDebtPayoffSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/debt-payoff/${record.slug}/`,
+  })),
 ];
 ---
 

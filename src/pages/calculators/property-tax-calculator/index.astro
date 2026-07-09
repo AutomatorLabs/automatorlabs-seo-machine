@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { propertyTaxCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredPropertyTaxSeoRecords } from '../../../data/programmatic-seo/property-tax';
 
 const relatedItems = propertyTaxCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -13,6 +14,10 @@ const exampleItems = [
     title: 'Browse all 200 property tax examples',
     url: '/calculators/property-tax/examples/',
   },
+  ...featuredPropertyTaxSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/property-tax/${record.slug}/`,
+  })),
 ];
 ---
 

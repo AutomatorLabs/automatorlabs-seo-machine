@@ -2,6 +2,7 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { loanPaymentCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
+import { featuredLoanPaymentSeoRecords } from '../../../data/programmatic-seo/loan-payment';
 
 const relatedItems = loanPaymentCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
@@ -13,6 +14,10 @@ const exampleItems = [
     title: 'Browse all 200 loan payment examples',
     url: '/calculators/loan-payment/examples/',
   },
+  ...featuredLoanPaymentSeoRecords.map((record) => ({
+    title: record.question,
+    url: `/calculators/loan-payment/${record.slug}/`,
+  })),
 ];
 ---
 
