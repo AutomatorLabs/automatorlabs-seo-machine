@@ -265,3 +265,13 @@ export const expenseRatioSeoRecords: ExpenseRatioSeoRecord[] = [
   ...retirementPortfolioFeesSeoRecords,
   ...taxableBrokerageFeesSeoRecords,
 ];
+
+export const featuredExpenseRatioSeoRecords = expenseRatioSeoRecords.filter((record) =>
+  [
+    'annual-fund-fees-50000-at-0-35-expense-ratio-for-25-years',
+    'etf-expense-ratio-50000-at-0-12-percent-for-25-years',
+    'mutual-fund-expense-ratio-50000-at-0-95-percent-for-25-years',
+    'retirement-portfolio-fees-250000-at-0-35-expense-ratio-for-30-years',
+    'taxable-brokerage-fees-50000-at-0-25-expense-ratio-for-25-years',
+  ].includes(record.slug),
+);

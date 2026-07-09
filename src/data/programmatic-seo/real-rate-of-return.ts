@@ -139,3 +139,13 @@ export const realRateOfReturnSeoRecords: RealRateOfReturnSeoRecord[] = [
   ...stockPortfolioRealRateSeoRecords,
   ...retirementPlanningRealRateSeoRecords,
 ];
+
+export const featuredRealRateOfReturnSeoRecords = realRateOfReturnSeoRecords.filter((record) =>
+  [
+    'savings-account-real-return-3-nominal-return-with-3-5-inflation',
+    'bond-portfolio-real-return-4-nominal-return-with-3-5-inflation',
+    'balanced-portfolio-real-return-6-nominal-return-with-3-5-inflation',
+    'stock-portfolio-real-return-9-nominal-return-with-3-5-inflation',
+    'retirement-real-return-6-nominal-return-with-3-5-inflation',
+  ].includes(record.slug),
+);

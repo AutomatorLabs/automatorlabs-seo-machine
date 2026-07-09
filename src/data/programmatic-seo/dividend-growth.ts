@@ -220,3 +220,13 @@ export const dividendGrowthSeoRecords: DividendGrowthSeoRecord[] = [
   ...portfolioIncomeGrowthSeoRecords,
   ...retirementDividendIncomeSeoRecords,
 ];
+
+export const featuredDividendGrowthSeoRecords = dividendGrowthSeoRecords.filter((record) =>
+  [
+    'annual-dividend-income-3600-growing-at-7-percent-for-5-years',
+    'reinvested-dividend-income-2400-at-8-percent-for-10-years',
+    'dividend-snowball-1200-at-9-percent-for-15-years',
+    'portfolio-dividend-income-9000-at-3-percent-for-10-years',
+    'retirement-dividend-income-24000-at-6-percent-for-10-years',
+  ].includes(record.slug),
+);

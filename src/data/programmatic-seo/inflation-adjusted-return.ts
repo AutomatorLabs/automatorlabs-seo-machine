@@ -216,3 +216,13 @@ export const inflationAdjustedReturnSeoRecords: InflationAdjustedReturnSeoRecord
     ...retirementPortfolioInflationAdjustedReturnSeoRecords,
     ...taxableBrokerageInflationAdjustedReturnSeoRecords,
   ];
+
+export const featuredInflationAdjustedReturnSeoRecords = inflationAdjustedReturnSeoRecords.filter((record) =>
+  [
+    'conservative-inflation-adjusted-return-50000-at-4-5-percent-with-3-inflation-for-25-years',
+    'balanced-inflation-adjusted-return-50000-at-6-5-percent-with-3-inflation-for-25-years',
+    'growth-inflation-adjusted-return-50000-at-8-5-percent-with-3-inflation-for-25-years',
+    'retirement-inflation-adjusted-return-250000-at-6-percent-with-3-5-inflation-for-30-years',
+    'taxable-inflation-adjusted-return-50000-at-7-percent-with-3-5-inflation-for-25-years',
+  ].includes(record.slug),
+);

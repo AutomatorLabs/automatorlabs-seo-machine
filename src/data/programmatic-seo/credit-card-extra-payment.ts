@@ -164,3 +164,13 @@ export const creditCardExtraPaymentSeoRecords: CreditCardExtraPaymentSeoRecord[]
       ),
     ),
   ];
+
+export const featuredCreditCardExtraPaymentSeoRecords = creditCardExtraPaymentSeoRecords.filter((record) =>
+  [
+    'starter-balance-3000-balance-at-21-99-apr-150-payment-50-extra',
+    'average-balance-10000-balance-at-21-99-apr-275-payment-50-extra',
+    'high-apr-7000-balance-at-28-99-apr-250-payment-75-extra',
+    'aggressive-extra-10000-balance-at-22-99-apr-275-payment-125-extra',
+    'large-balance-25000-balance-at-21-99-apr-600-payment-100-extra',
+  ].includes(record.slug),
+);

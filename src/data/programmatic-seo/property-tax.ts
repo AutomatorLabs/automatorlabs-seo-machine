@@ -171,3 +171,13 @@ export const propertyTaxSeoRecords: PropertyTaxSeoRecord[] = [
     ),
   ),
 ];
+
+export const featuredPropertyTaxSeoRecords = propertyTaxSeoRecords.filter((record) =>
+  [
+    'starter-home-350000-home-1-1-tax-100-assessed-3-growth-20-years',
+    'move-up-home-700000-home-1-2-tax-100-assessed-3-growth-20-years',
+    'high-tax-area-600000-home-2-3-tax-100-assessed-3-5-growth-20-years',
+    'assessment-growth-650000-home-1-3-tax-100-assessed-3-growth-25-years',
+    'long-horizon-700000-home-1-25-tax-100-assessed-3-growth-30-years',
+  ].includes(record.slug),
+);

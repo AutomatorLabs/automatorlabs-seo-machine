@@ -212,3 +212,13 @@ export const emergencyFundSeoRecords: EmergencyFundSeoRecord[] = [
   ...jobTransitionEmergencyFundSeoRecords,
   ...familyEmergencyFundSeoRecords,
 ];
+
+export const featuredEmergencyFundSeoRecords = emergencyFundSeoRecords.filter((record) =>
+  [
+    'starter-emergency-fund-2500-monthly-expenses-2-months-750-saved-500-monthly',
+    'three-month-emergency-fund-3000-monthly-expenses-3-months-2500-saved-700-monthly',
+    'six-month-emergency-fund-4000-monthly-expenses-6-months-10000-saved-1000-monthly',
+    'job-transition-emergency-fund-3500-monthly-expenses-6-months-5000-saved-900-monthly',
+    'family-emergency-fund-6000-monthly-expenses-6-months-8000-saved-1500-monthly',
+  ].includes(record.slug),
+);

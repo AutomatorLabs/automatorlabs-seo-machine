@@ -201,3 +201,13 @@ export const lumpSumVsDcaSeoRecords: LumpSumVsDcaSeoRecord[] = [
   ...taxableLumpSumVsDcaSeoRecords,
   ...volatileLumpSumVsDcaSeoRecords,
 ];
+
+export const featuredLumpSumVsDcaSeoRecords = lumpSumVsDcaSeoRecords.filter((record) =>
+  [
+    'lump-sum-vs-dca-36000-at-2000-monthly-8-percent-for-6-years',
+    'windfall-lump-sum-vs-dca-75000-at-3000-monthly-8-percent-for-7-years',
+    'retirement-rollover-lump-sum-vs-dca-150000-at-6000-monthly-7-5-percent-for-7-years',
+    'taxable-lump-sum-vs-dca-50000-at-2500-monthly-7-5-percent-for-7-years',
+    'volatile-market-lump-sum-vs-dca-36000-at-2000-monthly-7-percent-for-6-years',
+  ].includes(record.slug),
+);

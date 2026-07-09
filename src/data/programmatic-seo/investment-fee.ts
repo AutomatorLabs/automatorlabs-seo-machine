@@ -209,3 +209,13 @@ export const investmentFeeSeoRecords: InvestmentFeeSeoRecord[] = [
   ...taxableInvestmentFeeSeoRecords,
   ...fundFeeDragSeoRecords,
 ];
+
+export const featuredInvestmentFeeSeoRecords = investmentFeeSeoRecords.filter((record) =>
+  [
+    'investment-fees-50000-starting-1000-monthly-0-75-fee-for-30-years',
+    'retirement-investment-fees-250000-starting-1250-monthly-0-75-fee-for-30-years',
+    'advisor-fee-drag-100000-starting-1250-monthly-1-25-fee-for-30-years',
+    'taxable-investment-fees-50000-starting-1000-monthly-0-8-fee-for-30-years',
+    'fund-fee-drag-50000-starting-1000-monthly-0-7-fee-for-30-years',
+  ].includes(record.slug),
+);

@@ -171,3 +171,13 @@ export const mortgageRecastSeoRecords: MortgageRecastSeoRecord[] = [
     ),
   ),
 ];
+
+export const featuredMortgageRecastSeoRecords = mortgageRecastSeoRecords.filter((record) =>
+  [
+    'starter-recast-300000-balance-5-5-rate-25-years-30000-recast-300-fee',
+    'move-up-home-650000-balance-5-75-rate-25-years-60000-recast-350-fee',
+    'retirement-cashflow-500000-balance-5-25-rate-18-years-100000-recast-350-fee',
+    'low-fee-450000-balance-5-5-rate-25-years-50000-recast-150-fee',
+    'large-balance-1200000-balance-6-rate-30-years-200000-recast-400-fee',
+  ].includes(record.slug),
+);

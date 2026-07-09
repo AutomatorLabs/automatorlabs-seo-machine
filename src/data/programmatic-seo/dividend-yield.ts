@@ -254,3 +254,13 @@ export const dividendYieldSeoRecords: DividendYieldSeoRecord[] = [
   ...monthlyIncomeDividendYieldSeoRecords,
   ...retirementIncomeDividendYieldSeoRecords,
 ];
+
+export const featuredDividendYieldSeoRecords = dividendYieldSeoRecords.filter((record) =>
+  [
+    'stock-dividend-yield-7-2-annual-dividend-60-share-price-300-shares',
+    'etf-dividend-yield-4-5-annual-dividend-75-share-price-360-shares',
+    'portfolio-dividend-yield-150000-portfolio-3-annual-dividend-60-share-price',
+    'monthly-dividend-income-600-shares-6-annual-dividend-60-share-price',
+    'retirement-dividend-yield-4000-shares-5-annual-dividend-50-share-price',
+  ].includes(record.slug),
+);

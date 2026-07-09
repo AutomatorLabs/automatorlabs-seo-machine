@@ -328,3 +328,13 @@ export const dripSeoRecords: DripSeoRecord[] = [
   ...dividendSnowballDripSeoRecords,
   ...retirementIncomeDripSeoRecords,
 ];
+
+export const featuredDripSeoRecords = dripSeoRecords.filter((record) =>
+  [
+    'stock-drip-300-shares-75-share-price-4-5-yield-20-years',
+    'etf-drip-400-shares-50-share-price-4-2-yield-20-years',
+    'portfolio-drip-50000-starting-4-5-yield-1000-monthly-20-years',
+    'dividend-snowball-300-shares-50-share-price-5-yield-22-years',
+    'retirement-drip-500000-starting-5-yield-20-years',
+  ].includes(record.slug),
+);

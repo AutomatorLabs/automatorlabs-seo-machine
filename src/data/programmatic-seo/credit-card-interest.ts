@@ -168,3 +168,13 @@ export const creditCardInterestSeoRecords: CreditCardInterestSeoRecord[] = [
     ),
   ),
 ];
+
+export const featuredCreditCardInterestSeoRecords = creditCardInterestSeoRecords.filter((record) =>
+  [
+    'monthly-interest-5000-balance-at-21-99-apr-paying-175-with-25-extra',
+    'payoff-timeline-7000-balance-at-19-99-apr-paying-200-with-25-extra',
+    'extra-payment-8000-balance-at-22-99-apr-paying-225-with-75-extra',
+    'high-apr-6000-balance-at-28-99-apr-paying-200-with-25-extra',
+    'large-balance-20000-balance-at-21-99-apr-paying-500-with-75-extra',
+  ].includes(record.slug),
+);

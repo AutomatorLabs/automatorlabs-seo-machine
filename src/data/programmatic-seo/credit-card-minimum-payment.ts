@@ -164,3 +164,13 @@ export const creditCardMinimumPaymentSeoRecords: CreditCardMinimumPaymentSeoReco
       ),
     ),
   ];
+
+export const featuredCreditCardMinimumPaymentSeoRecords = creditCardMinimumPaymentSeoRecords.filter((record) =>
+  [
+    'starter-balance-1500-balance-at-21-99-apr-2-25-percent-minimum-35-floor',
+    'average-balance-7000-balance-at-21-99-apr-2-25-percent-minimum-40-floor',
+    'high-apr-5000-balance-at-28-99-apr-2-25-percent-minimum-45-floor',
+    'low-floor-5000-balance-at-19-99-apr-1-75-percent-minimum-25-floor',
+    'higher-percent-6000-balance-at-19-99-apr-3-5-percent-minimum-45-floor',
+  ].includes(record.slug),
+);

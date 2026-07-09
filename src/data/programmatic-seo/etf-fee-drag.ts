@@ -212,3 +212,13 @@ export const etfFeeDragSeoRecords: EtfFeeDragSeoRecord[] = [
   ...highFeeEtfDragSeoRecords,
 ];
 
+export const featuredEtfFeeDragSeoRecords = etfFeeDragSeoRecords.filter((record) =>
+  [
+    'low-cost-etf-fee-drag-50000-starting-1000-monthly-0-05-vs-0-2-for-30-years',
+    'index-fund-fee-drag-50000-starting-1000-monthly-0-08-vs-0-2-for-30-years',
+    'retirement-etf-fee-drag-250000-starting-1250-monthly-0-08-vs-0-25-for-30-years',
+    'taxable-etf-fee-drag-50000-starting-1000-monthly-0-09-vs-0-24-for-30-years',
+    'high-fee-etf-difference-50000-starting-1000-monthly-0-4-vs-1-1-for-30-years',
+  ].includes(record.slug),
+);
+

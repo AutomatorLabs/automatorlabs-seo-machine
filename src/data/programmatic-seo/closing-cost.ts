@@ -183,3 +183,13 @@ export const closingCostSeoRecords: ClosingCostSeoRecord[] = [
     ),
   ),
 ];
+
+export const featuredClosingCostSeoRecords = closingCostSeoRecords.filter((record) =>
+  [
+    'starter-home-350000-price-52500-down-2-5-closing-4500-fixed-5000-prepaids-500-credits',
+    'conventional-700000-price-175000-down-2-5-closing-5500-fixed-7500-prepaids-500-credits',
+    'lender-credit-600000-price-120000-down-2-75-closing-5500-fixed-8000-prepaids-3000-credits',
+    'high-prepaids-650000-price-162500-down-2-75-closing-5500-fixed-11000-prepaids-1000-credits',
+    'jumbo-home-1500000-price-375000-down-3-closing-10000-fixed-17000-prepaids-1000-credits',
+  ].includes(record.slug),
+);
