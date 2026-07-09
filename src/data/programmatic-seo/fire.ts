@@ -1,4 +1,9 @@
-export type FireSeoIntent = 'spending-target' | 'portfolio-check';
+export type FireSeoIntent =
+  | 'lean-spending-target'
+  | 'regular-spending-target'
+  | 'fat-spending-target'
+  | 'underfunded-portfolio-check'
+  | 'funded-portfolio-check';
 
 export interface FireSeoRecord {
   slug: string;
@@ -10,29 +15,32 @@ export interface FireSeoRecord {
   featured?: boolean;
 }
 
-export const EXPECTED_FIRE_SEO_PAGE_COUNT = 200;
+export const EXPECTED_FIRE_SEO_PAGE_COUNT = 69;
 
-const rateSlug = (rate: number) => rate.toString().replace('.', '-');
-const styleSlug = (style: FireStyle) => style.toLowerCase().replace(/\s+/g, '-');
-
-type FireStyle = 'Lean FIRE' | 'Regular FIRE' | 'Fat FIRE';
-
-function fireStyleForSpending(annualSpending: number): FireStyle {
-  if (annualSpending <= 50000) return 'Lean FIRE';
-  if (annualSpending >= 125000) return 'Fat FIRE';
-  return 'Regular FIRE';
+function spendingStyle(annualSpending: number): 'lean' | 'regular' | 'fat' {
+  if (annualSpending <= 50000) return 'lean';
+  if (annualSpending >= 125000) return 'fat';
+  return 'regular';
 }
 
 function spendingTargetRecord(
   annualSpending: number,
   featured = false,
 ): FireSeoRecord {
+  const style = spendingStyle(annualSpending);
+  const intent = `${style}-spending-target` as FireSeoIntent;
+  const styleLabel =
+    style === 'lean'
+      ? 'Lean FIRE'
+      : style === 'fat'
+        ? 'Fat FIRE'
+        : 'Regular FIRE';
   const spending = annualSpending.toLocaleString('en-US');
 
   return {
-    slug: `retire-spending-${annualSpending}-per-year`,
-    question: `How Much Do I Need to Retire Spending $${spending} per Year?`,
-    intent: 'spending-target',
+    slug: `${intent}-annual-spending-${annualSpending}`,
+    question: `${styleLabel} Number for $${spending} Annual Spending`,
+    intent,
     annualSpending,
     withdrawalRatePercent: 4,
     featured,
@@ -44,13 +52,20 @@ function portfolioCheckRecord(
   annualSpending: number,
   featured = false,
 ): FireSeoRecord {
+  const fireNumberAt4 = annualSpending / 0.04;
+  const intent: FireSeoIntent =
+    portfolioValue < fireNumberAt4
+      ? 'underfunded-portfolio-check'
+      : 'funded-portfolio-check';
+  const label =
+    intent === 'underfunded-portfolio-check' ? 'Underfunded' : 'Funded';
   const portfolio = portfolioValue.toLocaleString('en-US');
   const spending = annualSpending.toLocaleString('en-US');
 
   return {
-    slug: `can-i-retire-with-${portfolioValue}-and-${annualSpending}-spending`,
-    question: `Can I Retire With $${portfolio} and $${spending} Annual Spending?`,
-    intent: 'portfolio-check',
+    slug: `${intent}-portfolio-${portfolioValue}-spending-${annualSpending}`,
+    question: `${label} Check: Can I Retire With $${portfolio} and $${spending} Annual Spending?`,
+    intent,
     annualSpending,
     withdrawalRatePercent: 4,
     portfolioValue,
@@ -58,183 +73,93 @@ function portfolioCheckRecord(
   };
 }
 
-function spendingTargetVariantRecord(
-  annualSpending: number,
-  withdrawalRatePercent: number,
-  style = fireStyleForSpending(annualSpending),
-): FireSeoRecord {
-  const spending = annualSpending.toLocaleString('en-US');
-
-  return {
-    slug: `${styleSlug(style)}-number-for-${annualSpending}-spending-at-${rateSlug(withdrawalRatePercent)}-percent`,
-    question: `${style} Number for $${spending} Annual Spending at ${withdrawalRatePercent}%`,
-    intent: 'spending-target',
-    annualSpending,
-    withdrawalRatePercent,
-  };
-}
-
-function portfolioCheckVariantRecord(
-  portfolioValue: number,
-  annualSpending: number,
-  withdrawalRatePercent: number,
-  style = fireStyleForSpending(annualSpending),
-): FireSeoRecord {
-  const portfolio = portfolioValue.toLocaleString('en-US');
-  const spending = annualSpending.toLocaleString('en-US');
-
-  return {
-    slug: `can-i-retire-with-${portfolioValue}-and-${annualSpending}-spending-at-${rateSlug(withdrawalRatePercent)}-percent-${styleSlug(style)}`,
-    question: `Can I Retire With $${portfolio} and $${spending} Spending at ${withdrawalRatePercent}% for ${style}?`,
-    intent: 'portfolio-check',
-    annualSpending,
-    withdrawalRatePercent,
-    portfolioValue,
-  };
-}
-
-export const coreFireSeoRecords: FireSeoRecord[] = [
-  spendingTargetRecord(24000),
-  spendingTargetRecord(30000),
-  spendingTargetRecord(36000),
-  spendingTargetRecord(40000, true),
-  spendingTargetRecord(45000),
-  spendingTargetRecord(48000),
-  spendingTargetRecord(50000, true),
-  spendingTargetRecord(55000),
-  spendingTargetRecord(60000, true),
-  spendingTargetRecord(65000),
-  spendingTargetRecord(70000),
-  spendingTargetRecord(75000),
-  spendingTargetRecord(80000, true),
-  spendingTargetRecord(90000),
-  spendingTargetRecord(100000, true),
-  spendingTargetRecord(110000),
-  spendingTargetRecord(120000),
-  spendingTargetRecord(125000),
-  spendingTargetRecord(150000),
-  spendingTargetRecord(200000),
-  portfolioCheckRecord(750000, 30000),
-  portfolioCheckRecord(1000000, 40000, true),
-  portfolioCheckRecord(1000000, 50000),
-  portfolioCheckRecord(1250000, 40000),
-  portfolioCheckRecord(1250000, 50000),
-  portfolioCheckRecord(1500000, 60000, true),
-  portfolioCheckRecord(1500000, 75000),
-  portfolioCheckRecord(2000000, 80000),
-  portfolioCheckRecord(2000000, 100000),
-  portfolioCheckRecord(2500000, 120000),
+// 29 unique annual-spending amounts, mechanically de-duplicated from the
+// prior 200-record set's withdrawal-rate variants (10 lean / 15 regular /
+// 4 fat once split by spendingStyle's thresholds).
+const spendingTargetAmounts = [
+  24000, 30000, 32000, 35000, 36000, 40000, 42000, 45000, 48000, 50000, 52000,
+  55000, 58000, 60000, 65000, 68000, 70000, 75000, 80000, 85000, 90000, 95000,
+  100000, 110000, 120000, 125000, 150000, 175000, 200000,
 ];
 
-export const longTailFireSeoRecords: FireSeoRecord[] = [
-  spendingTargetRecord(52000),
-  spendingTargetRecord(58000),
-  spendingTargetRecord(85000),
-  spendingTargetRecord(95000),
-  spendingTargetRecord(175000),
-  portfolioCheckRecord(900000, 36000),
-  portfolioCheckRecord(1100000, 45000),
-  portfolioCheckRecord(1200000, 60000),
-  portfolioCheckRecord(1400000, 55000),
-  portfolioCheckRecord(1600000, 64000),
-  portfolioCheckRecord(1750000, 70000),
-  portfolioCheckRecord(1800000, 90000),
-  portfolioCheckRecord(2200000, 88000),
-  portfolioCheckRecord(3000000, 120000),
-  portfolioCheckRecord(3500000, 140000),
-];
+// Featured picks: 2 lean, 2 regular, 1 fat — carried forward from the prior
+// cluster's featured set (40000, 50000, 60000, 80000, 100000 all mapped
+// cleanly to surviving amounts) with 100000 swapped for 150000 to add fat
+// tier representation, since the old featured set had none.
+const featuredSpendingAmounts = new Set([40000, 50000, 60000, 80000, 150000]);
 
-const spendingTargetVariantAmounts = [
-  30000,
-  40000,
-  50000,
-  60000,
-  75000,
-  100000,
-  32000,
-  35000,
-  42000,
-  52000,
-  68000,
-  90000,
-  125000,
-  150000,
-];
-
-const spendingTargetVariantRates = [3, 3.5, 4.5, 5];
-
-export const spendingTargetVariantFireSeoRecords: FireSeoRecord[] =
-  spendingTargetVariantAmounts.flatMap((annualSpending) =>
-    spendingTargetVariantRates.map((withdrawalRatePercent) =>
-      spendingTargetVariantRecord(annualSpending, withdrawalRatePercent),
-    ),
+export const fireSpendingTargetSeoRecords: FireSeoRecord[] =
+  spendingTargetAmounts.map((amount) =>
+    spendingTargetRecord(amount, featuredSpendingAmounts.has(amount)),
   );
 
-const priorityPortfolioChecks: [number, number][] = [
+// 40 unique (portfolioValue, annualSpending) pairs, mechanically
+// de-duplicated the same way (19 underfunded / 21 funded once classified
+// against the 4% FIRE number).
+const portfolioCheckPairs: [number, number][] = [
+  [625000, 25000],
   [750000, 30000],
   [750000, 35000],
   [750000, 40000],
   [750000, 45000],
   [750000, 50000],
   [750000, 60000],
+  [875000, 35000],
+  [900000, 36000],
+  [1000000, 40000],
+  [1000000, 50000],
+  [1100000, 44000],
+  [1100000, 45000],
+  [1200000, 60000],
+  [1250000, 40000],
+  [1250000, 50000],
+  [1250000, 62500],
+  [1400000, 55000],
   [1500000, 50000],
   [1500000, 60000],
   [1500000, 75000],
   [1500000, 90000],
   [1500000, 100000],
   [1500000, 120000],
+  [1600000, 64000],
+  [1750000, 70000],
+  [1800000, 90000],
   [2000000, 60000],
   [2000000, 75000],
+  [2000000, 80000],
   [2000000, 90000],
   [2000000, 100000],
   [2000000, 125000],
   [2000000, 150000],
-];
-
-const portfolioVariantRates = [3, 3.5, 4.5, 5];
-
-export const priorityPortfolioFireSeoRecords: FireSeoRecord[] =
-  priorityPortfolioChecks.flatMap(([portfolioValue, annualSpending]) =>
-    portfolioVariantRates.map((withdrawalRatePercent) =>
-      portfolioCheckVariantRecord(
-        portfolioValue,
-        annualSpending,
-        withdrawalRatePercent,
-      ),
-    ),
-  );
-
-const additionalPortfolioChecks: [number, number][] = [
-  [625000, 25000],
-  [875000, 35000],
-  [1100000, 44000],
-  [1250000, 62500],
-  [1750000, 70000],
+  [2200000, 88000],
   [2500000, 100000],
+  [2500000, 120000],
   [3000000, 120000],
   [3500000, 140000],
   [4000000, 160000],
 ];
 
-const additionalPortfolioRates = [3.5, 4.5, 5];
+// Featured picks: 2 previously-featured pairs (1000000/40000 and
+// 1500000/60000, both land on funded-portfolio-check) plus one new
+// underfunded pick (750000/45000) for outcome diversity.
+const featuredPortfolioPairs = new Set([
+  '1000000-40000',
+  '1500000-60000',
+  '750000-45000',
+]);
 
-export const additionalPortfolioFireSeoRecords: FireSeoRecord[] =
-  additionalPortfolioChecks.flatMap(([portfolioValue, annualSpending]) =>
-    additionalPortfolioRates.map((withdrawalRatePercent) =>
-      portfolioCheckVariantRecord(
-        portfolioValue,
-        annualSpending,
-        withdrawalRatePercent,
-      ),
+export const firePortfolioCheckSeoRecords: FireSeoRecord[] =
+  portfolioCheckPairs.map(([portfolioValue, annualSpending]) =>
+    portfolioCheckRecord(
+      portfolioValue,
+      annualSpending,
+      featuredPortfolioPairs.has(`${portfolioValue}-${annualSpending}`),
     ),
   );
 
 export const fireSeoRecords: FireSeoRecord[] = [
-  ...coreFireSeoRecords,
-  ...longTailFireSeoRecords,
-  ...spendingTargetVariantFireSeoRecords,
-  ...priorityPortfolioFireSeoRecords,
-  ...additionalPortfolioFireSeoRecords,
+  ...fireSpendingTargetSeoRecords,
+  ...firePortfolioCheckSeoRecords,
 ];
 
 export const featuredFireSeoRecords = fireSeoRecords.filter(

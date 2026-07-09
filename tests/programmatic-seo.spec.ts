@@ -598,7 +598,7 @@ test.describe('compound interest programmatic SEO', () => {
 });
 
 test.describe('FIRE programmatic SEO', () => {
-  test('record audit enforces count and unique metadata', () => {
+  test('record audit enforces count, unique metadata, and sign invariants', () => {
     const audit = auditFireSeoRecords(
       fireSeoRecords,
       EXPECTED_FIRE_SEO_PAGE_COUNT,
