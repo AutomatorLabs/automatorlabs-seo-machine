@@ -2,6 +2,8 @@
 import { calculatorCategories } from '../data/calculator-categories';
 import { contentItems } from '../data/content';
 import { guideHubs } from '../data/guide-hubs';
+import { topicalGuides } from '../data/topical-guides';
+import { comparisonGuides } from '../data/comparison-guides';
 import NewsletterSignup from '../components/NewsletterSignup.astro';
 import Layout from '../layouts/Layout.astro';
 
@@ -13,7 +15,30 @@ const popularCalculators = contentItems
   .sort((a, b) => a.priority - b.priority)
   .slice(0, 6);
 
-const latestGuides = guideHubs.slice(0, 6);
+const truncate = (text: string, maxLength: number) =>
+  text.length > maxLength ? `${text.slice(0, maxLength - 1).trimEnd()}…` : text;
+
+// Blend all three guide types so each gets homepage exposure, not just guide hubs.
+const latestGuides = [
+  ...guideHubs.slice(0, 3).map((guide) => ({
+    eyebrow: guide.eyebrow,
+    title: guide.title,
+    description: guide.description,
+    url: `/guides/${guide.slug}/`,
+  })),
+  ...topicalGuides.slice(0, 3).map((guide) => ({
+    eyebrow: 'Guide',
+    title: guide.title,
+    description: truncate(guide.intro, 140),
+    url: `/guides/${guide.slug}/`,
+  })),
+  ...comparisonGuides.slice(0, 2).map((guide) => ({
+    eyebrow: 'Comparison',
+    title: guide.title,
+    description: truncate(guide.intro, 140),
+    url: `/guides/${guide.slug}/`,
+  })),
+];
 ---
 
 <Layout
@@ -95,7 +120,7 @@ const latestGuides = guideHubs.slice(0, 6);
 
       <div class="card-grid guide-grid">
         {latestGuides.map((guide) => (
-          <a class="content-card guide-card" href={`/guides/${guide.slug}/`}>
+          <a class="content-card guide-card" href={guide.url}>
             <span class="card-kicker">{guide.eyebrow}</span>
             <h3>{guide.title}</h3>
             <p>{guide.description}</p>
