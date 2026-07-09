@@ -109,7 +109,7 @@ This reduces orphan pages and increases topical depth.
 - calculator pages:
   - related calculators
   - related guides
-  - optional worked-example links
+  - a "popular scenarios" worked-example module (5-8 featured example pages from the calculator's own cluster, plus a link to the full examples index) — standard on every calculator backed by a programmatic SEO cluster, not optional
   - newsletter CTA
 - guide pages:
   - matching calculators
