@@ -16,8 +16,8 @@ Its job is to:
 Verified from source on 2026-07-01:
 
 - 55 live clusters in `src/data/programmatic-seo/clusters.ts`
-- 200 records per cluster
-- 11,000 generated example pages total
+- 200 records per cluster, except FIRE (69 records — see cluster notes)
+- 10,869 generated example pages total
 - global examples hub at `/examples/`
 
 Current live clusters:
@@ -299,6 +299,18 @@ Required surfaces:
 - examples index: `/calculators/emergency-fund/examples/`
 - generated page route: `/calculators/emergency-fund/<slug>/`
 - reuses shared emergency-fund target math helpers
+
+### FIRE
+
+- calculator: `/calculators/fire-calculator/` (plus `/calculators/barista-fire-calculator/`, `/calculators/fat-fire-calculator/`, `/calculators/lean-fire-calculator/`, which link to the same cluster — there is no separate cluster per FIRE variant)
+- examples index: `/calculators/fire/examples/`
+- generated page route: `/calculators/fire/<slug>/`
+- reuses `calculateFireNumber`, `calculateWithdrawalIncome`, `calculateWithdrawalPlan`
+- redesigned 2026-07-09 from 200 records (2 intents, 86% near-duplicates differing only by withdrawal rate) to 69 records (5 intents) — see `docs/superpowers/specs/2026-07-09-fire-cluster-redesign-design.md` for the near-duplicate audit that drove this
+- `withdrawalRatePercent` is fixed at 4 for every record; rate sensitivity is shown via the existing 3%-5% `createSensitivityTable()` comparison on every page instead of separate per-rate pages
+- five intents: lean-spending-target, regular-spending-target, fat-spending-target (split by annual spending, reusing the same lean/regular/fat thresholds the builder already used for framing text), underfunded-portfolio-check, funded-portfolio-check (split by sign of `calculateWithdrawalPlan(...).portfolioGap` at the fixed 4% rate)
+- second cluster with a domain-specific sign-invariant audit check (after Net Worth): `auditFireSeoRecords` asserts every `underfunded-portfolio-check` record has a negative portfolio gap and every `funded-portfolio-check` record has a non-negative portfolio gap at 4%, throwing a build-time error if violated
+- all 200 previous per-record URLs 301-redirect to their new canonical URL via `public/_redirects` (Netlify)
 
 ### Coast FIRE
 

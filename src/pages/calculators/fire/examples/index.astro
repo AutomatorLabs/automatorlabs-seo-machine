@@ -34,18 +34,39 @@ const currency = new Intl.NumberFormat('en-US', {
 });
 const groups = createProgrammaticExampleGroups(fireSeoRecords, [
   {
-    id: 'spending-targets',
-    title: 'FIRE Numbers by Annual Spending',
+    id: 'lean-spending-target',
+    title: 'Lean FIRE Spending Targets',
     description:
-      'Estimate the portfolio associated with a specific yearly retirement budget.',
-    matches: (record) => record.intent === 'spending-target',
+      'Portfolio targets for lower annual spending levels, up to $50,000 per year.',
+    matches: (record) => record.intent === 'lean-spending-target',
   },
   {
-    id: 'portfolio-checks',
-    title: 'Portfolio and Spending Checks',
+    id: 'regular-spending-target',
+    title: 'Regular FIRE Spending Targets',
     description:
-      'Compare an invested portfolio with a planned annual spending amount.',
-    matches: (record) => record.intent === 'portfolio-check',
+      'Portfolio targets for a common middle range of annual spending, $50,000 to $125,000 per year.',
+    matches: (record) => record.intent === 'regular-spending-target',
+  },
+  {
+    id: 'fat-spending-target',
+    title: 'Fat FIRE Spending Targets',
+    description:
+      'Portfolio targets for higher annual spending levels, $125,000 per year and up.',
+    matches: (record) => record.intent === 'fat-spending-target',
+  },
+  {
+    id: 'underfunded-portfolio-check',
+    title: 'Underfunded Portfolio Checks',
+    description:
+      'Scenarios where the portfolio falls short of the FIRE target at a 4% withdrawal rate.',
+    matches: (record) => record.intent === 'underfunded-portfolio-check',
+  },
+  {
+    id: 'funded-portfolio-check',
+    title: 'Funded Portfolio Checks',
+    description:
+      'Scenarios where the portfolio meets or exceeds the FIRE target at a 4% withdrawal rate.',
+    matches: (record) => record.intent === 'funded-portfolio-check',
   },
 ]);
 ---

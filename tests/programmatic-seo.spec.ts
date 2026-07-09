@@ -634,7 +634,7 @@ test.describe('FIRE programmatic SEO', () => {
     expect(
       await page.evaluate(() => document.querySelectorAll('h1').length),
     ).toBe(1);
-    await expect(page.locator('[data-fire-example-group]')).toHaveCount(2);
+    await expect(page.locator('[data-fire-example-group]')).toHaveCount(5);
     await expect(page.locator('[data-fire-example-card]')).toHaveCount(
       EXPECTED_FIRE_SEO_PAGE_COUNT,
     );
@@ -679,7 +679,7 @@ test.describe('FIRE programmatic SEO', () => {
     const record = fireSeoRecords.find(
       (candidate) =>
         candidate.slug ===
-        'can-i-retire-with-1000000-and-40000-spending',
+        'funded-portfolio-check-portfolio-1000000-spending-40000',
     );
     if (!record) throw new Error('Missing representative FIRE SEO record');
 
@@ -706,6 +706,7 @@ test.describe('FIRE programmatic SEO', () => {
       page.getByRole('heading', {
         level: 2,
         name: 'Withdrawal-Rate Comparison',
+        exact: true,
       }),
     ).toBeVisible();
     await expect(page.locator('tbody tr')).toHaveCount(5);

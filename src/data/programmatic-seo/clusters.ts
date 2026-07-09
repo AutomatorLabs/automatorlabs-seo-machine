@@ -298,11 +298,13 @@ const ruleOf72Representatives = [
 
 const fireRepresentatives = [
   fireSeoRecords.find(
-    (record) => record.slug === 'retire-spending-40000-per-year',
+    (record) =>
+      record.slug === 'lean-spending-target-annual-spending-40000',
   ),
   fireSeoRecords.find(
     (record) =>
-      record.slug === 'can-i-retire-with-1000000-and-40000-spending',
+      record.slug ===
+      'funded-portfolio-check-portfolio-1000000-spending-40000',
   ),
 ].filter((record) => record !== undefined);
 
