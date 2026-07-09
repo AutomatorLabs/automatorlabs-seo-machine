@@ -2,14 +2,14 @@
 import CalculatorPage from '../../../components/CalculatorPage.astro';
 import { baristaFireCalculator } from '../../../data/calculators';
 import { contentItems } from '../../../data/content';
-import { featuredFireSeoRecords } from '../../../data/programmatic-seo/fire';
+import { EXPECTED_FIRE_SEO_PAGE_COUNT, featuredFireSeoRecords } from '../../../data/programmatic-seo/fire';
 
 const relatedItems = baristaFireCalculator.relatedIds.flatMap((id) => {
   const item = contentItems.find((contentItem) => contentItem.id === id);
   return item ? [{ title: item.title, url: item.url }] : [];
 });
 const exampleItems = [
-  { title: 'Browse all 200 FIRE examples', url: '/calculators/fire/examples/' },
+  { title: `Browse all ${EXPECTED_FIRE_SEO_PAGE_COUNT} FIRE examples`, url: '/calculators/fire/examples/' },
   ...featuredFireSeoRecords.map((record) => ({
     title: record.question,
     url: `/calculators/fire/${record.slug}/`,
