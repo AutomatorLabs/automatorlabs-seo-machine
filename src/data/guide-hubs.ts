@@ -240,6 +240,7 @@ export const guideHubs: GuideHub[] = [
       'retirement-withdrawal-calculator',
       'financial-independence-date-calculator',
       'years-to-retirement-calculator',
+      'net-worth-calculator',
     ],
     exampleCollectionLinks: [
       {
@@ -247,6 +248,12 @@ export const guideHubs: GuideHub[] = [
         url: '/calculators/fire/examples/',
         description:
           'Compare FIRE numbers and retirement-readiness checks across spending levels, portfolios, and withdrawal rates.',
+      },
+      {
+        title: 'Net Worth Examples',
+        url: '/calculators/net-worth/examples/',
+        description:
+          'See how assets and liabilities combine into a net worth snapshot across different financial profiles.',
       },
       {
         title: '4 Percent Rule Examples',
@@ -1443,6 +1450,8 @@ export const guideHubs: GuideHub[] = [
       'down-payment-calculator',
       'budget-calculator',
       'savings-rate-calculator',
+      '529-college-savings-calculator',
+      'college-cost-inflation-calculator',
     ],
     exampleCollectionLinks: [
       {
@@ -1450,6 +1459,18 @@ export const guideHubs: GuideHub[] = [
         url: '/calculators/savings-goal/examples/',
         description:
           'Browse worked savings scenarios for emergency funds, down payments, vacations, cars, retirement, education, and other goals.',
+      },
+      {
+        title: '529 College Savings Examples',
+        url: '/calculators/529-college-savings/examples/',
+        description:
+          'Browse worked 529 savings plans across newborn savers, early-childhood savers, and last-stretch catch-up scenarios.',
+      },
+      {
+        title: 'College Cost Inflation Examples',
+        url: '/calculators/college-cost-inflation/examples/',
+        description:
+          'See how today’s college costs could grow by enrollment across different inflation-rate assumptions.',
       },
       {
         title: 'Monthly Savings Examples',

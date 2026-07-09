@@ -489,6 +489,11 @@ export const topicalGuides: TopicalGuide[] = [
         url: '/guides/cagr-vs-compound-interest/',
         description: 'Understand how annualized growth differs from a compounding assumption.',
       },
+      {
+        title: 'College Cost Inflation Calculator',
+        url: '/calculators/college-cost-inflation-calculator/',
+        description: 'Apply a dedicated education-inflation rate to a specific future cost target instead of a general inflation assumption.',
+      },
     ],
     faq: [
       {
@@ -606,6 +611,11 @@ export const topicalGuides: TopicalGuide[] = [
         url: '/calculators/inflation-adjusted-return/examples/',
         description:
           'Browse worked nominal-versus-real balance projections across conservative, growth, retirement, and taxable scenarios.',
+      },
+      {
+        title: 'College Cost Inflation Calculator',
+        url: '/calculators/college-cost-inflation-calculator/',
+        description: 'Apply a dedicated education-inflation rate to a specific future cost target, like the college-cost scenario described above.',
       },
       {
         title: 'What Is Compound Interest?',
