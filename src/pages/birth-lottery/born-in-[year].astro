@@ -1,0 +1,16 @@
+---
+import BirthLotteryYearPage from '../../components/BirthLotteryYearPage.astro';
+import { birthLotteryYears } from '../../data/birth-lottery';
+import { buildBirthLotteryYearPage } from '../../lib/birth-lottery';
+
+export function getStaticPaths() {
+  return birthLotteryYears.map((year) => ({
+    params: { year: String(year) },
+    props: { page: buildBirthLotteryYearPage(year) },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<BirthLotteryYearPage page={page} />
