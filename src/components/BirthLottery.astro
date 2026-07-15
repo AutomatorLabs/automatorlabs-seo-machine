@@ -51,6 +51,17 @@ const { dataBase = "/data/lottery", defaultYear = 1992, defaultCountry = "United
 
   <p class="bl-analogy" id="bl-analogy"></p>
 
+  <div class="bl-luck">
+    <div class="bl-flabel">The Luck Index</div>
+    <div class="bl-luckbig" id="bl-luckbig"></div>
+    <div class="bl-luckbars">
+      <div class="bl-luckrow"><span>Survival</span><div class="bl-lucktrack"><div class="bl-luckfill" id="bl-lb-surv"></div></div><b id="bl-lp-surv"></b></div>
+      <div class="bl-luckrow"><span>Longevity</span><div class="bl-lucktrack"><div class="bl-luckfill" id="bl-lb-lex"></div></div><b id="bl-lp-lex"></b></div>
+      <div class="bl-luckrow"><span>Wealth</span><div class="bl-lucktrack"><div class="bl-luckfill" id="bl-lb-gdp"></div></div><b id="bl-lp-gdp"></b></div>
+    </div>
+    <p class="bl-lucknote">Each bar is a birth-weighted percentile: the share of that year's babies born into countries with worse conditions on that measure. The headline averages the three. It measures day-one conditions only — not war, freedom, family, or which household your ticket landed in (see the inequality card below for that). Note: these odds and this index answer different questions — the ticket odds measure how <b>common</b> a birth was; the Luck Index measures how <b>fortunate</b>.</p>
+  </div>
+
   <h3 class="bl-h">What was printed on the ticket</h3>
   <div class="bl-facts">
     <div class="bl-fact"><div class="bl-flabel">Expected lifespan</div><div class="bl-fval" id="bl-lexval"></div><div class="bl-fsub" id="bl-lexsub"></div></div>
@@ -78,6 +89,18 @@ const { dataBase = "/data/lottery", defaultYear = 1992, defaultCountry = "United
     <div class="bl-slabels"><span>Poorest fifth</span><span>Richest fifth</span></div>
     <p class="bl-wnote" id="bl-wnote"></p>
   </div>
+
+  <div class="bl-wealth bl-ineq">
+    <div class="bl-wtop">
+      <div><div class="bl-flabel">The lottery inside the lottery</div><div class="bl-wval" id="bl-gval"></div></div>
+      <div class="bl-wsub" id="bl-gsrc"></div>
+    </div>
+    <p class="bl-wnote" id="bl-gnote"></p>
+  </div>
+
+  <h3 class="bl-h">The whole board, one year</h3>
+  <p class="bl-secnote" id="bl-bubnote">Every country with data: richer to the right, longer-lived toward the top, bubble size = babies born. Your ticket in red.</p>
+  <svg id="bl-bubble" viewBox="0 0 640 400" role="img" aria-label="Scatter chart of GDP per capita versus life expectancy for all countries in the selected year, bubble size proportional to births, selected country highlighted."></svg>
 
   <h3 class="bl-h">If that year were 100 babies</h3>
   <div class="bl-dots" id="bl-dots" aria-hidden="true"></div>
@@ -125,6 +148,22 @@ const { dataBase = "/data/lottery", defaultYear = 1992, defaultCountry = "United
 .bl-share{margin:0 0 22px;padding:9px 16px;font-size:13px;border:1px solid var(--bl-ink);background:transparent;cursor:pointer}
 .bl-share:hover{background:var(--bl-card)}
 .bl-analogy{border-left:3px solid var(--bl-accent);padding:4px 0 4px 18px;margin:0 0 40px;font-size:17px;max-width:56ch}
+.bl-luck{background:var(--bl-card);border:1px solid var(--bl-ink);padding:20px;margin:0 0 40px}
+.bl-luckbig{font-size:clamp(24px,5vw,34px);font-weight:800;margin:6px 0 14px}
+.bl-luckbig em{font-style:normal;color:var(--bl-accent)}
+.bl-luckrow{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.bl-luckrow span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--bl-muted);min-width:88px;font-family:ui-monospace,monospace}
+.bl-lucktrack{flex:1;height:10px;background:var(--bl-line)}
+.bl-luckfill{height:100%;background:var(--bl-accent);transition:width .35s ease}
+.bl-luckrow b{font-size:13px;min-width:44px;text-align:right;font-family:ui-monospace,monospace}
+.bl-lucknote{font-size:12px;color:var(--bl-muted);margin-top:12px;line-height:1.5}
+.bl-lucknote b{color:var(--bl-ink)}
+.bl-ineq{margin-top:-24px}
+#bl-bubble{width:100%;height:auto;margin:0 0 40px;background:var(--bl-card);border:1px solid var(--bl-line)}
+#bl-bubble :global(.ax){stroke:var(--bl-line);stroke-width:1}
+#bl-bubble :global(.lbl){fill:var(--bl-muted);font-size:10px;font-family:ui-monospace,monospace}
+#bl-bubble :global(.bub){fill:#b9b6aa;fill-opacity:.45;stroke:#8b8779;stroke-opacity:.4}
+#bl-bubble :global(.bub.you){fill:var(--bl-accent);fill-opacity:.85;stroke:var(--bl-accent);stroke-opacity:1;stroke-width:2}
 .bl-h{font-size:20px;font-weight:800;text-transform:uppercase;margin:0 0 12px}
 .bl-secnote{color:var(--bl-muted);font-size:14px;margin:0 0 16px;max-width:58ch}
 .bl-facts{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bl-line);border:1px solid var(--bl-line);margin-bottom:32px}
@@ -148,8 +187,8 @@ const { dataBase = "/data/lottery", defaultYear = 1992, defaultCountry = "United
 .bl-wnote{font-size:13px;color:var(--bl-muted);margin-top:10px}
 .bl-wnote b{color:var(--bl-ink)}
 .bl-dots{display:grid;grid-template-columns:repeat(20,1fr);gap:6px;max-width:640px;margin:14px 0 0}
-.bl-dot{aspect-ratio:1;border-radius:50%;background:#d9d6cc;transition:background .3s}
-.bl-dot.you{background:var(--bl-accent);outline:2px solid var(--bl-accent);outline-offset:2px}
+.bl :global(.bl-dot){aspect-ratio:1;border-radius:50%;background:#d9d6cc;transition:background .3s}
+.bl :global(.bl-dot.you){background:var(--bl-accent);outline:2px solid var(--bl-accent);outline-offset:2px}
 .bl-nodot{font-size:13px;color:var(--bl-accent);margin-top:12px;font-family:ui-monospace,monospace}
 .bl-legend{display:flex;gap:20px;margin:14px 0 40px;font-size:12px;color:var(--bl-muted);flex-wrap:wrap;font-family:ui-monospace,monospace}
 .bl-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
@@ -283,6 +322,89 @@ async function render(){
     $('bl-wrank').textContent = y > META.gdpLastYear ? 'GDP data ends in '+META.gdpLastYear+' \u2014 showing health rank' : 'No GDP data \u2014 showing health rank';
     wm.style.left = (lp*100).toFixed(1)+'%';
     $('bl-wnote').innerHTML = `Life expectancy is the closest stand-in for national wealth \u2014 the two track each other almost perfectly. This marker is <b>${name}\u2019s longevity rank</b> among all countries in ${y}.`;
+  }
+
+  // ---- Luck Index (birth-weighted percentiles) ----
+  const bwPct = (arr) => {
+    let covered = 0;
+    for (let i=0;i<arr.length;i++) if (arr[i]!=null) covered += D.births[i];
+    return arr.map((v,i)=>{
+      if (v==null) return null;
+      let below = 0;
+      for (let j=0;j<arr.length;j++) if (arr[j]!=null && arr[j]<v) below += D.births[j];
+      return below/covered*100;
+    });
+  };
+  const survArr = D.imr.map(v=>v==null?null:1000-v);
+  const pSurv = bwPct(survArr), pLex = bwPct(D.lex), pGdp = bwPct(D.gdp);
+  const scores = D.births.map((_,i)=>{
+    const cs = [pSurv[i], pLex[i], pGdp[i]].filter(v=>v!=null);
+    return cs.length ? cs.reduce((a,x)=>a+x,0)/cs.length : null;
+  });
+  let luckBelow = 0, luckTotal = 0;
+  for (let i=0;i<scores.length;i++){
+    if (scores[i]==null) continue;
+    luckTotal += D.births[i];
+    if (scores[i] < scores[c]) luckBelow += D.births[i];
+  }
+  const luckPct = luckBelow/luckTotal*100;
+  $('bl-luckbig').innerHTML = `Luckier than <em>${luckPct.toFixed(0)}%</em> of the ${fmtM(D.total)} babies born in ${y}`;
+  const setBar = (id, v) => {
+    $('bl-lb-'+id).style.width = (v==null?0:v).toFixed(0)+'%';
+    $('bl-lp-'+id).textContent = v==null ? 'n/a' : 'top '+Math.max(1,Math.round(100-v))+'%';
+  };
+  setBar('surv', pSurv[c]); setBar('lex', pLex[c]); setBar('gdp', pGdp[c]);
+
+  // ---- Inequality card ----
+  const gini = D.gini[c], gy = D.giniYear[c];
+  if (gini != null){
+    $('bl-gval').textContent = 'Gini ' + gini.toFixed(1);
+    $('bl-gsrc').textContent = gy === y ? `World Bank survey, ${gy}` : `nearest survey: ${gy}`;
+    const band = gini < 30 ? ['remarkably even', 'the national averages above describe most tickets fairly well']
+      : gini < 38 ? ['moderately unequal', 'the averages above hide a real spread between households']
+      : gini < 48 ? ['highly unequal', 'which family your ticket landed in mattered as much as the country printed on it']
+      : ['extremely unequal', 'this was two lotteries in one — the country ticket and the family ticket, and the second could overwhelm the first'];
+    $('bl-gnote').innerHTML = `${name} was <b>${band[0]}</b> around this time (0 = everyone earns the same, 100 = one person earns everything). In practice: ${band[1]}.`;
+  } else {
+    $('bl-gval').textContent = 'No survey data';
+    $('bl-gsrc').textContent = 'World Bank Gini';
+    $('bl-gnote').innerHTML = `No income-inequality survey exists for ${name} within \u00b15 years of ${y} \u2014 coverage is thin before the 1990s and for some countries entirely. The country-level averages above are all the data can honestly say.`;
+  }
+
+  // ---- Bubble chart (GDP vs life expectancy) ----
+  const svg = $('bl-bubble'), bubnote = $('bl-bubnote');
+  const pts = [];
+  for (let i=0;i<D.births.length;i++)
+    if (D.gdp[i]!=null && D.lex[i]!=null) pts.push([i, D.gdp[i], D.lex[i], D.births[i]]);
+  if (pts.length < 20){
+    svg.style.display='none';
+    bubnote.textContent = `GDP data ends in ${META.gdpLastYear}, so the board can\u2019t be drawn for ${y} \u2014 slide back to ${META.gdpLastYear} or earlier to see it.`;
+  } else {
+    svg.style.display='';
+    bubnote.textContent = 'Every country with data: richer to the right, longer-lived toward the top, bubble size = babies born. Your ticket in red.';
+    const Wd=640, Ht=400, L=52, R=16, T=14, B=36;
+    const gMin = Math.min(...pts.map(p=>p[1])), gMax = Math.max(...pts.map(p=>p[1]));
+    const lMin = Math.min(...pts.map(p=>p[2])), lMax = Math.max(...pts.map(p=>p[2]));
+    const lx = v => L + (Math.log(v)-Math.log(gMin))/(Math.log(gMax)-Math.log(gMin))*(Wd-L-R);
+    const ly = v => T + (1-(v-(lMin-2))/((lMax+2)-(lMin-2)))*(Ht-T-B);
+    const maxB = Math.max(...pts.map(p=>p[3]));
+    const rr = b => 2 + Math.sqrt(b/maxB)*26;
+    let s = '';
+    // gridlines: GDP ticks at 1k/3k/10k/30k; LEx every 10
+    for (const gv of [1000,3000,10000,30000]) if (gv>gMin*0.8 && gv<gMax*1.2)
+      s += `<line class="ax" x1="${lx(gv)}" y1="${T}" x2="${lx(gv)}" y2="${Ht-B}"/><text class="lbl" x="${lx(gv)}" y="${Ht-B+14}" text-anchor="middle">$${gv>=1000?gv/1000+'k':gv}</text>`;
+    for (let lv=Math.ceil(lMin/10)*10; lv<=lMax; lv+=10)
+      s += `<line class="ax" x1="${L}" y1="${ly(lv)}" x2="${Wd-R}" y2="${ly(lv)}"/><text class="lbl" x="${L-6}" y="${ly(lv)+3}" text-anchor="end">${lv}</text>`;
+    s += `<text class="lbl" x="${(Wd+L)/2}" y="${Ht-4}" text-anchor="middle">GDP per person (log scale)</text>`;
+    s += `<text class="lbl" x="12" y="${(Ht-B+T)/2}" text-anchor="middle" transform="rotate(-90 12 ${(Ht-B+T)/2})">life expectancy</text>`;
+    pts.sort((a,b)=>b[3]-a[3]);
+    for (const [i,gv,lv,b] of pts){
+      if (i===c) continue;
+      s += `<circle class="bub" cx="${lx(gv).toFixed(1)}" cy="${ly(lv).toFixed(1)}" r="${rr(b).toFixed(1)}"><title>${META.countries[i]}: $${gv.toLocaleString()}, ${lv.toFixed(1)} yrs</title></circle>`;
+    }
+    const me = pts.find(p=>p[0]===c);
+    if (me) s += `<circle class="bub you" cx="${lx(me[1]).toFixed(1)}" cy="${ly(me[2]).toFixed(1)}" r="${rr(me[3]).toFixed(1)}"><title>${name}: $${me[1].toLocaleString()}, ${me[2].toFixed(1)} yrs</title></circle>`;
+    svg.innerHTML = s;
   }
 
   const nd = Math.round(p*100);
