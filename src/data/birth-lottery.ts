@@ -1,9 +1,10 @@
 export const BIRTH_LOTTERY_YEAR_MIN = 1950;
 export const BIRTH_LOTTERY_YEAR_MAX = 2026;
 
-// Phase 3a: build only these years for review before generating the full
-// 1950-2026 range (see Phase 3b). Swap for the full range once approved.
-export const birthLotteryYears: number[] = [1950, 1992, 2026];
+export const birthLotteryYears: number[] = Array.from(
+  { length: BIRTH_LOTTERY_YEAR_MAX - BIRTH_LOTTERY_YEAR_MIN + 1 },
+  (_, i) => BIRTH_LOTTERY_YEAR_MIN + i,
+);
 
 export interface BirthLotteryMoneyLink {
   title: string;

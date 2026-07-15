@@ -34,9 +34,18 @@ const breadcrumbSchema = {
 };
 const escapeForScript = (value: unknown) =>
   JSON.stringify(value).replace(/</g, '\\u003c');
+
+const ogTitle = `Born in ${page.year}: ${page.totalM}M babies, and the odds of being one of them`;
 ---
 
-<Layout title={page.seoTitle} description={page.metaDescription}>
+<Layout
+  title={page.seoTitle}
+  description={page.metaDescription}
+  ogTitle={ogTitle}
+  ogDescription={page.metaDescription}
+  socialImagePath="/social/birth-lottery-social.svg"
+  socialImageAlt="The Birth Lottery: what were the odds of your birth? Pick a year and country to check your ticket."
+>
   <script type="application/ld+json" set:html={escapeForScript(faqSchema)} />
   <script
     type="application/ld+json"
