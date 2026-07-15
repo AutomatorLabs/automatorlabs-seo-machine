@@ -39,6 +39,18 @@ const latestGuides = [
     url: `/guides/${guide.slug}/`,
   })),
 ];
+
+// Novelty/fun data tools, distinct from the serious calculators above.
+// Start of a category — more cards land here over time.
+const funTools = [
+  {
+    eyebrow: 'Interactive tool',
+    title: 'The Birth Lottery',
+    description:
+      'What were the odds of being born in your country, in your year? Check your ticket — luck index, alternate lives, and the whole board.',
+    url: '/birth-lottery/',
+  },
+];
 ---
 
 <Layout
@@ -125,6 +137,27 @@ const latestGuides = [
             <h3>{guide.title}</h3>
             <p>{guide.description}</p>
             <span class="card-action">Read guide</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="home-section" aria-labelledby="fun-tools-heading">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">Just for fun</p>
+          <h2 id="fun-tools-heading">Data playground</h2>
+        </div>
+        <a href="/birth-lottery/">Explore the data playground</a>
+      </div>
+
+      <div class="card-grid fun-tools-grid">
+        {funTools.map((tool) => (
+          <a class="content-card" href={tool.url}>
+            <span class="card-kicker">{tool.eyebrow}</span>
+            <h3>{tool.title}</h3>
+            <p>{tool.description}</p>
+            <span class="card-action">Check your ticket</span>
           </a>
         ))}
       </div>

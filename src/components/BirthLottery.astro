@@ -1,0 +1,484 @@
+---
+/**
+ * BirthLottery.astro — interactive birth-lottery calculator island.
+ *
+ * Props:
+ *   dataBase     — public path to the lottery data dir (default "/data/lottery")
+ *   defaultYear  — initial year if no ?year= param (default 1992)
+ *   defaultCountry — initial country name if no ?country= param (default "United States")
+ *
+ * Data contract (all under {dataBase}/):
+ *   meta.json          { countries[], world{lex,imr,tfr,age}, yearMin, yearMax, lastEstimate, gdpLastYear }
+ *   years/{YYYY}.json  { total, births[], lex[], imr[], tfr[], age[], srb[], lexm[], lexf[], mac[], teen[], mig[], bpd[], le65[], gdp[] } — arrays indexed to meta.countries
+ *   births.json        { births[][] } — full matrix, lazy-loaded for the alternate timeline
+ *
+ * All JS is vanilla; no framework runtime. Use with client-side hydration disabled
+ * (the <script> below is a plain module — Astro ships it as-is).
+ */
+interface Props { dataBase?: string; defaultYear?: number; defaultCountry?: string; }
+const { dataBase = "/data/lottery", defaultYear = 1992, defaultCountry = "United States" } = Astro.props;
+---
+<div class="bl" data-base={dataBase} data-year={defaultYear} data-country={defaultCountry}>
+  <div class="bl-controls">
+    <div class="bl-ctrl">
+      <label for="bl-year">Birth year</label>
+      <div class="bl-yearrow">
+        <input type="range" id="bl-year" min="1950" max="2100" step="1" value={defaultYear} aria-label="Birth year" />
+        <span class="bl-yearval" id="bl-yearval">{defaultYear}</span>
+      </div>
+      <div class="bl-projnote" id="bl-projnote"></div>
+    </div>
+    <div class="bl-ctrl">
+      <label for="bl-country">Country</label>
+      <select id="bl-country" aria-label="Country of birth"></select>
+    </div>
+  </div>
+
+  <div class="bl-ticket" role="group" aria-label="Your lottery ticket result">
+    <div class="bl-tbody">
+      <div class="bl-trow"><span class="bl-tlabel" id="bl-tno"></span><span class="bl-tlabel" id="bl-pool"></span></div>
+      <div class="bl-bignum" id="bl-oddsbig"></div>
+      <div class="bl-tstats">
+        <div class="bl-tstat"><b id="bl-pct"></b><span>of all births</span></div>
+        <div class="bl-tstat"><b id="bl-rank"></b><span>of 237 countries</span></div>
+        <div class="bl-tstat"><b id="bl-babies"></b><span>born there that year</span></div>
+      </div>
+    </div>
+    <div class="bl-stub">Non-transferable · one per lifetime</div>
+  </div>
+
+  <button class="bl-share" id="bl-share" type="button">Copy link to this ticket</button>
+
+  <p class="bl-analogy" id="bl-analogy"></p>
+
+  <div class="bl-luck">
+    <div class="bl-flabel">The Luck Index</div>
+    <div class="bl-luckbig" id="bl-luckbig"></div>
+    <div class="bl-luckbars">
+      <div class="bl-luckrow"><span>Survival</span><div class="bl-lucktrack"><div class="bl-luckfill" id="bl-lb-surv"></div></div><b id="bl-lp-surv"></b></div>
+      <div class="bl-luckrow"><span>Longevity</span><div class="bl-lucktrack"><div class="bl-luckfill" id="bl-lb-lex"></div></div><b id="bl-lp-lex"></b></div>
+      <div class="bl-luckrow"><span>Wealth</span><div class="bl-lucktrack"><div class="bl-luckfill" id="bl-lb-gdp"></div></div><b id="bl-lp-gdp"></b></div>
+    </div>
+    <p class="bl-lucknote">Each bar is a birth-weighted percentile: the share of that year's babies born into countries with worse conditions on that measure. The headline averages the three. It measures day-one conditions only — not war, freedom, family, or which household your ticket landed in (see the inequality card below for that). Note: these odds and this index answer different questions — the ticket odds measure how <b>common</b> a birth was; the Luck Index measures how <b>fortunate</b>.</p>
+  </div>
+
+  <h3 class="bl-h">What was printed on the ticket</h3>
+  <div class="bl-facts">
+    <div class="bl-fact"><div class="bl-flabel">Expected lifespan</div><div class="bl-fval" id="bl-lexval"></div><div class="bl-fsub" id="bl-lexsub"></div></div>
+    <div class="bl-fact"><div class="bl-flabel">Odds of surviving year one</div><div class="bl-fval" id="bl-survval"></div><div class="bl-fsub" id="bl-survsub"></div></div>
+    <div class="bl-fact"><div class="bl-flabel">Family you'd land in</div><div class="bl-fval" id="bl-tfrval"></div><div class="bl-fsub" id="bl-tfrsub"></div></div>
+    <div class="bl-fact"><div class="bl-flabel">How old was everyone else</div><div class="bl-fval" id="bl-ageval"></div><div class="bl-fsub" id="bl-agesub"></div></div>
+  </div>
+
+  <h3 class="bl-h">The fine print</h3>
+  <div class="bl-facts">
+    <div class="bl-fact"><div class="bl-flabel">The first coin flip: boy or girl</div><div class="bl-fval" id="bl-sexval"></div><div class="bl-fsub" id="bl-sexsub"></div></div>
+    <div class="bl-fact"><div class="bl-flabel">The longevity gap</div><div class="bl-fval" id="bl-gapval"></div><div class="bl-fsub" id="bl-gapsub"></div></div>
+    <div class="bl-fact"><div class="bl-flabel">Your statistical mother</div><div class="bl-fval" id="bl-momval"></div><div class="bl-fsub" id="bl-momsub"></div></div>
+    <div class="bl-fact"><div class="bl-flabel">Coming or going</div><div class="bl-fval" id="bl-migval"></div><div class="bl-fsub" id="bl-migsub"></div></div>
+    <div class="bl-fact"><div class="bl-flabel">Births per funeral</div><div class="bl-fval" id="bl-bpdval"></div><div class="bl-fsub" id="bl-bpdsub"></div></div>
+    <div class="bl-fact"><div class="bl-flabel">The survivor's bonus</div><div class="bl-fval" id="bl-le65val"></div><div class="bl-fsub" id="bl-le65sub"></div></div>
+  </div>
+
+  <div class="bl-wealth">
+    <div class="bl-wtop">
+      <div><div class="bl-flabel">Wealth of the world you entered</div><div class="bl-wval" id="bl-wval"></div></div>
+      <div class="bl-wsub" id="bl-wrank"></div>
+    </div>
+    <div class="bl-scale" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><div class="bl-marker" id="bl-wmarker"></div></div>
+    <div class="bl-slabels"><span>Poorest fifth</span><span>Richest fifth</span></div>
+    <p class="bl-wnote" id="bl-wnote"></p>
+  </div>
+
+  <div class="bl-wealth bl-ineq">
+    <div class="bl-wtop">
+      <div><div class="bl-flabel">The lottery inside the lottery</div><div class="bl-wval" id="bl-gval"></div></div>
+      <div class="bl-wsub" id="bl-gsrc"></div>
+    </div>
+    <p class="bl-wnote" id="bl-gnote"></p>
+  </div>
+
+  <h3 class="bl-h">The whole board, one year</h3>
+  <p class="bl-secnote" id="bl-bubnote">Every country with data: richer to the right, longer-lived toward the top, bubble size = babies born. Your ticket in red.</p>
+  <svg id="bl-bubble" viewBox="0 0 640 400" role="img" aria-label="Scatter chart of GDP per capita versus life expectancy for all countries in the selected year, bubble size proportional to births, selected country highlighted."></svg>
+
+  <h3 class="bl-h">If that year were 100 babies</h3>
+  <div class="bl-dots" id="bl-dots" aria-hidden="true"></div>
+  <div id="bl-nodot" class="bl-nodot" hidden></div>
+  <div class="bl-legend">
+    <span><i class="bl-i-you"></i><span id="bl-legyou"></span></span>
+    <span><i class="bl-i-rest"></i>Everyone else</span>
+  </div>
+
+  <h3 class="bl-h">Same roll, different year</h3>
+  <p class="bl-secnote">Your birth was a specific spot on a spinning wheel of that year's births, countries sorted largest first. Hold that spot and re-spin in every year from 1950 to 2100.</p>
+  <div id="bl-eras"></div>
+</div>
+
+<style>
+/* Theme hooks — remap these four custom props to site tokens during integration. */
+.bl{
+  --bl-accent: #D8262C;
+  --bl-ink: var(--text-color, #1a1a1a);
+  --bl-muted: var(--muted-text-color, #8b8779);
+  --bl-line: var(--border-color, #e4e1d8);
+  --bl-card: var(--card-background, #fff);
+  --bl-good: var(--success-text, #1d8a68);
+  font-size: 16px; line-height: 1.6; color: var(--bl-ink);
+}
+.bl-controls{display:flex;gap:24px;flex-wrap:wrap;margin:0 0 28px;align-items:flex-end}
+.bl-ctrl{flex:1;min-width:220px}
+.bl-ctrl label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--bl-muted);margin-bottom:8px;font-family:ui-monospace,monospace}
+.bl select{width:100%;padding:10px 12px;font-size:15px;border:1px solid var(--bl-ink);background:var(--bl-card);color:var(--bl-ink)}
+.bl-yearrow{display:flex;align-items:center;gap:14px}
+.bl input[type=range]{flex:1;accent-color:var(--bl-accent);height:24px}
+.bl-yearval{font-size:26px;font-weight:800;min-width:80px;text-align:right}
+.bl-projnote{font-size:11px;color:var(--bl-muted);height:16px;margin-top:2px;font-family:ui-monospace,monospace}
+.bl-ticket{position:relative;background:var(--bl-card);border:1px solid var(--bl-ink);margin:0 0 12px;display:flex}
+.bl-stub{writing-mode:vertical-rl;transform:rotate(180deg);border-left:2px dashed var(--bl-line);padding:16px 10px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--bl-muted);text-align:center;flex:none;order:2;font-family:ui-monospace,monospace}
+.bl-tbody{flex:1;padding:24px 26px}
+.bl-trow{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:baseline}
+.bl-tlabel{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--bl-muted);font-family:ui-monospace,monospace}
+.bl-bignum{font-size:clamp(42px,9vw,72px);line-height:1;font-weight:800;color:var(--bl-accent);margin:6px 0 2px}
+.bl-tstats{display:flex;margin-top:20px;border-top:1px solid var(--bl-line);flex-wrap:wrap}
+.bl-tstat{flex:1;min-width:120px;padding:12px 16px 0;border-left:1px solid var(--bl-line)}
+.bl-tstat:first-child{border-left:none;padding-left:0}
+.bl-tstat b{display:block;font-size:19px;font-family:ui-monospace,monospace}
+.bl-tstat span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--bl-muted);font-family:ui-monospace,monospace}
+.bl-share{margin:0 0 22px;padding:9px 16px;font-size:13px;border:1px solid var(--bl-ink);background:transparent;cursor:pointer}
+.bl-share:hover{background:var(--bl-card)}
+.bl-analogy{border-left:3px solid var(--bl-accent);padding:4px 0 4px 18px;margin:0 0 40px;font-size:17px;max-width:56ch}
+.bl-luck{background:var(--bl-card);border:1px solid var(--bl-ink);padding:20px;margin:0 0 40px}
+.bl-luckbig{font-size:clamp(24px,5vw,34px);font-weight:800;margin:6px 0 14px}
+.bl-luckbig em{font-style:normal;color:var(--bl-accent)}
+.bl-luckrow{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.bl-luckrow span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--bl-muted);min-width:88px;font-family:ui-monospace,monospace}
+.bl-lucktrack{flex:1;height:10px;background:var(--bl-line)}
+.bl-luckfill{height:100%;background:var(--bl-accent);transition:width .35s ease}
+.bl-luckrow b{font-size:13px;min-width:44px;text-align:right;font-family:ui-monospace,monospace}
+.bl-lucknote{font-size:12px;color:var(--bl-muted);margin-top:12px;line-height:1.5}
+.bl-lucknote b{color:var(--bl-ink)}
+.bl-ineq{margin-top:-24px}
+#bl-bubble{width:100%;height:auto;margin:0 0 40px;background:var(--bl-card);border:1px solid var(--bl-line)}
+#bl-bubble :global(.ax){stroke:var(--bl-line);stroke-width:1}
+#bl-bubble :global(.lbl){fill:var(--bl-muted);font-size:10px;font-family:ui-monospace,monospace}
+#bl-bubble :global(.bub){fill:#b9b6aa;fill-opacity:.45;stroke:#8b8779;stroke-opacity:.4}
+#bl-bubble :global(.bub.you){fill:var(--bl-accent);fill-opacity:.85;stroke:var(--bl-accent);stroke-opacity:1;stroke-width:2}
+.bl-h{font-size:20px;font-weight:800;text-transform:uppercase;margin:0 0 12px}
+.bl-secnote{color:var(--bl-muted);font-size:14px;margin:0 0 16px;max-width:58ch}
+.bl-facts{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bl-line);border:1px solid var(--bl-line);margin-bottom:32px}
+.bl-fact{background:var(--bl-card);padding:16px 18px}
+.bl-flabel{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--bl-muted);font-family:ui-monospace,monospace}
+.bl-fval{font-size:26px;font-weight:800;margin:4px 0 2px}
+.bl-fsub{font-size:13px;color:var(--bl-muted);line-height:1.45}
+.bl-fsub b{color:var(--bl-ink)}
+.bl :global(.bl-up){color:var(--bl-good)} .bl :global(.bl-down){color:var(--bl-accent)}
+.bl-wealth{background:var(--bl-card);border:1px solid var(--bl-line);padding:18px;margin-bottom:40px}
+.bl-wtop{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.bl-wval{font-size:24px;font-weight:800}
+.bl-wsub{font-size:12px;color:var(--bl-muted);font-family:ui-monospace,monospace}
+.bl-scale{position:relative;height:14px;display:flex;gap:2px;margin-bottom:6px}
+.bl-scale i{flex:1}
+.bl-scale i:nth-child(1){background:#ebc5c6}.bl-scale i:nth-child(2){background:#e9d3c0}
+.bl-scale i:nth-child(3){background:#e6e0c2}.bl-scale i:nth-child(4){background:#c9dccb}
+.bl-scale i:nth-child(5){background:#a8cfbb}
+.bl-marker{position:absolute;top:-7px;width:4px;height:28px;background:var(--bl-ink);transform:translateX(-2px);transition:left .35s ease}
+.bl-slabels{display:flex;justify-content:space-between;font-size:11px;color:var(--bl-muted);text-transform:uppercase;letter-spacing:.08em;font-family:ui-monospace,monospace}
+.bl-wnote{font-size:13px;color:var(--bl-muted);margin-top:10px}
+.bl-wnote b{color:var(--bl-ink)}
+.bl-dots{display:grid;grid-template-columns:repeat(20,1fr);gap:6px;max-width:640px;margin:14px 0 0}
+.bl :global(.bl-dot){aspect-ratio:1;border-radius:50%;background:#d9d6cc;transition:background .3s}
+.bl :global(.bl-dot.you){background:var(--bl-accent);outline:2px solid var(--bl-accent);outline-offset:2px}
+.bl-nodot{font-size:13px;color:var(--bl-accent);margin-top:12px;font-family:ui-monospace,monospace}
+.bl-legend{display:flex;gap:20px;margin:14px 0 40px;font-size:12px;color:var(--bl-muted);flex-wrap:wrap;font-family:ui-monospace,monospace}
+.bl-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.bl-i-you{background:var(--bl-accent)} .bl-i-rest{background:#d9d6cc}
+.bl :global(.bl-era){display:flex;align-items:center;gap:14px;padding:8px 0;border-bottom:1px solid var(--bl-line);font-size:15px}
+.bl :global(.bl-era .yrs){font-size:13px;color:var(--bl-muted);min-width:100px;flex:none;font-family:ui-monospace,monospace}
+.bl :global(.bl-era .bar){height:8px;background:#d9d6cc;flex:none}
+.bl :global(.bl-era.hit){color:var(--bl-accent);font-weight:600}
+.bl :global(.bl-era.hit .bar){background:var(--bl-accent)}
+.bl :global(.bl-era.hit .yrs){color:var(--bl-accent)}
+@media (max-width:520px){.bl-dots{grid-template-columns:repeat(10,1fr);gap:7px}.bl-facts{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.bl *{transition:none!important}}
+</style>
+
+<script>
+const root = document.querySelector('.bl');
+const BASE = root.dataset.base;
+const $ = id => document.getElementById(id);
+let META = null, BIRTHS = null, yearCache = new Map(), curYear, curCountry;
+
+const fmtM = v => v >= 1000 ? (v/1000).toFixed(1).replace(/\.0$/,'') + 'M' : Math.round(v).toLocaleString() + 'K';
+const ANALOGIES = [
+  [2,'calling a coin flip correctly'],[4,'drawing a heart from a shuffled deck'],
+  [6,'rolling a six on your first try'],[13,'pulling an ace from a shuffled deck on your first draw'],
+  [20,'rolling a natural 20'],[36,'rolling double sixes on your first-ever throw'],
+  [52,'naming the exact card a stranger just drew'],[100,'holding the winning ticket in a 100-ticket raffle'],
+  [256,'flipping heads eight times in a row'],[500,'a pro golfer\u2019s odds of an ace on a single hole'],
+  [1024,'flipping heads ten times in a row'],[3000,'guessing the last 3 digits of a stranger\u2019s phone number, twice\u2026 almost'],
+  [10000,'guessing a stranger\u2019s 4-digit PIN on your first try'],[100000,'guessing a 5-digit ZIP code blind'],
+  [650000,'being dealt a royal flush']];
+const analogyFor = n => ANALOGIES.reduce((b,a)=>Math.abs(Math.log(n)-Math.log(a[0]))<Math.abs(Math.log(n)-Math.log(b[0]))?a:b)[1];
+
+const seq = Array.from({length:100},(_,i)=>i);
+for (let i=99;i>0;i--){ const j=(i*7919+13)%(i+1); [seq[i],seq[j]]=[seq[j],seq[i]]; }
+const dotsEl = $('bl-dots');
+for (let i=0;i<100;i++){ const d=document.createElement('div'); d.className='bl-dot'; dotsEl.appendChild(d); }
+
+async function getYear(y){
+  if (!yearCache.has(y)) yearCache.set(y, fetch(`${BASE}/years/${y}.json`).then(r=>r.json()));
+  return yearCache.get(y);
+}
+function delta(v,w,unit,higherGood){
+  const d=v-w, good = higherGood ? d>=0 : d<0;
+  return `<b class="${good?'bl-up':'bl-down'}">${d>=0?'+':'\u2212'}${Math.abs(d).toFixed(1)}${unit}</b> vs world`;
+}
+function syncUrl(){
+  const u = new URL(location.href);
+  u.searchParams.set('year', curYear);
+  u.searchParams.set('country', META.countries[curCountry]);
+  history.replaceState(null,'',u);
+}
+
+async function render(){
+  const y = curYear, c = curCountry, yi = y - META.yearMin;
+  const D = await getYear(y);
+  const name = META.countries[c];
+  const b = D.births[c], p = b/D.total, oneIn = 1/p;
+
+  $('bl-yearval').textContent = y;
+  $('bl-projnote').textContent = y > META.lastEstimate ? 'UN projection \u2014 babies not yet born' : '';
+  $('bl-tno').textContent = `Ticket \u00b7 ${name} \u00b7 ${y}`;
+  $('bl-pool').textContent = fmtM(D.total) + ' tickets in the pool';
+  $('bl-oddsbig').textContent = oneIn < 1.5 ? 'Almost certain' : '1 in ' + Math.round(oneIn).toLocaleString();
+  $('bl-pct').textContent = p >= 0.0001 ? (p*100).toFixed(2)+'%' : (p*100).toFixed(4)+'%';
+  const rank = D.births.filter(v=>v>b).length + 1;
+  $('bl-rank').textContent = '#'+rank;
+  $('bl-babies').textContent = fmtM(b);
+  $('bl-analogy').innerHTML = `Being born in ${name} in ${y} was about as likely as <em>${analogyFor(oneIn)}</em>.`;
+
+  const W = META.world;
+  $('bl-lexval').textContent = D.lex[c].toFixed(1)+' years';
+  $('bl-lexsub').innerHTML = `Ticket valid until ~${Math.round(y+D.lex[c])} \u00b7 ${delta(D.lex[c],W.lex[yi],' yrs',true)}`;
+  const surv=(1000-D.imr[c])/10, wsurv=(1000-W.imr[yi])/10;
+  $('bl-survval').textContent = surv.toFixed(1)+'%';
+  $('bl-survsub').innerHTML = `${D.imr[c].toFixed(0)} of every 1,000 didn\u2019t make it \u00b7 ${delta(surv,wsurv,' pts',true)}`;
+  $('bl-tfrval').textContent = D.tfr[c].toFixed(1)+' kids';
+  $('bl-tfrsub').innerHTML = `per mother that year \u2014 statistically ~${Math.max(0,D.tfr[c]-1).toFixed(1)} siblings \u00b7 world avg ${W.tfr[yi].toFixed(1)}`;
+  $('bl-ageval').textContent = D.age[c].toFixed(0)+' years old';
+  $('bl-agesub').innerHTML = `median age of the country you joined \u00b7 world median ${W.age[yi].toFixed(0)}`;
+
+  const srb = D.srb[c];
+  if (srb != null){
+    $('bl-sexval').textContent = (srb/(100+srb)*100).toFixed(1)+'% boy';
+    let s = srb.toFixed(0)+' boys born per 100 girls';
+    if (srb >= 110) s += ' \u00b7 <b class="bl-down">far above nature\u2019s ~105 \u2014 a signature of sex-selective intervention</b>';
+    $('bl-sexsub').innerHTML = s;
+  }
+  const lm=D.lexm[c], lf=D.lexf[c];
+  if (lm!=null && lf!=null){
+    const gap=lf-lm;
+    $('bl-gapval').textContent = (gap>=0?'+':'\u2212')+Math.abs(gap).toFixed(1)+' yrs for girls';
+    $('bl-gapsub').innerHTML = `girls: <b>${lf.toFixed(1)}</b> \u00b7 boys: <b>${lm.toFixed(1)}</b>` + (gap>=9?' \u00b7 <b class="bl-down">an extreme gap \u2014 usually a story about men and hardship</b>':'');
+  }
+  if (D.mac[c]!=null){
+    $('bl-momval').textContent = 'age '+D.mac[c].toFixed(0);
+    let ms='mean age of mothers at childbirth';
+    if (D.teen[c]!=null && D.teen[c]>=0.5) ms += ` \u00b7 <b>1 in ${Math.round(100/D.teen[c])}</b> babies had a teenage mom`;
+    $('bl-momsub').innerHTML = ms;
+  }
+  if (D.mig[c]!=null){
+    const inb = D.mig[c]>=0;
+    $('bl-migval').textContent = (inb?'+':'\u2212')+Math.abs(D.mig[c]).toFixed(1)+' per 1,000';
+    $('bl-migsub').innerHTML = inb
+      ? 'net migration \u2014 people were <b class="bl-up">moving in</b>. You were born somewhere others were trying to reach.'
+      : 'net migration \u2014 people were <b class="bl-down">leaving</b>. You were born somewhere others were trying to exit.';
+  }
+  if (D.bpd[c]!=null){
+    $('bl-bpdval').textContent = D.bpd[c].toFixed(1)+' births';
+    $('bl-bpdsub').innerHTML = D.bpd[c]>=1
+      ? `for every death that year \u2014 a <b>${D.bpd[c]>=2.5?'booming':D.bpd[c]>=1.3?'growing':'barely growing'}</b> population`
+      : 'for every death that year \u2014 <b class="bl-down">more funerals than cradles</b>';
+  }
+  if (D.le65[c]!=null){
+    $('bl-le65val').textContent = '65 + '+D.le65[c].toFixed(1)+' yrs';
+    $('bl-le65sub').innerHTML = `reach 65 and the ticket extends to ~<b>${Math.round(y+65+D.le65[c])}</b> \u2014 survivors always beat the printed average`;
+  }
+
+  const gv = D.gdp[c];
+  const wm = $('bl-wmarker');
+  if (gv != null){
+    const vals = D.gdp.filter(v=>v!=null).sort((a,b)=>a-b);
+    const below = vals.filter(v=>v<gv).length, pct = below/(vals.length-1);
+    $('bl-wval').textContent = '$'+gv.toLocaleString()+' / person / year';
+    $('bl-wrank').textContent = '#'+(Math.round((1-pct)*(vals.length-1))+1)+' richest of '+vals.length+' countries';
+    wm.style.left = (pct*100).toFixed(1)+'%';
+    const mult = gv/vals[Math.floor(vals.length/2)];
+    $('bl-wnote').innerHTML = `GDP per person, adjusted for prices (2011 international $). The average person here produced <b>${mult>=1?mult.toFixed(1)+'\u00d7 the world\u2019s median country':(1/mult).toFixed(1)+'\u00d7 less than the world\u2019s median country'}</b> that year.`;
+  } else {
+    const l = D.lex[c], below = D.lex.filter(v=>v!=null&&v<l).length, lp = below/(D.lex.length-1);
+    $('bl-wval').textContent = 'Top '+Math.max(1,Math.round((1-lp)*100))+'% by life expectancy';
+    $('bl-wrank').textContent = y > META.gdpLastYear ? 'GDP data ends in '+META.gdpLastYear+' \u2014 showing health rank' : 'No GDP data \u2014 showing health rank';
+    wm.style.left = (lp*100).toFixed(1)+'%';
+    $('bl-wnote').innerHTML = `Life expectancy is the closest stand-in for national wealth \u2014 the two track each other almost perfectly. This marker is <b>${name}\u2019s longevity rank</b> among all countries in ${y}.`;
+  }
+
+  // ---- Luck Index (birth-weighted percentiles) ----
+  const bwPct = (arr) => {
+    let covered = 0;
+    for (let i=0;i<arr.length;i++) if (arr[i]!=null) covered += D.births[i];
+    return arr.map((v,i)=>{
+      if (v==null) return null;
+      let below = 0;
+      for (let j=0;j<arr.length;j++) if (arr[j]!=null && arr[j]<v) below += D.births[j];
+      return below/covered*100;
+    });
+  };
+  const survArr = D.imr.map(v=>v==null?null:1000-v);
+  const pSurv = bwPct(survArr), pLex = bwPct(D.lex), pGdp = bwPct(D.gdp);
+  const scores = D.births.map((_,i)=>{
+    const cs = [pSurv[i], pLex[i], pGdp[i]].filter(v=>v!=null);
+    return cs.length ? cs.reduce((a,x)=>a+x,0)/cs.length : null;
+  });
+  let luckBelow = 0, luckTotal = 0;
+  for (let i=0;i<scores.length;i++){
+    if (scores[i]==null) continue;
+    luckTotal += D.births[i];
+    if (scores[i] < scores[c]) luckBelow += D.births[i];
+  }
+  const luckPct = luckBelow/luckTotal*100;
+  $('bl-luckbig').innerHTML = `Luckier than <em>${luckPct.toFixed(0)}%</em> of the ${fmtM(D.total)} babies born in ${y}`;
+  const setBar = (id, v) => {
+    $('bl-lb-'+id).style.width = (v==null?0:v).toFixed(0)+'%';
+    $('bl-lp-'+id).textContent = v==null ? 'n/a' : 'top '+Math.max(1,Math.round(100-v))+'%';
+  };
+  setBar('surv', pSurv[c]); setBar('lex', pLex[c]); setBar('gdp', pGdp[c]);
+
+  // ---- Inequality card ----
+  const gini = D.gini[c], gy = D.giniYear[c];
+  if (gini != null){
+    $('bl-gval').textContent = 'Gini ' + gini.toFixed(1);
+    $('bl-gsrc').textContent = gy === y ? `World Bank survey, ${gy}` : `nearest survey: ${gy}`;
+    const band = gini < 30 ? ['remarkably even', 'the national averages above describe most tickets fairly well']
+      : gini < 38 ? ['moderately unequal', 'the averages above hide a real spread between households']
+      : gini < 48 ? ['highly unequal', 'which family your ticket landed in mattered as much as the country printed on it']
+      : ['extremely unequal', 'this was two lotteries in one — the country ticket and the family ticket, and the second could overwhelm the first'];
+    $('bl-gnote').innerHTML = `${name} was <b>${band[0]}</b> around this time (0 = everyone earns the same, 100 = one person earns everything). In practice: ${band[1]}.`;
+  } else {
+    $('bl-gval').textContent = 'No survey data';
+    $('bl-gsrc').textContent = 'World Bank Gini';
+    $('bl-gnote').innerHTML = `No income-inequality survey exists for ${name} within \u00b15 years of ${y} \u2014 coverage is thin before the 1990s and for some countries entirely. The country-level averages above are all the data can honestly say.`;
+  }
+
+  // ---- Bubble chart (GDP vs life expectancy) ----
+  const svg = $('bl-bubble'), bubnote = $('bl-bubnote');
+  const pts = [];
+  for (let i=0;i<D.births.length;i++)
+    if (D.gdp[i]!=null && D.lex[i]!=null) pts.push([i, D.gdp[i], D.lex[i], D.births[i]]);
+  if (pts.length < 20){
+    svg.style.display='none';
+    bubnote.textContent = `GDP data ends in ${META.gdpLastYear}, so the board can\u2019t be drawn for ${y} \u2014 slide back to ${META.gdpLastYear} or earlier to see it.`;
+  } else {
+    svg.style.display='';
+    bubnote.textContent = 'Every country with data: richer to the right, longer-lived toward the top, bubble size = babies born. Your ticket in red.';
+    const Wd=640, Ht=400, L=52, R=16, T=14, B=36;
+    const gMin = Math.min(...pts.map(p=>p[1])), gMax = Math.max(...pts.map(p=>p[1]));
+    const lMin = Math.min(...pts.map(p=>p[2])), lMax = Math.max(...pts.map(p=>p[2]));
+    const lx = v => L + (Math.log(v)-Math.log(gMin))/(Math.log(gMax)-Math.log(gMin))*(Wd-L-R);
+    const ly = v => T + (1-(v-(lMin-2))/((lMax+2)-(lMin-2)))*(Ht-T-B);
+    const maxB = Math.max(...pts.map(p=>p[3]));
+    const rr = b => 2 + Math.sqrt(b/maxB)*26;
+    let s = '';
+    // gridlines: GDP ticks at 1k/3k/10k/30k; LEx every 10
+    for (const gv of [1000,3000,10000,30000]) if (gv>gMin*0.8 && gv<gMax*1.2)
+      s += `<line class="ax" x1="${lx(gv)}" y1="${T}" x2="${lx(gv)}" y2="${Ht-B}"/><text class="lbl" x="${lx(gv)}" y="${Ht-B+14}" text-anchor="middle">$${gv>=1000?gv/1000+'k':gv}</text>`;
+    for (let lv=Math.ceil(lMin/10)*10; lv<=lMax; lv+=10)
+      s += `<line class="ax" x1="${L}" y1="${ly(lv)}" x2="${Wd-R}" y2="${ly(lv)}"/><text class="lbl" x="${L-6}" y="${ly(lv)+3}" text-anchor="end">${lv}</text>`;
+    s += `<text class="lbl" x="${(Wd+L)/2}" y="${Ht-4}" text-anchor="middle">GDP per person (log scale)</text>`;
+    s += `<text class="lbl" x="12" y="${(Ht-B+T)/2}" text-anchor="middle" transform="rotate(-90 12 ${(Ht-B+T)/2})">life expectancy</text>`;
+    pts.sort((a,b)=>b[3]-a[3]);
+    for (const [i,gv,lv,b] of pts){
+      if (i===c) continue;
+      s += `<circle class="bub" cx="${lx(gv).toFixed(1)}" cy="${ly(lv).toFixed(1)}" r="${rr(b).toFixed(1)}"><title>${META.countries[i]}: $${gv.toLocaleString()}, ${lv.toFixed(1)} yrs</title></circle>`;
+    }
+    const me = pts.find(p=>p[0]===c);
+    if (me) s += `<circle class="bub you" cx="${lx(me[1]).toFixed(1)}" cy="${ly(me[2]).toFixed(1)}" r="${rr(me[3]).toFixed(1)}"><title>${name}: $${me[1].toLocaleString()}, ${me[2].toFixed(1)} yrs</title></circle>`;
+    svg.innerHTML = s;
+  }
+
+  const nd = Math.round(p*100);
+  $('bl-legyou').textContent = `Born in ${name} \u2014 ${nd}`;
+  const youSet = new Set(seq.slice(0,nd));
+  const dots = dotsEl.children;
+  for (let i=0;i<100;i++) dots[i].classList.toggle('you', youSet.has(i));
+  const nodot = $('bl-nodot');
+  if (nd===0){ nodot.hidden=false; nodot.textContent = `Not even one dot. You\u2019d need a grid of ${Math.round(oneIn).toLocaleString()} babies for ${name} to claim a single one.`; }
+  else nodot.hidden=true;
+
+  renderTimeline(D, c, y);
+  syncUrl();
+}
+
+async function renderTimeline(D, c, year){
+  if (!BIRTHS) BIRTHS = (await (await fetch(`${BASE}/births.json`)).json()).births;
+  const N = META.countries.length, NY = META.yearMax - META.yearMin + 1;
+  const yi = year - META.yearMin;
+  const totals = [];
+  for (let yy=0; yy<NY; yy++){ let t=0; for (let i=0;i<N;i++) t += BIRTHS[i][yy]; totals.push(t); }
+  const sortAt = yy => Array.from({length:N},(_,i)=>i).sort((a,b)=>BIRTHS[b][yy]-BIRTHS[a][yy]);
+  const s0 = sortAt(yi);
+  let cum=0, lo=0;
+  for (const i of s0){ if (i===c){ lo=cum; break; } cum += BIRTHS[i][yi]; }
+  const roll = (lo + BIRTHS[c][yi]/2)/totals[yi];
+  const timeline = [];
+  for (let yy=0; yy<NY; yy++){
+    const s = sortAt(yy); let acc=0, hit=s[s.length-1];
+    const target = roll*totals[yy];
+    for (const i of s){ acc += BIRTHS[i][yy]; if (acc>=target){ hit=i; break; } }
+    timeline.push(hit);
+  }
+  const eras=[]; let cur=timeline[0], start=META.yearMin;
+  for (let yy=1; yy<NY; yy++){
+    if (timeline[yy]!==cur){ eras.push([start,META.yearMin+yy-1,cur]); cur=timeline[yy]; start=META.yearMin+yy; }
+  }
+  eras.push([start,META.yearMax,cur]);
+  const maxSpan = Math.max(...eras.map(e=>e[1]-e[0]+1));
+  const wrap = $('bl-eras'); wrap.innerHTML='';
+  for (const [s,e,i] of eras){
+    const row = document.createElement('div');
+    const isYou = year>=s && year<=e;
+    row.className = 'bl-era'+(isYou?' hit':'');
+    row.innerHTML = `<span class="yrs">${s===e?s:s+'\u2013'+e}</span><span class="bar" style="width:${Math.max(6,(e-s+1)/maxSpan*120)}px"></span><span>${META.countries[i]}${isYou?' \u2190 your actual draw':''}</span>`;
+    wrap.appendChild(row);
+  }
+}
+
+(async function init(){
+  META = await (await fetch(`${BASE}/meta.json`)).json();
+  const params = new URLSearchParams(location.search);
+  curYear = Math.min(META.yearMax, Math.max(META.yearMin, parseInt(params.get('year')) || parseInt(root.dataset.year)));
+  const pc = params.get('country');
+  const wanted = pc && META.countries.includes(pc) ? pc : root.dataset.country;
+  curCountry = Math.max(0, META.countries.indexOf(wanted));
+
+  const sel = $('bl-country');
+  META.countries.forEach((n,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=n; sel.appendChild(o); });
+  sel.value = curCountry;
+  $('bl-year').value = curYear;
+
+  let t;
+  $('bl-year').addEventListener('input', e=>{
+    curYear = +e.target.value;
+    $('bl-yearval').textContent = curYear;
+    clearTimeout(t); t = setTimeout(render, 120);
+  });
+  sel.addEventListener('change', e=>{ curCountry = +e.target.value; render(); });
+  $('bl-share').addEventListener('click', async ()=>{
+    await navigator.clipboard.writeText(location.href);
+    const btn = $('bl-share'); btn.textContent = 'Link copied!';
+    setTimeout(()=>btn.textContent='Copy link to this ticket', 1600);
+  });
+  render();
+})();
+</script>

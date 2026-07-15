@@ -1,0 +1,398 @@
+---
+import type { BirthLotteryYearPage } from '../lib/birth-lottery';
+import BirthLottery from './BirthLottery.astro';
+import Layout from '../layouts/Layout.astro';
+
+interface Props {
+  page: BirthLotteryYearPage;
+}
+
+const { page } = Astro.props;
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: page.faqs.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+};
+const site = Astro.site ?? new URL('https://automatorlabs.co');
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: page.breadcrumbs.map((crumb, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: crumb.name,
+    item: new URL(crumb.url, site).toString(),
+  })),
+};
+const escapeForScript = (value: unknown) =>
+  JSON.stringify(value).replace(/</g, '\\u003c');
+
+const ogTitle = `Born in ${page.year}: ${page.totalM}M babies, and the odds of being one of them`;
+---
+
+<Layout
+  title={page.seoTitle}
+  description={page.metaDescription}
+  ogTitle={ogTitle}
+  ogDescription={page.metaDescription}
+  socialImagePath="/social/birth-lottery-social.svg"
+  socialImageAlt="The Birth Lottery: what were the odds of your birth? Pick a year and country to check your ticket."
+>
+  <script type="application/ld+json" set:html={escapeForScript(faqSchema)} />
+  <script
+    type="application/ld+json"
+    set:html={escapeForScript(breadcrumbSchema)}
+  />
+
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        {page.breadcrumbs.map((crumb, index) => (
+          <li>
+            {index === page.breadcrumbs.length - 1 ? (
+              <span aria-current="page">{crumb.name}</span>
+            ) : (
+              <a href={crumb.url}>{crumb.name}</a>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <article>
+      <header class="page-header">
+        <p class="eyebrow">Birth Lottery · {page.year}</p>
+        <h1>Born in {page.year}: what the birth lottery dealt you</h1>
+        <p class="intro">
+          In {page.year}, roughly <strong>{page.totalM} million babies</strong> were
+          born worldwide{page.hasPrevYear ? ` — ${page.yoyWord} ${page.year - 1}` : ''}.
+          Every one of them was handed a ticket in the biggest lottery there is: which
+          country they'd open their eyes in. {page.top10[0].name} and {page.top10[1].name} alone
+          accounted for {page.top2pct}% of the draw, while being born American was a
+          1-in-{page.usaOneIn.toLocaleString()} event. A newborn's expected lifespan that year
+          averaged {page.worldLifeExpectancy} years globally — but the gap between the
+          luckiest and unluckiest tickets was measured in decades, not years.
+        </p>
+      </header>
+
+      <section class="odds-table" aria-labelledby="odds-heading">
+        <h2 id="odds-heading">Odds of being born in each country in {page.year}</h2>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Country</th>
+                <th>Births</th>
+                <th>Share of world</th>
+                <th>Odds</th>
+              </tr>
+            </thead>
+            <tbody>
+              {page.top10.map((r, idx) => (
+                <tr>
+                  <td>#{idx + 1}</td>
+                  <td>{r.name}</td>
+                  <td>{(r.births / 1000).toFixed(2)}M</td>
+                  <td>{r.pct.toFixed(2)}%</td>
+                  <td>1 in {Math.round(100 / r.pct).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note">
+          The remaining {page.remainingCountries} countries shared the other{' '}
+          {page.remainingSharePct}% of {page.year}'s births. Use the calculator
+          below to look up any of them.
+        </p>
+      </section>
+
+      <section class="widget-section" aria-labelledby="widget-heading">
+        <h2 id="widget-heading">Check your own ticket</h2>
+        <BirthLottery defaultYear={page.year} defaultCountry="United States" />
+      </section>
+
+      <section class="faq-section" aria-labelledby="faq-heading">
+        <h2 id="faq-heading">Frequently asked questions</h2>
+        <div class="faq-list">
+          {page.faqs.map((faq) => (
+            <details>
+              <summary>{faq.question}</summary>
+              <p>{faq.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section class="internal-links" aria-labelledby="money-heading">
+        <h2 id="money-heading">What a {page.year} birth means for your money</h2>
+        <div class="link-grid">
+          {page.moneyLinks.map((link) => (
+            <a href={link.url}>
+              <strong>{link.title}</strong>
+              <span>{link.description}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <p class="disclaimer">
+        Sources: United Nations World Population Prospects 2024 (births, life
+        expectancy, mortality, fertility, migration; estimates 1950–2023,
+        medium-variant projections to 2100), Maddison Project Database 2020
+        (GDP per capita, 1950–2018), and World Bank Poverty and Inequality
+        Platform (Gini index, 1963–2025, where surveys exist). Figures are
+        national averages for the year of birth, not predictions of any
+        individual life.
+      </p>
+
+      <nav class="year-pager" aria-label="Other birth years">
+        {page.prevYear ? (
+          <a href={`/birth-lottery/born-in-${page.prevYear}/`}>
+            ← Born in {page.prevYear}
+          </a>
+        ) : (
+          <span />
+        )}
+        <a href="/birth-lottery/">All years</a>
+        {page.nextYear ? (
+          <a href={`/birth-lottery/born-in-${page.nextYear}/`}>
+            Born in {page.nextYear} →
+          </a>
+        ) : (
+          <span />
+        )}
+      </nav>
+    </article>
+  </main>
+</Layout>
+
+<style>
+  main {
+    width: min(900px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 4.5rem 0;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
+  }
+
+  .breadcrumbs li + li::before {
+    color: var(--muted-text-color);
+    content: '›';
+  }
+
+  .breadcrumbs a {
+    color: var(--link-color);
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .breadcrumbs [aria-current='page'] {
+    color: var(--text-color);
+    font-weight: 650;
+  }
+
+  .page-header {
+    max-width: 800px;
+    margin-bottom: 3rem;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.5rem;
+    color: var(--link-color);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.1rem, 6vw, 3.4rem);
+    letter-spacing: -0.04em;
+    line-height: 1.08;
+  }
+
+  .intro {
+    margin: 1rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 1.1rem;
+    line-height: 1.72;
+  }
+
+  .odds-table,
+  .widget-section,
+  .faq-section,
+  .internal-links {
+    margin-top: 3rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+  }
+
+  .odds-table h2,
+  .widget-section h2,
+  .faq-section h2,
+  .internal-links h2 {
+    margin: 0 0 0.9rem;
+    color: var(--heading-color);
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 480px;
+  }
+
+  th,
+  td {
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.6rem 0.75rem;
+    text-align: left;
+    font-size: 0.94rem;
+  }
+
+  th {
+    color: var(--muted-text-color);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .table-note {
+    margin: 1rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 0.94rem;
+  }
+
+  .faq-section {
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--faq-background);
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .faq-list {
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  details {
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 1rem 0;
+  }
+
+  summary {
+    cursor: pointer;
+    color: var(--text-color);
+    font-weight: 750;
+  }
+
+  details p {
+    margin: 0.65rem 0 0;
+    color: var(--muted-text-color);
+    line-height: 1.68;
+  }
+
+  .link-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.85rem;
+  }
+
+  .link-grid a {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--card-background);
+    color: var(--link-color);
+    padding: 1rem;
+    text-decoration: none;
+  }
+
+  .link-grid a:hover {
+    border-color: var(--link-color);
+    background: var(--subtle-background);
+  }
+
+  .link-grid span {
+    margin-top: 0.35rem;
+    color: var(--muted-text-color);
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .disclaimer {
+    margin: 2.5rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 0.88rem;
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  .year-pager {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2.5rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+  }
+
+  .year-pager a {
+    color: var(--link-color);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .year-pager a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 680px) {
+    main {
+      padding: 3rem 0;
+    }
+
+    .link-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

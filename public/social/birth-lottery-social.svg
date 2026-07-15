@@ -1,0 +1,33 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">The Birth Lottery social preview</title>
+  <desc id="desc">AutomatorLabs Birth Lottery: what were the odds of your birth?</desc>
+  <defs>
+    <linearGradient id="bl-bg" x1="120" y1="72" x2="1080" y2="558" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F6F7FB"/>
+      <stop offset="1" stop-color="#F7E9E9"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bl-bg)"/>
+  <circle cx="1030" cy="120" r="180" fill="#F5D9DA"/>
+  <circle cx="160" cy="560" r="220" fill="#F8E4E4"/>
+  <rect x="74" y="74" width="1052" height="482" rx="36" fill="#FFFFFF"/>
+  <rect x="74" y="74" width="1052" height="482" rx="36" stroke="#E1E4EC" stroke-width="2"/>
+
+  <rect x="118" y="126" width="268" height="268" rx="16" fill="#1A1A1A"/>
+  <path d="M146 260a14 14 0 0 1 0-28" fill="none"/>
+  <circle cx="146" cy="126" r="14" fill="#F6F7FB"/>
+  <circle cx="146" cy="394" r="14" fill="#F6F7FB"/>
+  <line x1="146" y1="168" x2="146" y2="352" stroke="#D8262C" stroke-width="3" stroke-dasharray="8 10"/>
+  <text x="184" y="222" fill="#D8262C" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="800" letter-spacing="1">1 IN</text>
+  <text x="184" y="290" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="800">?</text>
+  <text x="184" y="336" fill="#8B8779" font-family="ui-monospace, Menlo, monospace" font-size="18" letter-spacing="1">YOUR TICKET</text>
+
+  <text x="432" y="176" fill="#D8262C" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="800" letter-spacing="2">THE BIRTH LOTTERY</text>
+  <text x="432" y="256" fill="#172033" font-family="Arial, Helvetica, sans-serif" font-size="66" font-weight="800">What were the odds</text>
+  <text x="432" y="330" fill="#172033" font-family="Arial, Helvetica, sans-serif" font-size="66" font-weight="800">of your birth?</text>
+  <text x="432" y="384" fill="#586176" font-family="Arial, Helvetica, sans-serif" font-size="30">Pick a year and country to check your ticket.</text>
+  <rect x="432" y="420" width="368" height="34" rx="17" fill="#F8E4E4"/>
+  <text x="450" y="443" fill="#D8262C" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700">77 birth years • 237 countries</text>
+
+  <text x="432" y="516" fill="#8B8779" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="1">AUTOMATORLABS.CO</text>
+</svg>

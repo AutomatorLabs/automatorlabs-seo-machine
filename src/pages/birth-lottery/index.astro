@@ -1,0 +1,277 @@
+---
+import BirthLottery from '../../components/BirthLottery.astro';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
+import Layout from '../../layouts/Layout.astro';
+import {
+  BIRTH_LOTTERY_YEAR_MIN,
+  BIRTH_LOTTERY_YEAR_MAX,
+} from '../../data/birth-lottery';
+
+const title = 'The Birth Lottery: What Were the Odds of Your Birth?';
+const description =
+  "See the odds of being born in your country and year, life expectancy, survival rates, and how your birth compared to every other country's, using UN and Maddison Project data.";
+
+const decades: { label: string; years: number[] }[] = [];
+for (
+  let decadeStart = Math.floor(BIRTH_LOTTERY_YEAR_MIN / 10) * 10;
+  decadeStart <= BIRTH_LOTTERY_YEAR_MAX;
+  decadeStart += 10
+) {
+  const years: number[] = [];
+  for (let y = decadeStart; y < decadeStart + 10; y++) {
+    if (y >= BIRTH_LOTTERY_YEAR_MIN && y <= BIRTH_LOTTERY_YEAR_MAX) {
+      years.push(y);
+    }
+  }
+  if (years.length > 0) {
+    decades.push({ label: `${decadeStart}s`, years });
+  }
+}
+---
+
+<Layout
+  title={title}
+  description={description}
+  socialImagePath="/social/birth-lottery-social.svg"
+  socialImageAlt="The Birth Lottery: what were the odds of your birth? Pick a year and country to check your ticket."
+>
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li aria-current="page">Birth Lottery</li>
+      </ol>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Interactive tool</p>
+      <h1>The Birth Lottery</h1>
+      <p class="intro">
+        Before you did anything at all, the biggest draw of your life had already
+        happened: which country and year you were born into. Pick a year and a
+        country below to see what that ticket was actually worth — the odds of
+        it, the life expectancy attached to it, and how it stacked up against
+        every other ticket drawn that year.
+      </p>
+    </header>
+
+    <BirthLottery defaultYear={1992} defaultCountry="United States" />
+
+    <section class="how-it-works" aria-labelledby="how-it-works-heading">
+      <h2 id="how-it-works-heading">How this works</h2>
+      <p>
+        The odds shown for a given year and country are simply that country's
+        share of every baby born worldwide that year — if 4% of the world's
+        births happened in the country you picked, your odds of landing there
+        were 1 in 25. Life expectancy, survival rates, fertility, and the other
+        figures are that country's actual reported values for that birth year,
+        not estimates about you personally.
+      </p>
+      <p>
+        The wealth scale places a country's GDP per capita for that year against
+        every other country's, from poorest fifth to richest fifth. GDP data
+        only runs through 2018 and is missing for some small countries and
+        territories; for years or places without it, the scale falls back to a
+        life-expectancy-based rank instead, since the two track each other
+        closely.
+      </p>
+      <p>
+        The ticket odds and the Luck Index answer different questions. Odds
+        measure how <strong>common</strong> a birth was — the size of the pool
+        you were drawn from. The Luck Index measures how <strong>fortunate</strong> —
+        a birth-weighted percentile comparing your survival, longevity, and
+        wealth conditions against the actual babies born that year, not
+        against countries. A rare ticket (a small country) and a fortunate one
+        (good day-one conditions) aren't the same thing, and a country's
+        internal inequality — see the lottery-inside-the-lottery card — can
+        make the ticket you actually landed on very different from its
+        national average.
+      </p>
+      <p>
+        Data sources: births, life expectancy, infant mortality, fertility,
+        mothers' ages, sex ratio at birth, deaths, and net migration come from
+        the United Nations' World Population Prospects 2024 (estimates
+        1950–2023, medium-variant projections to 2100). GDP per capita comes
+        from the Maddison Project Database 2020, in constant 2011 international
+        dollars, available 1950–2018 for most countries. Income inequality
+        comes from the World Bank's Poverty and Inequality Platform (Gini
+        index), 1963–2025, where surveys exist.
+      </p>
+      <p>
+        <strong>These are national averages for the year of birth</strong> — the
+        odds and conditions a newborn faced on day one, not a prediction of any
+        individual life. Life expectancy shown is period life expectancy at
+        birth; real people have historically outlived it.
+      </p>
+    </section>
+
+    <section class="year-links" aria-labelledby="year-links-heading">
+      <h2 id="year-links-heading">Browse every birth year</h2>
+      <p class="section-intro">
+        Each year below has its own page with the full odds breakdown, top
+        countries by births, and year-specific facts.
+      </p>
+      {decades.map((decade) => (
+        <div class="decade-group">
+          <h3>{decade.label}</h3>
+          <ul class="decade-list">
+            {decade.years.map((y) => (
+              <li><a href={`/birth-lottery/born-in-${y}/`}>{y}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </section>
+
+    <NewsletterSignup compact />
+  </main>
+</Layout>
+
+<style>
+  main {
+    width: min(900px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 4.5rem 0;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
+  }
+
+  .breadcrumbs li + li::before {
+    color: var(--muted-text-color);
+    content: '›';
+  }
+
+  .breadcrumbs a {
+    color: var(--link-color);
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .breadcrumbs [aria-current='page'] {
+    color: var(--text-color);
+    font-weight: 650;
+  }
+
+  .page-header {
+    max-width: 800px;
+    margin-bottom: 2.5rem;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.5rem;
+    color: var(--link-color);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.35rem, 7vw, 4rem);
+    letter-spacing: -0.045em;
+    line-height: 1.06;
+  }
+
+  .intro {
+    margin: 1rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 1.12rem;
+    line-height: 1.72;
+  }
+
+  .how-it-works,
+  .year-links {
+    margin-top: 3.5rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+  }
+
+  .how-it-works h2,
+  .year-links h2 {
+    margin: 0 0 0.9rem;
+    color: var(--heading-color);
+    font-size: 1.55rem;
+    letter-spacing: -0.02em;
+  }
+
+  .how-it-works p {
+    margin: 0 0 1rem;
+    max-width: 74ch;
+    color: var(--text-color);
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  .section-intro {
+    margin: 0 0 1.5rem;
+    color: var(--muted-text-color);
+  }
+
+  .decade-group {
+    margin-bottom: 1.75rem;
+  }
+
+  .decade-group h3 {
+    margin: 0 0 0.6rem;
+    color: var(--heading-color);
+    font-size: 1rem;
+    font-weight: 750;
+  }
+
+  .decade-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .decade-list a {
+    display: block;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--card-background);
+    color: var(--link-color);
+    font-size: 0.9rem;
+    font-weight: 650;
+    text-align: center;
+    text-decoration: none;
+    padding: 0.5rem 0.25rem;
+  }
+
+  .decade-list a:hover {
+    border-color: var(--link-color);
+    background: var(--subtle-background);
+  }
+
+  @media (max-width: 620px) {
+    main {
+      padding: 3rem 0;
+    }
+  }
+</style>
