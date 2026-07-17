@@ -123,6 +123,16 @@ for (
       ))}
     </section>
 
+    <section class="cross-link" aria-labelledby="cross-link-heading">
+      <h2 id="cross-link-heading">More from the Data Playground</h2>
+      <p>
+        Liked seeing the odds of your birth? Check
+        <a href="/purple-star-chart/">the Purple Star Chart</a> — the
+        thousand-year-old Eastern birth chart, 12 life areas and 100+ stars,
+        explained in plain English.
+      </p>
+    </section>
+
     <NewsletterSignup compact />
   </main>
 </Layout>
@@ -204,26 +214,33 @@ for (
   }
 
   .how-it-works,
-  .year-links {
+  .year-links,
+  .cross-link {
     margin-top: 3.5rem;
     border-top: 1px solid var(--border-color);
     padding-top: 2rem;
   }
 
   .how-it-works h2,
-  .year-links h2 {
+  .year-links h2,
+  .cross-link h2 {
     margin: 0 0 0.9rem;
     color: var(--heading-color);
     font-size: 1.55rem;
     letter-spacing: -0.02em;
   }
 
-  .how-it-works p {
+  .how-it-works p,
+  .cross-link p {
     margin: 0 0 1rem;
     max-width: 74ch;
     color: var(--text-color);
     font-size: 1rem;
     line-height: 1.8;
+  }
+
+  .cross-link a {
+    color: var(--link-color);
   }
 
   .section-intro {

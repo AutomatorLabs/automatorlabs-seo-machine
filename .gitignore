@@ -29,3 +29,7 @@ pnpm-debug.log*
 
 # Git worktrees (agent-managed, local scratch)
 .worktrees/
+
+# Source material packages (not site code)
+purple-star-package/
+birth-lottery-package/

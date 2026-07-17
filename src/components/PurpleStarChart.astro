@@ -1,0 +1,158 @@
+---
+/**
+ * Styles are is:global on purpose: app.js injects DOM at runtime, and
+ * Astro-scoped selectors don't match JS-created elements (same bug class
+ * that hit the Birth Lottery build). All selectors are namespaced under
+ * this tool's own classes, so global is safe.
+ * Script order matters: engine -> dictionary -> app, all is:inline so
+ * Astro doesn't bundle or reorder them.
+ */
+---
+
+<div class="wrap">
+  <p class="eyebrow">The thousand-year-old life map · not fortune-telling</p>
+  <h1>Your Purple Star Chart</h1>
+  <p class="sub">Twelve boxes, one for each part of your life — money, career, marriage, health, and more. Stars land in each box based on the exact math of your birth date and hour. Change the birth hour below and watch the stars jump.</p>
+
+  <div class="controls">
+    <div class="ctrl">
+      <label for="bdate">Birth date (solar)</label>
+      <input type="date" id="bdate" value="1992-06-15" min="1900-01-01" max="2100-12-31">
+    </div>
+    <div class="ctrl">
+      <label for="bhour">Birth hour</label>
+      <select id="bhour"></select>
+    </div>
+    <div class="ctrl">
+      <label>Gender</label>
+      <div class="gender">
+        <button id="gm" class="on" type="button">Male</button>
+        <button id="gf" type="button">Female</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="board" id="board"></div>
+  <div class="legend">
+    <span>The four marks:</span>
+    <span><span class="mut" style="background:var(--luc)">Gain</span> tailwind</span>
+    <span><span class="mut" style="background:var(--quyen)">Power</span> turbo button</span>
+    <span><span class="mut" style="background:var(--khoa)">Fame</span> airbag</span>
+    <span><span class="mut" style="background:var(--ky)">Friction</span> pebble in your shoe</span>
+    <span style="margin-left:auto">tap any box for the full breakdown</span>
+  </div>
+
+  <div class="detail" id="detail"><h3>Tap a box</h3><p class="dom">Tap any of the twelve boxes above and I’ll break down what’s going on in that part of your life — every star, in plain English.</p></div>
+
+  <footer>
+    <p><b>What this is:</b> a structural calculator. It computes the classical Purple Star Astrology chart — palace positions, star placements, signal strength, the four marks (Gain, Power, Fame, Friction), and 10-year life cycles — from your birth date, hour, and gender, using the traditional lunar calendar. Star and palace names are shown in plain English, with the traditional Vietnamese names alongside.</p>
+    <p><b>What this is not:</b> a fortune reading. Interpretation traditions vary between Chinese and Vietnamese schools (and between Vietnamese lineages) — some minor-star placement rules differ, so a chart from your family's practitioner may differ in details. Star positions follow the Zi Wei Dou Shu conventions of the iztro engine. Treat it as cultural mathematics and pattern exploration, not prediction.</p>
+    <p>Birth hours follow the traditional twelve two-hour animal slots; the Rat hour is split into early (12–1 AM) and late (11 PM–12 AM) per common convention.</p>
+  </footer>
+</div>
+
+
+<style is:global>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@600;700&family=Spline+Sans+Mono:wght@400;500&display=swap');
+
+:root{
+  --paper:#F6F3EC; --ink:#231F1A; --verm:#B3402A; --gold:#9A7B2D;
+  --muted:#8D8677; --line:#E2DCCE; --card:#FFFDF8;
+  --luc:#1D7A4F; --quyen:#2A5FA8; --khoa:#9A7B2D; --ky:#B3402A;
+  --hover-tint:#FBF6E9; --self-tint:#FCEFE9;
+  --good-bg:#EEF4EC; --bad-bg:#F8ECE8;
+}
+
+:root[data-theme='dark']{
+  --paper:#1C1917; --ink:#EAE6DC; --verm:#E05545; --gold:#C9A24B;
+  --muted:#9C968A; --line:#3A352E; --card:#26221E;
+  --hover-tint:#2E2A24; --self-tint:#332620;
+  --good-bg:#1B2A20; --bad-bg:#2E1F1C;
+}
+.wrap,.wrap *{box-sizing:border-box;margin:0;padding:0}
+.wrap{max-width:980px;margin:0 auto;padding:36px 16px 80px;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.5}
+.eyebrow{font-family:'Spline Sans Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--verm)}
+.wrap h1{font-family:'Noto Serif',serif;font-size:clamp(30px,6vw,44px);margin:6px 0 8px;color:var(--ink)}
+.sub{color:var(--muted);max-width:60ch;margin-bottom:26px}
+
+.controls{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;align-items:flex-end}
+.ctrl label{display:block;font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.ctrl input,.ctrl select{padding:9px 10px;font-size:15px;border:1px solid var(--ink);background:var(--card);color:var(--ink);font-family:inherit}
+:root[data-theme='dark'] .ctrl input::-webkit-calendar-picker-indicator{filter:invert(1)}
+.gender{display:flex;border:1px solid var(--ink)}
+.gender button{padding:9px 16px;font-size:14px;border:none;background:var(--card);cursor:pointer;color:var(--ink)}
+.gender button.on{background:var(--verm);color:#fff}
+
+.board{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,minmax(128px,auto));gap:4px;background:var(--ink);border:3px solid var(--ink);margin-bottom:10px}
+.cell{background:var(--card);padding:7px 8px;position:relative;cursor:pointer;display:flex;flex-direction:column;min-width:0;transition:background .15s}
+.cell:hover{background:var(--hover-tint)}
+.cell.sel{outline:3px solid var(--verm);outline-offset:-3px;z-index:1}
+.cell.menh{background:var(--self-tint)}
+.pname{font-family:'Noto Serif',serif;font-weight:700;font-size:13px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pname .than{font-size:9px;background:var(--gold);color:#fff;padding:1px 5px;border-radius:2px;font-family:'Spline Sans Mono',monospace;letter-spacing:.06em}
+.stemb{position:absolute;top:6px;right:8px;font-family:'Spline Sans Mono',monospace;font-size:9.5px;color:var(--muted)}
+.majors{margin-top:4px;display:flex;flex-wrap:wrap;gap:3px 8px}
+.mstar{font-weight:700;font-size:12.5px;color:var(--verm);white-space:nowrap}
+.mstar sup{font-weight:400;font-size:8.5px;color:var(--muted);margin-left:1px}
+.mut{font-size:8.5px;padding:0 3px;border-radius:2px;color:#fff;margin-left:2px;font-family:'Spline Sans Mono',monospace;vertical-align:middle}
+.minors{margin-top:3px;font-size:10.5px;color:var(--ink);opacity:.85;line-height:1.45}
+.adjs{margin-top:2px;font-size:9.5px;color:var(--muted);line-height:1.4}
+.dec{margin-top:auto;padding-top:4px;font-family:'Spline Sans Mono',monospace;font-size:9px;color:var(--muted)}
+.center{grid-column:2/4;grid-row:2/4;background:var(--card);padding:16px;display:flex;flex-direction:column;justify-content:center;gap:6px;cursor:default}
+.center h2{font-family:'Noto Serif',serif;font-size:19px;margin-bottom:2px;color:var(--ink)}
+.crow{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;border-bottom:1px dashed var(--line);padding:3px 0}
+.crow span:first-child{color:var(--muted);font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding-top:2px}
+.crow span:last-child{text-align:right;font-weight:600}
+.pillars{display:flex;gap:6px;margin-top:6px}
+.pillar{flex:1;text-align:center;border:1px solid var(--line);padding:6px 2px;background:var(--paper)}
+.pillar b{display:block;font-family:'Noto Serif',serif;font-size:14px}
+.pillar span{font-size:8.5px;color:var(--muted);font-family:'Spline Sans Mono',monospace;letter-spacing:.06em;text-transform:uppercase}
+
+.detail{background:var(--card);border:1px solid var(--ink);padding:18px 20px;margin:14px 0 26px;min-height:90px}
+.detail h3{font-family:'Noto Serif',serif;font-size:18px;margin-bottom:4px;color:var(--ink)}
+.detail .dom{color:var(--muted);font-size:13.5px;margin-bottom:10px;max-width:70ch}
+.stargroups{display:flex;flex-wrap:wrap;gap:18px;font-size:13px}
+.stargroups b{display:block;font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-bottom:26px;font-family:'Spline Sans Mono',monospace}
+.legend .mut{font-size:9px}
+.starblock{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+.starblock h4{font-family:'Noto Serif',serif;font-size:16px;margin-bottom:6px;color:var(--ink)}
+.bshort{font-weight:400;font-size:12px;color:var(--muted)}
+.arch{font-size:13.5px;margin-bottom:8px;max-width:75ch}
+.inpal{font-size:13.5px;margin-bottom:8px;max-width:75ch;background:var(--hover-tint);padding:8px 10px;border-left:3px solid var(--gold)}
+.bline,.hline{font-size:13px;color:var(--ink);margin-bottom:8px;max-width:75ch}
+.hline{border-left:3px solid var(--verm);padding-left:10px}
+.dd{display:flex;gap:20px;flex-wrap:wrap;margin-top:6px}
+.dd>div{flex:1;min-width:230px}
+.dd b{font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.dd ul{margin:4px 0 0 16px;font-size:13px}
+.dd li{margin-bottom:4px}
+.qr{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0 4px}
+.qcol{flex:1;min-width:250px;padding:10px 12px;font-size:12.5px}
+.qcol b{font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:5px}
+.qgood{background:var(--good-bg);border-left:3px solid var(--luc)}
+.qbad{background:var(--bad-bg);border-left:3px solid var(--verm)}
+.qcol ul{margin-left:15px}.qcol li{margin-bottom:4px}
+.mgroup{border-top:1px solid var(--line);padding-top:12px;margin-top:14px}
+.glabel{font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.mlist{margin:6px 0 0 16px;font-size:12.5px;max-width:80ch}
+.mlist li{margin-bottom:4px}
+.mlist.adj{columns:2;column-gap:26px;font-size:11.5px;color:var(--ink)}
+.mlist.adj li{break-inside:avoid}
+.gnote{font-size:11px;color:var(--muted);margin:3px 0 2px;font-style:italic}
+.tradnote{margin-top:16px;font-size:11px;color:var(--muted);font-style:italic}
+@media (max-width:640px){.mlist.adj{columns:1}}
+.wrap footer{border-top:1px solid var(--line);padding-top:16px;font-size:12.5px;color:var(--muted);max-width:72ch;line-height:1.55}
+.wrap footer p{margin-bottom:8px}
+@media (max-width:640px){
+  .board{grid-template-rows:repeat(4,minmax(104px,auto))}
+  .pname{font-size:11px}.mstar{font-size:11px}
+  .minors{font-size:9px}.adjs{display:none}
+  .center{padding:8px}.crow{font-size:10.5px}.pillar b{font-size:11px}
+  .center h2{font-size:14px}
+}
+
+</style>
+<script is:inline src="/vendor/iztro.bundle.js"></script>
+<script is:inline src="/purple-star/dictionary.js"></script>
+<script is:inline src="/purple-star/app.js"></script>

@@ -1,0 +1,183 @@
+---
+import PurpleStarChart from '../components/PurpleStarChart.astro';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
+import Layout from '../layouts/Layout.astro';
+import {
+  createFaqSchema,
+  serializeJsonLd,
+} from '../lib/programmatic-seo/schema';
+
+const title =
+  'Purple Star Astrology Chart Calculator — Free Interactive Tử Vi / Zi Wei Dou Shu Chart';
+const description =
+  'Enter your birth date, hour, and gender to get your full Purple Star Astrology chart — 12 life palaces, 100+ stars, explained in plain English. Free, instant, no signup.';
+
+const faqs = [
+  {
+    question: 'What is Purple Star Astrology?',
+    answer:
+      "Purple Star Astrology (known as Tử Vi in Vietnam and Zi Wei Dou Shu in China) is a thousand-year-old Eastern system that maps your life into 12 areas — money, career, marriage, health, and more — based on your birth date, birth hour, and gender. Unlike Western astrology, it doesn't use planet positions; it's built entirely on traditional calendar math.",
+  },
+  {
+    question: 'Do I need my birth location?',
+    answer:
+      "No. The chart is calculated from your local birth time as written on your birth certificate — the same inputs a traditional practitioner would ask for. One caveat: if you were born during daylight saving time or within about 30 minutes of a 2-hour boundary, try both adjacent hours, since your true traditional hour may be the earlier slot.",
+  },
+  {
+    question: "What if I don't know my exact birth hour?",
+    answer:
+      "The hour matters a lot — it decides which palace anchors your chart. If you're unsure, generate charts for the possible hours and see which one's personality description fits you best. That's actually how traditional practitioners narrow it down too.",
+  },
+  {
+    question: 'Is this a fortune-telling site?',
+    answer:
+      "No. This tool computes the traditional chart structure and explains what the classical tradition says about each placement, in plain English. It describes the tradition — it doesn't predict your life. Different schools also interpret some details differently.",
+  },
+];
+
+const faqStructuredDataJson = serializeJsonLd(createFaqSchema(faqs));
+---
+
+<Layout
+  title={title}
+  description={description}
+  socialImagePath="/social/automatorlabs-default-social.svg"
+  socialImageAlt="Purple Star Chart: an interactive Tử Vi / Zi Wei Dou Shu birth chart calculator."
+>
+  <script type="application/ld+json" set:html={faqStructuredDataJson} />
+
+  <main id="main-content">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li aria-current="page">Purple Star Chart</li>
+      </ol>
+    </nav>
+
+    <PurpleStarChart />
+
+    <section class="faq-section" aria-labelledby="faq-heading">
+      <h2 id="faq-heading">Frequently asked questions</h2>
+      <div class="faq-list">
+        {faqs.map((item) => (
+          <details>
+            <summary>{item.question}</summary>
+            <p>{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="cross-link" aria-labelledby="cross-link-heading">
+      <h2 id="cross-link-heading">More from the Data Playground</h2>
+      <p>
+        Liked seeing what your birth moment says about you? Check
+        <a href="/birth-lottery/">The Birth Lottery</a> — the odds of being
+        born in your country, in your year, and how lucky that ticket really
+        was.
+      </p>
+    </section>
+
+    <NewsletterSignup compact />
+  </main>
+</Layout>
+
+<style>
+  main {
+    width: min(900px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 4.5rem 0;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
+  }
+
+  .breadcrumbs li + li::before {
+    color: var(--muted-text-color);
+    content: '›';
+  }
+
+  .breadcrumbs a {
+    color: var(--link-color);
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .breadcrumbs [aria-current='page'] {
+    color: var(--text-color);
+    font-weight: 650;
+  }
+
+  .faq-section,
+  .cross-link {
+    margin-top: 3.5rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+  }
+
+  .faq-section h2,
+  .cross-link h2 {
+    margin: 0 0 0.9rem;
+    color: var(--heading-color);
+    font-size: 1.55rem;
+    letter-spacing: -0.02em;
+  }
+
+  .faq-list details {
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 0;
+  }
+
+  .faq-list summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--text-color);
+  }
+
+  .faq-list details p {
+    max-width: 760px;
+    margin: 0.65rem 0 0;
+    color: var(--muted-text-color);
+    line-height: 1.7;
+  }
+
+  .cross-link p {
+    margin: 0;
+    max-width: 74ch;
+    color: var(--text-color);
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  .cross-link a {
+    color: var(--link-color);
+  }
+
+  @media (max-width: 620px) {
+    main {
+      padding: 3rem 0;
+    }
+  }
+</style>
