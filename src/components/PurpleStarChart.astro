@@ -146,10 +146,15 @@
 .wrap footer p{margin-bottom:8px}
 @media (max-width:640px){
   .board{grid-template-rows:repeat(4,minmax(104px,auto))}
-  .pname{font-size:11px}.mstar{font-size:11px}
+  .pname{font-size:11px}
+  .stemb{position:static;display:block;margin:2px 0 0}
+  .mstar{font-size:10.5px;white-space:normal;overflow-wrap:anywhere}
+  .mstar sup{font-size:7px}
+  .mut{font-size:7.5px;padding:0 2px}
   .minors{font-size:9px}.adjs{display:none}
-  .center{padding:8px}.crow{font-size:10.5px}.pillar b{font-size:11px}
+  .center{padding:8px;min-width:0}.crow{font-size:10.5px}.pillar b{font-size:11px}
   .center h2{font-size:14px}
+  .pillars{display:grid;grid-template-columns:repeat(2,1fr)}
 }
 
 </style>
