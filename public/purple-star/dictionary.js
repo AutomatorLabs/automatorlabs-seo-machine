@@ -14,10 +14,10 @@ BRIGHT: {
 },
 
 HOA: {
- 'Hóa Lộc': 'Oh, this is a good one. This star got the Gain mark — basically a tailwind. Money, chances, and people wanting to help you just... flow toward this part of your life, with weirdly little effort from you. Here’s the sad part: most people never use their tailwind because nobody told them it exists. Well, now someone told you. Lean into this area. Hard.',
- 'Hóa Quyền': 'This star got the Power mark — think turbo button. You naturally push harder and take charge in this part of your life, whether you mean to or not. Pointed at a real goal? Amazing, you’ll outwork everyone. Pointed at nothing? You’re just the bossy one in the group chat. So give it a goal.',
- 'Hóa Khoa': 'This star got the Fame mark — honestly the gentlest of the four. This part of your life earns you respect, and when things DO go wrong here, something usually softens the crash. A teacher vouches for you. A stranger helps. The mistake gets forgiven. It’s like having an airbag installed in this one area.',
- 'Hóa Kỵ': 'Okay, real talk time. This star got the Friction mark — and that makes this THE trouble spot of your whole chart. Things here get stuck, tangled, or quietly leak. BUT — and this is the part nobody tells you — the pain almost always comes from gripping too hard. Loosen up here. Keep backup money, backup time, backup plans. Do that, and honestly? 80% of the trouble just never shows up.'
+ 'Hóa Lộc': 'Quick explainer: on top of every star, this system stamps a few of them with a bonus or a curse. This one got “Gain” — the best stamp there is. Think tailwind. Money, opportunities, and people wanting to help just roll toward this part of your life without you working for it. The sad part? Most people never use their tailwind because nobody ever told them they had one. Well, now you know. Push here.',
+ 'Hóa Quyền': 'Quick explainer: on top of every star, this system stamps a few of them with a bonus or a curse. This one got “Power” — basically a turbo button. You naturally go hard and take over in this part of your life, whether you mean to or not. Aimed at a real goal? You’ll outwork everybody. Aimed at nothing? You’re just the bossy one in the group chat. Point it somewhere.',
+ 'Hóa Khoa': 'Quick explainer: on top of every star, this system stamps a few of them with a bonus or a curse. This one got “Fame” — the nicest one. People respect you in this part of your life, and when things go sideways here, something usually saves you. A teacher vouches for you. A stranger helps. The mistake gets forgiven. It’s an airbag.',
+ 'Hóa Kỵ': 'Okay, real talk. On top of every star, this system stamps a few of them with a bonus or a curse. This one got “Friction” — the rough one — which makes this THE problem spot of your entire chart. Things here get stuck, tangled, or quietly leak money. BUT here’s what nobody tells you: the pain comes from holding on too tight. Loosen your grip. Keep extra cash, extra time, a backup plan. Do that and honestly? Most of the trouble never even happens.'
 },
 
 STARS: {
@@ -352,18 +352,18 @@ ADJ: {
 },
 
 DOMAINS: {
- 'Mệnh':'The Self palace — your factory settings. Core personality, how you’re wired, the lens every other palace gets read through.',
- 'Phụ Mẫu':'Parents — your relationship with parents and elders, and what growing up in that house handed you.',
- 'Phúc Đức':'Inner life — your happiness settings. What recharges you, what your peace depends on, plus the luck your ancestors banked for you.',
- 'Điền Trạch':'Property — home, land, living space, and the stuff you accumulate. Where your assets like to live.',
- 'Quan Lộc':'Career — your work life. What kind of work fits you, how you climb, and how you handle bosses and authority.',
- 'Nô Bộc':'Friends & helpers — your network. Coworkers, allies, and the help (or headaches) other people bring into your life.',
- 'Giao Hữu':'Friends & helpers — your network. Coworkers, allies, and the help (or headaches) other people bring into your life.',
- 'Thiên Di':'Out in the world — travel, moving, life away from home, and how the world treats you when you’re out in it.',
- 'Tật Ách':'Health — your body’s owner’s manual. Strong points, weak points, and where stress goes when you don’t deal with it.',
- 'Tài Bạch':'Money — how you earn, how it flows through your hands, and your whole relationship with it.',
- 'Tử Nữ':'Children — your kids, your creations, the things you raise and leave behind.',
- 'Phu Thê':'Marriage — your partner and love life. The kind of person you pull close, and what the partnership runs on.',
- 'Huynh Đệ':'Siblings — brothers, sisters, and the friends who count as family.'
+ 'Mệnh':'This box is YOU. Your personality, how you’re built, how you react. Read this one first — everything else makes more sense after it.',
+ 'Phụ Mẫu':'Your parents. How you got along with them, and what growing up in that house handed you.',
+ 'Phúc Đức':'Your happiness. What makes you feel calm, what recharges you, what you’re like on the inside when nobody’s watching.',
+ 'Điền Trạch':'Your home and property. Houses, land, where you live, and the stuff you own long-term.',
+ 'Quan Lộc':'Your job. What kind of work fits you, how you climb, and how you deal with bosses.',
+ 'Nô Bộc':'Your friends and coworkers. Who shows up for you, who drains you, and how your circle works.',
+ 'Thiên Di':'Life away from home. Travel, moving, and how strangers treat you when you’re somewhere new.',
+ 'Giao Hữu':'Your friends and coworkers. Who shows up for you, who drains you, and how your circle works.',
+ 'Tật Ách':'Your health. Where your body is strong, where it’s weak, and where stress hits you first.',
+ 'Tài Bạch':'Your money. How you make it, how you spend it, and where it leaks out.',
+ 'Tử Nữ':'Your kids. Also the things you create and raise — what you pour yourself into.',
+ 'Phu Thê':'Your love life. Your husband or wife, the kind of person you go for, and what your relationship runs on.',
+ 'Huynh Đệ':'Your brothers and sisters — plus the friends who feel like family.'
 }
 };

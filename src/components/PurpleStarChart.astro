@@ -10,9 +10,15 @@
 ---
 
 <div class="wrap">
-  <p class="eyebrow">The thousand-year-old life map · not fortune-telling</p>
+  <p class="eyebrow">Free · no signup · takes 10 seconds</p>
   <h1>Your Purple Star Chart</h1>
-  <p class="sub">Twelve boxes, one for each part of your life — money, career, marriage, health, and more. Stars land in each box based on the exact math of your birth date and hour. Change the birth hour below and watch the stars jump.</p>
+  <div class="explainer">
+    <p><b>First things first — what is this?</b></p>
+    <p>Purple Star is a 1,000-year-old Chinese and Vietnamese system that’s basically the Eastern version of a horoscope — except instead of one sign for your whole life, it splits your life into <b>12 boxes</b>: money, career, love, health, family, and so on.</p>
+    <p>Then it drops <b>stars</b> into those boxes. Each star is a personality — The Emperor, The Wolf, The Money General — and wherever a star lands, it colors that part of your life. Get The Money General in your Money box? That says something very different than getting The Wolf.</p>
+    <p>Which stars land where depends on the exact day and hour you were born. That’s the whole idea.</p>
+    <p class="explainer-do"><b>How to use it:</b> put in your birthday below, then tap any box to see what your stars say about that part of your life — written in normal English, not fortune-cookie talk. <b>Start with the box called “Self.”</b></p>
+  </div>
 
   <div class="controls">
     <div class="ctrl">
@@ -75,6 +81,12 @@
 .wrap h1{font-family:'Noto Serif',serif;font-size:clamp(30px,6vw,44px);margin:6px 0 8px;color:var(--ink)}
 .sub{color:var(--muted);max-width:60ch;margin-bottom:26px}
 
+.explainer{max-width:62ch;margin:0 0 26px;font-size:15px;line-height:1.65}
+.explainer p{margin-bottom:10px}
+.explainer p:first-child{font-size:17px}
+.explainer b{color:var(--ink)}
+.explainer-do{border-left:3px solid var(--verm);padding:8px 0 8px 14px;background:var(--card);margin-top:14px}
+
 .controls{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;align-items:flex-end}
 .ctrl label{display:block;font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 .ctrl input,.ctrl select{padding:9px 10px;font-size:15px;border:1px solid var(--ink);background:var(--card);color:var(--ink);font-family:inherit}
@@ -111,6 +123,8 @@
 .detail{background:var(--card);border:1px solid var(--ink);padding:18px 20px;margin:14px 0 26px;min-height:90px}
 .detail h3{font-family:'Noto Serif',serif;font-size:18px;margin-bottom:4px;color:var(--ink)}
 .detail .dom{color:var(--muted);font-size:13.5px;margin-bottom:10px;max-width:70ch}
+.howto{font-size:12px;color:var(--muted);background:var(--card);border:1px dashed var(--line);padding:8px 10px;margin:0 0 12px;line-height:1.5}
+.howto b{color:var(--ink)}
 .stargroups{display:flex;flex-wrap:wrap;gap:18px;font-size:13px}
 .stargroups b{display:block;font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-bottom:26px;font-family:'Spline Sans Mono',monospace}

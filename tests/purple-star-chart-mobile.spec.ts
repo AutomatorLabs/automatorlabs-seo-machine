@@ -15,10 +15,13 @@ test.describe('purple star chart mobile layout (390px)', () => {
     await stubAnalytics(page);
     await page.goto('/purple-star-chart/', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('#board .cell').first()).toBeVisible();
+    await expect(page.locator('.explainer')).toContainText(
+      'Start with the box called',
+    );
 
     expect(
       await getHorizontalOverflow(page),
-      'Light mode should not overflow horizontally at 390px',
+      'Light mode (including the explainer) should not overflow horizontally at 390px',
     ).toBeLessThanOrEqual(1);
     await page.screenshot({
       path: 'test-results/purple-star-chart-mobile-light.png',

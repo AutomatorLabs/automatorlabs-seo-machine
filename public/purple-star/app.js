@@ -110,19 +110,19 @@ function quickRead(p){
   const strengths = [], frictions = [];
   for (const s of p.majorStars){
     const mz = s.mutagen ? (s.mutagen.startsWith('Hóa') ? s.mutagen : 'Hóa ' + s.mutagen) : '';
-    if (GOOD_BRIGHT.has(s.brightness)) strengths.push(`${en(s.name)} has strong signal here — so its good side is working for you`);
-    if (BAD_BRIGHT.has(s.brightness)) frictions.push(`${en(s.name)} has weak signal here — so you get more of its rough side — read its warning first`);
-    if (mz === 'Hóa Lộc') strengths.push(`${en(s.name)} carries the Gain mark — tailwind — money and chances flow easily here`);
-    if (mz === 'Hóa Quyền') strengths.push(`${en(s.name)} carries the Power mark — turbo button — you naturally push hard and take charge here`);
-    if (mz === 'Hóa Khoa') strengths.push(`${en(s.name)} carries the Fame mark — airbag — respect and lucky saves cushion this area`);
-    if (mz === 'Hóa Kỵ') frictions.push(`${en(s.name)} carries the Friction mark — the pebble-in-your-shoe spot of your whole chart. Fix: leave room for error here, don’t grip tighter`);
+    if (GOOD_BRIGHT.has(s.brightness)) strengths.push(`Your star <b>${en(s.name)}</b> is running at full power in this box. Translation: you get the good version of it here, not the messy one.`);
+    if (BAD_BRIGHT.has(s.brightness)) frictions.push(`Your star <b>${en(s.name)}</b> is running weak in this box. Translation: you get more of its bad habits than its gifts here, so this part of life needs you to actually pay attention.`);
+    if (mz === 'Hóa Lộc') strengths.push(`<b>${en(s.name)}</b> got stamped with "Gain" — think of it like a tailwind. Money, chances, and people wanting to help show up easier in this part of your life. Free luck. Use it.`);
+    if (mz === 'Hóa Quyền') strengths.push(`<b>${en(s.name)}</b> got stamped with "Power" — basically a turbo button. You go hard in this part of life without even trying. Great when you aim it, obnoxious when you don't.`);
+    if (mz === 'Hóa Khoa') strengths.push(`<b>${en(s.name)}</b> got stamped with "Fame" — kind of an airbag. People respect you here, and when you screw up in this part of life, something usually softens the crash.`);
+    if (mz === 'Hóa Kỵ') frictions.push(`<b>${en(s.name)}</b> got stamped with "Friction" — and this is THE problem spot of your entire chart. Stuff gets stuck, tangled, or leaks money here. The weird fix: stop squeezing. Leave yourself extra cash, extra time, a backup plan, and most of the trouble never shows up.`);
   }
   for (const s of p.minorStars){
     const mz = s.mutagen ? (s.mutagen.startsWith('Hóa') ? s.mutagen : 'Hóa ' + s.mutagen) : '';
-    if (CAT_TINH.has(s.name)) strengths.push(`${en(s.name)}: ${TUVI.MINOR[s.name]||''}`);
-    if (SAT_TINH.has(s.name)) frictions.push(`${en(s.name)}: ${TUVI.MINOR[s.name]||''}`);
-    if (mz === 'Hóa Kỵ') frictions.push(`${en(s.name)} carries the Friction mark — trouble rides on this star here`);
-    if (mz === 'Hóa Lộc' || mz === 'Hóa Quyền' || mz === 'Hóa Khoa') strengths.push(`${en(s.name)} carries the ${MUT_EN[mz.replace('Hóa ','')]} mark`);
+    if (CAT_TINH.has(s.name)) strengths.push(`<b>${en(s.name)}</b> — ${TUVI.MINOR[s.name]||''}`);
+    if (SAT_TINH.has(s.name)) frictions.push(`<b>${en(s.name)}</b> — ${TUVI.MINOR[s.name]||''}`);
+    if (mz === 'Hóa Kỵ') frictions.push(`<b>${en(s.name)}</b> got stamped with "Friction" — meaning this star causes more headaches than help in this part of your life.`);
+    if (mz === 'Hóa Lộc' || mz === 'Hóa Quyền' || mz === 'Hóa Khoa') strengths.push(`<b>${en(s.name)}</b> got stamped with "${MUT_EN[mz.replace('Hóa ','')]}" — a bonus that works in your favor here.`);
   }
   return {strengths, frictions};
 }
@@ -140,10 +140,10 @@ function showDetail(p){
       const bright = TUVI.BRIGHT[s.brightness];
       const hoa = s.mutagen ? TUVI.HOA[s.mutagen.startsWith('Hóa') ? s.mutagen : 'Hóa ' + s.mutagen] : '';
       return `<div class="starblock">
-        <h4>${en(s.name)}${s.brightness?` <span class="bshort">· ${bright?bright[0]:s.brightness}</span>`:''}${s.mutagen?` ${mutBadge(s.mutagen)}`:''}</h4>
+        <h4>${en(s.name)}${s.brightness?` <span class="bshort">· power: ${bright?bright[0]:s.brightness}</span>`:''}${s.mutagen?` ${mutBadge(s.mutagen)}`:''}</h4>
         <p class="arch">${S.arch}</p>
-        <p class="inpal"><b>In your ${PAL_EN[p.name]||p.name} palace:</b> ${S.pal[p.name]||''}</p>
-        ${bright?`<p class="bline"><b>Brightness:</b> ${bright[1]}.</p>`:''}
+        <p class="inpal"><b>What this star means for your ${PAL_EN[p.name]||p.name.toLowerCase()}:</b> ${S.pal[p.name]||''}</p>
+        ${bright?`<p class="bline"><b>How strong is this star here?</b> ${bright[1]}.</p>`:''}
         ${hoa?`<p class="hline">${hoa}</p>`:''}
         <div class="dd">
           <div><b>Do</b><ul>${S.dos.map(x=>`<li>${x}</li>`).join('')}</ul></div>
@@ -165,13 +165,14 @@ function showDetail(p){
   d.innerHTML = `
     <h3>${PAL_EN[p.name]||p.name} Palace · ${sb(p.heavenlyStem,p.earthlyBranch)}${p.isBodyPalace?' · your BODY palace (the area your life slowly centers on after about age 35)':''}</h3>
     <p class="dom">${dom} This palace also runs your life’s ages ${p.decadal.range[0]}–${p.decadal.range[1]} (each palace takes a 10-year shift).</p>
+    <p class="howto">Quick reminder: <b>stars</b> are the characters that landed in this box — each one has a personality. <b>Power</b> (bars) is how strong that star is here. Some stars also get <b>stamped</b> with Gain, Power, Fame, or Friction — bonuses and curses on top.</p>
     ${(qr.strengths.length||qr.frictions.length)?`<div class="qr">
       ${qr.strengths.length?`<div class="qcol qgood"><b>Working for you here</b><ul>${qr.strengths.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}
       ${qr.frictions.length?`<div class="qcol qbad"><b>Friction to manage here</b><ul>${qr.frictions.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}
     </div>`:''}
     ${majorsHtml}
-    ${minorsHtml?`<div class="mgroup"><b class="glabel">Supporting stars</b><p class="gnote">Medium-weight stars. They boost or drag the main star above — think co-stars, not the lead.</p><ul class="mlist">${minorsHtml}</ul></div>`:''}
-    ${adjHtml?`<div class="mgroup"><b class="glabel">Small background stars</b><p class="gnote">Tiny traditional stars with old poetic names. Think of them as seasoning — each one tilts this area maybe 5–10%. They add flavor; they don’t run the show.</p><ul class="mlist adj">${adjHtml}</ul></div>`:''}
+    ${minorsHtml?`<div class="mgroup"><b class="glabel">Backup stars</b><p class="gnote">Think of these as the supporting cast. They help or annoy the main star above, but they don’t run the show.</p><ul class="mlist">${minorsHtml}</ul></div>`:''}
+    ${adjHtml?`<div class="mgroup"><b class="glabel">Extra little stars</b><p class="gnote">These are the small stuff — like seasoning on food. Each one nudges this part of your life maybe 5–10%. Fun to read, not a big deal on their own.</p><ul class="mlist adj">${adjHtml}</ul></div>`:''}
     <p class="tradnote">These readings describe what the classical Purple Star Astrology tradition says. Different schools teach it a bit differently. This describes the tradition — it does not predict your life.</p>`;
   d.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
