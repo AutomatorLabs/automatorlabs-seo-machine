@@ -4,6 +4,20 @@ Operator checklist for releasing the live AutomatorLabs site.
 
 This document is intentionally procedural. It mixes repo-proven steps with external operator checks that happen in Netlify, search consoles, and analytics tools.
 
+## After Every Deploy That Adds Or Removes Pages
+
+**Resubmit the sitemap in Google Search Console. Do not skip this.** In the 2026-07-19 SEO diagnostic, the sitemap itself was confirmed complete and correct — all 11,221 indexable URLs present, zero dropped, verified identical between the local build and live production. The problem was on Google's side: the "Sitemaps read" table showed zero child-sitemap rows and the discovered-URL count (2,830) was far below the real page count, most likely from infrequent sitemap resubmission compounding normal crawl-budget limits on a young, large domain. A stale GSC read looks like a sitemap bug from the outside — it isn't one — but resubmitting after every release that changes the URL set is the cheapest way to keep Google's picture from drifting that far behind again.
+
+1. Open Google Search Console for the `automatorlabs.co` property.
+2. Go to **Sitemaps** in the left sidebar.
+3. If `sitemap-index.xml` is already listed, remove it and re-add it — a fresh submission forces an immediate re-fetch instead of waiting on Google's own crawl schedule. If it isn't listed, just add it.
+4. Enter `sitemap-index.xml` (full URL: `https://automatorlabs.co/sitemap-index.xml`) and click **Submit**.
+5. Confirm the status shows **Success** and the discovered-URL count is in the right ballpark — sanity-check it against `find dist -name "index.html" | wc -l` from the latest build.
+6. After a few minutes, check that the "Sitemaps read" table shows the child sitemap(s), not zero rows. If it's still zero, resubmit again.
+7. Skim the Coverage/Pages report for new anomalies: a spike in "Excluded," new "Page with redirect" entries, or growth in "Crawled — currently not indexed."
+
+Do this after: any release that adds, removes, or renames routes; any large content-cluster launch; any change to `robots.txt` or the sitemap config in `astro.config.mjs`.
+
 ## Before You Release
 
 Do not deploy casually if the change touches any of these areas without strong reason and full verification:
@@ -126,20 +140,7 @@ Confirm:
 
 ## Google Search Console Sitemap Resubmission
 
-After a release that changes URLs, internal linking, metadata, or page generation:
-
-1. Open Google Search Console for the live AutomatorLabs property.
-2. Go to `Sitemaps`.
-3. Enter or re-enter `sitemap-index.xml` if needed.
-4. Submit the sitemap.
-5. Confirm Google accepts the sitemap URL.
-6. Check for immediate parse or fetch errors.
-
-Also review:
-
-- coverage or indexing anomalies
-- sudden spike in excluded pages
-- canonical disagreements if visible
+See "After Every Deploy That Adds Or Removes Pages" at the top of this document for the full steps. Do this after any release that changes URLs, internal linking, metadata, or page generation.
 
 ## Bing Webmaster Tools Sitemap Resubmission
 
@@ -213,7 +214,7 @@ Use this as the short operational checklist:
 6. Smoke-test the live site.
 7. Open `/status/` and confirm the status page renders with the expected counts and smoke-test links.
 8. Confirm `https://automatorlabs.com/sitemap-index.xml` loads.
-9. Resubmit the sitemap in Google Search Console if the release affects discovery or indexing.
+9. If the release affects discovery or indexing: resubmit the sitemap in Google Search Console — see "After Every Deploy That Adds Or Removes Pages" at the top of this document. Do not skip this.
 10. Resubmit the sitemap in Bing Webmaster Tools if the release affects discovery or indexing.
 11. Confirm GA4 realtime receives a live page view.
 12. Confirm Microsoft Clarity still receives production traffic.

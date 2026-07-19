@@ -9,7 +9,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "audit:seo": "node scripts/audit-seo.mjs",
-    "verify": "npm run build && npm run audit:seo && npm run test:calculators",
+    "verify": "npm run build && npm run audit:seo && npm run test:calculators && echo '\n[verify] Adding, removing, or renaming pages in this release? Resubmit the sitemap in Google Search Console before you consider it done — see docs/DEPLOYMENT.md.'",
     "preview": "astro preview",
     "test:calculators": "playwright test tests",
     "astro": "astro"
