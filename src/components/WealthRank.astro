@@ -1,0 +1,211 @@
+---
+/**
+ * WealthRank.astro — "Where Do You Actually Rank?" income & wealth percentile tool.
+ *
+ * REQUIRED ASSETS (copied from package, not modified):
+ *   public/wealth-rank/data.json  — 216 countries x 100-point income & wealth ladders (~310KB)
+ *   public/wealth-rank/app.js     — all logic
+ *
+ * Styles are is:global ON PURPOSE. app.js creates DOM at runtime (ticks, picture-it
+ * cards, ladder rows); Astro-scoped selectors never match JS-created elements.
+ * Everything is namespaced under .wrap and tool-specific classes.
+ */
+interface Props { dataSrc?: string }
+const { dataSrc = "/wealth-rank/data.json" } = Astro.props;
+---
+<div class="wrap" data-src={dataSrc}>
+
+  <p class="eyebrow">Free · nothing saved · nothing sent anywhere</p>
+  <h1>Where Do You Actually Rank?</h1>
+  <p class="sub">Type in what you make (or what you're worth) and find out where you sit — in your own country, and against every adult alive on Earth. Most people are way off on the second one.</p>
+
+  <div class="tabs">
+    <button id="tab-income" class="on" type="button">Income</button>
+    <button id="tab-wealth" type="button">Net worth</button>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl">
+      <label for="country">Your country</label>
+      <select id="country"></select>
+    </div>
+    <div class="ctrl" style="max-width:210px">
+      <label for="currency">Currency</label>
+      <select id="currency"></select>
+    </div>
+    <div class="ctrl">
+      <label for="amount" id="amtlabel">Yearly income, before tax</label>
+      <div class="amtrow">
+        <span class="ccybadge" id="ccybadge">USD</span>
+        <input type="text" id="amount" inputmode="numeric" value="50,000">
+        <button type="button" id="recalc" title="Recalculate">↻</button>
+      </div>
+      <p class="hint" id="hint"></p>
+    </div>
+  </div>
+
+  <div class="result">
+    <div class="rlabel">Compared to every adult on Earth</div>
+    <div class="big" id="globalbig">—</div>
+    <p class="rsub" id="globalsub"></p>
+  </div>
+
+  <div class="charts">
+    <div class="chartblock">
+      <div class="chead"><span class="cname" id="c1name">Your country</span><span class="cpos" id="c1pos"></span></div>
+      <div class="ticks" id="ticks1"></div>
+      <div class="cfoot"><span>poorest adult</span><span>richest</span></div>
+    </div>
+    <div class="chartblock">
+      <div class="chead">
+        <span class="cname">Compare against <select id="compare" class="inlinesel"></select></span>
+        <span class="cpos" id="c2pos"></span>
+      </div>
+      <div class="ticks" id="ticks2"></div>
+      <div class="cfoot"><span id="cfoot2a">poorest adult on Earth</span><span>richest</span></div>
+    </div>
+  </div>
+
+  <div class="second">
+    <div class="cell">
+      <div class="clabel">In your own country</div>
+      <div class="cval" id="natval">—</div>
+      <div class="csub" id="natsub"></div>
+    </div>
+    <div class="cell">
+      <div class="clabel">People you're ahead of</div>
+      <div class="cval" id="peopleval">—</div>
+      <div class="csub" id="peoplesub"></div>
+    </div>
+  </div>
+
+  <h2>Picture it</h2>
+  <p class="note" id="picnote"></p>
+  <div class="pics" id="pics"></div>
+
+  <p class="context" id="context"></p>
+
+  <h2>The ladder</h2>
+  <p class="note" id="laddernote"></p>
+  <table class="ladder"><tbody id="ladderbody"></tbody></table>
+
+  <footer>
+    <p><b>Where the numbers come from:</b> the World Inequality Database (wid.world) — the research project behind the work of Thomas Piketty, Emmanuel Saez and Gabriel Zucman. Figures are per adult, pre-tax national income, latest available year. Wealth is net personal wealth per adult.</p>
+    <p><b>Why "per adult" matters:</b> the numbers split household income and wealth equally between adults in the household. So if you and a partner share finances, compare using roughly half the household total.</p>
+    <p><b>About currencies:</b> pick whatever currency your number is in — it gets converted for you, for every country. Exchange rates are approximate snapshots, not live quotes, so treat conversions as close-enough, not to-the-penny. A handful of countries with highly unstable or multi-tier exchange rates (for example economies under sanctions or in active conflict) don't have one trustworthy market rate to convert from, so those are shown in their own local currency only.</p>
+    <p><b>How the global comparison works:</b> your number is converted using purchasing-power parity, which adjusts for the fact that the same money buys different amounts in different countries. It's the fairest way to compare across borders, and it's still an estimate.</p>
+  </footer>
+
+</div>
+
+<style is:global>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Spline+Sans+Mono:wght@400;500&display=swap');
+
+:root{
+  --paper:#F7F5F0; --ink:#1A1A1A; --accent:#1D6F52; --hot:#D8262C;
+  --muted:#8B8779; --line:#E4E1D8; --card:#FFFFFF;
+  --tickfill:#BFD9CB; --flashbg:#E4F0E9; --highlight:#CFE6DA; --yourow:#F0F6F2;
+}
+:root[data-theme='dark']{
+  --paper:#1C1917; --card:#26221E; --ink:#EAE6DC;
+  --muted:#9C968A; --line:#3A352E; --accent:#4FA97F; --hot:#FF5449;
+  --tickfill:#2E4A3D; --flashbg:#1F3A2E; --highlight:#2A4A3D; --yourow:#1E2F27;
+}
+.wrap,.wrap *{box-sizing:border-box;margin:0;padding:0}
+.wrap{max-width:720px;margin:0 auto;padding:44px 20px 80px;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+.eyebrow{font-family:'Spline Sans Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:'Anton',sans-serif;font-size:clamp(38px,8vw,64px);line-height:1.03;text-transform:uppercase;margin:8px 0 12px}
+.sub{color:var(--muted);max-width:56ch;margin-bottom:8px}
+
+.controls{display:flex;gap:18px;flex-wrap:wrap;margin:28px 0 26px;align-items:flex-end}
+.ctrl{flex:1;min-width:190px}
+.ctrl label{display:block;font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+select,input[type=text]{width:100%;padding:11px 12px;font-size:16px;font-family:inherit;border:1px solid var(--ink);border-radius:0;background:var(--card);color:var(--ink)}
+.tabs{display:flex;border:1px solid var(--ink);margin-bottom:22px;max-width:340px}
+.tabs button{flex:1;padding:10px;font-size:14px;font-family:inherit;border:none;background:var(--card);cursor:pointer;color:var(--ink)}
+.tabs button.on{background:var(--ink);color:var(--paper)}
+.amtrow{display:flex;align-items:stretch;border:1px solid var(--ink);background:var(--card)}
+.amtrow input{border:none;flex:1;min-width:0}
+.ccybadge{display:flex;align-items:center;padding:0 11px;background:var(--ink);color:var(--paper);font-family:'Spline Sans Mono',monospace;font-size:12px;letter-spacing:.06em;flex:none}
+#recalc{border:none;border-left:1px solid var(--line);background:transparent;padding:0 13px;font-size:19px;cursor:pointer;color:var(--muted);line-height:1}
+#recalc:hover{background:var(--paper);color:var(--ink)}
+#recalc.spin{animation:sp .5s ease}
+@keyframes sp{to{transform:rotate(360deg)}}
+.flash{animation:fl .7s ease}
+@keyframes fl{0%{background:var(--flashbg)}100%{background:var(--card)}}
+.hint{font-size:12px;color:var(--muted);margin-top:6px}
+
+.result{background:var(--card);border:1px solid var(--ink);padding:26px 26px 20px;margin-bottom:14px}
+.rlabel{font-family:'Spline Sans Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.big{font-family:'Anton',sans-serif;font-size:clamp(40px,9vw,74px);line-height:1;color:var(--accent);margin:6px 0 4px}
+.big.low{color:var(--ink)}
+.rsub{font-size:16px;max-width:52ch}
+.rsub b{background:linear-gradient(transparent 62%,var(--highlight) 62%)}
+
+.scale{position:relative;height:34px;margin:22px 0 6px;background:linear-gradient(90deg,#EDE8DC,var(--highlight) 60%,var(--accent));border:1px solid var(--line)}
+.marker{position:absolute;top:-8px;width:3px;height:50px;background:var(--ink);transition:left .4s ease}
+.marker::after{content:attr(data-label);position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-family:'Spline Sans Mono',monospace;font-size:10px;white-space:nowrap;color:var(--ink)}
+.slabels{display:flex;justify-content:space-between;font-family:'Spline Sans Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+.charts{margin-bottom:24px}
+.chartblock{background:var(--card);border:1px solid var(--line);padding:16px 18px 14px;margin-bottom:10px}
+.chead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.inlinesel{font-family:'Spline Sans Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);background:transparent;border:none;border-bottom:1px solid var(--ink);padding:1px 18px 1px 2px;cursor:pointer;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%231A1A1A' stroke-width='1.4' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 2px center}
+.cname{font-family:'Spline Sans Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.cpos{font-weight:700;font-size:15px;color:var(--accent)}
+.ticks{display:flex;align-items:flex-end;gap:1px;height:44px;position:relative}
+.tick{flex:1;background:var(--line);transition:background .25s,height .25s}
+.tick.filled{background:var(--tickfill)}
+.tick.you{background:var(--hot);height:100%!important;position:relative}
+.tick.you::after{content:'you';position:absolute;top:-15px;left:50%;transform:translateX(-50%);font-family:'Spline Sans Mono',monospace;font-size:9px;color:var(--hot);letter-spacing:.05em}
+.cfoot{display:flex;justify-content:space-between;font-family:'Spline Sans Mono',monospace;font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:8px}
+.second{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:22px}
+.cell{background:var(--card);padding:16px 18px}
+.cell .clabel{font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.cell .cval{font-family:'Anton',sans-serif;font-size:30px;line-height:1.15;margin:3px 0 2px}
+.cell .csub{font-size:12.5px;color:var(--muted);line-height:1.45}
+
+.pics{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:24px}
+.pic{background:var(--card);padding:16px 18px;display:flex;gap:13px;align-items:flex-start}
+.picicon{font-size:24px;line-height:1.1;flex:none}
+.pictext{font-size:14px;line-height:1.5}
+.pictext b{font-family:'Spline Sans Mono',monospace;font-weight:500;color:var(--accent);font-size:15px}
+.pictext .who{display:block;font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+@media (max-width:560px){.pics{grid-template-columns:1fr}}
+.context{border-left:3px solid var(--accent);padding:10px 0 10px 16px;margin:0 0 26px;font-size:15px;max-width:58ch}
+h2{font-family:'Anton',sans-serif;font-size:20px;text-transform:uppercase;margin:0 0 6px}
+.note b{color:var(--ink)}
+.note{font-size:13px;color:var(--muted);max-width:62ch;margin-bottom:10px}
+.ladder{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:26px}
+.ladder td{padding:7px 8px;border-bottom:1px solid var(--line)}
+.ladder td:last-child{text-align:right;font-family:'Spline Sans Mono',monospace}
+.ladder tr.you td{background:var(--yourow);font-weight:700}
+.ladder tr.you td:first-child::after{content:' \2190  you'; color:var(--accent);font-weight:400;font-size:12px}
+footer{border-top:1px solid var(--line);padding-top:16px;font-size:12.5px;color:var(--muted);max-width:66ch}
+footer p{margin-bottom:8px}
+@media (max-width:560px){.charts{margin-bottom:24px}
+.chartblock{background:var(--card);border:1px solid var(--line);padding:16px 18px 14px;margin-bottom:10px}
+.chead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.inlinesel{font-family:'Spline Sans Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);background:transparent;border:none;border-bottom:1px solid var(--ink);padding:1px 18px 1px 2px;cursor:pointer;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%231A1A1A' stroke-width='1.4' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 2px center}
+.cname{font-family:'Spline Sans Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.cpos{font-weight:700;font-size:15px;color:var(--accent)}
+.ticks{display:flex;align-items:flex-end;gap:1px;height:44px;position:relative}
+.tick{flex:1;background:var(--line);transition:background .25s,height .25s}
+.tick.filled{background:var(--tickfill)}
+.tick.you{background:var(--hot);height:100%!important;position:relative}
+.tick.you::after{content:'you';position:absolute;top:-15px;left:50%;transform:translateX(-50%);font-family:'Spline Sans Mono',monospace;font-size:9px;color:var(--hot);letter-spacing:.05em}
+.cfoot{display:flex;justify-content:space-between;font-family:'Spline Sans Mono',monospace;font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:8px}
+.second{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.wrap,.wrap *{transition:none!important}}
+
+:root[data-theme='dark'] .wrap .inlinesel{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23EAE6DC' stroke-width='1.4' fill='none'/%3E%3C/svg%3E");
+}
+</style>
+<script is:inline src="/wealth-rank/app.js"></script>

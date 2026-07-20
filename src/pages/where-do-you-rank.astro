@@ -1,5 +1,5 @@
 ---
-import PurpleStarChart from '../components/PurpleStarChart.astro';
+import WealthRank from '../components/WealthRank.astro';
 import NewsletterSignup from '../components/NewsletterSignup.astro';
 import Layout from '../layouts/Layout.astro';
 import {
@@ -8,30 +8,35 @@ import {
 } from '../lib/programmatic-seo/schema';
 
 const title =
-  'Purple Star Astrology Chart Calculator — Free Interactive Tử Vi / Zi Wei Dou Shu Chart';
+  'Income & Net Worth Percentile Calculator — Where Do You Rank in the World?';
 const description =
-  'Enter your birth date, hour, and gender to get your full Purple Star Astrology chart — 12 life palaces, 100+ stars, explained in plain English. Free, instant, no signup.';
+  'Enter your income or net worth and see exactly where you rank — in your own country and against every adult on Earth. Free, instant, 216 countries. Data from the World Inequality Database.';
 
 const faqs = [
   {
-    question: 'What is Purple Star Astrology?',
+    question: 'How is my percentile calculated?',
     answer:
-      "Purple Star Astrology (known as Tử Vi in Vietnam and Zi Wei Dou Shu in China) is a thousand-year-old Eastern system that maps your life into 12 areas — money, career, marriage, health, and more — based on your birth date, birth hour, and gender. Unlike Western astrology, it doesn't use planet positions; it's built entirely on traditional calendar math.",
+      'Your figure is compared against the full income or wealth distribution of your country, using data from the World Inequality Database (the research project behind Thomas Piketty, Emmanuel Saez and Gabriel Zucman). For the global comparison, your number is converted using purchasing power parity, which adjusts for the fact that the same money buys different amounts in different countries.',
   },
   {
-    question: 'Do I need my birth location?',
+    question: "Why does the tool say 'per adult'?",
     answer:
-      "No. The chart is calculated from your local birth time as written on your birth certificate — the same inputs a traditional practitioner would ask for. One caveat: if you were born during daylight saving time or within about 30 minutes of a 2-hour boundary, try both adjacent hours, since your true traditional hour may be the earlier slot.",
+      'The underlying data splits household income and wealth equally between the adults in a household. So if you share finances with a partner, enter roughly half of your household total for an accurate comparison.',
   },
   {
-    question: "What if I don't know my exact birth hour?",
+    question: 'Is my data saved or sent anywhere?',
     answer:
-      "The hour matters a lot — it decides which palace anchors your chart. If you're unsure, generate charts for the possible hours and see which one's personality description fits you best. That's actually how traditional practitioners narrow it down too.",
+      'No. Everything is calculated in your browser. Nothing you type is stored, transmitted, or logged.',
   },
   {
-    question: 'Is this a fortune-telling site?',
+    question: 'Why am I in a much higher percentile globally than in my own country?',
     answer:
-      "No. This tool computes the traditional chart structure and explains what the classical tradition says about each placement, in plain English. It describes the tradition — it doesn't predict your life. Different schools also interpret some details differently.",
+      "Because global inequality is far larger than inequality within any single country. A median income in a wealthy country typically lands in the top 10 percent worldwide. Most people are surprised by this — it's the most interesting thing this calculator shows.",
+  },
+  {
+    question: 'How accurate are the currency conversions?',
+    answer:
+      "Exchange rates are approximate snapshots refreshed periodically, not live market quotes, so treat conversions as close-enough rather than exact. The percentile itself comes from the underlying distribution data and doesn't depend on the display currency.",
   },
 ];
 
@@ -42,7 +47,7 @@ const faqStructuredDataJson = serializeJsonLd(createFaqSchema(faqs));
   title={title}
   description={description}
   socialImagePath="/social/automatorlabs-default-social.svg"
-  socialImageAlt="Purple Star Chart: an interactive Tử Vi / Zi Wei Dou Shu birth chart calculator."
+  socialImageAlt="Where Do You Rank? An income and net worth percentile calculator comparing you to your country and the world."
 >
   <script type="application/ld+json" set:html={faqStructuredDataJson} />
 
@@ -50,11 +55,11 @@ const faqStructuredDataJson = serializeJsonLd(createFaqSchema(faqs));
     <nav class="breadcrumbs" aria-label="Breadcrumb">
       <ol>
         <li><a href="/">Home</a></li>
-        <li aria-current="page">Purple Star Chart</li>
+        <li aria-current="page">Where Do You Rank</li>
       </ol>
     </nav>
 
-    <PurpleStarChart />
+    <WealthRank />
 
     <section class="faq-section" aria-labelledby="faq-heading">
       <h2 id="faq-heading">Frequently asked questions</h2>
@@ -68,15 +73,22 @@ const faqStructuredDataJson = serializeJsonLd(createFaqSchema(faqs));
       </div>
     </section>
 
+    <section class="next-steps" aria-labelledby="next-steps-heading">
+      <h2 id="next-steps-heading">Turn the number into a plan</h2>
+      <p>
+        Know your rank? <a href="/calculators/fire-calculator/">See what financial independence would take from here</a>,
+        or <a href="/calculators/net-worth-calculator/">track your net worth over time</a> and watch the percentile move.
+        Or <a href="/calculators/">browse all calculators</a>.
+      </p>
+    </section>
+
     <section class="cross-link" aria-labelledby="cross-link-heading">
       <h2 id="cross-link-heading">More from the Data Playground</h2>
       <p>
-        Liked seeing what your birth moment says about you? Check
-        <a href="/birth-lottery/">The Birth Lottery</a> — the odds of being
-        born in your country, in your year, and how lucky that ticket really
-        was — or see
-        <a href="/where-do-you-rank/">where you rank</a> against every adult
-        on Earth by income or net worth.
+        Liked seeing where you rank? Check <a href="/birth-lottery/">The Birth Lottery</a> —
+        the odds of being born in your country, in your year — or
+        <a href="/purple-star-chart/">Your Purple Star Chart</a>, the thousand-year-old
+        Eastern birth chart, explained in plain English.
       </p>
     </section>
 
@@ -133,6 +145,7 @@ const faqStructuredDataJson = serializeJsonLd(createFaqSchema(faqs));
   }
 
   .faq-section,
+  .next-steps,
   .cross-link {
     margin-top: 3.5rem;
     border-top: 1px solid var(--border-color);
@@ -140,6 +153,7 @@ const faqStructuredDataJson = serializeJsonLd(createFaqSchema(faqs));
   }
 
   .faq-section h2,
+  .next-steps h2,
   .cross-link h2 {
     margin: 0 0 0.9rem;
     color: var(--heading-color);
@@ -165,6 +179,7 @@ const faqStructuredDataJson = serializeJsonLd(createFaqSchema(faqs));
     line-height: 1.7;
   }
 
+  .next-steps p,
   .cross-link p {
     margin: 0;
     max-width: 74ch;
@@ -173,6 +188,7 @@ const faqStructuredDataJson = serializeJsonLd(createFaqSchema(faqs));
     line-height: 1.8;
   }
 
+  .next-steps a,
   .cross-link a {
     color: var(--link-color);
   }
